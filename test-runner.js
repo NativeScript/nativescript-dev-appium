@@ -34,14 +34,10 @@ if (fs.existsSync(pluginMochaBinary)) {
 }
 log("Mocha found at: " + mochaBinary);
 
-var mochaOptsVar = process.env.MOCHA_OPS || "";
-mochaOpts = mochaOptsVar.split(/\s+/).filter(function(item){
-    return item.length > 0;
-});
-mochaOpts = mochaOpts.concat([
+mochaOpts = [
     "--recursive",
     "e2e-tests"
-]);
+];
 
 portastic.find({min: 9000, max: 9100}).then(function(ports) {
     var port = ports[0];
