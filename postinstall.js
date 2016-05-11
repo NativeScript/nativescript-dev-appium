@@ -19,11 +19,24 @@ if (!fs.existsSync(sampleTestDest)) {
 }
 
 var packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+
 if (!packageJson.scripts) {
     packageJson.scripts = {};
 }
 if (!packageJson.scripts["appium-android"]) {
     packageJson.scripts["appium-android"] = "tns run android --justlaunch && nativescript-dev-appium";
 }
+
+var newDeps = new Map();
+newDeps.set("chai", "^3.5.0");
+newDeps.set("chai-as-promised", "^5.3.0");
+newDeps.set("wd", "0.4.0");
+if (!packageJson.devDependencies) {
+    packageJson.devDependencies = {};
+}
+for (var key of newDeps.keys) {
+    packageJson.devDependencies[key] = newDeps.get(key);
+}
+
 fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, "    "));
 
