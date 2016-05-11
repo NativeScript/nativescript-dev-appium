@@ -23,7 +23,7 @@ if (!packageJson.scripts) {
     packageJson.scripts = {};
 }
 if (!packageJson.scripts["appium-android"]) {
-    packageJson.scripts["appium-android"] = "nativescript-dev-appium";
+    packageJson.scripts["appium-android"] = "tns run android --justlaunch && nativescript-dev-appium";
 }
 fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, "    "));
 
