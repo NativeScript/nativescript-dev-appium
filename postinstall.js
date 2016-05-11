@@ -34,8 +34,10 @@ newDeps.set("wd", "0.4.0");
 if (!packageJson.devDependencies) {
     packageJson.devDependencies = {};
 }
-for (var key of newDeps.keys) {
-    packageJson.devDependencies[key] = newDeps.get(key);
+for (var key of newDeps.keys()) {
+    if (!packageJson.devDependencies[key]) {
+        packageJson.devDependencies[key] = newDeps.get(key);
+    }
 }
 
 fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, "    "));
