@@ -1,0 +1,24 @@
+{
+  "name": "nativescript-dev-appium",
+  "version": "0.0.1",
+  "description": "A NativeScript plugin to help integrate and run Appium tests",
+  "main": "index.js",
+  "bin": {
+      "nativescript-dev-appium": "./test-runner.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nativescript",
+    "appium",
+    "test"
+  ],
+  "dependencies": {
+      "appium": "1.5.2",
+      "colors": "^1.1.2",
+      "portastic": "^1.0.1"
+  },
+  "author": "Telerik",
+  "license": "MIT"
+}
