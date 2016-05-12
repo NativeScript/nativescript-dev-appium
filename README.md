@@ -15,3 +15,13 @@ $ tns run android --justlaunch && npm run appium-android.
 ```
 
 The tests are standard [Mocha](http://mochajs.org) tests.
+
+## Missing features
+
+1. iOS support
+2. Better text output: colors, etc.
+3. Better integration with nativescript-cli.
+  - Run tests with a `tns appium ...` command
+  - Better deployment to device (`tns deploy` instead of `tns run`)
+  - Detect changes to app files and avoid rebuilding/redeploying the app if only test code has changed.
+4. Developer workflow - fast test runs when working on an app. Maybe using livesync.
