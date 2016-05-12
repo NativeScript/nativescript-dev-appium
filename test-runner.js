@@ -15,9 +15,14 @@ function log(message) {
     }
 }
 
+var appium = "appium";
+if (process.platform === "win32") {
+    appium = "appium.cmd";
+}
+
 var projectDir = path.dirname(path.dirname(__dirname));
-var pluginAppiumBinary = path.join(__dirname, "node_modules", ".bin", "appium");
-var projectAppiumBinary = path.join(projectDir, "node_modules", ".bin", "appium");
+var pluginAppiumBinary = path.join(__dirname, "node_modules", ".bin", appium);
+var projectAppiumBinary = path.join(projectDir, "node_modules", ".bin", appium);
 var appiumBinary = projectAppiumBinary;
 if (fs.existsSync(pluginAppiumBinary)) {
     appiumBinary = pluginAppiumBinary;
