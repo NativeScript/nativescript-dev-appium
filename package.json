@@ -1,6 +1,6 @@
 {
   "name": "nativescript-dev-appium",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A NativeScript plugin to help integrate and run Appium tests",
   "main": "index.js",
   "bin": {
