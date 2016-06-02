@@ -1,6 +1,8 @@
 require("./appium-setup");
 var path = require("path");
+var glob = require("glob");
 
+var testRunType = process.env.TEST_RUN_TYPE;
 var projectDir = path.dirname(path.dirname(__dirname));
 var appId = require(path.join(projectDir, "package.json")).nativescript.id;
 
@@ -11,7 +13,7 @@ exports.createDriver = function(caps, activityName) {
         activityName = "com.tns.NativeScriptActivity";
     }
     if (!caps) {
-        caps = exports.caps.android19();
+        caps = exports.getDefaultCapabilities();
     }
 
     var serverConfig = {
@@ -21,11 +23,36 @@ exports.createDriver = function(caps, activityName) {
     var driver = wd.promiseChainRemote(serverConfig);
     exports.configureLogging(driver);
 
-    var desired = exports.caps.android19();
-    desired.appPackage = appId;
-    desired.appActivity = "com.tns.NativeScriptActivity";
-    return driver.init(desired);
+    caps.app = exports.getAppPath();
+    return driver.init(caps);
 };
+
+exports.getAppPath = function() {
+    if (testRunType === "android") {
+        var apks = glob.sync("platforms/android/**/*.apk").filter(function(file) { return file.indexOf("unaligned") < 0; });
+        return apks[0];
+    } else if (testRunType === "ios-simulator") {
+        var simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
+        return simulatorApps[0];
+    } else if (testRunType === "ios") {
+        var deviceApps = glob.sync("platforms/ios/build/device/**/*.app");
+        return deviceApps[0];
+    } else {
+        throw new Error("Incorrect test run type: " + testRunType);
+    }
+};
+
+exports.getDefaultCapabilities = function() {
+    if (testRunType === "android") {
+        return exports.caps.android19();
+    } else if (testRunType === "ios-simulator") {
+        return exports.caps.ios92();
+    } else if (testRunType === "ios") {
+        return exports.caps.ios92();
+    } else {
+        throw new Error("Incorrect test run type: " + testRunType);
+    }
+}
 
 function log(message) {
     if (process.env.VERBOSE_LOG) {
@@ -62,7 +89,7 @@ exports.caps = {
             'appium-version': '1.5',
             platformName: 'iOS',
             platformVersion: '9.2',
-            deviceName: 'iPhone 5s',
+            deviceName: 'iPhone 6',
             app: undefined // will be set later
         };
     },

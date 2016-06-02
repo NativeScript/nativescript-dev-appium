@@ -9,6 +9,13 @@ var verbose = args.find(function(value) {
     return value === "-v" || value === "--verbose";
 }) !== undefined;
 
+var testRunType = "android";
+if (args.find(function(arg) { return arg.trim() === "ios"; })) {
+    testRunType = "ios";
+} else if (args.find(function(arg) { return arg.trim() === "ios-simulator"; })) {
+    testRunType = "ios-simulator";
+}
+
 function log(message) {
     if (verbose) {
         console.log(message);
@@ -70,11 +77,7 @@ portastic.find({min: 9000, max: 9100}).then(function(ports) {
 
     waitForOutput(server, /listener started/, 5000).then(function() {
         process.env.APPIUM_PORT = port;
-        var childEnv = JSON.parse(JSON.stringify(process.env));
-        if (verbose) {
-            childEnv.VERBOSE_LOG = "true";
-        }
-        var tests = child_process.spawn(mochaBinary, mochaOpts, {shell: true, env: childEnv});
+        var tests = child_process.spawn(mochaBinary, mochaOpts, {shell: true, env: getTestEnv()});
         tests.stdout.on('data', function (data) {
             logOut("" + data, true);
         });
@@ -87,6 +90,15 @@ portastic.find({min: 9000, max: 9100}).then(function(ports) {
         });
     });
 });
+
+function getTestEnv() {
+    var testEnv = JSON.parse(JSON.stringify(process.env));
+    testEnv.TEST_RUN_TYPE = testRunType;
+    if (verbose) {
+        testEnv.VERBOSE_LOG = "true";
+    }
+    return testEnv;
+}
 
 function waitForOutput(process, matcher, timeout) {
     return new Promise(function(resolve, reject) {
