@@ -2,7 +2,7 @@
 var nsAppium = require("nativescript-dev-appium");
 
 describe("android simple", function () {
-    this.timeout(5000);
+    this.timeout(10000);
     var driver;
 
     before(function () {
