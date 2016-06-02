@@ -27,15 +27,21 @@ exports.createDriver = function(caps, activityName) {
     return driver.init(desired);
 };
 
+function log(message) {
+    if (process.env.VERBOSE_LOG) {
+        console.log(message);
+    }
+}
+
 exports.configureLogging = function(driver) {
   driver.on('status', function (info) {
-    console.log(info.cyan);
+    log(info.cyan);
   });
   driver.on('command', function (meth, path, data) {
-    console.log(' > ' + meth.yellow, path.grey, data || '');
+    log(' > ' + meth.yellow + path.grey + " " + (data || ''));
   });
   driver.on('http', function (meth, path, data) {
-    console.log(' > ' + meth.magenta, path, (data || '').grey);
+    log(' > ' + meth.magenta + path + " " + (data || '').grey);
   });
 };
 

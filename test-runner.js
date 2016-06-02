@@ -15,6 +15,18 @@ function log(message) {
     }
 }
 
+function logOut(line, force) {
+    if (verbose || force) {
+        process.stdout.write(line);
+    }
+}
+
+function logErr(line, force) {
+    if (verbose || force) {
+        process.stderr.write(line);
+    }
+}
+
 var appium = "appium";
 if (process.platform === "win32") {
     appium = "appium.cmd";
@@ -27,9 +39,7 @@ var appiumBinary = projectAppiumBinary;
 if (fs.existsSync(pluginAppiumBinary)) {
     appiumBinary = pluginAppiumBinary;
 }
-if (verbose) {
 log("Appium found at: " + appiumBinary);
-}
 
 var pluginMochaBinary = path.join(__dirname, "node_modules", ".bin", "mocha");
 var projectMochaBinary = path.join(projectDir, "node_modules", ".bin", "mocha");
@@ -49,27 +59,27 @@ portastic.find({min: 9000, max: 9100}).then(function(ports) {
     var server = child_process.spawn(appiumBinary, ["-p", port]);
 
     server.stdout.on('data', function (data) {
-        if (verbose) {
-            console.log('APPIUM> ' + data);
-        }
+        logOut("" + data);
     });
     server.stderr.on('data', function (data) {
-        if (verbose) {
-            console.log('APPIUM> ' + data);
-        }
+        logErr("" + data);
     });
     server.on('exit', function (code) {
-        console.log('Server process exited with code ' + code);
+        logOut('Server process exited with code ' + code);
     });
 
-    waitForPort(port, 5000).then(function() {
+    waitForOutput(server, /listener started/, 5000).then(function() {
         process.env.APPIUM_PORT = port;
-    var tests = child_process.spawn(mochaBinary, mochaOpts, {shell: true});
+        var childEnv = JSON.parse(JSON.stringify(process.env));
+        if (verbose) {
+            childEnv.VERBOSE_LOG = "true";
+        }
+        var tests = child_process.spawn(mochaBinary, mochaOpts, {shell: true, env: childEnv});
         tests.stdout.on('data', function (data) {
-            console.log("" + data);
+            logOut("" + data, true);
         });
         tests.stderr.on('data', function (data) {
-            console.log("" + data);
+            logErr("" + data, true);
         });
         tests.on('exit', function (code) {
             console.log('Test runner exited with code ' + code);
@@ -78,27 +88,20 @@ portastic.find({min: 9000, max: 9100}).then(function(ports) {
     });
 });
 
-function waitForPort(port, timeout) {
-    console.log("Waiting for server to start listening on port: " + port);
+function waitForOutput(process, matcher, timeout) {
     return new Promise(function(resolve, reject) {
-        var interval = 200;
-        var started = false;
-        var time = 0;
-        setTimeout(check, interval);
+        var abortWatch = setTimeout(function() {
+            process.kill();
+            console.log("Timeout expired, output not detected for: " + matcher);
+            reject(new Error("Timeout expired, output not detected for: " + matcher));
+        }, timeout);
 
-        function check() {
-            if (time < timeout && !started) {
-                portastic.test(port).then(function(isOpen){
-                    if (isOpen) {
-                        time += interval;
-                        setTimeout(check, interval);
-                    } else {
-                        resolve();
-                    }
-                });
-            } else {
-                reject(new Error("Timeout expired, port still open."));
+        process.stdout.on('data', function (data) {
+            var line = "" + data;
+            if (matcher.test(line)) {
+                clearTimeout(abortWatch);
+                resolve();
             }
-        }
+        });
     });
 }
