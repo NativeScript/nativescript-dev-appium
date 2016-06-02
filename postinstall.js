@@ -27,7 +27,7 @@ if (!packageJson.scripts["appium-android"]) {
     packageJson.scripts["appium-android"] = "tns build android && nativescript-dev-appium android";
 }
 if (!packageJson.scripts["appium-ios-simulator"]) {
-    packageJson.scripts["appium-android"] = "tns build ios && nativescript-dev-appium ios-simulator";
+    packageJson.scripts["appium-ios-simulator"] = "tns build ios && nativescript-dev-appium ios-simulator";
 }
 
 var newDeps = new Map();
