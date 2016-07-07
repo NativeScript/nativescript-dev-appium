@@ -87,6 +87,7 @@ portastic.find({min: 9000, max: 9100}).then(function(ports) {
         tests.on('exit', function (code) {
             console.log('Test runner exited with code ' + code);
             server.kill();
+            process.exit(code);
         });
     });
 });
