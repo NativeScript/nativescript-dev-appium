@@ -1,8 +1,9 @@
 {
   "name": "nativescript-dev-cucumber",
-  "version": "0.1.0-alpha1",
+  "version": "0.1.0-alpha2",
   "description": "A NativeScript plugin to help integrate and run Cucumber tests with Appium",
   "main": "index.js",
+  "repository": "https://github.com/marcbuils/nativescript-dev-cucumber.git",
   "bin": {
     "nativescript-dev-cucumber": "./test-runner.js"
   },
