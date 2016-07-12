@@ -1,5 +1,8 @@
 {
   "name": "nativescript-dev-cucumber",
+  "version": "0.1.0-alpha5",
+  "description": "A NativeScript plugin to help integrate and run Cucumber tests with Appium",
+  "name": "nativescript-dev-cucumber",
   "version": "0.1.0-beta1",
   "description": "A NativeScript plugin to help integrate and run Cucumber tests with Appium",
   "main": "index.js",
