@@ -9,7 +9,7 @@ function World() {
 module.exports = function() {
   this.World = World;
 
-  this.AfterFeatures(() => {
+  this.AfterFeatures(function () {
     driver
       .quit()
       .finally(function () {
