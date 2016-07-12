@@ -1,10 +1,11 @@
 {
-  "name": "nativescript-dev-appium",
-  "version": "0.0.11",
-  "description": "A NativeScript plugin to help integrate and run Appium tests",
+  "name": "nativescript-dev-cucumber",
+  "version": "0.1.0-beta2",
+  "description": "A NativeScript plugin to help integrate and run Cucumber tests with Appium",
   "main": "index.js",
+  "repository": "https://github.com/marcbuils/nativescript-dev-cucumber.git",
   "bin": {
-    "nativescript-dev-appium": "./test-runner.js"
+    "nativescript-dev-cucumber": "./test-runner.js"
   },
   "scripts": {
     "postinstall": "node postinstall.js"
@@ -16,18 +17,18 @@
   ],
   "maintainers": [
     {
-      "name": "hdeshev",
-      "email": "hristo.deshev@telerik.com"
+      "name": "marcbuils",
+      "email": "marc.buils@unionup.fr"
     }
   ],
   "dependencies": {
-    "glob": "*",
-    "wd": "^0.4.0",
     "appium": "1.5.2",
     "colors": "^1.1.2",
-    "mocha": "^2.4.5",
-    "portastic": "^1.0.1"
+    "cucumber": "^1.2.1",
+    "glob": "*",
+    "portastic": "^1.0.1",
+    "wd": "^0.4.0"
   },
-  "author": "Telerik",
+  "author": "UnionUp",
   "license": "MIT"
 }
