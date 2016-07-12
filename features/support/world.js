@@ -1,5 +1,5 @@
 // features/support/world.js
-var nsAppium = require('nativescript-dev-appium');
+var nsAppium = require('nativescript-dev-cucumber');
 var driver = nsAppium.createDriver();
 
 function World() {
