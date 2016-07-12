@@ -2,8 +2,8 @@ require("./appium-setup");
 var path = require("path");
 var glob = require("glob");
 
-var testRunType = 'android'; //process.env.TEST_RUN_TYPE;
-var projectDir = '/Users/marcbuils/Documents/unionup/cestdanslecoin-mobile'; //path.dirname(path.dirname(__dirname));
+var testRunType = process.env.TEST_RUN_TYPE;
+var projectDir = path.dirname(path.dirname(__dirname));
 var appId = require(path.join(projectDir, "package.json")).nativescript.id;
 
 var wd = require("wd");

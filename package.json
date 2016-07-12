@@ -1,5 +1,5 @@
 {
-  "name": "nativescript-dev-appium",
+  "name": "nativescript-dev-cucumber",
   "version": "0.1.0-alpha4",
   "description": "A NativeScript plugin to help integrate and run Cucumber tests with Appium",
   "main": "index.js",
@@ -8,7 +8,7 @@
     "nativescript-dev-cucumber": "./test-runner.js"
   },
   "scripts": {
-    "postinstall": "echo node postinstall.js"
+    "postinstall": "node postinstall.js"
   },
   "keywords": [
     "nativescript",
