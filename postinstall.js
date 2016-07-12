@@ -15,25 +15,25 @@ try {
     generateSampleTest = false;
 }
 
-if (generateSampleTest) {
+/*if (generateSampleTest) {
     var sampleTestSrc = path.join(__dirname, "sample-test.js");
     var sampleTestDest = path.join(testsDir, "sample-test.js");
     if (!fs.existsSync(sampleTestDest)) {
         var javaClassesContent = fs.readFileSync(sampleTestSrc, "utf8");
         fs.writeFileSync(sampleTestDest, javaClassesContent);
     }
-}
+}*/
 
 var packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
 
 if (!packageJson.scripts) {
     packageJson.scripts = {};
 }
-if (!packageJson.scripts["appium-android"]) {
-    packageJson.scripts["appium-android"] = "tns build android && nativescript-dev-appium android";
+if (!packageJson.scripts["cucumber-android"]) {
+    packageJson.scripts["cucumber-android"] = "tns build android && nativescript-dev-cucumber android";
 }
-if (!packageJson.scripts["appium-ios-simulator"]) {
-    packageJson.scripts["appium-ios-simulator"] = "tns build ios && nativescript-dev-appium ios-simulator";
+if (!packageJson.scripts["cucumber-ios-simulator"]) {
+    packageJson.scripts["cucumber-ios-simulator"] = "tns build ios && nativescript-dev-cucumber ios-simulator";
 }
 
 var newDeps = new Map();
