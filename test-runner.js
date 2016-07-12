@@ -48,18 +48,13 @@ if (fs.existsSync(pluginAppiumBinary)) {
 }
 log("Appium found at: " + appiumBinary);
 
-var pluginMochaBinary = path.join(__dirname, "node_modules", ".bin", "mocha");
-var projectMochaBinary = path.join(projectDir, "node_modules", ".bin", "mocha");
-var mochaBinary = projectMochaBinary;
-if (fs.existsSync(pluginMochaBinary)) {
-    mochaBinary = pluginMochaBinary;
+var pluginCucumberBinary = path.join(__dirname, "node_modules", ".bin", "cucumberjs");
+var projectCucumberBinary = path.join(projectDir, "node_modules", ".bin", "cucumberjs");
+var cucumberBinary = projectCucumberBinary;
+if (fs.existsSync(pluginCucumberBinary)) {
+    cucumberBinary = pluginCucumberBinary;
 }
-log("Mocha found at: " + mochaBinary);
-
-mochaOpts = [
-    "--recursive",
-    "e2e-tests"
-];
+log("Cucumber found at: " + cucumberBinary);
 
 portastic.find({min: 9000, max: 9100}).then(function(ports) {
     var port = ports[0];
@@ -77,7 +72,7 @@ portastic.find({min: 9000, max: 9100}).then(function(ports) {
 
     waitForOutput(server, /listener started/, 5000).then(function() {
         process.env.APPIUM_PORT = port;
-        var tests = child_process.spawn(mochaBinary, mochaOpts, {shell: true, env: getTestEnv()});
+        var tests = child_process.spawn(cucumberBinary, {}, {shell: true, env: getTestEnv()});
         tests.stdout.on('data', function (data) {
             logOut("" + data, true);
         });
