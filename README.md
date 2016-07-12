@@ -1,5 +1,4 @@
 # nativescript-dev-cucumber
-** WORK IN PROGRESS **
 
 A helper package to make running E2E [Appium](http://appium.io) tests in NativeScript apps easier.
 
