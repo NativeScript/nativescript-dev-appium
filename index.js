@@ -1,23 +1,23 @@
-require("./appium-setup");
-var path = require("path");
-var glob = require("glob");
+require('./appium-setup');
+var path = require('path');
+var glob = require('glob');
 
 var testRunType = process.env.TEST_RUN_TYPE;
 var projectDir = path.dirname(path.dirname(__dirname));
-var appId = require(path.join(projectDir, "package.json")).nativescript.id;
+var appId = require(path.join(projectDir, 'package.json')).nativescript.id;
 
-var wd = require("wd");
+var wd = require('wd');
 
 exports.createDriver = function(caps, activityName) {
     if (!activityName) {
-        activityName = "com.tns.NativeScriptActivity";
+        activityName = 'com.tns.NativeScriptActivity';
     }
     if (!caps) {
         caps = exports.getDefaultCapabilities();
     }
 
     var serverConfig = {
-        host: "localhost",
+        host: 'localhost',
         port: process.env.APPIUM_PORT || 4723
     };
     var driver = wd.promiseChainRemote(serverConfig);
@@ -28,29 +28,29 @@ exports.createDriver = function(caps, activityName) {
 };
 
 exports.getAppPath = function() {
-    if (testRunType === "android") {
-        var apks = glob.sync("platforms/android/**/*.apk").filter(function(file) { return file.indexOf("unaligned") < 0; });
+    if (testRunType === 'android') {
+        var apks = glob.sync('platforms/android/**/*.apk').filter(function(file) { return file.indexOf('unaligned') < 0; });
         return apks[0];
-    } else if (testRunType === "ios-simulator") {
-        var simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
+    } else if (testRunType === 'ios-simulator') {
+        var simulatorApps = glob.sync('platforms/ios/build/emulator/**/*.app');
         return simulatorApps[0];
-    } else if (testRunType === "ios") {
-        var deviceApps = glob.sync("platforms/ios/build/device/**/*.app");
+    } else if (testRunType === 'ios') {
+        var deviceApps = glob.sync('platforms/ios/build/device/**/*.app');
         return deviceApps[0];
     } else {
-        throw new Error("Incorrect test run type: " + testRunType);
+        throw new Error('Incorrect test run type: ' + testRunType);
     }
 };
 
 exports.getDefaultCapabilities = function() {
-    if (testRunType === "android") {
+    if (testRunType === 'android') {
         return exports.caps.android19();
-    } else if (testRunType === "ios-simulator") {
+    } else if (testRunType === 'ios-simulator') {
         return exports.caps.ios92();
-    } else if (testRunType === "ios") {
+    } else if (testRunType === 'ios') {
         return exports.caps.ios92();
     } else {
-        throw new Error("Incorrect test run type: " + testRunType);
+        throw new Error('Incorrect test run type: ' + testRunType);
     }
 }
 
@@ -65,10 +65,10 @@ exports.configureLogging = function(driver) {
     log(info.cyan);
   });
   driver.on('command', function (meth, path, data) {
-    log(' > ' + meth.yellow + path.grey + " " + (data || ''));
+    log(' > ' + meth.yellow + path.grey + ' ' + (data || ''));
   });
   driver.on('http', function (meth, path, data) {
-    log(' > ' + meth.magenta + path + " " + (data || '').grey);
+    log(' > ' + meth.magenta + path + ' ' + (data || '').grey);
   });
 };
 

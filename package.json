@@ -13,7 +13,8 @@
   "keywords": [
     "nativescript",
     "appium",
-    "test"
+    "test",
+    "cucumber"
   ],
   "maintainers": [
     {
