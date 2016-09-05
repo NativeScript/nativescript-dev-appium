@@ -23,7 +23,9 @@ exports.createDriver = function(caps, activityName) {
     var driver = wd.promiseChainRemote(serverConfig);
     exports.configureLogging(driver);
 
-    caps.app = exports.getAppPath();
+    if (!caps.app) {
+        caps.app = exports.getAppPath();
+    }
     return driver.init(caps);
 };
 
