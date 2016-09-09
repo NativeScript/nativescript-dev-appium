@@ -65,30 +65,34 @@ portastic.find({min: 9000, max: 9100}).then(function(ports) {
     var port = ports[0];
     var server = child_process.spawn(appiumBinary, ["-p", port]);
 
-    server.stdout.on('data', function (data) {
+    server.stdout.on("data", function (data) {
         logOut("" + data);
     });
-    server.stderr.on('data', function (data) {
+    server.stderr.on("data", function (data) {
         logErr("" + data);
     });
-    server.on('exit', function (code) {
-        logOut('Server process exited with code ' + code);
+    server.on("exit", function (code) {
+        logOut("Server process exited with code " + code);
     });
 
     waitForOutput(server, /listener started/, 5000).then(function() {
         process.env.APPIUM_PORT = port;
         var tests = child_process.spawn(mochaBinary, mochaOpts, {shell: true, env: getTestEnv()});
-        tests.stdout.on('data', function (data) {
+        tests.stdout.on("data", function (data) {
             logOut("" + data, true);
         });
-        tests.stderr.on('data', function (data) {
+        tests.stderr.on("data", function (data) {
             logErr("" + data, true);
         });
-        tests.on('exit', function (code) {
-            console.log('Test runner exited with code ' + code);
+        tests.on("exit", function (code) {
+            console.log("Test runner exited with code " + code);
             server.kill();
             process.exit(code);
         });
+    }, function(err) {
+        console.log("Test runner could not start: " + err);
+        server.kill();
+        process.exit(1);
     });
 });
 
@@ -109,7 +113,7 @@ function waitForOutput(process, matcher, timeout) {
             reject(new Error("Timeout expired, output not detected for: " + matcher));
         }, timeout);
 
-        process.stdout.on('data', function (data) {
+        process.stdout.on("data", function (data) {
             var line = "" + data;
             if (matcher.test(line)) {
                 clearTimeout(abortWatch);
