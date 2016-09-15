@@ -75,7 +75,7 @@ portastic.find({min: 9000, max: 9100}).then(function(ports) {
         logOut("Server process exited with code " + code);
     });
 
-    waitForOutput(server, /listener started/, 5000).then(function() {
+    waitForOutput(server, /listener started/, 15000).then(function() {
         process.env.APPIUM_PORT = port;
         var tests = child_process.spawn(mochaBinary, mochaOpts, {shell: true, env: getTestEnv()});
         tests.stdout.on("data", function (data) {
