@@ -70,9 +70,9 @@ portastic.find({min: 9000, max: 9100}).then(function(ports) {
         logOut('Server process exited with code ' + code);
     });
 
-    waitForOutput(server, /listener started/, 30000).then(function() {
+    waitForOutput(server, /listener started/, 15000).then(function() {
         process.env.APPIUM_PORT = port;
-        var tests = child_process.spawn(cucumberBinary, [], {shell: true, env: getTestEnv()});
+        var tests = child_process.spawn(mochaBinary, mochaOpts, {shell: true, env: getTestEnv()});
         tests.stdout.on('data', function (data) {
             logOut('' + data, true);
         });
@@ -84,6 +84,10 @@ portastic.find({min: 9000, max: 9100}).then(function(ports) {
             server.kill();
             process.exit(code);
         });
+    }, function(err) {
+        console.log('Test runner could not start: ' + err);
+        server.kill();
+        process.exit(1);
     });
 });
 
