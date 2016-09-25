@@ -1,4 +1,4 @@
-# nativescript-dev-appium
+# nativescript-dev-cucumber
 
 A helper package to make running E2E [Appium](http://appium.io) tests in NativeScript apps easier.
 
@@ -6,22 +6,54 @@ A helper package to make running E2E [Appium](http://appium.io) tests in NativeS
 
 Install it with:
 
-`$ tns install appium`
+`$ tns install cumcumber`
 
-It will produce a sample test below the `e2e-tests` dir. Now, run it with:
+It will produce a sample test below the `features` dir. Now, run it with:
 
 ```
-$ npm run appium-android.
+$ npm run cucumber-android
 ```
 
-The tests are standard [Mocha](http://mochajs.org) tests.
+or
 
-## Missing features
+```
+$ npm run cucumber-ios-simulator
+```
 
-1. iOS support
-2. Better text output: colors, etc.
-3. Better integration with nativescript-cli.
-  - Run tests with a `tns appium ...` command
-  - Better deployment to device (`tns deploy` instead of `tns run`)
-  - Detect changes to app files and avoid rebuilding/redeploying the app if only test code has changed.
-4. Developer workflow - fast test runs when working on an app. Maybe using livesync.
+The tests are standard [Cumcumber.js](https://cucumber.io/docs/reference/javascript) tests.
+
+## Getting started
+
+Create a new NativeScript Application (if necessary):
+
+`$ tns create cucumberSample --ng`
+
+Update the template to add "automationText" attributes (for Angular2 NS applications).
+
+app.component.html:
+
+```
+<StackLayout>
+    <Label text="Tap the button" class="title"></Label>
+    
+    <Button text="TAP" (tap)="onTap()" automationText="tapButton"></Button>
+
+    <Label [text]="message" class="message" textWrap="true" automationText="messageLabel"></Label>
+</StackLayout>
+```
+
+Install cucumber:
+
+`$ tns install cucumber`
+
+Execute tests:
+
+```
+$ npm run cucumber-android
+```
+
+or
+
+```
+$ npm run cucumber-ios-simulator
+```
