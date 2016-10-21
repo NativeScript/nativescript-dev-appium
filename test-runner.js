@@ -35,8 +35,10 @@ function logErr(line, force) {
 }
 
 var appium = "appium";
+var mocha = "mocha";
 if (process.platform === "win32") {
     appium = "appium.cmd";
+    mocha = "mocha.cmd";
 }
 
 var projectDir = path.dirname(path.dirname(__dirname));
@@ -48,12 +50,13 @@ if (fs.existsSync(pluginAppiumBinary)) {
 }
 log("Appium found at: " + appiumBinary);
 
-var pluginMochaBinary = path.join(__dirname, "node_modules", ".bin", "mocha");
-var projectMochaBinary = path.join(projectDir, "node_modules", ".bin", "mocha");
+var pluginMochaBinary = path.join(__dirname, "node_modules", ".bin", mocha);
+var projectMochaBinary = path.join(projectDir, "node_modules", ".bin", mocha);
 var mochaBinary = projectMochaBinary;
 if (fs.existsSync(pluginMochaBinary)) {
     mochaBinary = pluginMochaBinary;
 }
+
 log("Mocha found at: " + mochaBinary);
 
 mochaOpts = [
@@ -61,9 +64,10 @@ mochaOpts = [
     "e2e-tests"
 ];
 
+var server, tests;
 portastic.find({min: 9000, max: 9100}).then(function(ports) {
     var port = ports[0];
-    var server = child_process.spawn(appiumBinary, ["-p", port]);
+    server = child_process.spawn(appiumBinary, ["-p", port, "--no-reset"], {detached: false});
 
     server.stdout.on('data', function (data) {
         logOut("" + data);
@@ -72,12 +76,15 @@ portastic.find({min: 9000, max: 9100}).then(function(ports) {
         logErr("" + data);
     });
     server.on('exit', function (code) {
-        logOut('Server process exited with code ' + code);
+        server = null;
+        logOut('Appium Server process exited with code ' + code);
+        process.exit();
     });
+    console.log("PID:", server.pid);
 
-    waitForOutput(server, /listener started/, 5000).then(function() {
+    waitForOutput(server, /listener started/, 10000).then(function() {
         process.env.APPIUM_PORT = port;
-        var tests = child_process.spawn(mochaBinary, mochaOpts, {shell: true, env: getTestEnv()});
+        tests = child_process.spawn(mochaBinary, mochaOpts, {shell: true, detached: false, env: getTestEnv()});
         tests.stdout.on('data', function (data) {
             logOut("" + data, true);
         });
@@ -86,11 +93,45 @@ portastic.find({min: 9000, max: 9100}).then(function(ports) {
         });
         tests.on('exit', function (code) {
             console.log('Test runner exited with code ' + code);
-            server.kill();
+            if (process.platform === "win32") {
+                // The default kill doesn't kill the sub-children...
+                killPid(server.pid);
+            } else {
+                server.kill();
+            }
+            server = null;
+            tests = null;
             process.exit(code);
         });
     });
 });
+
+process.on("exit", shutdown);
+process.on('uncaughtException', shutdown)
+
+function shutdown()
+{
+    if (tests) {
+        if (process.platform === "win32") {
+            killPid(tests.pid);
+        } else {
+            tests.kill();
+        }
+        tests = null;
+    }
+    if (server) {
+        if (process.platform === "win32") {
+            killPid(server.pid);
+        } else {
+            server.kill();
+        }
+        server = null;
+    }
+}
+
+function killPid(pid) {
+    var output = child_process.execSync('taskkill /PID ' + pid + ' /T /F');
+}
 
 function getTestEnv() {
     var testEnv = JSON.parse(JSON.stringify(process.env));
