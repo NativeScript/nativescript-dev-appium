@@ -46,9 +46,9 @@ exports.getDefaultCapabilities = function() {
     if (testRunType === "android") {
         return exports.caps.android19();
     } else if (testRunType === "ios-simulator") {
-        return exports.caps.ios92();
+        return exports.caps.ios10();
     } else if (testRunType === "ios") {
-        return exports.caps.ios92();
+        return exports.caps.ios10();
     } else {
         throw new Error("Incorrect test run type: " + testRunType);
     }
@@ -73,7 +73,7 @@ exports.configureLogging = function(driver) {
 };
 
 exports.caps = {
-    android19: function(){ 
+    android19: function(){
         return {
             browserName: '',
             'appium-version': '1.5',
@@ -83,12 +83,22 @@ exports.caps = {
             app: undefined // will be set later
         };
     },
-    ios92: function() { 
+    ios92: function() {
         return {
             browserName: '',
             'appium-version': '1.5',
             platformName: 'iOS',
             platformVersion: '9.2',
+            deviceName: 'iPhone 6',
+            app: undefined // will be set later
+        };
+    },
+    ios10: function() {
+        return {
+            browserName: '',
+            'appium-version': '1.6',
+            platformName: 'iOS',
+            platformVersion: '10.0',
             deviceName: 'iPhone 6',
             app: undefined // will be set later
         };
