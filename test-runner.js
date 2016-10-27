@@ -80,7 +80,6 @@ portastic.find({min: 9000, max: 9100}).then(function(ports) {
         logOut('Appium Server process exited with code ' + code);
         process.exit();
     });
-    console.log("PID:", server.pid);
 
     waitForOutput(server, /listener started/, 10000).then(function() {
         process.env.APPIUM_PORT = port;
@@ -111,7 +110,7 @@ portastic.find({min: 9000, max: 9100}).then(function(ports) {
 });
 
 process.on("exit", shutdown);
-process.on('uncaughtException', shutdown)
+process.on('uncaughtException', shutdown);
 
 function shutdown()
 {
