@@ -11,7 +11,7 @@ Install it with:
 It will produce a sample test below the `e2e-tests` dir. Now, run it with:
 
 ```
-$ npm run appium-android.
+$ npm run appium-android
 ```
 
 The tests are standard [Mocha](http://mochajs.org) tests.
