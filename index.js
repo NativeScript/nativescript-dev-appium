@@ -29,7 +29,8 @@ exports.createDriver = function(caps, activityName) {
 
 exports.getAppPath = function() {
     if (testRunType === "android") {
-        var apks = glob.sync("platforms/android/**/*.apk").filter(function(file) { return file.indexOf("unaligned") < 0; });
+        var apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function(file) { return file.indexOf("unaligned") < 0; });
+
         return apks[0];
     } else if (testRunType === "ios-simulator") {
         var simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
@@ -52,7 +53,7 @@ exports.getDefaultCapabilities = function() {
     } else {
         throw new Error("Incorrect test run type: " + testRunType);
     }
-}
+};
 
 function log(message) {
     if (process.env.VERBOSE_LOG) {
