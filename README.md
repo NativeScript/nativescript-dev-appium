@@ -18,7 +18,7 @@ The tests are standard [Mocha](http://mochajs.org) tests.
 
 ## Missing features
 
-1. iOS support
+1. iOS device support (simulator only)
 2. Better text output: colors, etc.
 3. Better integration with nativescript-cli.
   - Run tests with a `tns appium ...` command
