@@ -78,7 +78,7 @@ exports.caps = {
             platformName: "Android",
             platformVersion: "4.4.2",
             deviceName: "Android Emulator",
-            noReset: false, //Always reinstall app
+            noReset: false, //Always reinstall app on Android
             app: undefined // will be set later
         };
     },
@@ -89,7 +89,6 @@ exports.caps = {
             platformName: "iOS",
             platformVersion: "9.2",
             deviceName: "iPhone 6",
-            noReset: false, //Always reinstall app
             app: undefined // will be set later
         };
     },
@@ -100,7 +99,6 @@ exports.caps = {
             platformName: "iOS",
             platformVersion: "10.0",
             deviceName: "iPhone 6",
-            noReset: false, //Always reinstall app
             app: undefined // will be set later
         };
     },
