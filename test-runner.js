@@ -4,17 +4,8 @@ var path = require("path");
 var portastic = require("portastic");
 var child_process = require("child_process");
 
-var args = process.argv.map(function(i){return i.trim(); });
-var verbose = args.find(function(value) {
-    return value === "-v" || value === "--verbose";
-}) !== undefined;
-
-var testRunType = "android";
-if (args.find(function(arg) { return arg.trim() === "ios"; })) {
-    testRunType = "ios";
-} else if (args.find(function(arg) { return arg.trim() === "ios-simulator"; })) {
-    testRunType = "ios-simulator";
-}
+var verbose = process.env.npm_config_loglevel === "verbose";
+var testRunType = process.env.npm_config_runType || "android";
 
 function log(message) {
     if (verbose) {

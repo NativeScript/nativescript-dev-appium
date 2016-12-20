@@ -29,17 +29,17 @@ var packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
 if (!packageJson.scripts) {
     packageJson.scripts = {};
 }
-if (!packageJson.scripts["test-appium-android"]) {
-    packageJson.scripts["test-appium-android"] = "nativescript-dev-appium android";
+if (!packageJson.scripts["appium"]) {
+    packageJson.scripts["appium"] = "nativescript-dev-appium";
 }
 if (!packageJson.scripts["appium-android"]) {
-    packageJson.scripts["appium-android"] = "tns build android && npm run test-appium-android";
-}
-if (!packageJson.scripts["test-appium-ios-simulator"]) {
-    packageJson.scripts["test-appium-ios-simulator"] = "nativescript-dev-appium ios-simulator";
+    packageJson.scripts["appium-android"] = "tns build android && npm run appium --runType=android";
 }
 if (!packageJson.scripts["appium-ios-simulator"]) {
-    packageJson.scripts["appium-ios-simulator"] = "tns build ios && npm run test-appium-ios-simulator";
+    packageJson.scripts["appium-ios-simulator"] = "tns build ios && npm run appium --runType=ios-simulator";
+}
+if (!packageJson.scripts["appium-ios"]) {
+    packageJson.scripts["appium-ios"] = "tns build ios && npm run appium --runType=ios";
 }
 
 var newDeps = new Map();
