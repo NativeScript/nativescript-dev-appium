@@ -81,7 +81,7 @@ portastic.find({min: 9000, max: 9100}).then(function(ports) {
         process.exit();
     });
 
-    waitForOutput(server, /listener started/, 10000).then(function() {
+    waitForOutput(server, /listener started/, 30000).then(function() {
         process.env.APPIUM_PORT = port;
         tests = child_process.spawn(mochaBinary, mochaOpts, {shell: true, detached: false, env: getTestEnv()});
         tests.stdout.on('data', function (data) {
