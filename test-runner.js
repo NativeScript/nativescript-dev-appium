@@ -56,7 +56,7 @@ mochaOpts = [
 ];
 
 var server, tests;
-portastic.find({min: 9000, max: 9100}).then(function(ports) {
+portastic.find({min: 9200, max: 9300}).then(function(ports) {
     var port = ports[0];
     server = child_process.spawn(appiumBinary, ["-p", port, "--no-reset"], {detached: false});
 
