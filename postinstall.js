@@ -1,5 +1,6 @@
 var path = require("path");
 var fs = require("fs");
+var childProcess = require("child_process");
 
 var projectDir = path.dirname(path.dirname(__dirname));
 var testsDir = path.join(projectDir, "e2e-tests");
@@ -42,18 +43,49 @@ if (!packageJson.scripts["appium-ios"]) {
     packageJson.scripts["appium-ios"] = "tns build ios && npm run appium --runType=ios";
 }
 
-var newDeps = new Map();
-newDeps.set("chai", "^3.5.0");
-newDeps.set("chai-as-promised", "^5.3.0");
-newDeps.set("wd", "0.4.0");
-if (!packageJson.devDependencies) {
-    packageJson.devDependencies = {};
-}
-for (var key of newDeps.keys()) {
-    if (!packageJson.devDependencies[key]) {
-        packageJson.devDependencies[key] = newDeps.get(key);
+configureDevDependencies(packageJson, function (add) {
+    add("chai", "~3.5.0");
+    add("chai-as-promised", "~5.3.0");
+    add("wd", "~1.1.1");
+});
+
+console.warn("WARNING: nativescript-dev-appium no longer installs Appium as a local dependency!");
+console.log("Add appium as a local dependency (see README) or we'll attempt to run it from PATH.");
+
+fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 4));
+
+function configureDevDependencies(packageJson, adderCallback) {
+    var pendingNpmInstall = false;
+    if (!packageJson.devDependencies) {
+        packageJson.devDependencies = {};
+    }
+    var dependencies = packageJson.devDependencies;
+
+    adderCallback(function (name, version) {
+        if (!dependencies[name]) {
+            dependencies[name] = version;
+            console.info("Adding dev dependency: " + name + "@" + version);
+            pendingNpmInstall = true;
+        } else {
+            console.info("Dev dependency: '" + name + "' already added. Leaving version: " + dependencies[name]);
+        }
+    });
+
+    if (pendingNpmInstall) {
+        console.info("Installing new dependencies...");
+        //Run `npm install` after everything else.
+        setTimeout(function () {
+            var spawnArgs = [];
+            if (/^win/.test(process.platform)) {
+                spawnArgs = ["cmd.exe", ["/c", "npm", "install"]];
+            } else {
+                spawnArgs = ["npm", ["install"]];
+            }
+            spawnArgs.push({ cwd: projectDir, stdio: "inherit" });
+            var npm = childProcess.spawn.apply(null, spawnArgs);
+            npm.on("close", function (code) {
+                process.exit(code);
+            });
+        }, 100);
     }
 }
-
-fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, "    "));
-

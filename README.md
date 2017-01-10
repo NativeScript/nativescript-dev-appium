@@ -6,9 +6,17 @@ A helper package to make running E2E [Appium](http://appium.io) tests in NativeS
 
 Install it with:
 
-`$ tns install appium`
+`$ npm install --save-dev nativescript-dev-appium`
 
-It will produce a sample test below the `e2e-tests` dir. Now, run it with:
+Install Appium locally:
+
+`$ npm install --save-dev appium@1.6.0`
+
+Or install appium globally (to avoid installing it for every app):
+
+`$ npm install -g appium@1.6.0`
+
+After installation, you should have a sample test below the `e2e-tests` dir. Now, run it with:
 
 ```
 $ npm run appium-android
@@ -32,7 +40,7 @@ All of the above commands will run a `tns build` command before running tests. I
 $ npm run appium --runType=android
 ```
 
-The tests are standard [Mocha](http://mochajs.org) tests.
+Generated tests are standard [Mocha](http://mochajs.org) tests.
 
 ## Troubleshooting
 
@@ -51,8 +59,4 @@ $ npm run appium --runType=android --verbose
 
 ## Missing features
 
-1. Better text output: colors, etc.
-2. Better integration with nativescript-cli.
-  - Better deployment to device (`tns deploy` instead of `tns run`)
-  - Detect changes to app files and avoid rebuilding/redeploying the app if only test code has changed.
-3. Developer workflow - fast test runs when working on an app. Maybe using livesync.
+1. Faster developer turnaround when working on an app. Find a way to use livesync and kick off Appium tests for the app that's on the device already.

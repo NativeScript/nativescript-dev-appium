@@ -35,11 +35,16 @@ if (process.platform === "win32") {
 var projectDir = path.dirname(path.dirname(__dirname));
 var pluginAppiumBinary = path.join(__dirname, "node_modules", ".bin", appium);
 var projectAppiumBinary = path.join(projectDir, "node_modules", ".bin", appium);
-var appiumBinary = projectAppiumBinary;
+var appiumBinary = appium;
 if (fs.existsSync(pluginAppiumBinary)) {
+    console.log("Using plugin-local Appium binary.");
     appiumBinary = pluginAppiumBinary;
+} else if (fs.existsSync(projectAppiumBinary)) {
+    console.log("Using project-local Appium binary.");
+    appiumBinary = projectAppiumBinary;
+} else {
+    console.log("Using global Appium binary.");
 }
-log("Appium found at: " + appiumBinary);
 
 var pluginMochaBinary = path.join(__dirname, "node_modules", ".bin", mocha);
 var projectMochaBinary = path.join(projectDir, "node_modules", ".bin", mocha);
