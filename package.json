@@ -8,11 +8,7 @@
     },
     "scripts": {
         "postinstall": "node postinstall.js",
-        "appium": "nativescript-dev-appium",
-        "appium-android-19": "npm run appium --runType=android19",
-        "appium-android-23": "npm run appium --runType=android23",
-        "appium-ios-simulator": "npm run appium --runType=ios-simulator",
-        "appium-ios": "npm run appium --runType=ios"
+        "appium": "nativescript-dev-appium"
     },
     "keywords": [
         "nativescript",

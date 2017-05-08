@@ -5,8 +5,7 @@ var portastic = require("portastic");
 var child_process = require("child_process");
 
 var verbose = process.env.npm_config_loglevel === "verbose";
-var testRunType = process.env.npm_config_runType || "ios-simulator";
-
+var testRunType = process.env.npm_config_runtype || "android23";
 function log(message) {
     if (verbose) {
         console.log(message);
