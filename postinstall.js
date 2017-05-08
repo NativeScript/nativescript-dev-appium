@@ -45,7 +45,7 @@ configureDevDependencies(packageJson, function (add) {
 console.warn("WARNING: nativescript-dev-appium no longer installs Appium as a local dependency!");
 console.log("Add appium as a local dependency (see README) or we'll attempt to run it from PATH.");
 
-fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 4));
+fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
 function configureDevDependencies(packageJson, adderCallback) {
     var pendingNpmInstall = false;
