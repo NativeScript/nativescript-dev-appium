@@ -5,7 +5,7 @@ var portastic = require("portastic");
 var child_process = require("child_process");
 
 var verbose = process.env.npm_config_loglevel === "verbose";
-var testRunType = process.env.npm_config_runType || "android";
+var testRunType = process.env.npm_config_runType || "ios-simulator";
 
 function log(message) {
     if (verbose) {
@@ -61,9 +61,9 @@ mochaOpts = [
 ];
 
 var server, tests;
-portastic.find({min: 9200, max: 9300}).then(function(ports) {
+portastic.find({ min: 9200, max: 9300 }).then(function (ports) {
     var port = ports[0];
-    server = child_process.spawn(appiumBinary, ["-p", port, "--no-reset"], {detached: false});
+    server = child_process.spawn(appiumBinary, ["-p", port, "--no-reset"], { detached: false });
 
     server.stdout.on("data", function (data) {
         logOut("" + data);
@@ -77,9 +77,9 @@ portastic.find({min: 9200, max: 9300}).then(function(ports) {
         process.exit();
     });
 
-    waitForOutput(server, /listener started/, 60000).then(function() {
+    waitForOutput(server, /listener started/, 60000).then(function () {
         process.env.APPIUM_PORT = port;
-        tests = child_process.spawn(mochaBinary, mochaOpts, {shell: true, detached: false, env: getTestEnv()});
+        tests = child_process.spawn(mochaBinary, mochaOpts, { shell: true, detached: false, env: getTestEnv() });
         tests.stdout.on('data', function (data) {
             logOut("" + data, true);
         });
@@ -98,7 +98,7 @@ portastic.find({min: 9200, max: 9300}).then(function(ports) {
             tests = null;
             process.exit(code);
         });
-    }, function(err) {
+    }, function (err) {
         console.log("Test runner could not start: " + err);
         server.kill();
         process.exit(1);
@@ -108,8 +108,7 @@ portastic.find({min: 9200, max: 9300}).then(function(ports) {
 process.on("exit", shutdown);
 process.on('uncaughtException', shutdown);
 
-function shutdown()
-{
+function shutdown() {
     if (tests) {
         if (process.platform === "win32") {
             killPid(tests.pid);
@@ -142,8 +141,8 @@ function getTestEnv() {
 }
 
 function waitForOutput(process, matcher, timeout) {
-    return new Promise(function(resolve, reject) {
-        var abortWatch = setTimeout(function() {
+    return new Promise(function (resolve, reject) {
+        var abortWatch = setTimeout(function () {
             process.kill();
             console.log("Timeout expired, output not detected for: " + matcher);
             reject(new Error("Timeout expired, output not detected for: " + matcher));

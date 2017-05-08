@@ -2,10 +2,12 @@ require("./appium-setup");
 var glob = require("glob");
 
 var testRunType = process.env.TEST_RUN_TYPE;
-
+const appiumVerion = "1.6.3";
 var wd = require("wd");
 
-exports.createDriver = function(caps, activityName) {
+exports.createDriver = function (caps, activityName) {
+    console.log("CAPS " + caps);
+    console.log("activityName " + activityName);
     if (!activityName) {
         activityName = "com.tns.NativeScriptActivity";
     }
@@ -24,10 +26,15 @@ exports.createDriver = function(caps, activityName) {
     return driver.init(caps);
 };
 
-exports.getAppPath = function() {
-    if (testRunType === "android") {
-        var apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function(file) { return file.indexOf("unaligned") < 0; });
-
+exports.getAppPath = function () {
+    console.log("testRunType " + testRunType);
+    if (testRunType === "android19") {
+        console.log("GLOB: " + glob);
+        var apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
+        return apks[0];
+    } else if (testRunType === "android23") {
+        console.log("GLOB: " + glob);
+        var apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
         return apks[0];
     } else if (testRunType === "ios-simulator") {
         var simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
@@ -40,9 +47,11 @@ exports.getAppPath = function() {
     }
 };
 
-exports.getDefaultCapabilities = function() {
-    if (testRunType === "android") {
+exports.getDefaultCapabilities = function () {
+    if (testRunType === "android19") {
         return exports.caps.android19();
+    } else if (testRunType === "android23") {
+        return exports.caps.android23();
     } else if (testRunType === "ios-simulator") {
         return exports.caps.ios10();
     } else if (testRunType === "ios") {
@@ -58,23 +67,23 @@ function log(message) {
     }
 }
 
-exports.configureLogging = function(driver) {
-  driver.on("status", function (info) {
-    log(info.cyan);
-  });
-  driver.on("command", function (meth, path, data) {
-    log(" > " + meth.yellow + path.grey + " " + (data || ""));
-  });
-  driver.on("http", function (meth, path, data) {
-    log(" > " + meth.magenta + path + " " + (data || "").grey);
-  });
+exports.configureLogging = function (driver) {
+    driver.on("status", function (info) {
+        log(info.cyan);
+    });
+    driver.on("command", function (meth, path, data) {
+        log(" > " + meth.yellow + path.grey + " " + (data || ""));
+    });
+    driver.on("http", function (meth, path, data) {
+        log(" > " + meth.magenta + path + " " + (data || "").grey);
+    });
 };
 
 exports.caps = {
-    android19: function(){
+    android19: function () {
         return {
             browserName: "",
-            "appium-version": "1.6",
+            "appium-version": appiumVerion,
             platformName: "Android",
             platformVersion: "4.4.2",
             deviceName: "Android Emulator",
@@ -82,29 +91,40 @@ exports.caps = {
             app: undefined // will be set later
         };
     },
-    ios92: function() {
+    android23: function () {
         return {
             browserName: "",
-            "appium-version": "1.6",
+            "appium-version": appiumVerion,
+            platformName: "Android",
+            platformVersion: "6.0",
+            deviceName: "Android Emulator",
+            noReset: false, //Always reinstall app on Android
+            app: undefined // will be set later
+        };
+    },
+    ios92: function () {
+        return {
+            browserName: "",
+            "appium-version": appiumVerion,
             platformName: "iOS",
             platformVersion: "9.2",
             deviceName: "iPhone 6",
             app: undefined // will be set later
         };
     },
-    ios10: function() {
+    ios10: function () {
         return {
             browserName: "",
-            "appium-version": "1.6",
+            "appium-version": appiumVerion,
             platformName: "iOS",
             platformVersion: "10.0",
-            deviceName: "iPhone 6",
+            deviceName: "iPhone 7 100",
             app: undefined // will be set later
         };
     },
 };
 
-exports.getXPathElement = function(name) {
+exports.getXPathElement = function (name) {
     var tempName = name.toLowerCase().replace(/\-/g, "");
     if (testRunType === "android") {
         return xpathAndroid(tempName, name);
@@ -143,39 +163,53 @@ function xpathAndroid(name) {
         case "webview": return "android.webkit.WebView";
     }
 
-    throw new Error("This "+name + " does not appear to to be a standard NativeScript UI component.");
+    throw new Error("This " + name + " does not appear to to be a standard NativeScript UI component.");
 }
 
 function xpathiOS(name) {
     switch (name) {
-        case "activityindicator": return "UIActivityIndicatorView";
-        case "button": return "UIButton";
-        case "datepicker": return "UIDatePicker";
-        case "htmlview": return "UITextView";
-        case "image": return "UIImageView";
+        case "activityindicator": return createIosElement("ActivityIndicator");
+        case "button": return createIosElement("Button");
+        case "datepicker": return createIosElement("DatePicker");
+        case "htmlview": return createIosElement("TextView");
+        case "image": return createIosElement("ImageView");
         case "label": return "TNSLabel";
-        case "absolutelayout": return "UIView";
-        case "docklayout": return "UIView";
-        case "gridlayout": return "UIView";
-        case "stacklayout": return "UIView";
-        case "wraplayout": return "UIView";
-        case "listpicker": return "UIPickerView";
-        case "listview": return "UITableView";
-        case "progress": return "UIProgressView";
-        case "scrollview":
-        case "hscrollview":
-        case "vscrollview": return "UIScrollView";
-        case "searchbar": return "UISearchBar";
-        case "segmentedbar": return "UISegmentedControl";
-        case "slider": return "UISlider";
-        case "switch": return "UISwitch";
-        case "tabview": return "UITabBarItem";
-        case "textview": return "UITextView";
-        case "textfield": return "UITextField";
-        case "timepicker": return "UIDatePicker";
-        case "webview": return "UIWebView";
+        case "absolutelayout": return createIosElement("View");
+        case "docklayout": return createIosElement("View");
+        case "gridlayout": return createIosElement("View");
+        case "stacklayout": return createIosElement("View");
+        case "wraplayout": return createIosElement("View");
+        case "listpicker": return createIosElement("Picker");
+        case "listview": return createIosElement("Table");
+        case "progress": return createIosElement("ProgressIndicator");
+        case "scrollview": return createIosElement("ScrollView");
+        case "hscrollview": return createIosElement("ScrollView");
+        case "vscrollview": return createIosElement("ScrollView");
+        case "searchbar": return createIosElement("SearchField");
+        case "segmentedbar": return createIosElement("SegmentedControl");
+        case "slider": return createIosElement("Slider");
+        case "switch": return createIosElement("Switch");
+        case "tabview": return "XCUIElementTypeTabBarItem";
+        case "textview": return createIosElement("TextView");
+        case "textfield": return createIosElement("TextField");
+        case "timepicker": return createIosElement("DatePicker");
+        case "webview": return createIosElement("WebView");
     }
 
     throw new Error("This " + name + " does not appear to to be a standard NativeScript UI component.");
+}
+
+function createIosElement(element) {
+    let xCUIElementType = "XCUIElementType";
+    let uIA = "UIA";
+    let elementType;
+
+    if (this.settings.platformVersion.toString().startsWith("10")) {
+        elementType = xCUIElementType;
+    } else {
+        elementType = uIA;
+    }
+
+    return elementType + element;
 }
 

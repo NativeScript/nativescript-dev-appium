@@ -10,11 +10,11 @@ Install it with:
 
 Install Appium locally:
 
-`$ npm install --save-dev appium@1.6.0`
+`$ npm install --save-dev appium@1.6.3`
 
 Or install appium globally (to avoid installing it for every app):
 
-`$ npm install -g appium@1.6.0`
+`$ npm install -g appium@1.6.3`
 
 After installation, you should have a sample test below the `e2e-tests` dir. Now, run it with:
 

@@ -2,13 +2,15 @@ var path = require("path");
 var fs = require("fs");
 var childProcess = require("child_process");
 
-var projectDir = path.dirname(path.dirname(__dirname));
+var projectDir = path.resolve(__dirname);
 var testsDir = path.join(projectDir, "e2e-tests");
 var packageJsonPath = path.join(projectDir, "package.json");
 
 var generateSampleTest = true;
 
 try {
+    console.log("projectDir" + projectDir);
+    console.log("packageJsonPath" + packageJsonPath);
     fs.mkdirSync(testsDir);
 } catch (e) {
     console.log("Test directory already exists: " + testsDir);
@@ -33,8 +35,11 @@ if (!packageJson.scripts) {
 if (!packageJson.scripts["appium"]) {
     packageJson.scripts["appium"] = "nativescript-dev-appium";
 }
-if (!packageJson.scripts["appium-android"]) {
-    packageJson.scripts["appium-android"] = "tns build android && npm run appium --runType=android";
+if (!packageJson.scripts["appium-android19"]) {
+    packageJson.scripts["appium-android"] = "tns build android && npm run appium --runType=android19";
+}
+if (!packageJson.scripts["appium-android23"]) {
+    packageJson.scripts["appium-android"] = "tns build android && npm run appium --runType=android23";
 }
 if (!packageJson.scripts["appium-ios-simulator"]) {
     packageJson.scripts["appium-ios-simulator"] = "tns build ios && npm run appium --runType=ios-simulator";
