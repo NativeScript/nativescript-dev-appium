@@ -16,29 +16,33 @@ Or install appium globally (to avoid installing it for every app):
 
 `$ npm install -g appium@1.6.3`
 
-After installation, you should have a sample test below the `e2e-tests` dir. Now, run it with:
+After installation, you should have a sample test below the `e2e-tests` dir which you can rename of your choice. However, if you rename the folder you will have to specify it using `--testfolder=someFolderName` option.
+
+Before running the tests you will have to build your app for the platform on test or both. Navigate to your demo app folder from where you will execute the commands that follow.
 
 ```
-$ npm run appium-android
-```
-
-or
-
-```
-$ npm run appium-ios-simulator
+$ tns build android
 ```
 
 or
 
 ```
-$ npm run appium-ios
+$ tns build ios
 ```
 
-All of the above commands will run a `tns build` command before running tests. If you have built your project already and wish to just run your tests, execute:
+The command that will run the tests should specify the targeted platform using the `runtype` option as shown below:
 
 ```
-$ npm run appium --runType=android
+$ npm run appium --runtype=android23
 ```
+For Android possible options are android19, android23, android25.
+
+or
+
+```
+$ npm run appium --runtype=ios-simulator10
+```
+For IOS there is one more option `ios-simulator92`.
 
 Generated tests are standard [Mocha](http://mochajs.org) tests.
 
@@ -47,14 +51,7 @@ Generated tests are standard [Mocha](http://mochajs.org) tests.
 Use the `--verbose` option to get error details:
 
 ```
-$ npm run appium-android --verbose
-```
-
-or
-
-
-```
-$ npm run appium --runType=android --verbose
+$ npm run appium --runtype=android --verbose
 ```
 
 ## Missing features

@@ -4,10 +4,9 @@ var glob = require("glob");
 var testRunType = process.env.TEST_RUN_TYPE;
 const appiumVerion = "1.6.3";
 var wd = require("wd");
+var capabilities;
 
 exports.createDriver = function (caps, activityName) {
-    console.log("CAPS " + caps);
-    console.log("activityName " + activityName);
     if (!activityName) {
         activityName = "com.tns.NativeScriptActivity";
     }
@@ -23,24 +22,21 @@ exports.createDriver = function (caps, activityName) {
     exports.configureLogging(driver);
 
     caps.app = exports.getAppPath();
+    capabilities = caps;
+    console.log("Creating driver!");
     return driver.init(caps);
 };
 
 exports.getAppPath = function () {
     console.log("testRunType " + testRunType);
-    if (testRunType === "android19") {
-        console.log("GLOB: " + glob);
+    if (testRunType.includes("android")) {
         var apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
         return apks[0];
-    } else if (testRunType === "android23") {
-        console.log("GLOB: " + glob);
-        var apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
-        return apks[0];
-    } else if (testRunType === "ios-simulator") {
+    } else if (testRunType.includes("ios-simulator")) {
         var simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
         return simulatorApps[0];
-    } else if (testRunType === "ios") {
-        var deviceApps = glob.sync("platforms/ios/build/device/**/*.app");
+    } else if (testRunType.includes("ios-device")) {
+        var deviceApps = glob.sync("platforms/ios/build/device/**/*.ipa");
         return deviceApps[0];
     } else {
         throw new Error("Incorrect test run type: " + testRunType);
@@ -52,10 +48,12 @@ exports.getDefaultCapabilities = function () {
         return exports.caps.android19();
     } else if (testRunType === "android23") {
         return exports.caps.android23();
-    } else if (testRunType === "ios-simulator") {
+    } else if (testRunType === "android25") {
+        return exports.caps.android25();
+    } else if (testRunType === "ios-simulator10" || testRunType === "ios-device10") {
         return exports.caps.ios10();
-    } else if (testRunType === "ios") {
-        return exports.caps.ios10();
+    } else if (testRunType === "ios-simulator92" || testRunType === "ios-device92") {
+        return exports.caps.ios92();
     } else {
         throw new Error("Incorrect test run type: " + testRunType);
     }
@@ -102,6 +100,17 @@ exports.caps = {
             app: undefined // will be set later
         };
     },
+    android25: function () {
+        return {
+            browserName: "",
+            "appium-version": appiumVerion,
+            platformName: "Android",
+            platformVersion: "7.1.1",
+            deviceName: "Android Emulator",
+            noReset: false, //Always reinstall app on Android
+            app: undefined // will be set later
+        };
+    },
     ios92: function () {
         return {
             browserName: "",
@@ -126,10 +135,10 @@ exports.caps = {
 
 exports.getXPathElement = function (name) {
     var tempName = name.toLowerCase().replace(/\-/g, "");
-    if (testRunType === "android") {
-        return xpathAndroid(tempName, name);
+    if (testRunType.includes("android")) {
+        return xpathAndroid(tempName);
     } else {
-        return xpathiOS(tempName, name);
+        return xpathiOS(tempName);
     }
 };
 
@@ -173,7 +182,7 @@ function xpathiOS(name) {
         case "datepicker": return createIosElement("DatePicker");
         case "htmlview": return createIosElement("TextView");
         case "image": return createIosElement("ImageView");
-        case "label": return "TNSLabel";
+        case "label": return createIosElement("StaticText");
         case "absolutelayout": return createIosElement("View");
         case "docklayout": return createIosElement("View");
         case "gridlayout": return createIosElement("View");
@@ -192,6 +201,7 @@ function xpathiOS(name) {
         case "tabview": return "XCUIElementTypeTabBarItem";
         case "textview": return createIosElement("TextView");
         case "textfield": return createIosElement("TextField");
+        case "securetextfield": return createIosElement("SecureTextField");
         case "timepicker": return createIosElement("DatePicker");
         case "webview": return createIosElement("WebView");
     }
@@ -203,8 +213,7 @@ function createIosElement(element) {
     let xCUIElementType = "XCUIElementType";
     let uIA = "UIA";
     let elementType;
-
-    if (this.settings.platformVersion.toString().startsWith("10")) {
+    if (capabilities.platformVersion.includes("10")) {
         elementType = xCUIElementType;
     } else {
         elementType = uIA;

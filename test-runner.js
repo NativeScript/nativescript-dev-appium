@@ -54,9 +54,10 @@ if (fs.existsSync(pluginMochaBinary)) {
 
 log("Mocha found at: " + mochaBinary);
 
+var testFolder = process.env.npm_config_testfolder || "e2e-tests";
 mochaOpts = [
     "--recursive",
-    "e2e-tests"
+    testFolder
 ];
 
 var server, tests;
