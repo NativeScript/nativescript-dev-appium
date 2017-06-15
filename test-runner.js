@@ -5,7 +5,8 @@ var portastic = require("portastic");
 var child_process = require("child_process");
 
 var verbose = process.env.npm_config_loglevel === "verbose";
-var testRunType = process.env.npm_config_runtype || "android23";
+var capabilitiesLocation = process.env.npm_config_capsLocation;
+
 function log(message) {
     if (verbose) {
         console.log(message);
@@ -133,7 +134,6 @@ function killPid(pid) {
 
 function getTestEnv() {
     var testEnv = JSON.parse(JSON.stringify(process.env));
-    testEnv.TEST_RUN_TYPE = testRunType;
     if (verbose) {
         testEnv.VERBOSE_LOG = "true";
     }
@@ -157,3 +157,32 @@ function waitForOutput(process, matcher, timeout) {
         });
     });
 }
+
+function setCustomCapabilities(appiumCapabilitiesLocation) {
+    var file = fs.readFileSync(appiumCapabilitiesLocation);
+    process.env.APPIUM_CAPABILITIES = file;
+    console.log("Custom capabilities found.");
+}
+
+function searchCustomCapabilities() {
+    var fileName = "appium.capabilities.json";
+    var projectDir = path.dirname(path.dirname(__dirname));
+    var pluginRootDir = path.dirname(projectDir);
+    var pluginAppiumCapabilitiesLocation = path.join(pluginRootDir, fileName);
+    var appAppiumCapabilitiesLocation = path.join(projectDir, fileName);
+    var customCapabilitiesLocation;
+
+    if(capabilitiesLocation){
+        customCapabilitiesLocation = path.join(projectDir, capabilitiesLocation, fileName);
+    }
+
+    if(fs.existsSync(customCapabilitiesLocation)) {
+        setCustomCapabilities(customCapabilitiesLocation)
+    } else if (fs.existsSync(pluginAppiumCapabilitiesLocation)) {
+        setCustomCapabilities(pluginAppiumCapabilitiesLocation)
+    } else if (fs.existsSync(appAppiumCapabilitiesLocation)) {
+        setCustomCapabilities(appAppiumCapabilitiesLocation)
+    }
+}
+
+searchCustomCapabilities();
