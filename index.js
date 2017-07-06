@@ -1,28 +1,64 @@
 require("./appium-setup");
 var glob = require("glob");
 
-var testRunType = process.env.TEST_RUN_TYPE;
-const appiumVerion = "1.6.3";
+var testRunType = process.env.npm_config_runType;
+var isSauceLab = process.env.npm_config_sauceLab;
+var appLocation = process.env.npm_config_appLocation;
 var wd = require("wd");
-var capabilities;
+var capability;
+var customCapabilitiesList = process.env.APPIUM_CAPABILITIES;
+var customCapabilities;
+
+if (customCapabilitiesList) {
+    customCapabilities = JSON.parse(customCapabilitiesList)
+} else {
+    throw new Error("No capabilities provided!!!");
+}
 
 exports.createDriver = function (caps, activityName) {
     if (!activityName) {
         activityName = "com.tns.NativeScriptActivity";
     }
+
     if (!caps) {
-        caps = exports.getDefaultCapabilities();
+        caps = customCapabilities[testRunType];
+        if (!caps) {
+            throw new Error("Incorrect test run type: " + testRunType + " . Available run types are :" + customCapabilitiesList);
+        }
     }
 
-    var serverConfig = {
+    var localServerConfig = {
         host: "localhost",
         port: process.env.APPIUM_PORT || 4723
     };
-    var driver = wd.promiseChainRemote(serverConfig);
+
+    var config = localServerConfig;
+    var sauceLabConfig;
+
+    if (isSauceLab) {
+        var sauceUser = process.env.SAUCE_USER;
+        var sauceKey = process.env.SAUCE_KEY;
+
+        if (!sauceKey || !sauceUser) {
+            throw new Error("Sauce Labs Username or Access Key is missing! Check environment variables for SAUCE_USER and SAUCE_KEY !!!");
+        }
+
+        sauceLabConfig = "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub";
+        config = sauceLabConfig;
+    }
+
+    var driver = wd.promiseChainRemote(config);
     exports.configureLogging(driver);
 
-    caps.app = exports.getAppPath();
-    capabilities = caps;
+    if (appLocation) {
+        caps.app = isSauceLab ? "sauce-storage:" + appLocation : appLocation;
+    }
+    else if (!caps.app) {
+        console.log("Getting caps.app!");
+        caps.app = exports.getAppPath();
+    }
+
+    capability = caps;
     console.log("Creating driver!");
     return driver.init(caps);
 };
@@ -39,23 +75,8 @@ exports.getAppPath = function () {
         var deviceApps = glob.sync("platforms/ios/build/device/**/*.ipa");
         return deviceApps[0];
     } else {
-        throw new Error("Incorrect test run type: " + testRunType);
-    }
-};
-
-exports.getDefaultCapabilities = function () {
-    if (testRunType === "android19") {
-        return exports.caps.android19();
-    } else if (testRunType === "android23") {
-        return exports.caps.android23();
-    } else if (testRunType === "android25") {
-        return exports.caps.android25();
-    } else if (testRunType === "ios-simulator10" || testRunType === "ios-device10") {
-        return exports.caps.ios10();
-    } else if (testRunType === "ios-simulator92" || testRunType === "ios-device92") {
-        return exports.caps.ios92();
-    } else {
-        throw new Error("Incorrect test run type: " + testRunType);
+        throw new Error("No 'app' capability provided and incorrect 'runType' convention used: " + testRunType +
+         ". In order to automatically search and locate app package please use 'android','ios-device','ios-simulator' in your 'runType' option. E.g --runType=android23, --runType=ios-simulator10iPhone6");
     }
 };
 
@@ -75,62 +96,6 @@ exports.configureLogging = function (driver) {
     driver.on("http", function (meth, path, data) {
         log(" > " + meth.magenta + path + " " + (data || "").grey);
     });
-};
-
-exports.caps = {
-    android19: function () {
-        return {
-            browserName: "",
-            "appium-version": appiumVerion,
-            platformName: "Android",
-            platformVersion: "4.4.2",
-            deviceName: "Android Emulator",
-            noReset: false, //Always reinstall app on Android
-            app: undefined // will be set later
-        };
-    },
-    android23: function () {
-        return {
-            browserName: "",
-            "appium-version": appiumVerion,
-            platformName: "Android",
-            platformVersion: "6.0",
-            deviceName: "Android Emulator",
-            noReset: false, //Always reinstall app on Android
-            app: undefined // will be set later
-        };
-    },
-    android25: function () {
-        return {
-            browserName: "",
-            "appium-version": appiumVerion,
-            platformName: "Android",
-            platformVersion: "7.1.1",
-            deviceName: "Android Emulator",
-            noReset: false, //Always reinstall app on Android
-            app: undefined // will be set later
-        };
-    },
-    ios92: function () {
-        return {
-            browserName: "",
-            "appium-version": appiumVerion,
-            platformName: "iOS",
-            platformVersion: "9.2",
-            deviceName: "iPhone 6",
-            app: undefined // will be set later
-        };
-    },
-    ios10: function () {
-        return {
-            browserName: "",
-            "appium-version": appiumVerion,
-            platformName: "iOS",
-            platformVersion: "10.0",
-            deviceName: "iPhone 7 100",
-            app: undefined // will be set later
-        };
-    },
 };
 
 exports.getXPathElement = function (name) {
@@ -167,6 +132,7 @@ function xpathAndroid(name) {
         case "switch": return "android.widget.Switch";
         case "tabview": return "android.support.v4.view.ViewPager";
         case "textview":
+        case "securetextfield":
         case "textfield": return "android.widget.EditText";
         case "timepicker": return "android.widget.TimePicker";
         case "webview": return "android.webkit.WebView";
@@ -213,7 +179,7 @@ function createIosElement(element) {
     let xCUIElementType = "XCUIElementType";
     let uIA = "UIA";
     let elementType;
-    if (capabilities.platformVersion.includes("10")) {
+    if (capability.platformVersion.includes("10")) {
         elementType = xCUIElementType;
     } else {
         elementType = uIA;
