@@ -65,6 +65,8 @@ mochaOpts = [
     mochaCustomOptions
 ];
 
+console.log("Mocha options: ", mochaOpts);
+
 let server, tests;
 portastic.find({ min: 9200, max: 9300 }).then(function(ports) {
     const port = ports[0];
