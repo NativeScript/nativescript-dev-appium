@@ -1,12 +1,12 @@
-var path = require("path");
-var fs = require("fs");
-var childProcess = require("child_process");
+const path = require("path");
+const fs = require("fs");
+const childProcess = require("child_process");
+const projectDir = path.resolve(__dirname, "../", "../");
+const testsDir = path.join(projectDir, "e2e-tests");
+const packageJsonPath = path.join(projectDir, "package.json");
+const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
 
-var projectDir = path.resolve(__dirname, "../", "../");
-var testsDir = path.join(projectDir, "e2e-tests");
-var packageJsonPath = path.join(projectDir, "package.json");
-
-var generateSampleTest = true;
+let generateSampleTest = true;
 
 try {
     console.log("projectDir" + projectDir);
@@ -19,15 +19,13 @@ try {
 }
 
 if (generateSampleTest) {
-    var sampleTestSrc = path.join(__dirname, "sample-test.js");
-    var sampleTestDest = path.join(testsDir, "sample-test.js");
+    let sampleTestSrc = path.join(__dirname, "sample-test.js");
+    let sampleTestDest = path.join(testsDir, "sample-test.js");
     if (!fs.existsSync(sampleTestDest)) {
-        var javaClassesContent = fs.readFileSync(sampleTestSrc, "utf8");
+        let javaClassesContent = fs.readFileSync(sampleTestSrc, "utf8");
         fs.writeFileSync(sampleTestDest, javaClassesContent);
     }
 }
-
-var packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
 
 if (!packageJson.scripts) {
     packageJson.scripts = {};
@@ -48,11 +46,12 @@ console.log("Add appium as a local dependency (see README) or we'll attempt to r
 fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
 function configureDevDependencies(packageJson, adderCallback) {
-    var pendingNpmInstall = false;
+    let pendingNpmInstall = false;
     if (!packageJson.devDependencies) {
         packageJson.devDependencies = {};
     }
-    var dependencies = packageJson.devDependencies;
+
+    let dependencies = packageJson.devDependencies;
 
     adderCallback(function (name, version) {
         if (!dependencies[name]) {
@@ -68,14 +67,14 @@ function configureDevDependencies(packageJson, adderCallback) {
         console.info("Installing new dependencies...");
         //Run `npm install` after everything else.
         setTimeout(function () {
-            var spawnArgs = [];
+            let spawnArgs = [];
             if (/^win/.test(process.platform)) {
                 spawnArgs = ["cmd.exe", ["/c", "npm", "install"]];
             } else {
                 spawnArgs = ["npm", ["install"]];
             }
             spawnArgs.push({ cwd: projectDir, stdio: "inherit" });
-            var npm = childProcess.spawn.apply(null, spawnArgs);
+            const npm = childProcess.spawn.apply(null, spawnArgs);
             npm.on("close", function (code) {
                 process.exit(code);
             });

@@ -1,11 +1,18 @@
 #!/usr/bin/env node
-var fs = require("fs");
-var path = require("path");
-var portastic = require("portastic");
-var child_process = require("child_process");
-
-var verbose = process.env.npm_config_loglevel === "verbose";
-var capabilitiesLocation = process.env.npm_config_capsLocation;
+const fs = require("fs");
+const path = require("path");
+const portastic = require("portastic");
+const child_process = require("child_process");
+const projectDir = path.dirname(path.dirname(__dirname));
+let appium = "appium";
+let mocha = "mocha";
+const pluginAppiumBinary = path.join(__dirname, "node_modules", ".bin", appium);
+const projectAppiumBinary = path.join(projectDir, "node_modules", ".bin", appium);
+const pluginMochaBinary = path.join(__dirname, "node_modules", ".bin", mocha);
+const projectMochaBinary = path.join(projectDir, "node_modules", ".bin", mocha);
+const testFolder = process.env.npm_config_testfolder || "e2e-tests";
+const verbose = process.env.npm_config_loglevel === "verbose";
+let capabilitiesLocation = process.env.npm_config_capsLocation;
 
 function log(message) {
     if (verbose) {
@@ -25,17 +32,12 @@ function logErr(line, force) {
     }
 }
 
-var appium = "appium";
-var mocha = "mocha";
 if (process.platform === "win32") {
     appium = "appium.cmd";
     mocha = "mocha.cmd";
 }
 
-var projectDir = path.dirname(path.dirname(__dirname));
-var pluginAppiumBinary = path.join(__dirname, "node_modules", ".bin", appium);
-var projectAppiumBinary = path.join(projectDir, "node_modules", ".bin", appium);
-var appiumBinary = appium;
+let appiumBinary = appium;
 if (fs.existsSync(pluginAppiumBinary)) {
     console.log("Using plugin-local Appium binary.");
     appiumBinary = pluginAppiumBinary;
@@ -46,24 +48,20 @@ if (fs.existsSync(pluginAppiumBinary)) {
     console.log("Using global Appium binary.");
 }
 
-var pluginMochaBinary = path.join(__dirname, "node_modules", ".bin", mocha);
-var projectMochaBinary = path.join(projectDir, "node_modules", ".bin", mocha);
-var mochaBinary = projectMochaBinary;
+let mochaBinary = projectMochaBinary;
 if (fs.existsSync(pluginMochaBinary)) {
     mochaBinary = pluginMochaBinary;
 }
 
 log("Mocha found at: " + mochaBinary);
-
-var testFolder = process.env.npm_config_testfolder || "e2e-tests";
 mochaOpts = [
     "--recursive",
     testFolder
 ];
 
-var server, tests;
+let server, tests;
 portastic.find({ min: 9200, max: 9300 }).then(function (ports) {
-    var port = ports[0];
+    const port = ports[0];
     server = child_process.spawn(appiumBinary, ["-p", port, "--no-reset"], { detached: false });
 
     server.stdout.on("data", function (data) {
@@ -129,11 +127,11 @@ function shutdown() {
 }
 
 function killPid(pid) {
-    var output = child_process.execSync('taskkill /PID ' + pid + ' /T /F');
+    let output = child_process.execSync('taskkill /PID ' + pid + ' /T /F');
 }
 
 function getTestEnv() {
-    var testEnv = JSON.parse(JSON.stringify(process.env));
+    const testEnv = JSON.parse(JSON.stringify(process.env));
     if (verbose) {
         testEnv.VERBOSE_LOG = "true";
     }
@@ -158,31 +156,27 @@ function waitForOutput(process, matcher, timeout) {
     });
 }
 
-function setCustomCapabilities(appiumCapabilitiesLocation) {
-    var file = fs.readFileSync(appiumCapabilitiesLocation);
-    process.env.APPIUM_CAPABILITIES = file;
-    console.log("Custom capabilities found.");
-}
-
 function searchCustomCapabilities() {
-    var fileName = "appium.capabilities.json";
-    var projectDir = path.dirname(path.dirname(__dirname));
-    var pluginRootDir = path.dirname(projectDir);
-    var pluginAppiumCapabilitiesLocation = path.join(pluginRootDir, fileName);
-    var appAppiumCapabilitiesLocation = path.join(projectDir, fileName);
-    var customCapabilitiesLocation;
-
-    if(capabilitiesLocation){
-        customCapabilitiesLocation = path.join(projectDir, capabilitiesLocation, fileName);
-    }
-
-    if(fs.existsSync(customCapabilitiesLocation)) {
+    const fileName = "appium.capabilities.json";
+    const projectDir = path.dirname(path.dirname(__dirname));
+    const pluginRootDir = path.dirname(projectDir);
+    const pluginAppiumCapabilitiesLocation = path.join(pluginRootDir, fileName);
+    const appAppiumCapabilitiesLocation = path.join(projectDir, fileName);
+    const customCapabilitiesLocation = path.join(projectDir, capabilitiesLocation, fileName);
+    
+    if (fs.existsSync(customCapabilitiesLocation)) {
         setCustomCapabilities(customCapabilitiesLocation)
     } else if (fs.existsSync(pluginAppiumCapabilitiesLocation)) {
         setCustomCapabilities(pluginAppiumCapabilitiesLocation)
     } else if (fs.existsSync(appAppiumCapabilitiesLocation)) {
         setCustomCapabilities(appAppiumCapabilitiesLocation)
     }
+}
+
+function setCustomCapabilities(appiumCapabilitiesLocation) {
+    const file = fs.readFileSync(appiumCapabilitiesLocation);
+    process.env.APPIUM_CAPABILITIES = file;
+    console.log("Custom capabilities found.");
 }
 
 searchCustomCapabilities();

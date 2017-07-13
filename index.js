@@ -1,16 +1,15 @@
 require("./appium-setup");
-var glob = require("glob");
+const glob = require("glob");
+const wd = require("wd");
 
-var testRunType = process.env.npm_config_runType;
-var isSauceLab = process.env.npm_config_sauceLab;
-var appLocation = process.env.npm_config_appLocation;
-var wd = require("wd");
-var capability;
-var customCapabilitiesList = process.env.APPIUM_CAPABILITIES;
-var customCapabilities;
+let testRunType = process.env.npm_config_runType;
+let isSauceLab = process.env.npm_config_sauceLab;
+let appLocation = process.env.npm_config_appLocation;
+let customCapabilitiesConfigs = process.env.APPIUM_CAPABILITIES;
+let customCapabilities;
 
-if (customCapabilitiesList) {
-    customCapabilities = JSON.parse(customCapabilitiesList)
+if (customCapabilitiesConfigs) {
+    customCapabilities = JSON.parse(customCapabilitiesConfigs)
 } else {
     throw new Error("No capabilities provided!!!");
 }
@@ -23,31 +22,27 @@ exports.createDriver = function (caps, activityName) {
     if (!caps) {
         caps = customCapabilities[testRunType];
         if (!caps) {
-            throw new Error("Incorrect test run type: " + testRunType + " . Available run types are :" + customCapabilitiesList);
+            throw new Error("Incorrect test run type: " + testRunType + " . Available run types are :" + customCapabilitiesConfigs);
         }
     }
 
-    var localServerConfig = {
+    let config = {
         host: "localhost",
         port: process.env.APPIUM_PORT || 4723
     };
 
-    var config = localServerConfig;
-    var sauceLabConfig;
-
     if (isSauceLab) {
-        var sauceUser = process.env.SAUCE_USER;
-        var sauceKey = process.env.SAUCE_KEY;
+        const sauceUser = process.env.SAUCE_USER;
+        const sauceKey = process.env.SAUCE_KEY;
 
         if (!sauceKey || !sauceUser) {
             throw new Error("Sauce Labs Username or Access Key is missing! Check environment variables for SAUCE_USER and SAUCE_KEY !!!");
         }
 
-        sauceLabConfig = "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub";
-        config = sauceLabConfig;
+        config = "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub";
     }
 
-    var driver = wd.promiseChainRemote(config);
+    const driver = wd.promiseChainRemote(config);
     exports.configureLogging(driver);
 
     if (appLocation) {
@@ -58,7 +53,6 @@ exports.createDriver = function (caps, activityName) {
         caps.app = exports.getAppPath();
     }
 
-    capability = caps;
     console.log("Creating driver!");
     return driver.init(caps);
 };
@@ -66,13 +60,13 @@ exports.createDriver = function (caps, activityName) {
 exports.getAppPath = function () {
     console.log("testRunType " + testRunType);
     if (testRunType.includes("android")) {
-        var apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
+        const apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
         return apks[0];
     } else if (testRunType.includes("ios-simulator")) {
-        var simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
+        const simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
         return simulatorApps[0];
     } else if (testRunType.includes("ios-device")) {
-        var deviceApps = glob.sync("platforms/ios/build/device/**/*.ipa");
+        const deviceApps = glob.sync("platforms/ios/build/device/**/*.ipa");
         return deviceApps[0];
     } else {
         throw new Error("No 'app' capability provided and incorrect 'runType' convention used: " + testRunType +
@@ -99,7 +93,7 @@ exports.configureLogging = function (driver) {
 };
 
 exports.getXPathElement = function (name) {
-    var tempName = name.toLowerCase().replace(/\-/g, "");
+    const tempName = name.toLowerCase().replace(/\-/g, "");
     if (testRunType.includes("android")) {
         return xpathAndroid(tempName);
     } else {
@@ -176,13 +170,9 @@ function xpathiOS(name) {
 }
 
 function createIosElement(element) {
-    let xCUIElementType = "XCUIElementType";
-    let uIA = "UIA";
-    let elementType;
-    if (capability.platformVersion.includes("10")) {
-        elementType = xCUIElementType;
-    } else {
-        elementType = uIA;
+    let elementType = "UIA";
+    if (caps.platformVersion.includes("10")) {
+        elementType = "XCUIElementType";
     }
 
     return elementType + element;
