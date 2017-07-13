@@ -39,7 +39,7 @@ if (!packageJson.scripts["appium"]) {
     packageJson.scripts["appium"] = "nativescript-dev-appium";
 }
 
-configureDevDependencies(packageJson, function (add) {
+configureDevDependencies(packageJson, function(add) {
     add("chai", "~3.5.0");
     add("chai-as-promised", "~5.3.0");
     add("wd", "~1.1.1");
@@ -58,7 +58,7 @@ function configureDevDependencies(packageJson, adderCallback) {
 
     let dependencies = packageJson.devDependencies;
 
-    adderCallback(function (name, version) {
+    adderCallback(function(name, version) {
         if (!dependencies[name]) {
             dependencies[name] = version;
             console.info("Adding dev dependency: " + name + "@" + version);
@@ -71,7 +71,7 @@ function configureDevDependencies(packageJson, adderCallback) {
     if (pendingNpmInstall) {
         console.info("Installing new dependencies...");
         //Run `npm install` after everything else.
-        setTimeout(function () {
+        setTimeout(function() {
             let spawnArgs = [];
             if (/^win/.test(process.platform)) {
                 spawnArgs = ["cmd.exe", ["/c", "npm", "install"]];
@@ -80,7 +80,7 @@ function configureDevDependencies(packageJson, adderCallback) {
             }
             spawnArgs.push({ cwd: projectDir(), stdio: "inherit" });
             const npm = childProcess.spawn.apply(null, spawnArgs);
-            npm.on("close", function (code) {
+            npm.on("close", function(code) {
                 process.exit(code);
             });
         }, 100);

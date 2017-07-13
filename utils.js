@@ -8,35 +8,34 @@ function resolve(mainPath) {
     if (!path.isAbsolute(mainPath)) {
         if (mainPath[0] === '~') {
             mainPath = path.join(process.env.HOME, mainPath.slice(1));
-        }
-        else {
+        } else {
             mainPath = path.resolve(dir, mainPath);
         }
     }
     var fullPath = mainPath;
-    args.forEach(function (p) {
+    args.forEach(function(p) {
         fullPath = path.resolve(fullPath, p);
     });
     return fullPath;
 }
 exports.resolve = resolve;
 
-function projectDir(){
+function projectDir() {
     return process.cwd();
 }
 exports.projectDir = projectDir;
 
-function pluginBinary(){
+function pluginBinary() {
     return resolve(__dirname, "node_modules", ".bin");
 }
 exports.pluginBinary = pluginBinary;
 
-function projectBinary(){
+function projectBinary() {
     return resolve(projectDir(), "node_modules", ".bin");
 }
 exports.projectBinary = projectBinary;
 
-function pluginRoot(){
+function pluginRoot() {
     return resolve(__dirname);
 }
-exports.pluginRoot=pluginRoot;
+exports.pluginRoot = pluginRoot;

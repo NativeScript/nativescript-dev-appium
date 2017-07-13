@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 const fs = require("fs");
 const path = require("path");
 const portastic = require("portastic");
@@ -7,6 +8,9 @@ const utils = require("./utils");
 let appium = "appium";
 let mocha = "mocha";
 
+const testFolder = process.env.npm_config_testfolder || "e2e-tests";
+const verbose = process.env.npm_config_loglevel === "verbose";
+const mochaCustomOptions = process.env.npm_config_mochaOptions || "";
 const projectDir = utils.projectDir();
 const pluginBinary = utils.pluginBinary();
 const projectBinary = utils.projectBinary();
@@ -14,8 +18,6 @@ const pluginRoot = utils.pluginRoot();
 const pluginAppiumBinary = utils.resolve(pluginBinary, appium);
 const projectAppiumBinary = utils.resolve(projectBinary, appium);
 const pluginMochaBinary = utils.resolve(pluginBinary, mocha);
-const testFolder = process.env.npm_config_testfolder || "e2e-tests";
-const verbose = process.env.npm_config_loglevel === "verbose";
 let mochaBinary = utils.resolve(projectBinary, mocha);
 let capabilitiesLocation = process.env.npm_config_capsLocation;
 
@@ -59,36 +61,37 @@ if (fs.existsSync(pluginMochaBinary)) {
 log("Mocha found at: " + mochaBinary);
 mochaOpts = [
     "--recursive",
-    testFolder
+    testFolder,
+    mochaCustomOptions
 ];
 
 let server, tests;
-portastic.find({ min: 9200, max: 9300 }).then(function (ports) {
+portastic.find({ min: 9200, max: 9300 }).then(function(ports) {
     const port = ports[0];
     server = child_process.spawn(appium, ["-p", port], { detached: false });
 
-    server.stdout.on("data", function (data) {
+    server.stdout.on("data", function(data) {
         logOut("" + data);
     });
-    server.stderr.on("data", function (data) {
+    server.stderr.on("data", function(data) {
         logErr("" + data);
     });
-    server.on('exit', function (code) {
+    server.on('exit', function(code) {
         server = null;
         logOut('Appium Server process exited with code ' + code);
         process.exit();
     });
 
-    waitForOutput(server, /listener started/, 60000).then(function () {
+    waitForOutput(server, /listener started/, 60000).then(function() {
         process.env.APPIUM_PORT = port;
         tests = child_process.spawn(mochaBinary, mochaOpts, { shell: true, detached: false, env: getTestEnv() });
-        tests.stdout.on('data', function (data) {
+        tests.stdout.on('data', function(data) {
             logOut("" + data, true);
         });
-        tests.stderr.on("data", function (data) {
+        tests.stderr.on("data", function(data) {
             logErr("" + data, true);
         });
-        tests.on('exit', function (code) {
+        tests.on('exit', function(code) {
             console.log('Test runner exited with code ' + code);
             if (process.platform === "win32") {
                 // The default kill doesn't kill the sub-children...
@@ -100,7 +103,7 @@ portastic.find({ min: 9200, max: 9300 }).then(function (ports) {
             tests = null;
             process.exit(code);
         });
-    }, function (err) {
+    }, function(err) {
         console.log("Test runner could not start: " + err);
         server.kill();
         process.exit(1);
@@ -142,14 +145,14 @@ function getTestEnv() {
 }
 
 function waitForOutput(process, matcher, timeout) {
-    return new Promise(function (resolve, reject) {
-        var abortWatch = setTimeout(function () {
+    return new Promise(function(resolve, reject) {
+        var abortWatch = setTimeout(function() {
             process.kill();
             console.log("Timeout expired, output not detected for: " + matcher);
             reject(new Error("Timeout expired, output not detected for: " + matcher));
         }, timeout);
 
-        process.stdout.on("data", function (data) {
+        process.stdout.on("data", function(data) {
             var line = "" + data;
             if (matcher.test(line)) {
                 clearTimeout(abortWatch);
