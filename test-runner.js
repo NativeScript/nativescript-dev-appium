@@ -65,7 +65,7 @@ mochaOpts = [
 let server, tests;
 portastic.find({ min: 9200, max: 9300 }).then(function (ports) {
     const port = ports[0];
-    server = child_process.spawn(appium, ["-p", port, "--no-reset"], { detached: false });
+    server = child_process.spawn(appium, ["-p", port], { detached: false });
 
     server.stdout.on("data", function (data) {
         logOut("" + data);
