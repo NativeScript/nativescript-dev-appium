@@ -1,15 +1,19 @@
 const path = require("path");
 const fs = require("fs");
 const childProcess = require("child_process");
-const projectDir = path.resolve(__dirname, "../", "../");
-const testsDir = path.join(projectDir, "e2e-tests");
-const packageJsonPath = path.join(projectDir, "package.json");
-const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+const utils = require("./utils");
+const testsDir = utils.resolve(utils.projectDir(), "e2e-tests");
+const packageJsonPath = utils.resolve(utils.projectDir(), "package.json");
+let packageJson = {};
 
 let generateSampleTest = true;
 
+if (fs.existsSync(packageJsonPath)) {
+    packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+}
+
 try {
-    console.log("projectDir" + projectDir);
+    console.log("projectDir()" + utlis.projectDir());
     console.log("packageJsonPath" + packageJsonPath);
     fs.mkdirSync(testsDir);
 } catch (e) {
@@ -73,7 +77,7 @@ function configureDevDependencies(packageJson, adderCallback) {
             } else {
                 spawnArgs = ["npm", ["install"]];
             }
-            spawnArgs.push({ cwd: projectDir, stdio: "inherit" });
+            spawnArgs.push({ cwd: projectDir(), stdio: "inherit" });
             const npm = childProcess.spawn.apply(null, spawnArgs);
             npm.on("close", function (code) {
                 process.exit(code);

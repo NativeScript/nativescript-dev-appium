@@ -3,15 +3,16 @@ const fs = require("fs");
 const path = require("path");
 const portastic = require("portastic");
 const child_process = require("child_process");
-const projectDir = path.dirname(path.dirname(__dirname));
+const utils = require("./utils");
 let appium = "appium";
 let mocha = "mocha";
-const pluginAppiumBinary = path.join(__dirname, "node_modules", ".bin", appium);
-const projectAppiumBinary = path.join(projectDir, "node_modules", ".bin", appium);
-const pluginMochaBinary = path.join(__dirname, "node_modules", ".bin", mocha);
-const projectMochaBinary = path.join(projectDir, "node_modules", ".bin", mocha);
+
+const pluginAppiumBinary = utils.resolve(utils.pluginBinary(), appium);
+const projectAppiumBinary = utils.resolve(utils.projectBinary(), appium);
+const pluginMochaBinary = utils.resolve(utils.pluginBinary(), mocha);
 const testFolder = process.env.npm_config_testfolder || "e2e-tests";
 const verbose = process.env.npm_config_loglevel === "verbose";
+let mochaBinary = utils.resolve(utils.projectBinary(), mocha);
 let capabilitiesLocation = process.env.npm_config_capsLocation;
 
 function log(message) {
@@ -37,18 +38,16 @@ if (process.platform === "win32") {
     mocha = "mocha.cmd";
 }
 
-let appiumBinary = appium;
 if (fs.existsSync(pluginAppiumBinary)) {
     console.log("Using plugin-local Appium binary.");
-    appiumBinary = pluginAppiumBinary;
+    appium = pluginAppiumBinary;
 } else if (fs.existsSync(projectAppiumBinary)) {
     console.log("Using project-local Appium binary.");
-    appiumBinary = projectAppiumBinary;
+    appium = projectAppiumBinary;
 } else {
     console.log("Using global Appium binary.");
 }
 
-let mochaBinary = projectMochaBinary;
 if (fs.existsSync(pluginMochaBinary)) {
     mochaBinary = pluginMochaBinary;
 }
@@ -62,7 +61,7 @@ mochaOpts = [
 let server, tests;
 portastic.find({ min: 9200, max: 9300 }).then(function (ports) {
     const port = ports[0];
-    server = child_process.spawn(appiumBinary, ["-p", port, "--no-reset"], { detached: false });
+    server = child_process.spawn(appium, ["-p", port, "--no-reset"], { detached: false });
 
     server.stdout.on("data", function (data) {
         logOut("" + data);
@@ -158,12 +157,10 @@ function waitForOutput(process, matcher, timeout) {
 
 function searchCustomCapabilities() {
     const fileName = "appium.capabilities.json";
-    const projectDir = path.dirname(path.dirname(__dirname));
-    const pluginRootDir = path.dirname(projectDir);
-    const pluginAppiumCapabilitiesLocation = path.join(pluginRootDir, fileName);
-    const appAppiumCapabilitiesLocation = path.join(projectDir, fileName);
-    const customCapabilitiesLocation = path.join(projectDir, capabilitiesLocation, fileName);
-    
+    const pluginAppiumCapabilitiesLocation = utils.resolve(utils.pluginRoot(), fileName);
+    const appAppiumCapabilitiesLocation = utils.resolve(utils.projectDir(), fileName);
+    const customCapabilitiesLocation = path.join(utils.projectDir(), capabilitiesLocation, fileName);
+
     if (fs.existsSync(customCapabilitiesLocation)) {
         setCustomCapabilities(customCapabilitiesLocation)
     } else if (fs.existsSync(pluginAppiumCapabilitiesLocation)) {

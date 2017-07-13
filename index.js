@@ -1,6 +1,7 @@
 require("./appium-setup");
 const glob = require("glob");
 const wd = require("wd");
+const utils = require("./utils");
 
 let testRunType = process.env.npm_config_runType;
 let isSauceLab = process.env.npm_config_sauceLab;
