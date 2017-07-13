@@ -2,8 +2,9 @@ const path = require("path");
 const fs = require("fs");
 const childProcess = require("child_process");
 const utils = require("./utils");
-const testsDir = utils.resolve(utils.projectDir(), "e2e-tests");
-const packageJsonPath = utils.resolve(utils.projectDir(), "package.json");
+const projectDir = utils.projectDir();
+const testsDir = utils.resolve(projectDir, "e2e-tests");
+const packageJsonPath = utils.resolve(projectDir, "package.json");
 let packageJson = {};
 
 let generateSampleTest = true;

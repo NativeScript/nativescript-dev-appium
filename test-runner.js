@@ -7,12 +7,16 @@ const utils = require("./utils");
 let appium = "appium";
 let mocha = "mocha";
 
-const pluginAppiumBinary = utils.resolve(utils.pluginBinary(), appium);
-const projectAppiumBinary = utils.resolve(utils.projectBinary(), appium);
-const pluginMochaBinary = utils.resolve(utils.pluginBinary(), mocha);
+const projectDir = utils.projectDir();
+const pluginBinary = utils.pluginBinary();
+const projectBinary = utils.projectBinary();
+const pluginRoot = utils.pluginRoot();
+const pluginAppiumBinary = utils.resolve(pluginBinary, appium);
+const projectAppiumBinary = utils.resolve(projectBinary, appium);
+const pluginMochaBinary = utils.resolve(pluginBinary, mocha);
 const testFolder = process.env.npm_config_testfolder || "e2e-tests";
 const verbose = process.env.npm_config_loglevel === "verbose";
-let mochaBinary = utils.resolve(utils.projectBinary(), mocha);
+let mochaBinary = utils.resolve(projectBinary, mocha);
 let capabilitiesLocation = process.env.npm_config_capsLocation;
 
 function log(message) {
@@ -157,9 +161,9 @@ function waitForOutput(process, matcher, timeout) {
 
 function searchCustomCapabilities() {
     const fileName = "appium.capabilities.json";
-    const pluginAppiumCapabilitiesLocation = utils.resolve(utils.pluginRoot(), fileName);
-    const appAppiumCapabilitiesLocation = utils.resolve(utils.projectDir(), fileName);
-    const customCapabilitiesLocation = path.join(utils.projectDir(), capabilitiesLocation, fileName);
+    const pluginAppiumCapabilitiesLocation = utils.resolve(pluginRoot, fileName);
+    const appAppiumCapabilitiesLocation = utils.resolve(projectDir, fileName);
+    const customCapabilitiesLocation = utils.resolve(projectDir, capabilitiesLocation, fileName);
 
     if (fs.existsSync(customCapabilitiesLocation)) {
         setCustomCapabilities(customCapabilitiesLocation)
