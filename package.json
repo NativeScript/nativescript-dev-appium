@@ -1,36 +1,38 @@
 {
-    "name": "nativescript-dev-appium",
-    "version": "1.0.0",
-    "description": "A NativeScript plugin to help integrate and run Appium tests",
-    "main": "index.js",
-    "bin": {
-        "nativescript-dev-appium": "./test-runner.js"
-    },
-    "scripts": {
-        "postinstall": "node postinstall.js",
-        "appium": "nativescript-dev-appium"
-    },
-    "keywords": [
-        "nativescript",
-        "appium",
-        "test"
-    ],
-    "maintainers": [{
-        "name": "hdeshev",
-        "email": "hristo.deshev@telerik.com"
-    }],
-    "dependencies": {
-        "glob": "*",
-        "colors": "^1.1.2",
-        "mocha": "^3.0.0",
-        "portastic": "^1.0.1"
-    },
-    "author": "Telerik",
-    "license": "MIT",
-    "devDependencies": {
-        "chai": "~4.0.0",
-        "chai-as-promised": "~7.0.0",
-        "mocha-junit-reporter": "^1.13.0",
-        "wd": "~1.3.0"
+  "name": "nativescript-dev-appium",
+  "version": "1.0.0",
+  "description": "A NativeScript plugin to help integrate and run Appium tests",
+  "main": "index.js",
+  "bin": {
+    "nativescript-dev-appium": "./test-runner.js"
+  },
+  "scripts": {
+    "postinstall": "node postinstall.js",
+    "appium": "nativescript-dev-appium"
+  },
+  "keywords": [
+    "nativescript",
+    "appium",
+    "test"
+  ],
+  "maintainers": [
+    {
+      "name": "hdeshev",
+      "email": "hristo.deshev@telerik.com"
     }
+  ],
+  "dependencies": {
+    "glob": "*",
+    "colors": "^1.1.2",
+    "mocha": "^3.0.0",
+    "portastic": "^1.0.1"
+  },
+  "author": "Telerik",
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "~4.0.0",
+    "chai-as-promised": "~7.0.0",
+    "mocha-junit-reporter": "^1.13.0",
+    "wd": "~1.3.0"
+  }
 }

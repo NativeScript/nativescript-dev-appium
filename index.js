@@ -9,6 +9,7 @@ const customCapabilitiesConfigs = process.env.APPIUM_CAPABILITIES;
 const appLocation = process.env.npm_config_appLocation;
 
 let customCapabilities;
+let caps;
 
 if (customCapabilitiesConfigs) {
     customCapabilities = JSON.parse(customCapabilitiesConfigs)
@@ -16,7 +17,8 @@ if (customCapabilitiesConfigs) {
     throw new Error("No capabilities provided!!!");
 }
 
-exports.createDriver = function(caps, activityName) {
+exports.createDriver = function (capabilities, activityName) {
+    caps = capabilities;
     if (!activityName) {
         activityName = "com.tns.NativeScriptActivity";
     }
@@ -58,10 +60,10 @@ exports.createDriver = function(caps, activityName) {
     return driver.init(caps);
 };
 
-exports.getAppPath = function() {
+exports.getAppPath = function () {
     console.log("testRunType " + testRunType);
     if (testRunType.includes("android")) {
-        const apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function(file) { return file.indexOf("unaligned") < 0; });
+        const apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
         return apks[0];
     } else if (testRunType.includes("ios-simulator")) {
         const simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
@@ -81,19 +83,19 @@ function log(message) {
     }
 }
 
-exports.configureLogging = function(driver) {
-    driver.on("status", function(info) {
+exports.configureLogging = function (driver) {
+    driver.on("status", function (info) {
         log(info.cyan);
     });
-    driver.on("command", function(meth, path, data) {
+    driver.on("command", function (meth, path, data) {
         log(" > " + meth.yellow + path.grey + " " + (data || ""));
     });
-    driver.on("http", function(meth, path, data) {
+    driver.on("http", function (meth, path, data) {
         log(" > " + meth.magenta + path + " " + (data || "").grey);
     });
 };
 
-exports.getXPathElement = function(name) {
+exports.getXPathElement = function (name) {
     const tempName = name.toLowerCase().replace(/\-/g, "");
     if (testRunType.includes("android")) {
         return xpathAndroid(tempName);
