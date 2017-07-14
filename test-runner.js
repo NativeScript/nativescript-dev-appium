@@ -19,7 +19,7 @@ const pluginAppiumBinary = utils.resolve(pluginBinary, appium);
 const projectAppiumBinary = utils.resolve(projectBinary, appium);
 const pluginMochaBinary = utils.resolve(pluginBinary, mocha);
 let mochaBinary = utils.resolve(projectBinary, mocha);
-let capabilitiesLocation = process.env.npm_config_capsLocation || path.join(projectDir,testFolder, "config");
+let capabilitiesLocation = process.env.npm_config_capsLocation || path.join(testFolder, "config");
 
 function log(message) {
     if (verbose) {
@@ -166,16 +166,20 @@ function waitForOutput(process, matcher, timeout) {
 
 function searchCustomCapabilities() {
     const fileName = "appium.capabilities.json";
-    const pluginAppiumCapabilitiesLocation = utils.resolve(pluginRoot, fileName);
-    const appAppiumCapabilitiesLocation = utils.resolve(projectDir, fileName);
-    const customCapabilitiesLocation = utils.resolve(projectDir, capabilitiesLocation, fileName);
+    const appParentFolder = utils.resolve(projectDir, "../", fileName);
+    const appRootLevel = utils.resolve(projectDir, fileName);
+
+    let customCapabilitiesLocation = capabilitiesLocation;
+    if (!path.isAbsolute(capabilitiesLocation)) {
+        customCapabilitiesLocation = utils.resolve(projectDir, capabilitiesLocation, fileName);
+    }
 
     if (fs.existsSync(customCapabilitiesLocation)) {
         setCustomCapabilities(customCapabilitiesLocation)
-    } else if (fs.existsSync(pluginAppiumCapabilitiesLocation)) {
-        setCustomCapabilities(pluginAppiumCapabilitiesLocation)
-    } else if (fs.existsSync(appAppiumCapabilitiesLocation)) {
-        setCustomCapabilities(appAppiumCapabilitiesLocation)
+    } else if (fs.existsSync(appParentFolder)) {
+        setCustomCapabilities(appParentFolder)
+    } else if (fs.existsSync(appRootLevel)) {
+        setCustomCapabilities(appRootLevel)
     }
 }
 

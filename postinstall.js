@@ -3,6 +3,7 @@ const fs = require("fs");
 const childProcess = require("child_process");
 const utils = require("./utils");
 const projectDir = utils.projectDir();
+const pluginRoot = utils.pluginRoot();
 const testsDir = utils.resolve(projectDir, "e2e-tests");
 const packageJsonPath = utils.resolve(projectDir, "package.json");
 let packageJson = {};
@@ -14,18 +15,14 @@ if (fs.existsSync(packageJsonPath)) {
 }
 
 try {
-    console.log("projectDir()" + utlis.projectDir());
-    console.log("packageJsonPath" + packageJsonPath);
     fs.mkdirSync(testsDir);
 } catch (e) {
-    console.log("Test directory already exists: " + testsDir);
-    console.log("Skipping sample test generation.");
     generateSampleTest = false;
 }
 
 if (generateSampleTest) {
-    let sampleTestSrc = path.join(__dirname, "sample-test.js");
-    let sampleTestDest = path.join(testsDir, "sample-test.js");
+    let sampleTestSrc = utils.resolve(pluginRoot, "sample-test.js");
+    let sampleTestDest = utils.resolve(testsDir, "sample-test.js");
     if (!fs.existsSync(sampleTestDest)) {
         let javaClassesContent = fs.readFileSync(sampleTestSrc, "utf8");
         fs.writeFileSync(sampleTestDest, javaClassesContent);
