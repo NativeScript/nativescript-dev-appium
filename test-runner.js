@@ -20,7 +20,6 @@ const projectAppiumBinary = utils.resolve(projectBinary, appium);
 const pluginMochaBinary = utils.resolve(pluginBinary, mocha);
 let mochaBinary = utils.resolve(projectBinary, mocha);
 let capabilitiesLocation = process.env.npm_config_capsLocation || path.join(testFolder, "config");
-
 function log(message) {
     if (verbose) {
         console.log(message);
@@ -64,8 +63,34 @@ mochaOpts = [
     testFolder,
     mochaCustomOptions
 ];
-
 console.log("Mocha options: ", mochaOpts);
+
+function searchCustomCapabilities() {
+    const fileName = "appium.capabilities.json";
+    const appParentFolder = path.dirname(projectDir);
+    const appRootLevel = utils.resolve(projectDir, fileName);
+
+    let customCapabilitiesLocation = capabilitiesLocation;
+    if (!path.isAbsolute(capabilitiesLocation)) {
+        customCapabilitiesLocation = utils.resolve(projectDir, capabilitiesLocation, fileName);
+    }
+
+    if (fs.existsSync(customCapabilitiesLocation)) {
+        setCustomCapabilities(customCapabilitiesLocation)
+    } else if (fs.existsSync(appParentFolder)) {
+        setCustomCapabilities(appParentFolder)
+    } else if (fs.existsSync(appRootLevel)) {
+        setCustomCapabilities(appRootLevel)
+    }
+}
+
+function setCustomCapabilities(appiumCapabilitiesLocation) {
+    const file = fs.readFileSync(appiumCapabilitiesLocation);
+    process.env.APPIUM_CAPABILITIES = file;
+    console.log("Custom capabilities found.");
+}
+
+searchCustomCapabilities();
 
 let server, tests;
 portastic.find({ min: 9200, max: 9300 }).then(function (ports) {
@@ -163,30 +188,3 @@ function waitForOutput(process, matcher, timeout) {
         });
     });
 }
-
-function searchCustomCapabilities() {
-    const fileName = "appium.capabilities.json";
-    const appParentFolder = utils.resolve(projectDir, "../", fileName);
-    const appRootLevel = utils.resolve(projectDir, fileName);
-
-    let customCapabilitiesLocation = capabilitiesLocation;
-    if (!path.isAbsolute(capabilitiesLocation)) {
-        customCapabilitiesLocation = utils.resolve(projectDir, capabilitiesLocation, fileName);
-    }
-
-    if (fs.existsSync(customCapabilitiesLocation)) {
-        setCustomCapabilities(customCapabilitiesLocation)
-    } else if (fs.existsSync(appParentFolder)) {
-        setCustomCapabilities(appParentFolder)
-    } else if (fs.existsSync(appRootLevel)) {
-        setCustomCapabilities(appRootLevel)
-    }
-}
-
-function setCustomCapabilities(appiumCapabilitiesLocation) {
-    const file = fs.readFileSync(appiumCapabilitiesLocation);
-    process.env.APPIUM_CAPABILITIES = file;
-    console.log("Custom capabilities found.");
-}
-
-searchCustomCapabilities();
