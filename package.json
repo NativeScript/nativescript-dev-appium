@@ -25,14 +25,12 @@
     "glob": "*",
     "colors": "^1.1.2",
     "mocha": "^3.0.0",
-    "portastic": "^1.0.1"
-  },
-  "author": "Telerik",
-  "license": "MIT",
-  "devDependencies": {
+    "portastic": "^1.0.1",
+    "wd": "^1.4.0",
     "chai": "~4.0.0",
     "chai-as-promised": "~7.0.0",
-    "mocha-junit-reporter": "^1.13.0",
-    "wd": "~1.3.0"
-  }
+    "mocha-junit-reporter": "^1.13.0"
+  },
+  "author": "Telerik",
+  "license": "MIT"
 }

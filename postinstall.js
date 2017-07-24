@@ -9,9 +9,10 @@ const packageJsonPath = utils.resolve(projectDir, "package.json");
 let packageJson = {};
 
 let generateSampleTest = true;
-
+console.log(packageJsonPath);
 if (fs.existsSync(packageJsonPath)) {
     packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+    console.log("packageJson", packageJson);
 }
 
 try {
@@ -75,7 +76,7 @@ function configureDevDependencies(packageJson, adderCallback) {
             } else {
                 spawnArgs = ["npm", ["install"]];
             }
-            spawnArgs.push({ cwd: projectDir(), stdio: "inherit" });
+            spawnArgs.push({ cwd: projectDir, stdio: "inherit" });
             const npm = childProcess.spawn.apply(null, spawnArgs);
             npm.on("close", function(code) {
                 process.exit(code);

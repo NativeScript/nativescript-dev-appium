@@ -17,7 +17,7 @@ if (customCapabilitiesConfigs) {
     throw new Error("No capabilities provided!!!");
 }
 
-exports.createDriver = function (capabilities, activityName) {
+exports.createDriver = (capabilities, activityName) => {
     caps = capabilities;
     if (!activityName) {
         activityName = "com.tns.NativeScriptActivity";
@@ -60,7 +60,7 @@ exports.createDriver = function (capabilities, activityName) {
     return driver.init(caps);
 };
 
-exports.getAppPath = function () {
+exports.getAppPath = () => {
     console.log("testRunType " + testRunType);
     if (testRunType.includes("android")) {
         const apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
@@ -83,7 +83,7 @@ function log(message) {
     }
 }
 
-exports.configureLogging = function (driver) {
+exports.configureLogging = (driver) => {
     driver.on("status", function (info) {
         log(info.cyan);
     });
@@ -103,6 +103,60 @@ exports.getXPathElement = function (name) {
         return xpathiOS(tempName);
     }
 };
+
+exports.byText = (text, exactMatch) => {
+    return findByTextLocator("*", text, exactMatch);
+}
+
+function findByTextLocator(controlType, value, exactMatch) {
+    let result = "";
+    if (testRunType.includes("android")) {
+        if (exactMatch) {
+            result = "//" + controlType
+                + "["
+                + getXpathComparingAttributesForEqualityForAndroid("content-desc", toLowerCaseValue) + " or "
+                + getXpathComparingAttributesForEqualityForAndroid("resource-id", toLowerCaseValue) + " or "
+                + getXpathComparingAttributesForEqualityForAndroid("text", value)
+                + "]";
+        } else {
+            result = "//" + controlType
+                + "["
+                + getXpathComparingAttributesByTextContainsForAndroid("content-desc", value) + " or "
+                + getXpathComparingAttributesByTextContainsForAndroid("resource-id", value) + " or "
+                + getXpathComparingAttributesByTextContainsForAndroid("text", value)
+                + "]";
+        }
+    } else {
+        if (exactMatch) {
+            result = "//" + controlType
+                + "["
+                + getXpathComparingAttributesForEqualityForAndroid("label", value) + " or "
+                + getXpathComparingAttributesForEqualityForAndroid("value", value) + " or "
+                + getXpathComparingAttributesForEqualityForAndroid("hint", value)
+                + "]";
+        } else {
+            return "//" + controlType
+                + "["
+                + getXpathComparingAttributesByTextContainsForAndroid("label", value) + " or "
+                + getXpathComparingAttributesByTextContainsForAndroid("value", value) + " or "
+                + getXpathComparingAttributesByTextContainsForAndroid("hint", value)
+                + "]";
+        }
+    }
+
+    console.log("Xpath: " + result);
+    return result;
+}
+
+function getXpathComparingAttributesForEqualityForAndroid(attribute, value) {
+    const result = "@" + attribute + "='" + value + "'";
+    return result;
+}
+
+function getXpathComparingAttributesByTextContainsForAndroid(attribute, value) {
+    const result = "contains(@" + attribute + ",'" + value + "')";
+    return result;
+}
 
 function xpathAndroid(name) {
     switch (name) {
