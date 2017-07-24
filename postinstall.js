@@ -38,9 +38,9 @@ if (!packageJson.scripts["appium"]) {
 }
 
 configureDevDependencies(packageJson, function(add) {
-    add("chai", "~3.5.0");
-    add("chai-as-promised", "~5.3.0");
-    add("wd", "~1.1.1");
+    // add("chai", "~3.5.0");
+    // add("chai-as-promised", "~5.3.0");
+    // add("wd", "~1.1.1");
 });
 
 console.warn("WARNING: nativescript-dev-appium no longer installs Appium as a local dependency!");
