@@ -94,8 +94,8 @@
         return "//" + elementFinder.getXPathElement(name, testRunType);
     };
 
-    exports.byText = (text, exactMatch) => {
-        return elementFinder.byText(text, exactMatch, testRunType);
+    exports.getXPathByText = (text, exactMatch) => {
+        return elementFinder.getXPathByText(text, exactMatch, testRunType);
     }
 
     function log(message) {

@@ -4,7 +4,8 @@
   "description": "A NativeScript plugin to help integrate and run Appium tests",
   "main": "index.js",
   "bin": {
-    "nativescript-dev-appium": "./test-runner.js"
+    "nativescript-dev-appium": "./test-runner.js",
+    "ns-dev-appium": "./test-runner.js"
   },
   "scripts": {
     "postinstall": "node postinstall.js",
@@ -22,15 +23,20 @@
     }
   ],
   "dependencies": {
-    "glob": "*",
-    "colors": "^1.1.2",
-    "mocha": "^3.0.0",
     "portastic": "^1.0.1",
+    "colors": "^1.1.2"
+  },
+  "author": "Telerik",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^7.0.5",
+    "glob": "*",
+    "mocha": "^3.5.0",
     "wd": "^1.4.0",
     "chai": "~4.0.0",
     "chai-as-promised": "~7.0.0",
-    "mocha-junit-reporter": "^1.13.0"
-  },
-  "author": "Telerik",
-  "license": "MIT"
+    "mocha-junit-reporter": "^1.13.0",
+    "tslint": "^4.5.1",
+    "typescript": "^2.4.2"
+  }
 }

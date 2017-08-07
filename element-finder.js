@@ -7,11 +7,12 @@ exports.getXPathElement = (name, testRunType) => {
     }
 };
 
-exports.byText = (text, exactMatch, testRunType) => {
+exports.getXPathByText = (text, exactMatch, testRunType) => {
     return findByTextLocator("*", text, exactMatch, testRunType);
 }
 
 function findByTextLocator(controlType, value, exactMatch, testRunType) {
+    console.log("Should be exact match: " + exactMatch);
     let artbutes = ["label", "value", "hint"];
     if (testRunType.includes("android")) {
         artbutes = ["content-desc", "resource-id", "text"];
@@ -21,7 +22,7 @@ function findByTextLocator(controlType, value, exactMatch, testRunType) {
     if (exactMatch) {
         artbutes.forEach((atr) => { searchedString += "@" + atr + "='" + value + "'" + " or " });
     } else {
-        artbutes.forEach((atr) => { searchedString += "@" + atr + "='" + value + "'" + " or " });
+        artbutes.forEach((atr) => { searchedString += "contains(@" + atr + ",'" + value + "')" + " or " });
     }
 
     searchedString = searchedString.substring(0, searchedString.lastIndexOf(" or "));
