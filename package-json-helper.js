@@ -12,7 +12,7 @@ function configureDevDependencies(packageJson, adderCallback) {
 
     let dependencies = packageJson.devDependencies;
 
-    adderCallback(function (name, version) {
+    adderCallback(function(name, version) {
         if (!dependencies[name]) {
             dependencies[name] = version;
             console.info("Adding dev dependency: " + name + "@" + version);
@@ -25,7 +25,7 @@ function configureDevDependencies(packageJson, adderCallback) {
     if (pendingNpmInstall) {
         console.info("Installing new dependencies...");
         //Run `npm install` after everything else.
-        setTimeout(function () {
+        setTimeout(function() {
             utils.executeNpmInstall(projectDir);
         }, 100);
     }
@@ -34,7 +34,9 @@ function configureDevDependencies(packageJson, adderCallback) {
 exports.updatePackageJsonDep = (packageJsonPath, isTscProj) => {
     let packageJson = {};
     if (!utils.fileExists(packageJsonPath)) {
-        throw Error("The path to package.json is not valid: " + packageJson);
+        utils.logErr("The path to package.json is not valid: " + packageJson);
+
+        return
     } else {
         utils.log("PackageJsonPath: " + packageJsonPath);
         packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
@@ -51,6 +53,14 @@ exports.updatePackageJsonDep = (packageJsonPath, isTscProj) => {
             packageJson.scripts["appium"] = "tsc -p e2e && nativescript-dev-appium";
         } else {
             packageJson.scripts["appium"] = "nativescript-dev-appium";
+        }
+    }
+
+    if (!packageJson.scripts["mocha"]) {
+        if (isTscProj) {
+            packageJson.scripts["mocha"] = "tsc -p e2e && mocha --opts ./e2e/config/mocha.opts --";
+        } else {
+            packageJson.scripts["mocha"] = "tsc -p e2e && mocha --opts ./e2e/config/mocha.opts --";
         }
     }
 
