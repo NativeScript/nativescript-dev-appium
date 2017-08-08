@@ -9,6 +9,8 @@ exports.verbose = verbose;
 exports.mochaCustomOptions = process.env.npm_config_mochaOptions || "";
 exports.capabilitiesLocation = process.env.npm_config_capsLocation || path.join(testFolder, "config");
 exports.capabilitiesName = "appium.capabilities.json";
+exports.appLocation = process.env.npm_config_appLocation;
+
 function resolve(mainPath) {
     var args = [];
     for (var _i = 1; _i < arguments.length; _i++) {
@@ -22,7 +24,7 @@ function resolve(mainPath) {
             mainPath = path.join(process.env.HOME, mainPath.slice(1));
         }
         else {
-            mainPath = path.resolve(cwd(), mainPath);
+            mainPath = path.resolve(process.cwd(), mainPath);
         }
     }
     var fullPath = mainPath;
@@ -34,6 +36,12 @@ function resolve(mainPath) {
 exports.resolve = resolve;
 
 function projectDir() {
+    const cwd = process.cwd();
+    let projectDir = cwd;
+    let parentFolder = resolve(path.dirname(path.dirname(cwd)));
+    if (cwd === resolve(__dirname) && fileExists(parentFolder)) {
+        return parentFolder;
+    }
     return process.cwd();
 }
 exports.projectDir = projectDir;
@@ -207,20 +215,62 @@ exports.searchFiles = (folder, words, recursive, files) => {
     return files;
 }
 
-exports.log = function log(message) {
+function log(message) {
     if (verbose) {
         console.log(message);
     }
 }
 
-exports.logOut = function loglogOut(line, force) {
+exports.log = log;
+
+function loglogOut(line, force) {
     if (verbose || force) {
         process.stdout.write(line);
     }
 }
 
-exports.logErr = function logErr(line, force) {
+exports.logOut = loglogOut;
+
+function logErr(line, force) {
     if (verbose || force) {
         process.stderr.write(line);
     }
 }
+
+exports.logErr = logErr;
+
+function shutdown(processToKill) {
+    if (processToKill) {
+        if (process.platform === "win32") {
+            killPid(processToKill.pid);
+        } else {
+            processToKill.kill();
+        }
+        processToKill = null;
+    }
+}
+exports.shutdown = shutdown;
+
+function killPid(pid) {
+    let output = child_process.execSync('taskkill /PID ' + pid + ' /T /F');
+}
+
+function waitForOutput(process, matcher, timeout) {
+    return new Promise(function (resolve, reject) {
+        var abortWatch = setTimeout(function () {
+            process.kill();
+            console.log("Timeout expired, output not detected for: " + matcher);
+            reject(new Error("Timeout expired, output not detected for: " + matcher));
+        }, timeout);
+
+        process.stdout.on("data", function (data) {
+            var line = "" + data;
+            if (matcher.test(line)) {
+                clearTimeout(abortWatch);
+                resolve();
+            }
+        });
+    });
+}
+
+exports.waitForOutput = waitForOutput;

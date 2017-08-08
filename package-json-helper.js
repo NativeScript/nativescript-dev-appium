@@ -76,6 +76,6 @@ exports.updatePackageJsonDep = (packageJsonPath, isTscProj) => {
 
     if (fs.existsSync(packageJsonPath) && pendingNpmInstall) {
         packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
-        console.log("packageJson", packageJson);
+        utils.log("packageJson", packageJson);
     }
 }
