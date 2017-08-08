@@ -8,9 +8,8 @@ const utils = require("./utils");
 let appium = "appium";
 let mocha = "mocha";
 
-const testFolder = process.env.npm_config_testFolder || "e2e-tests";
-const verbose = process.env.npm_config_loglevel === "verbose";
-const mochaCustomOptions = process.env.npm_config_mochaOptions || "";
+const testFolder = utils.testFolder;
+const mochaCustomOptions = utils.mochaOptions;
 const projectDir = utils.projectDir();
 const pluginBinary = utils.pluginBinary();
 const projectBinary = utils.projectBinary();
@@ -19,24 +18,7 @@ const pluginAppiumBinary = utils.resolve(pluginBinary, appium);
 const projectAppiumBinary = utils.resolve(projectBinary, appium);
 const pluginMochaBinary = utils.resolve(pluginBinary, mocha);
 let mochaBinary = utils.resolve(projectBinary, mocha);
-let capabilitiesLocation = process.env.npm_config_capsLocation || path.join(testFolder, "config");
-function log(message) {
-    if (verbose) {
-        console.log(message);
-    }
-}
-
-function logOut(line, force) {
-    if (verbose || force) {
-        process.stdout.write(line);
-    }
-}
-
-function logErr(line, force) {
-    if (verbose || force) {
-        process.stderr.write(line);
-    }
-}
+let capabilitiesLocation = utils.capabilitiesLocation;
 
 if (process.platform === "win32") {
     appium = "appium.cmd";
@@ -44,43 +26,34 @@ if (process.platform === "win32") {
 }
 
 if (fs.existsSync(pluginAppiumBinary)) {
-    console.log("Using plugin-local Appium binary.");
+    utils.log("Using plugin-local Appium binary.");
     appium = pluginAppiumBinary;
 } else if (fs.existsSync(projectAppiumBinary)) {
-    console.log("Using project-local Appium binary.");
+    utils.log("Using project-local Appium binary.");
     appium = projectAppiumBinary;
 } else {
-    console.log("Using global Appium binary.");
+    utils.log("Using global Appium binary.");
 }
 
 if (fs.existsSync(pluginMochaBinary)) {
     mochaBinary = pluginMochaBinary;
 }
 
-log("Mocha found at: " + mochaBinary);
-mochaOpts = [
-    "--recursive",
-    testFolder,
-    mochaCustomOptions
-];
-console.log("Mocha options: ", mochaOpts);
+utils.log("Mocha found at: " + mochaBinary);
+mochaOpts = ['--opts', utils.resolve(utils.testFolder, "config", "mocha.opts")];
+utils.log("Mocha options: ", mochaOpts);
 
 function searchCustomCapabilities() {
-    const fileName = "appium.capabilities.json";
     const appParentFolder = path.dirname(projectDir);
-    const appRootLevel = utils.resolve(projectDir, fileName);
-
     let customCapabilitiesLocation = capabilitiesLocation;
     if (!path.isAbsolute(capabilitiesLocation)) {
-        customCapabilitiesLocation = utils.resolve(projectDir, capabilitiesLocation, fileName);
+        customCapabilitiesLocation = utils.resolve(projectDir, capabilitiesLocation, utils);
     }
 
-    if (fs.existsSync(customCapabilitiesLocation)) {
-        setCustomCapabilities(customCapabilitiesLocation)
-    } else if (fs.existsSync(appParentFolder)) {
-        setCustomCapabilities(appParentFolder)
-    } else if (fs.existsSync(appRootLevel)) {
-        setCustomCapabilities(appRootLevel)
+    if (utils.fileExists(customCapabilitiesLocation)) {
+        setCustomCapabilities(customCapabilitiesLocation);
+    } else {
+        utils.searchFiles(appParentFolder, fileName, true);
     }
 }
 
@@ -111,6 +84,7 @@ portastic.find({ min: 9200, max: 9300 }).then(function (ports) {
 
     waitForOutput(server, /listener started/, 60000).then(function () {
         process.env.APPIUM_PORT = port;
+        console.log("mochaOpts", mochaOpts);
         tests = child_process.spawn(mochaBinary, mochaOpts, { shell: true, detached: false, env: getTestEnv() });
         tests.stdout.on('data', function (data) {
             logOut("" + data, true);

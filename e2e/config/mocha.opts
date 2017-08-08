@@ -1,0 +1,3 @@
+--timeout 80000
+--recursive e2e
+--reporter mocha-junit-reporter

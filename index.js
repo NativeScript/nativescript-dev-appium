@@ -6,9 +6,7 @@
 
     const testRunType = process.env.npm_config_runType;
     const isSauceLab = process.env.npm_config_sauceLab;
-    const customCapabilitiesConfigs = process.env.APPIUM_CAPABILITIES;
-    const appLocation = process.env.npm_config_appLocation;
-
+    const customCapabilitiesConfigs = utils.capabilitiesLocation;
     let customCapabilities;
     let caps;
 

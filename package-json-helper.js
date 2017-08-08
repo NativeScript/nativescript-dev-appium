@@ -36,9 +36,10 @@ exports.updatePackageJsonDep = (packageJsonPath, isTscProj) => {
     if (!utils.fileExists(packageJsonPath)) {
         throw Error("The path to package.json is not valid: " + packageJson);
     } else {
+        utils.log("PackageJsonPath: " + packageJsonPath);
         packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
         projectDir = path.dirname(packageJsonPath);
-        console.log("packageJson", packageJson);
+        utils.log("packageJson", packageJson);
     }
 
     if (!packageJson.scripts) {
@@ -47,23 +48,24 @@ exports.updatePackageJsonDep = (packageJsonPath, isTscProj) => {
 
     if (!packageJson.scripts["appium"]) {
         if (isTscProj) {
-            packageJson.scripts["appium"] = "npm run tests-tsc && nativescript-dev-appium";
+            packageJson.scripts["appium"] = "tsc -p e2e && nativescript-dev-appium";
         } else {
             packageJson.scripts["appium"] = "nativescript-dev-appium";
         }
     }
-    if (!packageJson.scripts["tests-watch"] && isTscProj) {
-        packageJson.scripts["tests-tsc"] = "cd e2e-tests && ../node_modules/.bin/tsc  -p tsconfig-e2e-tests.json";
-    }
+
     configureDevDependencies(packageJson, (add) => {
         add("chai", "~4.1.1");
         add("mocha", "~3.5.0");
         add('chai-as-promised', '~7.1.1');
         add('mocha-junit-reporter', '^1.13.0');
         add('wd', '^1.4.0');
+        add('colors', '^1.1.2');
         if (isTscProj) {
             add('tslib', '^1.7.1');
             add("@types/node", "^7.0.5");
+            add("@types/chai", "^4.0.2");
+            add("@types/mocha", "^2.2.41");
         }
     });
 

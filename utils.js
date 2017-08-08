@@ -2,16 +2,27 @@ const path = require("path");
 const fs = require("fs");
 const childProcess = require("child_process");
 
+const testFolder = process.env.npm_config_testFolder || "e2e";
+exports.testFolder = testFolder;
+const verbose = process.env.npm_config_loglevel === "verbose";
+exports.verbose = verbose;
+exports.mochaCustomOptions = process.env.npm_config_mochaOptions || "";
+exports.capabilitiesLocation = process.env.npm_config_capsLocation || path.join(testFolder, "config");
+exports.capabilitiesName = "appium.capabilities.json";
 function resolve(mainPath) {
     var args = [];
     for (var _i = 1; _i < arguments.length; _i++) {
         args[_i - 1] = arguments[_i];
     }
+    // if (isSymLink(mainPath)) {
+    //     mainPath = fs.realpathSync(mainPath);
+    // }
     if (!path.isAbsolute(mainPath)) {
-        if (mainPath[0] === '~') {
+        if (mainPath.startsWith('~')) {
             mainPath = path.join(process.env.HOME, mainPath.slice(1));
-        } else {
-            mainPath = path.resolve(dir, mainPath);
+        }
+        else {
+            mainPath = path.resolve(cwd(), mainPath);
         }
     }
     var fullPath = mainPath;
@@ -51,11 +62,11 @@ function fileExists(p) {
         return false;
     } catch (e) {
         if (e.code == 'ENOENT') {
-            console.log("File does not exist. " + p);
+            logErr("File does not exist. " + p);
             return false;
         }
 
-        console.log("Exception fs.statSync (" + path + "): " + e);
+        logErr("Exception fs.statSync (" + path + "): " + e);
         throw e;
     }
 }
@@ -87,22 +98,22 @@ function copy(src, dest, verbose) {
 
     if (isDirectory(src)) {
         if (!fileExists(dest)) {
-            console.log("CREATE Directory: ", dest);
+            log("CREATE Directory: ", dest);
             fs.mkdirSync(dest);
         }
         const files = getAllFileNames(src);
         const destination = dest;
         files.forEach(file => {
             const destt = path.resolve(destination, file);
-            console.log("destt", destt);
-            console.log("src", path.join(src, file));
+            log("destt", destt);
+            log("src", path.join(src, file));
             copy(path.join(src, file), destt, verbose);
         });
     } else {
         fs.writeFileSync(dest, fs.readFileSync(src));
     }
     if (verbose) {
-        console.log("File " + src + " is coppied to " + dest);
+        log("File " + src + " is coppied to " + dest);
     }
 
     return dest;
@@ -129,7 +140,7 @@ function isFile(fullName) {
             return true;
         }
     } catch (e) {
-        console.log(e.message);
+        logError(e.message);
         return false;
     }
 
@@ -181,20 +192,11 @@ exports.searchFiles = (folder, words, recursive, files) => {
     if (files === undefined || files === null) {
         files = new Array();
     }
-    console.log("searchFiles folder", folder);
     const rootFiles = getAllFileNames(folder);
-    console.log("searchFiles rootFiles", rootFiles);
-
     const regex = createRegexPattern(words);
-    console.log("regex rootFiles", regex);
-
     rootFiles.filter(f => {
         const fileFullName = resolve(folder, f);
-        console.log("searchFiles f", f);
-        
         let m = regex.test(f);
-        console.log("searchFiles regex", regex);
-        console.log("searchFiles m", m);
         if (m) {
             files.push(fileFullName);
         } else if (isDirectory(fileFullName) && recursive) {
@@ -202,6 +204,23 @@ exports.searchFiles = (folder, words, recursive, files) => {
         }
     });
 
-    console.log("searchFiles files", files);
     return files;
+}
+
+exports.log = function log(message) {
+    if (verbose) {
+        console.log(message);
+    }
+}
+
+exports.logOut = function loglogOut(line, force) {
+    if (verbose || force) {
+        process.stdout.write(line);
+    }
+}
+
+exports.logErr = function logErr(line, force) {
+    if (verbose || force) {
+        process.stderr.write(line);
+    }
 }
