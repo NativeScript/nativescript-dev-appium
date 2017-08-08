@@ -43,6 +43,5 @@ tests.on('exit', function(code) {
     process.exit(code);
 });
 
-
 process.on("exit", (tests) => utils.shutdown(tests));
 process.on('uncaughtException', (tests) => utils.shutdown(tests));
