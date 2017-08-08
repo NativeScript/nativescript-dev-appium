@@ -2,33 +2,28 @@ const path = require("path");
 const fs = require("fs");
 const childProcess = require("child_process");
 
-const testFolder = process.env.npm_config_testFolder || "e2e";
-exports.testFolder = testFolder;
 const verbose = process.env.npm_config_loglevel === "verbose";
 exports.verbose = verbose;
-exports.mochaCustomOptions = process.env.npm_config_mochaOptions || "";
-exports.capabilitiesLocation = process.env.npm_config_capsLocation || path.join(testFolder, "config");
+exports.testFolder = process.env.npm_config_testFolder || "e2e";
+exports.mochaCustomOptions = process.env.npm_config_mochaOptions;
 exports.capabilitiesName = "appium.capabilities.json";
 exports.appLocation = process.env.npm_config_appLocation;
+exports.executionPath = process.env.npm_config_executionPath;
 
 function resolve(mainPath) {
     var args = [];
     for (var _i = 1; _i < arguments.length; _i++) {
         args[_i - 1] = arguments[_i];
     }
-    // if (isSymLink(mainPath)) {
-    //     mainPath = fs.realpathSync(mainPath);
-    // }
     if (!path.isAbsolute(mainPath)) {
         if (mainPath.startsWith('~')) {
             mainPath = path.join(process.env.HOME, mainPath.slice(1));
-        }
-        else {
-            mainPath = path.resolve(process.cwd(), mainPath);
+        } else {
+            mainPath = path.resolve(mainPath);
         }
     }
     var fullPath = mainPath;
-    args.forEach(function (p) {
+    args.forEach(function(p) {
         fullPath = path.resolve(fullPath, p);
     });
     return fullPath;
@@ -36,13 +31,7 @@ function resolve(mainPath) {
 exports.resolve = resolve;
 
 function projectDir() {
-    const cwd = process.cwd();
-    let projectDir = cwd;
-    let parentFolder = resolve(path.dirname(path.dirname(cwd)));
-    if (cwd === resolve(__dirname) && fileExists(parentFolder)) {
-        return parentFolder;
-    }
-    return process.cwd();
+    return exports.executionPath !== undefined ? exports.executionPath : process.cwd();
 }
 exports.projectDir = projectDir;
 
@@ -78,7 +67,6 @@ function fileExists(p) {
         throw e;
     }
 }
-
 exports.fileExists = fileExists;
 
 function executeNpmInstall(cwd) {
@@ -93,7 +81,6 @@ function executeNpmInstall(cwd) {
     }
     const npm = childProcess.spawnSync(command, spawnArgs, { cwd: cwd, stdio: "inherit" });
 }
-
 exports.executeNpmInstall = executeNpmInstall;
 
 function copy(src, dest, verbose) {
@@ -126,7 +113,6 @@ function copy(src, dest, verbose) {
 
     return dest;
 }
-
 exports.copy = copy;
 
 function isDirectory(fullName) {
@@ -220,7 +206,6 @@ function log(message) {
         console.log(message);
     }
 }
-
 exports.log = log;
 
 function loglogOut(line, force) {
@@ -228,7 +213,6 @@ function loglogOut(line, force) {
         process.stdout.write(line);
     }
 }
-
 exports.logOut = loglogOut;
 
 function logErr(line, force) {
@@ -236,7 +220,6 @@ function logErr(line, force) {
         process.stderr.write(line);
     }
 }
-
 exports.logErr = logErr;
 
 function shutdown(processToKill) {
@@ -252,18 +235,18 @@ function shutdown(processToKill) {
 exports.shutdown = shutdown;
 
 function killPid(pid) {
-    let output = child_process.execSync('taskkill /PID ' + pid + ' /T /F');
+    let output = childProcess.execSync('taskkill /PID ' + pid + ' /T /F');
 }
 
 function waitForOutput(process, matcher, timeout) {
-    return new Promise(function (resolve, reject) {
-        var abortWatch = setTimeout(function () {
+    return new Promise(function(resolve, reject) {
+        var abortWatch = setTimeout(function() {
             process.kill();
             console.log("Timeout expired, output not detected for: " + matcher);
             reject(new Error("Timeout expired, output not detected for: " + matcher));
         }, timeout);
 
-        process.stdout.on("data", function (data) {
+        process.stdout.on("data", function(data) {
             var line = "" + data;
             if (matcher.test(line)) {
                 clearTimeout(abortWatch);

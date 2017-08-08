@@ -22,8 +22,9 @@
     }
   ],
   "dependencies": {
+    "colors": "^1.1.2",
     "portastic": "^1.0.1",
-    "colors": "^1.1.2"
+    "yargs": "^8.0.2"
   },
   "author": "Telerik",
   "license": "MIT",

@@ -18,10 +18,8 @@ let mochaBinary = utils.resolve(projectBinary, mocha);
 let capabilitiesLocation = utils.capabilitiesLocation;
 
 if (process.platform === "win32") {
-    appium = "appium.cmd";
     mocha = "mocha.cmd";
 }
-
 
 if (fs.existsSync(pluginMochaBinary)) {
     mochaBinary = pluginMochaBinary;
@@ -32,52 +30,19 @@ const mochaOptsPath = utils.resolve(utils.testFolder, "config", "mocha.opts");
 mochaOpts = ['--opts', mochaOptsPath];
 utils.log("Mocha options: " + mochaOpts);
 
-function searchCustomCapabilities() {
-    const appParentFolder = path.dirname(projectDir);
-    let customCapabilitiesLocation = capabilitiesLocation;
-    if (!path.isAbsolute(capabilitiesLocation)) {
-        customCapabilitiesLocation = utils.resolve(projectDir, capabilitiesLocation, utils.capabilitiesName);
-    }
-
-    if (utils.fileExists(customCapabilitiesLocation)) {
-        setCustomCapabilities(customCapabilitiesLocation);
-    } else {
-        setCustomCapabilities(utils.searchFiles(appParentFolder, fileName, true)[0]);
-    }
-}
-
-function setCustomCapabilities(appiumCapabilitiesLocation) {
-    const file = fs.readFileSync(appiumCapabilitiesLocation);
-    process.env.APPIUM_CAPABILITIES = file;
-    utils.log("Custom capabilities found at: " + appiumCapabilitiesLocation);
-}
-
-searchCustomCapabilities();
-
 tests = child_process.spawn(mochaBinary, mochaOpts, { shell: true, detached: false });
-tests.stdout.on('data', function (data) {
+tests.stdout.on('data', function(data) {
     utils.logOut("" + data, true);
 });
-tests.stderr.on("data", function (data) {
+tests.stderr.on("data", function(data) {
     utils.logErr("" + data, true);
 });
-tests.on('exit', function (code) {
+tests.on('exit', function(code) {
     console.log('Test runner exited with code ' + code);
-    if (process.platform === "win32") {
-        // The default kill doesn't kill the sub-children...
-        killPid(server.pid);
-    }
     tests = null;
     process.exit(code);
 });
 
 
 process.on("exit", (tests) => utils.shutdown(tests));
-process.on('uncaughtException', (tests) =>utils.shutdown(tests));
-
-
-
-
-
-
-
+process.on('uncaughtException', (tests) => utils.shutdown(tests));

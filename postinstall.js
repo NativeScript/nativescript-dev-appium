@@ -12,9 +12,13 @@ updatePackageJsonDep(packageJsonPath, isTscProj);
 // Copy e2e-tests folder if doesn't exist
 const e2eTests = utils.testFolder;
 const e2eTestsDir = utils.resolve(projectDir, e2eTests);
+
 if (!utils.fileExists(e2eTestsDir)) {
     fs.mkdirSync(e2eTestsDir);
     let sampleJsTestSrc = utils.resolve(pluginRoot, e2eTests);
+    if (!sampleJsTestSrc) {
+        return;
+    }
     if (isTscProj) {
         utils.copy(sampleJsTestSrc, e2eTestsDir, true);
     } else {
