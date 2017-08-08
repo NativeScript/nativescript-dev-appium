@@ -1,10 +1,9 @@
 import * as setup from "nativescript-dev-appium";
 import * as portastic from "portastic";
 
-let appiumServer: any;
 before("setup server", async () => {
     console.log("Setting up server");
-    const port = (await portastic.find({ min: 9200, max: 9300 }))[2];
+    const port = (await portastic.find({ min: 9200, max: 9300 }))[8];
     await setup.startAppiumServer(port);
     console.log("Server is started");
 });
