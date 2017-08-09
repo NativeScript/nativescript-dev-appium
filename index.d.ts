@@ -28,7 +28,6 @@ export function getXPathWithExactText(text: string): string;
  */
 export function getXPathContainingsText(text: string): string;
 
-
 /**
  * returns xpath
  */
