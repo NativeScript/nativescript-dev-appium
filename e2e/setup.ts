@@ -3,7 +3,7 @@ import * as portastic from "portastic";
 
 before("setup server", async () => {
     console.log("Setting up server");
-    const port = (await portastic.find({ min: 9200, max: 9300 }))[8];
+    const port = 9191;
     await setup.startAppiumServer(port);
     console.log("Server is started");
 });

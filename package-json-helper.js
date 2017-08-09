@@ -67,8 +67,9 @@ exports.updatePackageJsonDep = (packageJsonPath, isTscProj) => {
     configureDevDependencies(packageJson, (add) => {
         add("chai", "~4.1.1");
         add("mocha", "~3.5.0");
-        add('chai-as-promised', '~7.1.1');
         add('mocha-junit-reporter', '^1.13.0');
+        add('mocha-multi', '^0.11.0');
+        add('chai-as-promised', '~7.1.1');
         add('wd', '^1.4.0');
         add('colors', '^1.1.2');
         if (isTscProj) {

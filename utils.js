@@ -31,7 +31,7 @@ function resolve(mainPath) {
 exports.resolve = resolve;
 
 function projectDir() {
-    return exports.executionPath !== undefined ? exports.executionPath : process.cwd();
+    return require('app-root-path').toString();
 }
 exports.projectDir = projectDir;
 
