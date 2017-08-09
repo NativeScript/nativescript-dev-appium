@@ -1,15 +1,13 @@
 {
   "name": "nativescript-dev-appium",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A NativeScript plugin to help integrate and run Appium tests",
   "main": "index.js",
   "bin": {
     "nativescript-dev-appium": "./test-runner.js"
   },
   "scripts": {
-    "postinstall": "node postinstall.js",
-    "appium": "nativescript-dev-appium",
-    "mocha": "tsc -p e2e && mocha --opts ./e2e/config/mocha.opts --"
+    "postinstall": "node postinstall.js"
   },
   "keywords": [
     "nativescript",

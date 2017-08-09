@@ -21,10 +21,5 @@ if (!utils.fileExists(e2eTestsDir)) {
     }
     if (isTscProj) {
         utils.copy(sampleJsTestSrc, e2eTestsDir, true);
-    } else {
-        let filesToCopy = utils.searchFiles(sampleJsTestSrc, "config,*.js");
-        filesToCopy.foreach((f) => {
-            utils.copy(sampleJsTestSrc, e2eTestsDir, true);
-        });
-    }
+    } 
 }

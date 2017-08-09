@@ -58,9 +58,9 @@ exports.updatePackageJsonDep = (packageJsonPath, isTscProj) => {
 
     if (!packageJson.scripts["e2e"]) {
         if (isTscProj) {
-            packageJson.scripts["e2e"] = "tsc -p e2e && mocha --opts ./e2e/config/mocha.opts --";
+            packageJson.scripts["e2e"] = "tsc -p e2e && mocha --opts ./e2e/config/mocha.opts";
         } else {
-            packageJson.scripts["e2e"] = "tsc -p e2e && mocha --opts ./e2e/config/mocha.opts --";
+            packageJson.scripts["e2e"] = "mocha --opts ./e2e/config/mocha.opts";
         }
     }
 
