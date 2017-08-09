@@ -1,84 +1,30 @@
-var path = require("path");
-var fs = require("fs");
-var childProcess = require("child_process");
+const path = require("path");
+const fs = require("fs");
+const utils = require("./utils");
+const updatePackageJsonDep = require("./package-json-helper").updatePackageJsonDep;
+const pluginRoot = utils.pluginRoot();
+const projectDir = utils.projectDir();
+const packageJsonPath = utils.resolve(projectDir, "package.json");
+const isTscProj = utils.searchFiles(projectDir, "tsconfig*.json").length > 0;
 
-var projectDir = path.resolve(__dirname, "../", "../");
-var testsDir = path.join(projectDir, "e2e-tests");
-var packageJsonPath = path.join(projectDir, "package.json");
+updatePackageJsonDep(packageJsonPath, isTscProj);
 
-var generateSampleTest = true;
+// Copy e2e-tests folder if doesn't exist
+const e2eTests = utils.testFolder;
+const e2eTestsDir = utils.resolve(projectDir, e2eTests);
 
-try {
-    console.log("projectDir" + projectDir);
-    console.log("packageJsonPath" + packageJsonPath);
-    fs.mkdirSync(testsDir);
-} catch (e) {
-    console.log("Test directory already exists: " + testsDir);
-    console.log("Skipping sample test generation.");
-    generateSampleTest = false;
-}
-
-if (generateSampleTest) {
-    var sampleTestSrc = path.join(__dirname, "sample-test.js");
-    var sampleTestDest = path.join(testsDir, "sample-test.js");
-    if (!fs.existsSync(sampleTestDest)) {
-        var javaClassesContent = fs.readFileSync(sampleTestSrc, "utf8");
-        fs.writeFileSync(sampleTestDest, javaClassesContent);
+if (!utils.fileExists(e2eTestsDir)) {
+    fs.mkdirSync(e2eTestsDir);
+    let sampleJsTestSrc = utils.resolve(pluginRoot, e2eTests);
+    if (!sampleJsTestSrc) {
+        return;
     }
-}
-
-var packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
-
-if (!packageJson.scripts) {
-    packageJson.scripts = {};
-}
-if (!packageJson.scripts["appium"]) {
-    packageJson.scripts["appium"] = "nativescript-dev-appium";
-}
-
-configureDevDependencies(packageJson, function (add) {
-    add("chai", "~3.5.0");
-    add("chai-as-promised", "~5.3.0");
-    add("wd", "~1.1.1");
-});
-
-console.warn("WARNING: nativescript-dev-appium no longer installs Appium as a local dependency!");
-console.log("Add appium as a local dependency (see README) or we'll attempt to run it from PATH.");
-
-fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
-
-function configureDevDependencies(packageJson, adderCallback) {
-    var pendingNpmInstall = false;
-    if (!packageJson.devDependencies) {
-        packageJson.devDependencies = {};
-    }
-    var dependencies = packageJson.devDependencies;
-
-    adderCallback(function (name, version) {
-        if (!dependencies[name]) {
-            dependencies[name] = version;
-            console.info("Adding dev dependency: " + name + "@" + version);
-            pendingNpmInstall = true;
-        } else {
-            console.info("Dev dependency: '" + name + "' already added. Leaving version: " + dependencies[name]);
-        }
-    });
-
-    if (pendingNpmInstall) {
-        console.info("Installing new dependencies...");
-        //Run `npm install` after everything else.
-        setTimeout(function () {
-            var spawnArgs = [];
-            if (/^win/.test(process.platform)) {
-                spawnArgs = ["cmd.exe", ["/c", "npm", "install"]];
-            } else {
-                spawnArgs = ["npm", ["install"]];
-            }
-            spawnArgs.push({ cwd: projectDir, stdio: "inherit" });
-            var npm = childProcess.spawn.apply(null, spawnArgs);
-            npm.on("close", function (code) {
-                process.exit(code);
-            });
-        }, 100);
+    if (isTscProj) {
+        utils.copy(sampleJsTestSrc, e2eTestsDir, true);
+    } else {
+        let filesToCopy = utils.searchFiles(sampleJsTestSrc, "config,*.js");
+        filesToCopy.foreach((f) => {
+            utils.copy(sampleJsTestSrc, e2eTestsDir, true);
+        });
     }
 }
