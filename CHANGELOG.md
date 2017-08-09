@@ -5,3 +5,8 @@
 # 0.0.19 (2016-08-02)
 
 - Initial release. Supporting android, iOS, and iOS simulator test run types.
+
+# 2.0.0 (2017-08-09)
+
+- Intoduce new test cycle.
+- Include new method for creating XPath for elements

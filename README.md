@@ -16,7 +16,7 @@ Or install appium globally (to avoid installing it for every app):
 
 `$ npm install -g appium`
 
-After installation, you should have a sample test below the `e2e-tests` directory which you can rename of your choice. However, if you rename the folder you will have to specify it using `--testfolder=someFolderName` option.
+After installation, you should have a sample test below the `e2e` directory which you can rename of your choice. However, if you rename the folder you will have to specify it using `--testfolder someFolderName` option.
 
 Before running the tests you will have to build your app for the platform on test or both. Navigate to your demo app folder from where you will execute the commands that follow.
 
@@ -33,13 +33,20 @@ $ tns build ios
 The command that will run the tests should specify the targeted platform using the `runType` option as shown below. This way a capabilities will be selected from the [capabilities config file](#customCapabilities) if none provided on driver creation (`driver = nsAppium.createDriver(capabilities);`).
 
 ```
+This will start mocha test by the plugin
 $ npm run appium --runType=android23
+
+or
+
+This will excute mocha tests or whatever test plugin is passed
+The script that is called beneath is tsc -p e2e && mocha --opts ./e2e/config/mocha.opts
+$ npm run e2e -- --runType android23
 ```
 
 or
 
 ```
-$ npm run appium --runType=ios-simulator10iPhone6
+$ npm run e2e -- --runType ios-simulator10iPhone6
 ```
 
 Generated tests are standard [Mocha](http://mochajs.org) tests.
@@ -124,7 +131,8 @@ As you can see, the `app` property can be left an empty string which will force 
 Examples:
 
 ```
-$ npm run appium --runType=android23 --sauceLab=true --appLocation=demo.apk --capsLocation="/e2e-tests/config"
+$ npm run e2e --runType android23 --sauceLab --appLocation demo.apk --capsLocation "/e2e-tests/config"
+
 ```
 
 ## Troubleshooting

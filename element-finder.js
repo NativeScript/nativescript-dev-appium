@@ -7,6 +7,15 @@ exports.getXPathElement = (name, testRunType) => {
     }
 };
 
+exports.getElementClass= (name, testRunType) => {
+    const tempName = name.toLowerCase().replace(/\-/g, "");
+    if (testRunType.includes("android")) {
+        return getAndroidClass(tempName);
+    } else {
+        return getiOSClassByName(tempName);
+    }
+}
+
 exports.getXPathByText = (text, exactMatch, testRunType) => {
     return findByTextLocator("*", text, exactMatch, testRunType);
 }

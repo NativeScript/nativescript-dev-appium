@@ -11,6 +11,14 @@ export function startAppiumServer(port?: number): void;
 export function killAppiumServer(): void;
 
 /**
+ * Creates appium driver. 
+ * @param capabilities 
+ * @param activityName Default is com.tns.NativeScriptActivity
+ * 
+ */
+export function createDriver(capabilities?: any, activityName?: string): string;
+
+/**
  * returns xpath
  */
 export function getXPathWithExactText(text: string): string;
@@ -22,9 +30,6 @@ export function getXPathContainingsText(text: string): string;
 
 
 /**
- * Creates appium driver. 
- * @param capabilities 
- * @param activityName Default is com.tns.NativeScriptActivity
- * 
+ * returns xpath
  */
-export function createDriver(capabilities?: any, activityName?: string): string;
+export function getElementClass(text: string): string;

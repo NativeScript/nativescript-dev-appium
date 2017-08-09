@@ -75,7 +75,7 @@ if (fs.existsSync(pluginAppiumBinary)) {
 
 let server;
 let serverPort = 9200;
-exports.startAppiumServer = function(port) {
+exports.startAppiumServer = function (port) {
     serverPort = port || serverPort;
     server = child_process.spawn(appium, ["-p", port], {
         shell: true,
@@ -149,13 +149,13 @@ exports.createDriver = (capabilities, activityName) => {
 
 
 exports.configureLogging = (driver) => {
-    driver.on("status", function(info) {
+    driver.on("status", function (info) {
         utils.log(info.cyan);
     });
-    driver.on("command", function(meth, path, data) {
+    driver.on("command", function (meth, path, data) {
         utils.log(" > " + meth.yellow + path.grey + " " + (data || ""));
     });
-    driver.on("http", function(meth, path, data) {
+    driver.on("http", function (meth, path, data) {
         utils.log(" > " + meth.magenta + path + " " + (data || "").grey);
     });
 };
@@ -168,10 +168,14 @@ exports.getXPathContainingsText = (text) => {
     return elementFinder.getXPathByText(text, false, runType);
 }
 
+exports.getElementClass = (name) => {
+    return elementFinder.getElementClass(name, runType);
+}
+
 function getAppPath() {
     console.log("runType " + runType);
     if (runType.includes("android")) {
-        const apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function(file) { return file.indexOf("unaligned") < 0; });
+        const apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
         return apks[0];
     } else if (runType.includes("ios-simulator")) {
         const simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
