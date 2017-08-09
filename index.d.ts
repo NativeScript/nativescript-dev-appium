@@ -16,7 +16,7 @@ export function killAppiumServer(): void;
  * @param activityName Default is com.tns.NativeScriptActivity
  * 
  */
-export function createDriver(capabilities?: any, activityName?: string): string;
+export function createDriver(capabilities?: any, activityName?: string);
 
 /**
  * returns xpath
@@ -26,7 +26,7 @@ export function getXPathWithExactText(text: string): string;
 /**
  * returns xpath
  */
-export function getXPathContainingsText(text: string): string;
+export function getXPathContainingText(text: string): string;
 
 /**
  * returns xpath

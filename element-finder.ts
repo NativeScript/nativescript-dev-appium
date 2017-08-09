@@ -1,49 +1,48 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var utils = require("./utils");
-function getXPathElement(name, testRunType) {
-    var tempName = name.toLowerCase().replace(/\-/g, "");
+const utils = require("./utils");
+
+export function getXPathElement(name, testRunType) {
+    const tempName = name.toLowerCase().replace(/\-/g, "");
     if (utils.contains(testRunType, "android")) {
         return getAndroidClass(tempName);
+    } else {
+        return getiOSClassByName(tempName, testRunType);
     }
-    else {
+};
+
+export function getElementClass(name, testRunType) {
+    const tempName = name.toLowerCase().replace(/\-/g, "");
+    if (utils.contains(testRunType, "android")) {
+        return getAndroidClass(tempName);
+    } else {
         return getiOSClassByName(tempName, testRunType);
     }
 }
-exports.getXPathElement = getXPathElement;
-;
-function getElementClass(name, testRunType) {
-    var tempName = name.toLowerCase().replace(/\-/g, "");
-    if (utils.contains(testRunType, "android")) {
-        return getAndroidClass(tempName);
-    }
-    else {
-        return getiOSClassByName(tempName, testRunType);
-    }
-}
-exports.getElementClass = getElementClass;
-function getXPathByText(text, exactMatch, testRunType) {
+
+export function getXPathByText(text, exactMatch, testRunType) {
     return findByTextLocator("*", text, exactMatch, testRunType);
 }
-exports.getXPathByText = getXPathByText;
+
 function findByTextLocator(controlType, value, exactMatch, testRunType) {
     console.log("Should be exact match: " + exactMatch);
-    var artbutes = ["label", "value", "hint"];
-    if (utils.contains(testRunType, "android")) {
+    let artbutes = ["label", "value", "hint"];
+    if (utils.contains(testRunType,"android")) {
         artbutes = ["content-desc", "resource-id", "text"];
     }
-    var searchedString = "";
+
+    let searchedString = "";
     if (exactMatch) {
-        artbutes.forEach(function (atr) { searchedString += "@" + atr + "='" + value + "'" + " or "; });
+        artbutes.forEach((atr) => { searchedString += "@" + atr + "='" + value + "'" + " or " });
+    } else {
+        artbutes.forEach((atr) => { searchedString += "contains(@" + atr + ",'" + value + "')" + " or " });
     }
-    else {
-        artbutes.forEach(function (atr) { searchedString += "contains(@" + atr + ",'" + value + "')" + " or "; });
-    }
+
     searchedString = searchedString.substring(0, searchedString.lastIndexOf(" or "));
-    var result = "//" + controlType + "[" + searchedString + "]";
+    const result = "//" + controlType + "[" + searchedString + "]";
     console.log("Xpath: " + result);
+
     return result;
 }
+
 function getAndroidClass(name) {
     switch (name) {
         case "activityindicator":
@@ -99,8 +98,10 @@ function getAndroidClass(name) {
         case "webview":
             return "android.webkit.WebView";
     }
+
     throw new Error("This " + name + " does not appear to to be a standard NativeScript UI component.");
 }
+
 function getiOSClassByName(name, caps) {
     switch (name) {
         case "activityindicator":
@@ -158,13 +159,15 @@ function getiOSClassByName(name, caps) {
         case "webview":
             return createIosElement("WebView", caps);
     }
+
     throw new Error("This " + name + " does not appear to to be a standard NativeScript UI component.");
 }
+
 function createIosElement(element, caps) {
-    var elementType = "UIA";
+    let elementType = "UIA";
     if (utils.contains(caps.platformVersion, "10")) {
         elementType = "XCUIElementType";
     }
+
     return elementType + element;
 }
-//# sourceMappingURL=element-finder.js.map

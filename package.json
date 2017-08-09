@@ -3,9 +3,6 @@
   "version": "2.0.0",
   "description": "A NativeScript plugin to help integrate and run Appium tests",
   "main": "index.js",
-  "bin": {
-    "nativescript-dev-appium": "./test-runner.js"
-  },
   "scripts": {
     "postinstall": "node postinstall.js",
     "appium": "nativescript-dev-appium",

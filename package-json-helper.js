@@ -47,15 +47,7 @@ exports.updatePackageJsonDep = (packageJsonPath, isTscProj) => {
     if (!packageJson.scripts) {
         packageJson.scripts = {};
     }
-
-    if (!packageJson.scripts["appium"]) {
-        if (isTscProj) {
-            packageJson.scripts["appium"] = "tsc -p e2e && nativescript-dev-appium";
-        } else {
-            packageJson.scripts["appium"] = "nativescript-dev-appium";
-        }
-    }
-
+    
     if (!packageJson.scripts["e2e"]) {
         if (isTscProj) {
             packageJson.scripts["e2e"] = "tsc -p e2e && mocha --opts ./e2e/config/mocha.opts --";
