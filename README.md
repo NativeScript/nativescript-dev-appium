@@ -33,13 +33,8 @@ $ tns build ios
 The command that will run the tests should specify the targeted platform using the `runType` option as shown below. This way a capabilities will be selected from the [capabilities config file](#customCapabilities) if none provided on driver creation (`driver = nsAppium.createDriver(capabilities);`).
 
 ```
-This will start mocha test by the plugin
-$ npm run appium --runType=android23
 
-or
-
-This will excute mocha tests or whatever test plugin is passed
-The script that is called beneath is tsc -p e2e && mocha --opts ./e2e/config/mocha.opts
+This will excute mocha tests or you can change mocha plugin to the prefered one
 $ npm run e2e -- --runType android23
 ```
 
@@ -146,3 +141,6 @@ $ npm run appium --runType=android --verbose
 ## Missing features
 
 1. Faster developer turnaround when working on an app. Find a way to use livesync and kick off Appium tests for the app that's on the device already.
+
+
+## Br
