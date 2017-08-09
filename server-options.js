@@ -6,6 +6,7 @@ var ServerOptions = (function () {
     }
     Object.defineProperty(ServerOptions.prototype, "port", {
         get: function () {
+            console.log("PORT", this._port);
             return this._port;
         },
         set: function (port) {

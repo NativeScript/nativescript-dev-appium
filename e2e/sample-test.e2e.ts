@@ -5,7 +5,7 @@ describe("scenario simple", () => {
     let driver;
 
     before(async () => {
-        driver = nsAppium.createDriver();
+        driver = await nsAppium.createDriver();
     });
 
     after(async () => {

@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var utils = require("./utils");
 function getXPathElement(name, testRunType) {
     var tempName = name.toLowerCase().replace(/\-/g, "");

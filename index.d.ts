@@ -10,13 +10,13 @@ export function startAppiumServer(port?: number): void;
  */
 export function killAppiumServer(): void;
 
-/**
- * Creates appium driver. 
- * @param capabilities 
- * @param activityName Default is com.tns.NativeScriptActivity
- * 
- */
-export function createDriver(capabilities?: any, activityName?: string);
+// /**
+//  * Creates appium driver. 
+//  * @param capabilities 
+//  * @param activityName Default is com.tns.NativeScriptActivity
+//  * 
+//  */
+// export function createDriver(capabilities?: any, activityName?: string);
 
 /**
  * returns xpath

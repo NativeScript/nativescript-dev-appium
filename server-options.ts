@@ -4,6 +4,7 @@ export class ServerOptions {
     }
 
     get port() {
+        console.log("PORT",this._port)
         return this._port;
     }
 
