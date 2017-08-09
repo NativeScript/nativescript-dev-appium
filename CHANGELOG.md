@@ -8,5 +8,7 @@
 
 # 2.0.0 (2017-08-09)
 
-- Intoduce new test cycle.
-- Include new method for creating XPath for elements
+- Introduce typescript support
+- Async/await
+- Introduce new test cycle.
+- Introduce new methods for getting XPath of element

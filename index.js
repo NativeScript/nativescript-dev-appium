@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = require("tslib");
 require("./appium-setup");
 var glob = require("glob");
 var fs = require("fs");
@@ -10,6 +11,7 @@ var child_process = require("child_process");
 var utils = require("./utils");
 var elementFinder = require("./element-finder");
 var server_options_1 = require("./server-options");
+var appium_driver_1 = require("./appium-driver");
 var config = (function () {
     var options = yargs
         .option("runType", { describe: "Path to excute command.", type: "string", default: null })
@@ -94,44 +96,49 @@ function killAppiumServer() {
 }
 exports.killAppiumServer = killAppiumServer;
 function createDriver(capabilities, activityName) {
-    console.log("Creating driver");
-    caps = capabilities;
-    if (!activityName) {
-        activityName = "com.tns.NativeScriptActivity";
-    }
-    if (!caps) {
-        caps = customCapabilities[runType];
-        if (!caps) {
-            throw new Error("Incorrect test run type: " + runType + " . Available run types are :" + customCapabilitiesConfigs);
-        }
-    }
-    var config = {
-        host: "localhost",
-        port: serverOptoins.port
-    };
-    if (isSauceLab) {
-        var sauceUser = process.env.SAUCE_USER;
-        var sauceKey = process.env.SAUCE_KEY;
-        if (!sauceKey || !sauceUser) {
-            throw new Error("Sauce Labs Username or Access Key is missing! Check environment variables for SAUCE_USER and SAUCE_KEY !!!");
-        }
-        // TODO: Should be tested
-        config = {
-            host: "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub",
-            port: 0
-        };
-    }
-    var driver = wd.promiseChainRemote(config);
-    configureLogging(driver);
-    if (appLocation) {
-        caps.app = isSauceLab ? "sauce-storage:" + appLocation : appLocation;
-    }
-    else if (!caps.app) {
-        console.log("Getting caps.app!");
-        caps.app = getAppPath();
-    }
-    console.log("Creating driver!");
-    return driver.init(caps);
+    return tslib_1.__awaiter(this, void 0, void 0, function () {
+        var config, sauceUser, sauceKey, driver;
+        return tslib_1.__generator(this, function (_a) {
+            console.log("Creating driver");
+            caps = capabilities;
+            if (!activityName) {
+                activityName = "com.tns.NativeScriptActivity";
+            }
+            if (!caps) {
+                caps = customCapabilities[runType];
+                if (!caps) {
+                    throw new Error("Incorrect test run type: " + runType + " . Available run types are :" + customCapabilitiesConfigs);
+                }
+            }
+            config = {
+                host: "localhost",
+                port: serverOptoins.port
+            };
+            if (isSauceLab) {
+                sauceUser = process.env.SAUCE_USER;
+                sauceKey = process.env.SAUCE_KEY;
+                if (!sauceKey || !sauceUser) {
+                    throw new Error("Sauce Labs Username or Access Key is missing! Check environment variables for SAUCE_USER and SAUCE_KEY !!!");
+                }
+                // TODO: Should be tested
+                config = {
+                    host: "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub",
+                    port: 0
+                };
+            }
+            driver = wd.promiseChainRemote(config);
+            configureLogging(driver);
+            if (appLocation) {
+                caps.app = isSauceLab ? "sauce-storage:" + appLocation : appLocation;
+            }
+            else if (!caps.app) {
+                console.log("Getting caps.app!");
+                caps.app = getAppPath();
+            }
+            console.log("Creating driver!");
+            return [2 /*return*/, new appium_driver_1.AppiumDriver(driver.init(caps), runType)];
+        });
+    });
 }
 exports.createDriver = createDriver;
 ;
@@ -152,10 +159,10 @@ function getXPathWithExactText(text) {
     return elementFinder.getXPathByText(text, true, runType);
 }
 exports.getXPathWithExactText = getXPathWithExactText;
-function getXPathContainingsText(text) {
+function getXPathContainingText(text) {
     return elementFinder.getXPathByText(text, false, runType);
 }
-exports.getXPathContainingsText = getXPathContainingsText;
+exports.getXPathContainingText = getXPathContainingText;
 function getElementClass(name) {
     return elementFinder.getElementClass(name, runType);
 }
@@ -180,3 +187,4 @@ function getAppPath() {
     }
 }
 ;
+//# sourceMappingURL=index.js.map

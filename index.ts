@@ -8,6 +8,7 @@ const child_process = require("child_process");
 const utils = require("./utils");
 const elementFinder = require("./element-finder");
 import { ServerOptions } from './server-options';
+import { AppiumDriver } from './appium-driver';
 
 const config = (() => {
     const options = yargs
@@ -75,7 +76,7 @@ if (fs.existsSync(pluginAppiumBinary)) {
 
 let server;
 const serverOptoins = new ServerOptions(9200);
-export function startAppiumServer(port){
+export function startAppiumServer(port) {
     serverOptoins.port = port || serverOptoins.port;
     server = child_process.spawn(appium, ["-p", port], {
         shell: true,
@@ -85,7 +86,7 @@ export function startAppiumServer(port){
     return utils.waitForOutput(server, /listener started/, 60000);
 }
 
-export function killAppiumServer(){
+export function killAppiumServer() {
     // todo: check if allready dead?
     var isAlive = true;
     if (isAlive) {
@@ -103,7 +104,7 @@ export function killAppiumServer(){
     }
 }
 
-export function createDriver(capabilities?, activityName?){
+export async function createDriver(capabilities?, activityName?) {
     console.log("Creating driver");
     caps = capabilities;
     if (!activityName) {
@@ -148,10 +149,10 @@ export function createDriver(capabilities?, activityName?){
     }
 
     console.log("Creating driver!");
-    return driver.init(caps);
+    return new AppiumDriver(driver.init(caps), runType);
 };
 
-export function configureLogging(driver){
+export function configureLogging(driver) {
     driver.on("status", function (info) {
         utils.log(info.cyan);
     });
@@ -163,15 +164,15 @@ export function configureLogging(driver){
     });
 };
 
-export function getXPathWithExactText(text){
+export function getXPathWithExactText(text) {
     return elementFinder.getXPathByText(text, true, runType);
 }
 
-export function getXPathContainingsText(text){
+export function getXPathContainingText(text) {
     return elementFinder.getXPathByText(text, false, runType);
 }
 
-export function getElementClass (name){
+export function getElementClass(name) {
     return elementFinder.getElementClass(name, runType);
 }
 
