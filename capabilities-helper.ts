@@ -7,12 +7,32 @@ import * as utils from "./utils";
 const projectDir = utils.projectDir();
 
 export function searchCustomCapabilities(capabilitiesLocation) {
-    const appParentFolder = path.dirname(projectDir);
-    let customCapabilitiesLocation = capabilitiesLocation;
     let cap = {};
-    if (!path.isAbsolute(capabilitiesLocation)) {
-        customCapabilitiesLocation = utils.resolve(projectDir, capabilitiesLocation, utils.capabilitiesName);
+
+    if (capabilitiesLocation) {
+        cap = setCustomCapabilities(capabilitiesLocation);
+
+        return cap;
     }
+
+    let customCapabilitiesLocation = utils.resolve(projectDir);
+    console.log("customCapabilitiesLocation ", customCapabilitiesLocation)
+
+
+
+    customCapabilitiesLocation = utils.resolve(customCapabilitiesLocation, "e2e", "config", utils.capabilitiesName);
+    if (utils.fileExists(customCapabilitiesLocation)) {
+        cap = setCustomCapabilities(customCapabilitiesLocation);
+
+        return cap;
+    }
+
+    const appParentFolder = path.dirname(projectDir);
+
+    customCapabilitiesLocation = utils.searchFiles(appParentFolder, utils.capabilitiesName, true)[0];
+
+    console.log("customCapabilitiesLocation ", customCapabilitiesLocation);
+
 
     if (utils.fileExists(customCapabilitiesLocation)) {
         cap = setCustomCapabilities(customCapabilitiesLocation);
@@ -20,7 +40,7 @@ export function searchCustomCapabilities(capabilitiesLocation) {
         console.log("START")
         cap = setCustomCapabilities(utils.searchFiles(appParentFolder, utils.capabilitiesName, true)[0]);
         console.log("END")
-    
+
     }
 
     return cap;

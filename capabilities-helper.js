@@ -5,12 +5,21 @@ var fs = require("fs");
 var utils = require("./utils");
 var projectDir = utils.projectDir();
 function searchCustomCapabilities(capabilitiesLocation) {
-    var appParentFolder = path.dirname(projectDir);
-    var customCapabilitiesLocation = capabilitiesLocation;
     var cap = {};
-    if (!path.isAbsolute(capabilitiesLocation)) {
-        customCapabilitiesLocation = utils.resolve(projectDir, capabilitiesLocation, utils.capabilitiesName);
+    if (capabilitiesLocation) {
+        cap = setCustomCapabilities(capabilitiesLocation);
+        return cap;
     }
+    var customCapabilitiesLocation = utils.resolve(projectDir);
+    console.log("customCapabilitiesLocation ", customCapabilitiesLocation);
+    customCapabilitiesLocation = utils.resolve(customCapabilitiesLocation, "e2e", "config", utils.capabilitiesName);
+    if (utils.fileExists(customCapabilitiesLocation)) {
+        cap = setCustomCapabilities(customCapabilitiesLocation);
+        return cap;
+    }
+    var appParentFolder = path.dirname(projectDir);
+    customCapabilitiesLocation = utils.searchFiles(appParentFolder, utils.capabilitiesName, true)[0];
+    console.log("customCapabilitiesLocation ", customCapabilitiesLocation);
     if (utils.fileExists(customCapabilitiesLocation)) {
         cap = setCustomCapabilities(customCapabilitiesLocation);
     }
@@ -29,3 +38,4 @@ function setCustomCapabilities(appiumCapabilitiesLocation) {
     return file;
 }
 exports.searchCustomCapabilities = searchCustomCapabilities;
+//# sourceMappingURL=capabilities-helper.js.map

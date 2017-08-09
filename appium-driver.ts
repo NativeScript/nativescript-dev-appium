@@ -12,14 +12,14 @@ export var should = chai.should();
 chaiAsPromised.transferPromiseness = wd.transferPromiseness;
 
 
-export function createDriver(runType, port, capsLocation?: string, capabilities?, activityName?) {
+export function createAppiumDriver(runType, port, capsLocation?: string, capabilities?, isSauceLab: boolean = false, activityName?) {
     let caps = capabilities;
     if (!activityName) {
         activityName = "com.tns.NativeScriptActivity";
     }
 
     if (!caps) {
-        caps = this.resolveCapabilities(capsLocation)[runType];
+        caps = resolveCapabilities(capsLocation)[runType];
 
         if (!caps) {
             throw new Error("Incorrect test run type: " + runType);
@@ -31,7 +31,7 @@ export function createDriver(runType, port, capsLocation?: string, capabilities?
         port: port
     };
 
-    if (this._isSauceLab) {
+    if (isSauceLab) {
         const sauceUser = process.env.SAUCE_USER;
         const sauceKey = process.env.SAUCE_KEY;
 
@@ -47,13 +47,13 @@ export function createDriver(runType, port, capsLocation?: string, capabilities?
     }
 
     const driver = wd.promiseChainRemote(driverConfig);
-    this.configureLogging(driver);
+    configureLogging(driver);
 
     if (utils.appLocation) {
-        caps.app = this._isSauceLab ? "sauce-storage:" + utils.appLocation : utils.appLocation;
+        caps.app = isSauceLab ? "sauce-storage:" + utils.appLocation : utils.appLocation;
     } else if (!caps.app) {
         console.log("Getting caps.app!");
-        caps.app = this.getAppPath();
+        caps.app = getAppPath(runType );
     }
 
     console.log("Creating driver!");
@@ -61,18 +61,45 @@ export function createDriver(runType, port, capsLocation?: string, capabilities?
     new AppiumDriver(driver.init(caps), runType, port, false);
 }
 
-function resolveCapabilities(capsLocation): {} {
-    if (!capsLocation) {
-        capsLocation = utils.resolve(path.dirname(utils.projectDir()));
-    }
-    let customCapabilitiesConfigs:any = searchCustomCapabilities(capsLocation);
-    let customCapabilities;
-    if (customCapabilitiesConfigs) {
-        customCapabilities = JSON.parse(customCapabilitiesConfigs);
-        utils.log(customCapabilities);
-    }
+function configureLogging(driver) {
+    driver.on("status", function (info) {
+        utils.log(info.cyan);
+    });
+    driver.on("command", function (meth, path, data) {
+        utils.log(" > " + meth.yellow + path.grey + " " + (data || ""));
+    });
+    driver.on("http", function (meth, path, data) {
+        utils.log(" > " + meth.magenta + path + " " + (data || "").grey);
+    });
+};
 
-    return customCapabilities;
+function getAppPath(runType) {
+    console.log("runType " + runType);
+    if (runType.includes("android")) {
+        const apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
+        return apks[0];
+    } else if (runType.includes("ios-simulator")) {
+        const simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
+        return simulatorApps[0];
+    } else if (runType.includes("ios-device")) {
+        const deviceApps = glob.sync("platforms/ios/build/device/**/*.ipa");
+        return deviceApps[0];
+    } else {
+        throw new Error("No 'app' capability provided and incorrect 'runType' convention used: " + this._runType +
+            ". In order to automatically search and locate app package please use 'android','ios-device','ios-simulator' in your 'runType' option. E.g --runType=android23, --runType=ios-simulator10iPhone6");
+    }
+};
+
+function resolveCapabilities(capsLocation): {} {
+    let customCapabilitiesConfigs: any = searchCustomCapabilities(capsLocation);
+    if (customCapabilitiesConfigs) {
+        const customCapabilities = JSON.parse(customCapabilitiesConfigs);
+        utils.log(customCapabilities);
+
+        return customCapabilities;
+    } else {
+        throw Error("No capabilities found!!!");
+    }
 }
 
 export class AppiumDriver {
@@ -84,35 +111,6 @@ export class AppiumDriver {
 
     constructor(private _driver: any, private _runType: string, private _port: number, private _isSauceLab: boolean = false, private _capsLocation?: string) {
     }
-
-    private configureLogging(driver) {
-        driver.on("status", function (info) {
-            utils.log(info.cyan);
-        });
-        driver.on("command", function (meth, path, data) {
-            utils.log(" > " + meth.yellow + path.grey + " " + (data || ""));
-        });
-        driver.on("http", function (meth, path, data) {
-            utils.log(" > " + meth.magenta + path + " " + (data || "").grey);
-        });
-    };
-
-    private getAppPath() {
-        console.log("runType " + this._runType);
-        if (this._runType.includes("android")) {
-            const apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
-            return apks[0];
-        } else if (this._runType.includes("ios-simulator")) {
-            const simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
-            return simulatorApps[0];
-        } else if (this._runType.includes("ios-device")) {
-            const deviceApps = glob.sync("platforms/ios/build/device/**/*.ipa");
-            return deviceApps[0];
-        } else {
-            throw new Error("No 'app' capability provided and incorrect 'runType' convention used: " + this._runType +
-                ". In order to automatically search and locate app package please use 'android','ios-device','ios-simulator' in your 'runType' option. E.g --runType=android23, --runType=ios-simulator10iPhone6");
-        }
-    };
 
     public findElementByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
         return this._driver.waitForElementByXPath(xPath, waitForElement);

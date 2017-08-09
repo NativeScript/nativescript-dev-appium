@@ -5,7 +5,7 @@ import * as child_process from "child_process";
 import * as utils from "./utils";
 import * as elementFinder from "./element-finder";
 import { ServerOptions } from './server-options';
-import { createDriver } from './appium-driver';
+import { createAppiumDriver } from './appium-driver';
 
 const config = (() => {
     const options = yargs
@@ -88,7 +88,7 @@ export function killAppiumServer() {
 }
 
 export function createDriver(capabilities?, activityName?) {
-    return createDriver(runType, serverOptoins.port);
+    return createAppiumDriver(runType, serverOptoins.port);
 };
 
 export function getXPathWithExactText(text) {

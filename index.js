@@ -79,7 +79,7 @@ function killAppiumServer() {
 }
 exports.killAppiumServer = killAppiumServer;
 function createDriver(capabilities, activityName) {
-    return new appium_driver_1.AppiumDriver(runType, serverOptoins.port, false);
+    return appium_driver_1.createAppiumDriver(runType, serverOptoins.port);
 }
 exports.createDriver = createDriver;
 ;
@@ -95,3 +95,4 @@ function getElementClass(name) {
     return elementFinder.getElementClass(name, runType);
 }
 exports.getElementClass = getElementClass;
+//# sourceMappingURL=index.js.map
