@@ -17,4 +17,3 @@ var ServerOptions = (function () {
     return ServerOptions;
 }());
 exports.ServerOptions = ServerOptions;
-//# sourceMappingURL=server-options.js.map

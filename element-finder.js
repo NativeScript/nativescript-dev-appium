@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 var utils = require("./utils");
 function getXPathElement(name, testRunType) {
     var tempName = name.toLowerCase().replace(/\-/g, "");
@@ -167,4 +167,3 @@ function createIosElement(element, caps) {
     }
     return elementType + element;
 }
-//# sourceMappingURL=element-finder.js.map

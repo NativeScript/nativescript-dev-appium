@@ -187,4 +187,3 @@ function getAppPath() {
     }
 }
 ;
-//# sourceMappingURL=index.js.map
