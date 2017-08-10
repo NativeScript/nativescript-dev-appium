@@ -7,7 +7,7 @@
         "noEmitHelpers": false,
         "importHelpers": true,
         "noEmitOnError": true,
-        "declaration": true,
+        "declaration": false,
         "sourceMap": true,
         "lib": [
             "es6",
