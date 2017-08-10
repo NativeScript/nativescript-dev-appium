@@ -1,11 +1,11 @@
-const nsAppium = require("nativescript-dev-appium");
+import { AppiumDriver, createDriver } from "nativescript-dev-appium";
 
 describe("scenario simple", () => {
     const defaultWaitTime = 5000;
-    let driver;
+    let driver: AppiumDriver;
 
     before(async () => {
-        driver = await nsAppium.createDriver();
+        driver = await createDriver();
     });
 
     after(async () => {
@@ -14,10 +14,9 @@ describe("scenario simple", () => {
     });
 
     it("should find an element", async () => {
-        const tapButtonLocator = nsAppium.getXPathContainingsText("TAP");
-        const tapButton = await driver.waitForElementByXPath(tapButtonLocator, defaultWaitTime);
+        const tapButton = await driver.findElementByText("TAP", "exact");
         await tapButton.click();
-        const messageLabel = await driver.waitForElementByXPath(nsAppium.getXPathContainingsText("41 taps left"), defaultWaitTime);
+        const messageLabel = await driver.findElementByText("41 taps left", "exact");
         console.log(await messageLabel.text());
     });
 });
