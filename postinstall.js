@@ -30,3 +30,4 @@ if (!utils.fileExists(e2eTestsDir)) {
         }
     }
 }
+//# sourceMappingURL=postinstall.js.map

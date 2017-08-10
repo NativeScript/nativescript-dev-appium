@@ -7,10 +7,13 @@
         "noEmitHelpers": false,
         "importHelpers": true,
         "noEmitOnError": true,
+        "declaration": true,
+        "sourceMap": true,
         "lib": [
             "es6",
             "dom",
-            "es2015.iterable"
+            "es2015.iterable",
+            "es2015.promise"
         ],
         "baseUrl": ".",
         "paths": {

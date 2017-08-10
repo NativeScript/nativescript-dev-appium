@@ -74,3 +74,4 @@ function updatePackageJsonDep(packageJsonPath, isTscProj) {
     }
 }
 exports.updatePackageJsonDep = updatePackageJsonDep;
+//# sourceMappingURL=package-json-helper.js.map

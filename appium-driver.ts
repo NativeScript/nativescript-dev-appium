@@ -53,7 +53,7 @@ export function createAppiumDriver(runType, port, capsLocation?: string, capabil
         caps.app = isSauceLab ? "sauce-storage:" + utils.appLocation : utils.appLocation;
     } else if (!caps.app) {
         console.log("Getting caps.app!");
-        caps.app = getAppPath(runType );
+        caps.app = getAppPath(runType);
     }
 
     console.log("Creating driver!");
@@ -112,6 +112,10 @@ export class AppiumDriver {
     constructor(private _driver: any, private _runType: string, private _port: number, private _isSauceLab: boolean = false, private _capsLocation?: string) {
     }
 
+    get driver() {
+        return this._driver;
+    }
+
     public findElementByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
         return this._driver.waitForElementByXPath(xPath, waitForElement);
     }
@@ -131,9 +135,5 @@ export class AppiumDriver {
 
     public quit() {
         return this._driver.quit();
-    }
-
-    public driver() {
-        return this._driver;
     }
 }

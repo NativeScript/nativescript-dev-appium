@@ -104,6 +104,13 @@ var AppiumDriver = (function () {
         this._isSauceLab = _isSauceLab;
         this._capsLocation = _capsLocation;
     }
+    Object.defineProperty(AppiumDriver.prototype, "driver", {
+        get: function () {
+            return this._driver;
+        },
+        enumerable: true,
+        configurable: true
+    });
     AppiumDriver.prototype.findElementByXPath = function (xPath, waitForElement) {
         if (waitForElement === void 0) { waitForElement = AppiumDriver.defaultWaitTime; }
         return this._driver.waitForElementByXPath(xPath, waitForElement);
@@ -122,11 +129,8 @@ var AppiumDriver = (function () {
     AppiumDriver.prototype.quit = function () {
         return this._driver.quit();
     };
-    AppiumDriver.prototype.driver = function () {
-        return this._driver;
-    };
-    AppiumDriver.defaultWaitTime = 5000;
     return AppiumDriver;
 }());
+AppiumDriver.defaultWaitTime = 5000;
 exports.AppiumDriver = AppiumDriver;
 //# sourceMappingURL=appium-driver.js.map

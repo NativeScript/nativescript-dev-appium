@@ -1,4 +1,7 @@
 "use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
 Object.defineProperty(exports, "__esModule", { value: true });
 var fs = require("fs");
 var path = require("path");
@@ -8,6 +11,7 @@ var utils = require("./utils");
 var elementFinder = require("./element-finder");
 var server_options_1 = require("./server-options");
 var appium_driver_1 = require("./appium-driver");
+__export(require("./appium-driver"));
 var config = (function () {
     var options = yargs
         .option("runType", { describe: "Path to excute command.", type: "string", default: null })

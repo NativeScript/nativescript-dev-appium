@@ -6,6 +6,7 @@ import * as utils from "./utils";
 import * as elementFinder from "./element-finder";
 import { ServerOptions } from './server-options';
 import { createAppiumDriver } from './appium-driver';
+export * from "./appium-driver";
 
 const config = (() => {
     const options = yargs
