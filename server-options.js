@@ -6,6 +6,7 @@ var ServerOptions = (function () {
     }
     Object.defineProperty(ServerOptions.prototype, "port", {
         get: function () {
+            console.log("PORT", this._port);
             return this._port;
         },
         set: function (port) {
@@ -17,3 +18,4 @@ var ServerOptions = (function () {
     return ServerOptions;
 }());
 exports.ServerOptions = ServerOptions;
+//# sourceMappingURL=server-options.js.map

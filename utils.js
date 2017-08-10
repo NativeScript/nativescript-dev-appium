@@ -167,9 +167,8 @@ function contains(source, check) {
 exports.contains = contains;
 // Search for files and folders. If shoud not match, than the filter will skip this words. Could be use with wildcards
 function searchFiles(folder, words, recursive, files) {
-    if (files === undefined || files === null) {
-        files = new Array();
-    }
+    if (recursive === void 0) { recursive = true; }
+    if (files === void 0) { files = new Array(); }
     var rootFiles = getAllFileNames(folder);
     var regex = createRegexPattern(words);
     rootFiles.filter(function (f) {
@@ -191,11 +190,13 @@ function log(message) {
     }
 }
 exports.log = log;
+exports.log = log;
 function loglogOut(line, force) {
     if (exports.verbose || force) {
         process.stdout.write(line);
     }
 }
+exports.loglogOut = loglogOut;
 exports.logOut = loglogOut;
 function logErr(line, force) {
     if (exports.verbose || force) {
@@ -235,3 +236,4 @@ function waitForOutput(process, matcher, timeout) {
     });
 }
 exports.waitForOutput = waitForOutput;
+//# sourceMappingURL=utils.js.map

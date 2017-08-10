@@ -171,10 +171,7 @@ function contains(source, check) {
 exports.contains = contains;
 
 // Search for files and folders. If shoud not match, than the filter will skip this words. Could be use with wildcards
-export function searchFiles(folder, words, recursive, files) {
-    if (files === undefined || files === null) {
-        files = new Array();
-    }
+export function searchFiles(folder, words, recursive: boolean = true, files = new Array()): Array<string> {
     const rootFiles = getAllFileNames(folder);
     const regex = createRegexPattern(words);
     rootFiles.filter(f => {
@@ -190,26 +187,25 @@ export function searchFiles(folder, words, recursive, files) {
     return files;
 }
 
-function log(message) {
+export function log(message) {
     if (verbose) {
         console.log(message);
     }
 }
 exports.log = log;
 
-function loglogOut(line, force) {
+export function loglogOut(line, force) {
     if (verbose || force) {
         process.stdout.write(line);
     }
 }
 exports.logOut = loglogOut;
 
-function logErr(line, force) {
+export function logErr(line, force) {
     if (verbose || force) {
         process.stderr.write(line);
     }
 }
-exports.logErr = logErr;
 
 function shutdown(processToKill) {
     if (processToKill) {
@@ -227,7 +223,7 @@ function killPid(pid) {
     let output = childProcess.execSync('taskkill /PID ' + pid + ' /T /F');
 }
 
-function waitForOutput(process, matcher, timeout) {
+export function waitForOutput(process, matcher, timeout) {
     return new Promise(function (resolve, reject) {
         var abortWatch = setTimeout(function () {
             process.kill();
@@ -244,5 +240,3 @@ function waitForOutput(process, matcher, timeout) {
         });
     });
 }
-
-exports.waitForOutput = waitForOutput;

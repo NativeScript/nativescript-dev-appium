@@ -1,17 +1,17 @@
 "use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = require("tslib");
-require("./appium-setup");
-var glob = require("glob");
 var fs = require("fs");
 var path = require("path");
-var wd = require("wd");
-var yargs = require('yargs');
+var yargs = require("yargs");
 var child_process = require("child_process");
 var utils = require("./utils");
 var elementFinder = require("./element-finder");
 var server_options_1 = require("./server-options");
 var appium_driver_1 = require("./appium-driver");
+__export(require("./appium-driver"));
 var config = (function () {
     var options = yargs
         .option("runType", { describe: "Path to excute command.", type: "string", default: null })
@@ -41,19 +41,6 @@ var projectBinary = utils.projectBinary();
 var pluginRoot = utils.pluginRoot();
 var pluginAppiumBinary = utils.resolve(pluginBinary, appium);
 var projectAppiumBinary = utils.resolve(projectBinary, appium);
-var caps;
-var customCapabilitiesConfigs;
-var customCapabilities;
-try {
-    customCapabilitiesConfigs = require("./capabilities-helper").searchCustomCapabilities(capsLocation);
-    if (customCapabilitiesConfigs) {
-        customCapabilities = JSON.parse(customCapabilitiesConfigs);
-        utils.log(customCapabilities);
-    }
-}
-catch (error) {
-    utils.logErr("No capabilities provided!!!");
-}
 if (fs.existsSync(pluginAppiumBinary)) {
     utils.log("Using plugin-local Appium binary.");
     appium = pluginAppiumBinary;
@@ -96,64 +83,9 @@ function killAppiumServer() {
 }
 exports.killAppiumServer = killAppiumServer;
 function createDriver(capabilities, activityName) {
-    return tslib_1.__awaiter(this, void 0, void 0, function () {
-        var config, sauceUser, sauceKey, driver;
-        return tslib_1.__generator(this, function (_a) {
-            console.log("Creating driver");
-            caps = capabilities;
-            if (!activityName) {
-                activityName = "com.tns.NativeScriptActivity";
-            }
-            if (!caps) {
-                caps = customCapabilities[runType];
-                if (!caps) {
-                    throw new Error("Incorrect test run type: " + runType + " . Available run types are :" + customCapabilitiesConfigs);
-                }
-            }
-            config = {
-                host: "localhost",
-                port: serverOptoins.port
-            };
-            if (isSauceLab) {
-                sauceUser = process.env.SAUCE_USER;
-                sauceKey = process.env.SAUCE_KEY;
-                if (!sauceKey || !sauceUser) {
-                    throw new Error("Sauce Labs Username or Access Key is missing! Check environment variables for SAUCE_USER and SAUCE_KEY !!!");
-                }
-                // TODO: Should be tested
-                config = {
-                    host: "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub",
-                    port: 0
-                };
-            }
-            driver = wd.promiseChainRemote(config);
-            configureLogging(driver);
-            if (appLocation) {
-                caps.app = isSauceLab ? "sauce-storage:" + appLocation : appLocation;
-            }
-            else if (!caps.app) {
-                console.log("Getting caps.app!");
-                caps.app = getAppPath();
-            }
-            console.log("Creating driver!");
-            return [2 /*return*/, new appium_driver_1.AppiumDriver(driver.init(caps), runType)];
-        });
-    });
+    return appium_driver_1.createAppiumDriver(runType, serverOptoins.port);
 }
 exports.createDriver = createDriver;
-;
-function configureLogging(driver) {
-    driver.on("status", function (info) {
-        utils.log(info.cyan);
-    });
-    driver.on("command", function (meth, path, data) {
-        utils.log(" > " + meth.yellow + path.grey + " " + (data || ""));
-    });
-    driver.on("http", function (meth, path, data) {
-        utils.log(" > " + meth.magenta + path + " " + (data || "").grey);
-    });
-}
-exports.configureLogging = configureLogging;
 ;
 function getXPathWithExactText(text) {
     return elementFinder.getXPathByText(text, true, runType);
@@ -167,23 +99,4 @@ function getElementClass(name) {
     return elementFinder.getElementClass(name, runType);
 }
 exports.getElementClass = getElementClass;
-function getAppPath() {
-    console.log("runType " + runType);
-    if (runType.includes("android")) {
-        var apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
-        return apks[0];
-    }
-    else if (runType.includes("ios-simulator")) {
-        var simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
-        return simulatorApps[0];
-    }
-    else if (runType.includes("ios-device")) {
-        var deviceApps = glob.sync("platforms/ios/build/device/**/*.ipa");
-        return deviceApps[0];
-    }
-    else {
-        throw new Error("No 'app' capability provided and incorrect 'runType' convention used: " + runType +
-            ". In order to automatically search and locate app package please use 'android','ios-device','ios-simulator' in your 'runType' option. E.g --runType=android23, --runType=ios-simulator10iPhone6");
-    }
-}
-;
+//# sourceMappingURL=index.js.map

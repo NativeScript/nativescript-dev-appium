@@ -26,7 +26,7 @@
   "dependencies": {
     "app-root-path": "^2.0.1",
     "colors": "^1.1.2",
-    "portastic": "^1.0.1",
+    "wd": "^1.4.0",
     "yargs": "^8.0.2"
   },
   "author": "Telerik",
@@ -34,17 +34,17 @@
   "devDependencies": {
     "@types/node": "^7.0.5",
     "glob": "*",
-    "mocha": "^3.5.0",
-    "wd": "^1.4.0",
     "chai": "~4.0.0",
     "chai-as-promised": "~7.0.0",
-    "mocha-junit-reporter": "^1.13.0",
     "tslint": "^4.5.1",
     "typescript": "^2.4.2",
     "colors": "^1.1.2",
     "tslib": "^1.7.1",
+    "mocha": "~3.5.0",
+    "mocha-junit-reporter": "^1.13.0",
+    "mocha-multi": "^0.11.0",
+    "wd": "^1.4.0",
     "@types/chai": "^4.0.2",
-    "@types/mocha": "^2.2.41",
-    "mocha-multi": "^0.11.0"
+    "@types/mocha": "^2.2.41"
   }
 }

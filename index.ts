@@ -1,14 +1,12 @@
-require("./appium-setup");
-const glob = require("glob");
-const fs = require("fs");
-const path = require("path");
-const wd = require("wd");
-const yargs = require('yargs');
-const child_process = require("child_process");
-const utils = require("./utils");
-const elementFinder = require("./element-finder");
+import * as fs from "fs";
+import * as path from "path";
+import * as yargs from 'yargs';
+import * as child_process from "child_process";
+import * as utils from "./utils";
+import * as elementFinder from "./element-finder";
 import { ServerOptions } from './server-options';
-import { AppiumDriver } from './appium-driver';
+import { createAppiumDriver } from './appium-driver';
+export * from "./appium-driver";
 
 const config = (() => {
     const options = yargs
@@ -50,20 +48,6 @@ const pluginRoot = utils.pluginRoot();
 const pluginAppiumBinary = utils.resolve(pluginBinary, appium);
 const projectAppiumBinary = utils.resolve(projectBinary, appium);
 
-let caps;
-let customCapabilitiesConfigs;
-let customCapabilities;
-
-try {
-    customCapabilitiesConfigs = require("./capabilities-helper").searchCustomCapabilities(capsLocation);
-    if (customCapabilitiesConfigs) {
-        customCapabilities = JSON.parse(customCapabilitiesConfigs);
-        utils.log(customCapabilities);
-    }
-} catch (error) {
-    utils.logErr("No capabilities provided!!!");
-}
-
 if (fs.existsSync(pluginAppiumBinary)) {
     utils.log("Using plugin-local Appium binary.");
     appium = pluginAppiumBinary;
@@ -104,64 +88,8 @@ export function killAppiumServer() {
     }
 }
 
-export async function createDriver(capabilities?, activityName?) {
-    console.log("Creating driver");
-    caps = capabilities;
-    if (!activityName) {
-        activityName = "com.tns.NativeScriptActivity";
-    }
-
-    if (!caps) {
-        caps = customCapabilities[runType];
-        if (!caps) {
-            throw new Error("Incorrect test run type: " + runType + " . Available run types are :" + customCapabilitiesConfigs);
-        }
-    }
-
-    let config = {
-        host: "localhost",
-        port: serverOptoins.port
-    };
-
-    if (isSauceLab) {
-        const sauceUser = process.env.SAUCE_USER;
-        const sauceKey = process.env.SAUCE_KEY;
-
-        if (!sauceKey || !sauceUser) {
-            throw new Error("Sauce Labs Username or Access Key is missing! Check environment variables for SAUCE_USER and SAUCE_KEY !!!");
-        }
-
-        // TODO: Should be tested
-        config = {
-            host: "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub",
-            port: 0
-        }
-    }
-
-    const driver = wd.promiseChainRemote(config);
-    configureLogging(driver);
-
-    if (appLocation) {
-        caps.app = isSauceLab ? "sauce-storage:" + appLocation : appLocation;
-    } else if (!caps.app) {
-        console.log("Getting caps.app!");
-        caps.app = getAppPath();
-    }
-
-    console.log("Creating driver!");
-    return new AppiumDriver(driver.init(caps), runType);
-};
-
-export function configureLogging(driver) {
-    driver.on("status", function (info) {
-        utils.log(info.cyan);
-    });
-    driver.on("command", function (meth, path, data) {
-        utils.log(" > " + meth.yellow + path.grey + " " + (data || ""));
-    });
-    driver.on("http", function (meth, path, data) {
-        utils.log(" > " + meth.magenta + path + " " + (data || "").grey);
-    });
+export function createDriver(capabilities?, activityName?) {
+    return createAppiumDriver(runType, serverOptoins.port);
 };
 
 export function getXPathWithExactText(text) {
@@ -175,20 +103,3 @@ export function getXPathContainingText(text) {
 export function getElementClass(name) {
     return elementFinder.getElementClass(name, runType);
 }
-
-function getAppPath() {
-    console.log("runType " + runType);
-    if (runType.includes("android")) {
-        const apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
-        return apks[0];
-    } else if (runType.includes("ios-simulator")) {
-        const simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
-        return simulatorApps[0];
-    } else if (runType.includes("ios-device")) {
-        const deviceApps = glob.sync("platforms/ios/build/device/**/*.ipa");
-        return deviceApps[0];
-    } else {
-        throw new Error("No 'app' capability provided and incorrect 'runType' convention used: " + runType +
-            ". In order to automatically search and locate app package please use 'android','ios-device','ios-simulator' in your 'runType' option. E.g --runType=android23, --runType=ios-simulator10iPhone6");
-    }
-};
