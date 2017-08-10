@@ -1,32 +1,19 @@
-import * as elementHelper from "./element-finder";
-import * as  utils from "./utils";
-import * as  path from "path";
-import { searchCustomCapabilities } from "./capabilities-helper";
 require('colors');
-const wd = require("wd");
-const glob = require("glob");
-
 var chai = require("chai");
+import * as wd from "wd";
 var chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
 export var should = chai.should();
 chaiAsPromised.transferPromiseness = wd.transferPromiseness;
 
+import { searchCustomCapabilities } from "./capabilities-helper";
+import { ElementHelper } from "./element-helper";
+import * as  utils from "./utils";
+import * as  path from "path";
+import * as glob from "glob";
 
-export function createAppiumDriver(runType, port, capsLocation?: string, capabilities?, isSauceLab: boolean = false, activityName?) {
-    let caps = capabilities;
-    if (!activityName) {
-        activityName = "com.tns.NativeScriptActivity";
-    }
-
-    if (!caps) {
-        caps = resolveCapabilities(capsLocation)[runType];
-
-        if (!caps) {
-            throw new Error("Incorrect test run type: " + runType);
-        }
-    }
-
+export function createAppiumDriver(runType, port, capsLocation?: string, isSauceLab: boolean = false) {
+    const caps = resolveCapabilities(capsLocation)[runType];
     let driverConfig = {
         host: "localhost",
         port: port
@@ -43,7 +30,7 @@ export function createAppiumDriver(runType, port, capsLocation?: string, capabil
         // TODO: Should be tested
         driverConfig = {
             host: "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub",
-            port: 0
+            port: ""
         }
     }
 
@@ -105,12 +92,10 @@ function resolveCapabilities(capsLocation): {} {
 
 export class AppiumDriver {
     private static defaultWaitTime: number = 5000;
-
-    private caps: {};
-    private customCapabilitiesConfigs: any;
-    private customCapabilities: any;
+    private elementHelper: ElementHelper;
 
     constructor(private _driver: any, private _runType: string, private _port: number, private _isSauceLab: boolean = false, private _capsLocation?: string) {
+        this.elementHelper = new ElementHelper(this._runType);
     }
 
     get driver() {
@@ -123,7 +108,7 @@ export class AppiumDriver {
 
     public findElementByText(text: string, match: 'exact' | 'contains', waitForElement: number = AppiumDriver.defaultWaitTime) {
         const shouldMatch = match == 'exact' ? true : false;
-        return this.findElementByXPath(elementHelper.getXPathByText(text, shouldMatch, this._runType), waitForElement);
+        return this.findElementByXPath(this.elementHelper.getXPathByText(text, shouldMatch, this._runType), waitForElement);
     }
 
     public click() {
