@@ -49,7 +49,7 @@ function createAppiumDriver(runType, port, capsLocation, capabilities, isSauceLa
         caps.app = getAppPath(runType);
     }
     console.log("Creating driver!");
-    new AppiumDriver(driver.init(caps), runType, port, false);
+    return new AppiumDriver(driver.init(caps), runType, port, false);
 }
 exports.createAppiumDriver = createAppiumDriver;
 function configureLogging(driver) {

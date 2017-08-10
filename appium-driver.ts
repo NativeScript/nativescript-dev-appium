@@ -58,7 +58,7 @@ export function createAppiumDriver(runType, port, capsLocation?: string, capabil
 
     console.log("Creating driver!");
 
-    new AppiumDriver(driver.init(caps), runType, port, false);
+    return new AppiumDriver(driver.init(caps), runType, port, false);
 }
 
 function configureLogging(driver) {
