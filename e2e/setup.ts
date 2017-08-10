@@ -1,5 +1,4 @@
 import * as setup from "nativescript-dev-appium";
-import * as portastic from "portastic";
 
 before("setup server", async () => {
     console.log("Setting up server");

@@ -5,6 +5,7 @@ import * as child_process from "child_process";
 import * as utils from "./utils";
 import * as elementFinder from "./element-finder";
 import { ServerOptions } from './server-options';
+import { AppiumDriver } from './appium-driver';
 import { createAppiumDriver } from './appium-driver';
 export * from "./appium-driver";
 
