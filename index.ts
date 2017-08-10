@@ -6,15 +6,16 @@ import * as utils from "./utils";
 import * as elementFinder from "./element-finder";
 import { ServerOptions } from './server-options';
 import { AppiumDriver } from './appium-driver';
+import { ElementHelper } from './element-helper';
 import { createAppiumDriver } from './appium-driver';
 export * from "./appium-driver";
 
 const config = (() => {
     const options = yargs
         .option("runType", { describe: "Path to excute command.", type: "string", default: null })
-        .option("path", { alias: "p", describe: "Path to app root.", default: process.cwd, type: "string" })
-        .option("testFolder", { describe: "E2e test folder name", default: "e2e", type: "string" })
-        .option("capsLocation", { describe: "Capabilities location", type: "string" })
+        .option("path", { alias: "p", describe: "Path to app root.", default: process.cwd(), type: "string" })
+        .option("testFolder", { describe: "e2e test folder name", default: "e2e", type: "string" })
+        .option("capabilities", { describe: "Capabilities", type: "string" })
         .option("sauceLab", { describe: "SauceLab", default: false, type: "boolean" })
         .option("verbose", { alias: "v", describe: "Log actions", default: false, type: "boolean" })
         .help()
@@ -25,7 +26,7 @@ const config = (() => {
         loglevel: options.verbose,
         testFolder: options.testFolder,
         runType: options.runType || process.env.npm_config_runType,
-        capsLocation: options.capsLocation || path.join(options.testFolder, "config"),
+        capabilities: options.capabilities || path.join(options.path, options.testFolder, "config", utils.capabilitiesName),
         isSauceLab: options.sauceLab
     }
     return config;
@@ -36,7 +37,7 @@ const {
     loglevel,
     testFolder,
     runType,
-    capsLocation,
+    capabilities,
     isSauceLab
 } = config;
 
@@ -89,18 +90,13 @@ export function killAppiumServer() {
     }
 }
 
-export function createDriver(capabilities?, activityName?) {
-    return createAppiumDriver(runType, serverOptoins.port);
+export function createDriver() {
+    return createAppiumDriver(runType, serverOptoins.port, capabilities, isSauceLab);
 };
 
-export function getXPathWithExactText(text) {
-    return elementFinder.getXPathByText(text, true, runType);
+export function elementHelper() {
+    return new ElementHelper(runType);
 }
 
-export function getXPathContainingText(text) {
-    return elementFinder.getXPathByText(text, false, runType);
-}
-
-export function getElementClass(name) {
-    return elementFinder.getElementClass(name, runType);
-}
+process.on("exit", (server) => utils.shutdown(server));
+process.on('uncaughtException', (server) => utils.shutdown(server)); 

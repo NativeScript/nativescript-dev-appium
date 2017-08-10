@@ -1,6 +1,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as childProcess from "child_process";
+require('colors');
 
 export const verbose = process.env.npm_config_loglevel === "verbose";
 export const testFolder = process.env.npm_config_testFolder || "e2e";
@@ -8,7 +9,6 @@ export const mochaCustomOptions = process.env.npm_config_mochaOptions;
 export const capabilitiesName = "appium.capabilities.json";
 export const appLocation = process.env.npm_config_appLocation;
 export const executionPath = process.env.npm_config_executionPath;
-
 
 export function resolve(mainPath, ...args) {
     if (!path.isAbsolute(mainPath)) {
@@ -115,7 +115,7 @@ function isDirectory(fullName) {
     return false;
 }
 
-function isFile(fullName) {
+export function isFile(fullName) {
     try {
         if (fs.statSync(fullName).isFile()) {
             return true;
@@ -164,11 +164,9 @@ function createRegexPattern(text) {
     return regex;
 }
 
-function contains(source, check) {
+export function contains(source, check) {
     return source.indexOf(check) >= 0;
 }
-
-exports.contains = contains;
 
 // Search for files and folders. If shoud not match, than the filter will skip this words. Could be use with wildcards
 export function searchFiles(folder, words, recursive: boolean = true, files = new Array()): Array<string> {
@@ -192,14 +190,12 @@ export function log(message) {
         console.log(message);
     }
 }
-exports.log = log;
 
 export function loglogOut(line, force) {
     if (verbose || force) {
         process.stdout.write(line);
     }
 }
-exports.logOut = loglogOut;
 
 export function logErr(line, force) {
     if (verbose || force) {
@@ -207,20 +203,25 @@ export function logErr(line, force) {
     }
 }
 
-function shutdown(processToKill) {
-    if (processToKill) {
-        if (process.platform === "win32") {
-            killPid(processToKill.pid);
-        } else {
-            processToKill.kill();
+export function shutdown(processToKill) {
+    try {
+        if (processToKill) {
+            if (process.platform === "win32") {
+                killPid(processToKill.pid);
+            } else {
+                processToKill.kill();
+            }
+            processToKill = null;
+            console.log("Shut down!!!");
         }
-        processToKill = null;
+    } catch (error) {
+        logErr(error, true);
     }
 }
-exports.shutdown = shutdown;
 
 function killPid(pid) {
     let output = childProcess.execSync('taskkill /PID ' + pid + ' /T /F');
+    log(output);
 }
 
 export function waitForOutput(process, matcher, timeout) {
