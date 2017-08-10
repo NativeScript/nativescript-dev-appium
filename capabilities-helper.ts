@@ -1,49 +1,35 @@
-
-'use strict'
-
 import * as  path from "path";
 import * as fs from "fs";
 import * as utils from "./utils";
 const projectDir = utils.projectDir();
 
 export function searchCustomCapabilities(capabilitiesLocation) {
-    let cap = {};
-
-    if (capabilitiesLocation) {
-        cap = setCustomCapabilities(capabilitiesLocation);
-
-        return cap;
+    // resolve capabilites if exist
+    if (utils.fileExists(capabilitiesLocation) && utils.isFile(capabilitiesLocation)) {
+        return setCustomCapabilities(capabilitiesLocation);
     }
 
-    let customCapabilitiesLocation = utils.resolve(projectDir);
-    console.log("customCapabilitiesLocation ", customCapabilitiesLocation)
-
-
-
-    customCapabilitiesLocation = utils.resolve(customCapabilitiesLocation, "e2e", "config", utils.capabilitiesName);
+    // search for default capabilites
+    let customCapabilitiesLocation = utils.searchFiles(projectDir, utils.capabilitiesName)[0];
     if (utils.fileExists(customCapabilitiesLocation)) {
-        cap = setCustomCapabilities(customCapabilitiesLocation);
-
-        return cap;
+        return setCustomCapabilities(customCapabilitiesLocation);
     }
 
+    // search in parent folder for capabilities
     const appParentFolder = path.dirname(projectDir);
-
     customCapabilitiesLocation = utils.searchFiles(appParentFolder, utils.capabilitiesName, true)[0];
 
-    console.log("customCapabilitiesLocation ", customCapabilitiesLocation);
-
-
     if (utils.fileExists(customCapabilitiesLocation)) {
-        cap = setCustomCapabilities(customCapabilitiesLocation);
+        return setCustomCapabilities(customCapabilitiesLocation);
     } else {
-        console.log("START")
-        cap = setCustomCapabilities(utils.searchFiles(appParentFolder, utils.capabilitiesName, true)[0]);
-        console.log("END")
-
+        // search for capabilities recursive 
+        let cap = utils.searchFiles(appParentFolder, utils.capabilitiesName, true)[0];
+        if (cap) {
+            setCustomCapabilities(cap);
+        }
     }
 
-    return cap;
+    throw Error("No capabilities found!!!");
 }
 
 function setCustomCapabilities(appiumCapabilitiesLocation) {
@@ -52,5 +38,3 @@ function setCustomCapabilities(appiumCapabilitiesLocation) {
     utils.log("Custom capabilities found at: " + appiumCapabilitiesLocation);
     return file;
 }
-
-exports.searchCustomCapabilities = searchCustomCapabilities;
