@@ -5,6 +5,7 @@ import { searchCustomCapabilities } from "./capabilities-helper";
 require('colors');
 const wd = require("wd");
 const glob = require("glob");
+
 var chai = require("chai");
 var chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);

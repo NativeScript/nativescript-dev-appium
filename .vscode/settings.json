@@ -1,3 +1,18 @@
-// Place your settings in this file to overwrite default and user settings.
 {
+    "typescript.check.tscVersion": false,
+    "window.zoomLevel": 2,
+    "workbench.iconTheme": "vscode-icons",
+    "vsicons.dontShowNewVersionMessage": true,
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "*.js": true,
+        "*.map": true,
+        "*.d.ts": true,
+        "node_modules":true,
+        "*.tgz":true
+    }
 }
