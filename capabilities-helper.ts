@@ -3,6 +3,24 @@ import * as fs from "fs";
 import * as utils from "./utils";
 const projectDir = utils.projectDir();
 
+export function resolveCapabilities(capsLocation: string, runType: string): {} {
+    let caps;
+    let customCapabilitiesConfigs: any = searchCustomCapabilities(capsLocation);
+    if (customCapabilitiesConfigs) {
+        const customCapabilities = JSON.parse(customCapabilitiesConfigs);
+        utils.log(customCapabilities);
+
+        caps = customCapabilities[runType];
+        if (!caps) {
+            throw new Error("Not suitable runType!!!");
+        }
+    } else {
+        throw new Error("No capabilities found!!!");
+    }
+
+    return caps;
+}
+
 export function searchCustomCapabilities(capabilitiesLocation) {
     // resolve capabilites if exist
     if (utils.fileExists(capabilitiesLocation) && utils.isFile(capabilitiesLocation)) {

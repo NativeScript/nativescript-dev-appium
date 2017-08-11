@@ -4,6 +4,7 @@ import * as yargs from 'yargs';
 import * as child_process from "child_process";
 import * as utils from "./utils";
 import * as elementFinder from "./element-finder";
+import * as capabilitiesHelper from "./capabilities-helper";
 import { ServerOptions } from './server-options';
 import { AppiumDriver } from './appium-driver';
 import { ElementHelper } from './element-helper';
@@ -35,18 +36,18 @@ const config = (() => {
 const {
     executionPath,
     loglevel,
+    capabilities,
     testFolder,
     runType,
-    capabilities,
     isSauceLab
 } = config;
 
 const appLocation = utils.appLocation;
-let appium = process.platform === "win32" ? "appium.cmd" : "appium";
 const projectDir = utils.projectDir();
 const pluginBinary = utils.pluginBinary();
 const projectBinary = utils.projectBinary();
 const pluginRoot = utils.pluginRoot();
+let appium = process.platform === "win32" ? "appium.cmd" : "appium";
 const pluginAppiumBinary = utils.resolve(pluginBinary, appium);
 const projectAppiumBinary = utils.resolve(projectBinary, appium);
 
@@ -90,12 +91,14 @@ export function killAppiumServer() {
     }
 }
 
+const caps: any = capabilitiesHelper.resolveCapabilities(capabilities, runType);
+
 export function createDriver() {
-    return createAppiumDriver(runType, serverOptoins.port, capabilities, isSauceLab);
+    return createAppiumDriver(runType, serverOptoins.port, caps, isSauceLab);
 };
 
 export function elementHelper() {
-    return new ElementHelper(runType);
+    return new ElementHelper(caps.platform, caps.platformVersion);
 }
 
 process.on("exit", (server) => utils.shutdown(server));

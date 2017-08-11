@@ -2,42 +2,42 @@ import { contains } from "./utils";
 
 export class ElementHelper {
 
-    constructor(private runType: string) { }
+    constructor(private platform: string, private platformVersion: number) { }
 
     public getXPathElement(name) {
         const tempName = name.toLowerCase().replace(/\-/g, "");
-        if (contains(this.runType, "android")) {
+        if (contains(this.platform, "android")) {
             return this.getAndroidClass(tempName);
         } else {
-            return this.getiOSClassByName(tempName, this.runType);
+            return this.getiOSClassByName(tempName, this.platformVersion);
         }
     };
 
     public getElementClass(name) {
         const tempName = name.toLowerCase().replace(/\-/g, "");
-        if (contains(this.runType, "android")) {
+        if (contains(this.platform, "android")) {
             return this.getAndroidClass(tempName);
         } else {
-            return this.getiOSClassByName(tempName, this.runType);
+            return this.getiOSClassByName(tempName, this.platformVersion);
         }
     }
 
-    public getXPathByText(text, exactMatch, testRunType) {
+    public getXPathByText(text, exactMatch) {
         return this.findByTextLocator("*", text, exactMatch);
     }
 
     public getXPathWithExactText(text) {
-        return this.getXPathByText(text, true, this.runType);
+        return this.getXPathByText(text, true);
     }
 
     public getXPathContainingText(text) {
-        return this.getXPathByText(text, false, this.runType);
+        return this.getXPathByText(text, false);
     }
 
     public findByTextLocator(controlType, value, exactMatch) {
         console.log("Should be exact match: " + exactMatch);
         let artbutes = ["label", "value", "hint"];
-        if (contains(this.runType, "android")) {
+        if (contains(this.platform, "android")) {
             artbutes = ["content-desc", "resource-id", "text"];
         }
 
@@ -117,67 +117,67 @@ export class ElementHelper {
     private getiOSClassByName(name, caps) {
         switch (name) {
             case "activityindicator":
-                return this.createIosElement("ActivityIndicator", caps);
+                return this.createIosElement("ActivityIndicator");
             case "button":
-                return this.createIosElement("Button", caps);
+                return this.createIosElement("Button");
             case "datepicker":
-                return this.createIosElement("DatePicker", caps);
+                return this.createIosElement("DatePicker");
             case "htmlview":
-                return this.createIosElement("TextView", caps);
+                return this.createIosElement("TextView");
             case "image":
-                return this.createIosElement("ImageView", caps);
+                return this.createIosElement("ImageView");
             case "label":
-                return this.createIosElement("StaticText", caps);
+                return this.createIosElement("StaticText");
             case "absolutelayout":
-                return this.createIosElement("View", caps);
+                return this.createIosElement("View");
             case "docklayout":
-                return this.createIosElement("View", caps);
+                return this.createIosElement("View");
             case "gridlayout":
-                return this.createIosElement("View", caps);
+                return this.createIosElement("View");
             case "stacklayout":
-                return this.createIosElement("View", caps);
+                return this.createIosElement("View");
             case "wraplayout":
-                return this.createIosElement("View", caps);
+                return this.createIosElement("View");
             case "listpicker":
-                return this.createIosElement("Picker", caps);
+                return this.createIosElement("Picker");
             case "listview":
-                return this.createIosElement("Table", caps);
+                return this.createIosElement("Table");
             case "progress":
-                return this.createIosElement("ProgressIndicator", caps);
+                return this.createIosElement("ProgressIndicator");
             case "scrollview":
-                return this.createIosElement("ScrollView", caps);
+                return this.createIosElement("ScrollView");
             case "hscrollview":
-                return this.createIosElement("ScrollView", caps);
+                return this.createIosElement("ScrollView");
             case "vscrollview":
-                return this.createIosElement("ScrollView", caps);
+                return this.createIosElement("ScrollView");
             case "searchbar":
-                return this.createIosElement("SearchField", caps);
+                return this.createIosElement("SearchField");
             case "segmentedbar":
-                return this.createIosElement("SegmentedControl", caps);
+                return this.createIosElement("SegmentedControl");
             case "slider":
-                return this.createIosElement("Slider", caps);
+                return this.createIosElement("Slider");
             case "switch":
-                return this.createIosElement("Switch", caps);
+                return this.createIosElement("Switch");
             case "tabview":
                 return "XCUIElementTypeTabBarItem";
             case "textview":
-                return this.createIosElement("TextView", caps);
+                return this.createIosElement("TextView");
             case "textfield":
-                return this.createIosElement("TextField", caps);
+                return this.createIosElement("TextField");
             case "securetextfield":
-                return this.createIosElement("SecureTextField", caps);
+                return this.createIosElement("SecureTextField");
             case "timepicker":
-                return this.createIosElement("DatePicker", caps);
+                return this.createIosElement("DatePicker");
             case "webview":
-                return this.createIosElement("WebView", caps);
+                return this.createIosElement("WebView");
         }
 
         throw new Error("This " + name + " does not appear to to be a standard NativeScript UI component.");
     }
 
-    private createIosElement(element, caps) {
+    private createIosElement(element) {
         let elementType = "UIA";
-        if (contains(caps.platformVersion, "10")) {
+        if (contains(this.platformVersion, "10")) {
             elementType = "XCUIElementType";
         }
 

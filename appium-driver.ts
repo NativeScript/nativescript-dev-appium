@@ -12,8 +12,7 @@ import * as  utils from "./utils";
 import * as  path from "path";
 import * as glob from "glob";
 
-export function createAppiumDriver(runType, port, capsLocation?: string, isSauceLab: boolean = false) {
-    const caps = resolveCapabilities(capsLocation)[runType];
+export function createAppiumDriver(runType, port, caps, isSauceLab: boolean = false): AppiumDriver {
     let driverConfig = {
         host: "localhost",
         port: port
@@ -41,12 +40,12 @@ export function createAppiumDriver(runType, port, capsLocation?: string, isSauce
         caps.app = isSauceLab ? "sauce-storage:" + utils.appLocation : utils.appLocation;
     } else if (!caps.app) {
         console.log("Getting caps.app!");
-        caps.app = getAppPath(runType);
+        caps.app = getAppPath(caps.platformName, runType);
     }
 
     console.log("Creating driver!");
 
-    return new AppiumDriver(driver.init(caps), runType, port, false);
+    return new AppiumDriver(driver.init(caps), runType, port, caps, false);
 }
 
 function configureLogging(driver) {
@@ -61,44 +60,42 @@ function configureLogging(driver) {
     });
 };
 
-function getAppPath(runType) {
-    console.log("runType " + runType);
-    const platform = runType.toLowerCase();
+function getAppPath(platform, runType) {
     if (platform.includes("android")) {
         const apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
         return apks[0];
     } else if (platform.includes("ios")) {
-        if (platform.includes("sim")) {
+        if (runType.includes("sim")) {
             const simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
             return simulatorApps[0];
-        } else if (platform.includes("device")) {
+        } else if (runType.includes("device")) {
             const deviceApps = glob.sync("platforms/ios/build/device/**/*.ipa");
             return deviceApps[0];
         }
     } else {
-        throw new Error("No 'app' capability provided and incorrect 'runType' convention used: " + this._runType +
-            ". In order to automatically search and locate app package please use 'android','ios-device','ios-simulator' in your 'runType' option. E.g --runType=android23, --runType=ios-simulator10iPhone6");
+        throw new Error("No 'app' capability provided and incorrect 'runType' convention used: " + runType +
+            ". In order to automatically search and locate app package please use 'android','ios-device','ios-simulator' in your 'runType' option. E.g --runType android23, --runType ios-simulator10iPhone6");
     }
 };
-
-function resolveCapabilities(capsLocation): {} {
-    let customCapabilitiesConfigs: any = searchCustomCapabilities(capsLocation);
-    if (customCapabilitiesConfigs) {
-        const customCapabilities = JSON.parse(customCapabilitiesConfigs);
-        utils.log(customCapabilities);
-
-        return customCapabilities;
-    } else {
-        throw Error("No capabilities found!!!");
-    }
-}
 
 export class AppiumDriver {
     private static defaultWaitTime: number = 5000;
     private elementHelper: ElementHelper;
 
-    constructor(private _driver: any, private _runType: string, private _port: number, private _isSauceLab: boolean = false, private _capsLocation?: string) {
-        this.elementHelper = new ElementHelper(this._runType);
+    constructor(private _driver: any, private _runType: string, private _port: number, private caps, private _isSauceLab: boolean = false, private _capsLocation?: string) {
+        this.elementHelper = new ElementHelper(this.caps.platform, this.caps.platformName);
+    }
+
+    get capabilities() {
+        return this.caps;
+    }
+
+    get platformName() {
+        return this.caps.platformName;
+    }
+
+    get platformVesrion() {
+        return this.caps.platformVesrion;
     }
 
     get driver() {
@@ -115,7 +112,7 @@ export class AppiumDriver {
 
     public findElementByText(text: string, match: 'exact' | 'contains', waitForElement: number = AppiumDriver.defaultWaitTime) {
         const shouldMatch = match == 'exact' ? true : false;
-        return this.findElementByXPath(this.elementHelper.getXPathByText(text, shouldMatch, this._runType), waitForElement);
+        return this.findElementByXPath(this.elementHelper.getXPathByText(text, shouldMatch), waitForElement);
     }
 
     public click() {
