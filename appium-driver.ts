@@ -63,12 +63,12 @@ function configureLogging(driver) {
 
 function getAppPath(runType) {
     console.log("runType " + runType);
-    const platform = runType.tolower();
+    const platform = runType.toLowerCase();
     if (platform.includes("android")) {
         const apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
         return apks[0];
     } else if (platform.includes("ios")) {
-        if (platform.tolower().includes("sim")) {
+        if (platform.includes("sim")) {
             const simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
             return simulatorApps[0];
         } else if (platform.includes("device")) {
