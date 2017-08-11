@@ -9,6 +9,7 @@ import { ServerOptions } from './server-options';
 import { AppiumDriver } from './appium-driver';
 import { ElementHelper } from './element-helper';
 import { createAppiumDriver } from './appium-driver';
+import { startAppiumServer, stopAppiumServer } from './appium-server';
 export * from "./appium-driver";
 
 const config = (() => {
@@ -61,35 +62,7 @@ if (fs.existsSync(pluginAppiumBinary)) {
     utils.log("Using global Appium binary.");
 }
 
-let server;
 const serverOptoins = new ServerOptions(9200);
-export function startAppiumServer(port) {
-    serverOptoins.port = port || serverOptoins.port;
-    server = child_process.spawn(appium, ["-p", port], {
-        shell: true,
-        detached: false
-    });
-
-    return utils.waitForOutput(server, /listener started/, 60000);
-}
-
-export function killAppiumServer() {
-    // todo: check if allready dead?
-    var isAlive = true;
-    if (isAlive) {
-        return new Promise((resolve, reject) => {
-            server.on("close", (code, signal) => {
-                console.log(`Appium terminated due ${signal}`);
-                resolve();
-            });
-            // TODO: What about "error".
-            server.kill('SIGINT');
-            server = null;
-        });
-    } else {
-        return Promise.resolve();
-    }
-}
 
 const caps: any = capabilitiesHelper.resolveCapabilities(capabilities, runType);
 
@@ -103,3 +76,15 @@ export function elementHelper() {
 
 process.on("exit", (server) => utils.shutdown(server));
 process.on('uncaughtException', (server) => utils.shutdown(server)); 
+
+export function getElementClass(name) {
+    return elementFinder.getElementClass(name, runType);
+}
+
+export function startServer(port) {
+    return startAppiumServer(serverOptoins.port);
+};
+
+export function stopServer() {
+    return stopAppiumServer(serverOptoins.port);
+};

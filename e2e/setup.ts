@@ -1,10 +1,10 @@
-import * as setup from "nativescript-dev-appium";
+import { startServer, stopServer } from "nativescript-dev-appium";
 
-before("setup server", async () => {
-    console.log("Setting up server");
+before("start server", async () => {
+    console.log("Starting server ...");
     const port = 9191;
-    await setup.startAppiumServer(port);
-    console.log("Server is started");
+    await startServer(port);
+    console.log("Server started!");
 });
 
 before("setup driver", async () => {
@@ -15,7 +15,7 @@ after("kill driver", async () => {
     console.log("Kill driver");
 });
 
-after("kill server", async () => {
-    await setup.killAppiumServer();
-    console.log("Server stopped");
+after("stop server", async () => {
+    await stopServer();
+    console.log("Server stopped!");
 });
