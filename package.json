@@ -3,11 +3,6 @@
   "version": "2.0.0",
   "description": "A NativeScript plugin to help integrate and run Appium tests",
   "main": "index.js",
-  "scripts": {
-    "postinstall": "node postinstall.js",
-    "appium": "nativescript-dev-appium",
-    "e2e": "tsc -p e2e && mocha --opts ./e2e/config/mocha.opts --"
-  },
   "keywords": [
     "nativescript",
     "appium",
@@ -46,5 +41,10 @@
     "wd": "^1.4.0",
     "@types/chai": "^4.0.2",
     "@types/mocha": "^2.2.41"
+  },
+  "scripts": {
+    "postinstall": "node postinstall.js",
+    "tsc": "tsc --watch",
+    "e2e": "tsc -p e2e && mocha --opts ./e2e/config/mocha.opts --"
   }
 }
