@@ -63,15 +63,18 @@ function configureLogging(driver) {
 
 function getAppPath(runType) {
     console.log("runType " + runType);
-    if (runType.includes("android")) {
+    const platform = runType.tolower();
+    if (platform.includes("android")) {
         const apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
         return apks[0];
-    } else if (runType.includes("ios-simulator")) {
-        const simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
-        return simulatorApps[0];
-    } else if (runType.includes("ios-device")) {
-        const deviceApps = glob.sync("platforms/ios/build/device/**/*.ipa");
-        return deviceApps[0];
+    } else if (platform.includes("ios")) {
+        if (platform.tolower().includes("sim")) {
+            const simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
+            return simulatorApps[0];
+        } else if (platform.includes("device")) {
+            const deviceApps = glob.sync("platforms/ios/build/device/**/*.ipa");
+            return deviceApps[0];
+        }
     } else {
         throw new Error("No 'app' capability provided and incorrect 'runType' convention used: " + this._runType +
             ". In order to automatically search and locate app package please use 'android','ios-device','ios-simulator' in your 'runType' option. E.g --runType=android23, --runType=ios-simulator10iPhone6");
@@ -104,6 +107,10 @@ export class AppiumDriver {
 
     public findElementByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
         return this._driver.waitForElementByXPath(xPath, waitForElement);
+    }
+
+    public findElementsByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
+        return this._driver.waitForElementsByXPath(xPath, waitForElement);
     }
 
     public findElementByText(text: string, match: 'exact' | 'contains', waitForElement: number = AppiumDriver.defaultWaitTime) {

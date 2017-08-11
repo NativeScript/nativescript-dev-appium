@@ -59,7 +59,7 @@
         "fullReset": true,
         "app": ""
     },
-    "ios-simulator.iPhone7.ios10": {
+    "ios.sim.iPhone7.100": {
         "browserName": "",
         "appium-version": "1.6.5",
         "platformName": "iOS",
