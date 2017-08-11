@@ -12,8 +12,8 @@ import * as  utils from "./utils";
 import * as  path from "path";
 import * as glob from "glob";
 
-export function createAppiumDriver(runType, port, caps, isSauceLab: boolean = false): AppiumDriver {
-    let driverConfig = {
+export function createAppiumDriver(runType: string, port: number, caps: any, isSauceLab: boolean = false): AppiumDriver {
+    let driverConfig: any = {
         host: "localhost",
         port: port
     };
@@ -26,10 +26,8 @@ export function createAppiumDriver(runType, port, caps, isSauceLab: boolean = fa
             throw new Error("Sauce Labs Username or Access Key is missing! Check environment variables for SAUCE_USER and SAUCE_KEY !!!");
         }
 
-        // TODO: Should be tested
         driverConfig = {
-            host: "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub",
-            port: ""
+            host: "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub"
         }
     }
 
@@ -40,11 +38,10 @@ export function createAppiumDriver(runType, port, caps, isSauceLab: boolean = fa
         caps.app = isSauceLab ? "sauce-storage:" + utils.appLocation : utils.appLocation;
     } else if (!caps.app) {
         console.log("Getting caps.app!");
-        caps.app = getAppPath(caps.platformName, runType);
+        caps.app = getAppPath(caps.platformName.toLowerCase(), runType.toLowerCase());
     }
 
-    console.log("Creating driver!");
-
+    utils.log("Creating driver!");
     return new AppiumDriver(driver.init(caps), runType, port, caps, false);
 }
 
@@ -83,7 +80,7 @@ export class AppiumDriver {
     private elementHelper: ElementHelper;
 
     constructor(private _driver: any, private _runType: string, private _port: number, private caps, private _isSauceLab: boolean = false, private _capsLocation?: string) {
-        this.elementHelper = new ElementHelper(this.caps.platform, this.caps.platformName);
+        this.elementHelper = new ElementHelper(this.caps.platformName.toLowerCase(), this.caps.platformVersion.toLowerCase());
     }
 
     get capabilities() {

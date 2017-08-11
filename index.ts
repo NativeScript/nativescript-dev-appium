@@ -3,8 +3,7 @@ import * as path from "path";
 import * as yargs from 'yargs';
 import * as child_process from "child_process";
 import * as utils from "./utils";
-import * as elementFinder from "./element-finder";
-import * as capabilitiesHelper from "./capabilities-helper";
+import { resolveCapabilities } from "./capabilities-helper";
 import { ServerOptions } from './server-options';
 import { AppiumDriver } from './appium-driver';
 import { ElementHelper } from './element-helper';
@@ -12,10 +11,10 @@ import { createAppiumDriver } from './appium-driver';
 import { startAppiumServer, stopAppiumServer } from './appium-server';
 export * from "./appium-driver";
 
+// TODO: Update variables consider also this from utils. 
 const config = (() => {
     const options = yargs
         .option("runType", { describe: "Path to excute command.", type: "string", default: null })
-        .option("path", { alias: "p", describe: "Path to app root.", default: process.cwd(), type: "string" })
         .option("testFolder", { describe: "e2e test folder name", default: "e2e", type: "string" })
         .option("capabilities", { describe: "Capabilities", type: "string" })
         .option("sauceLab", { describe: "SauceLab", default: false, type: "boolean" })
@@ -28,7 +27,7 @@ const config = (() => {
         loglevel: options.verbose,
         testFolder: options.testFolder,
         runType: options.runType || process.env.npm_config_runType,
-        capabilities: options.capabilities || path.join(options.path, options.testFolder, "config", utils.capabilitiesName),
+        capabilities: options.capabilities || path.join(process.cwd(), options.testFolder, "config", utils.capabilitiesName),
         isSauceLab: options.sauceLab
     }
     return config;
@@ -43,44 +42,8 @@ const {
     isSauceLab
 } = config;
 
-const appLocation = utils.appLocation;
-const projectDir = utils.projectDir();
-const pluginBinary = utils.pluginBinary();
-const projectBinary = utils.projectBinary();
-const pluginRoot = utils.pluginRoot();
-let appium = process.platform === "win32" ? "appium.cmd" : "appium";
-const pluginAppiumBinary = utils.resolve(pluginBinary, appium);
-const projectAppiumBinary = utils.resolve(projectBinary, appium);
-
-if (fs.existsSync(pluginAppiumBinary)) {
-    utils.log("Using plugin-local Appium binary.");
-    appium = pluginAppiumBinary;
-} else if (fs.existsSync(projectAppiumBinary)) {
-    utils.log("Using project-local Appium binary.");
-    appium = projectAppiumBinary;
-} else {
-    utils.log("Using global Appium binary.");
-}
-
+// TODO: Remove server options class and use instead AppiumServer
 const serverOptoins = new ServerOptions(9200);
-
-const caps: any = capabilitiesHelper.resolveCapabilities(capabilities, runType);
-
-export function createDriver() {
-    return createAppiumDriver(runType, serverOptoins.port, caps, isSauceLab);
-};
-
-export function elementHelper() {
-    return new ElementHelper(caps.platform, caps.platformVersion);
-}
-
-process.on("exit", (server) => utils.shutdown(server));
-process.on('uncaughtException', (server) => utils.shutdown(server)); 
-
-export function getElementClass(name) {
-    return elementFinder.getElementClass(name, runType);
-}
-
 export function startServer(port) {
     return startAppiumServer(serverOptoins.port);
 };
@@ -88,3 +51,21 @@ export function startServer(port) {
 export function stopServer() {
     return stopAppiumServer(serverOptoins.port);
 };
+
+const caps: any = resolveCapabilities(capabilities, runType);
+export function createDriver() {
+    if (!caps) {
+        throw new Error("Provided path to appium capabilities is not correct!");
+    }
+    if (!runType) {
+        throw new Error("--runType is missing! Make sure it is provided correctly! It is used to parse the configuration for appium driver!");
+    }
+    return createAppiumDriver(runType, serverOptoins.port, caps, isSauceLab);
+};
+
+export function elementHelper() {
+    return new ElementHelper(this.caps.platformName.toLowerCase(), this.caps.platformVersion.toLowerCase());
+}
+
+process.on("exit", (server) => utils.shutdown(server));
+process.on('uncaughtException', (server) => utils.shutdown(server)); 

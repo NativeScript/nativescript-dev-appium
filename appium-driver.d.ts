@@ -1,5 +1,5 @@
 export declare var should: any;
-export declare function createAppiumDriver(runType: any, port: any, caps: any, isSauceLab?: boolean): AppiumDriver;
+export declare function createAppiumDriver(runType: string, port: number, caps: any, isSauceLab?: boolean): AppiumDriver;
 export declare class AppiumDriver {
     private _driver;
     private _runType;
