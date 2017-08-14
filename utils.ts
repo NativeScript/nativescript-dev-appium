@@ -63,7 +63,7 @@ export function fileExists(p) {
 export function executeNpmInstall(cwd) {
     let spawnArgs = [];
     let command = "";
-    if (/^win/.test(process.platform)) {
+    if (isWin()) {
         command = "cmd.exe"
         spawnArgs = ["/c", "npm", "install"];
     } else {
@@ -242,18 +242,18 @@ export function waitForOutput(process, matcher, timeout) {
     });
 }
 
-export function executeCommand(args, cwd?) {
+export function executeCommand(args, cwd?): string {
     cwd = cwd || process.cwd();
-    let command;
-    if (/^win/.test(process.platform)) {
-        command = "cmd.exe"
-    }
 
-    const output = childProcess.spawnSync(command, args.split(" "), {
+    const output = childProcess.spawnSync("", args.split(" "), {
         shell: true,
         cwd: process.cwd(),
         encoding: "UTF8"
     });
 
-    return output.output[1].trim();
+    return output.output[1].toString();
+}
+
+export function isWin() {
+    return /^win/.test(process.platform);
 }

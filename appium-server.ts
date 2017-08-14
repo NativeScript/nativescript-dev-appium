@@ -52,7 +52,11 @@ export class AppiumServer {
             utils.log("Using project-local Appium binary.");
             appium = projectAppiumBinary;
         } else {
-            appium = utils.executeCommand("which appium");
+            const innerCommand = utils.isWin() ? "where" : "which";
+            appium = utils.executeCommand(innerCommand + " appium").split("\n")[0];
+            if (appium && utils.isWin() && !appium.endsWith("cmd")) {
+                appium = utils.resolve(path.dirname(appium), "node_modules", "appium");
+            }
             utils.log("Using global Appium binary. " + appium);
         }
 
