@@ -11,6 +11,7 @@ import { ElementHelper } from "./element-helper";
 import * as  utils from "./utils";
 import * as  path from "path";
 import * as glob from "glob";
+import * as fs from "fs";
 
 export function createAppiumDriver(runType: string, port: number, caps: any, isSauceLab: boolean = false): AppiumDriver {
     let driverConfig: any = {
@@ -118,6 +119,16 @@ export class AppiumDriver {
 
     public tap() {
         return this._driver.tap();
+    }
+
+    public takeScreenshot(fileName: string) {
+        return this._driver.takeScreenshot().then(
+            function(image, err) {
+                fs.writeFile(fileName, image, 'base64', function(err) {
+                    console.log(err);
+                });
+            }
+        );
     }
 
     public quit() {

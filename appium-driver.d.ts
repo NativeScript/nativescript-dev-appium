@@ -19,5 +19,6 @@ export declare class AppiumDriver {
     findElementByText(text: string, match: 'exact' | 'contains', waitForElement?: number): any;
     click(): any;
     tap(): any;
+    takeScreenshot(fileName: string): any;
     quit(): any;
 }
