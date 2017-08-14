@@ -3,12 +3,11 @@ import * as path from "path";
 import * as yargs from 'yargs';
 import * as child_process from "child_process";
 import * as utils from "./utils";
+import { AppiumServer } from './appium-server';
 import { resolveCapabilities } from "./capabilities-helper";
-import { ServerOptions } from './server-options';
 import { AppiumDriver } from './appium-driver';
 import { ElementHelper } from './element-helper';
 import { createAppiumDriver } from './appium-driver';
-import { startAppiumServer, stopAppiumServer } from './appium-server';
 export * from "./appium-driver";
 
 // TODO: Update variables consider also this from utils. 
@@ -42,14 +41,14 @@ const {
     isSauceLab
 } = config;
 
-// TODO: Remove server options class and use instead AppiumServer
-const serverOptoins = new ServerOptions(9200);
-export function startServer(port) {
-    return startAppiumServer(serverOptoins.port);
+const server = new AppiumServer(9200);
+
+export function startServer() {
+    return server.start();
 };
 
 export function stopServer() {
-    return stopAppiumServer(serverOptoins.port);
+    return server.stop();
 };
 
 const caps: any = resolveCapabilities(capabilities, runType);
@@ -60,7 +59,7 @@ export function createDriver() {
     if (!runType) {
         throw new Error("--runType is missing! Make sure it is provided correctly! It is used to parse the configuration for appium driver!");
     }
-    return createAppiumDriver(runType, serverOptoins.port, caps, isSauceLab);
+    return createAppiumDriver(runType, server.port, caps, isSauceLab);
 };
 
 export function elementHelper() {

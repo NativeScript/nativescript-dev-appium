@@ -5,9 +5,7 @@ export declare class AppiumServer {
     constructor(_port: number);
     port: number;
     readonly server: any;
-    start(): void;
-    stop(): void;
+    start(): Promise<{}>;
+    stop(): Promise<void> | Promise<{}>;
     private resolveAppiumDependency();
 }
-export declare function startAppiumServer(port: any): Promise<{}>;
-export declare function stopAppiumServer(port: any): Promise<void> | Promise<{}>;

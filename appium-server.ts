@@ -5,13 +5,13 @@ import * as utils from "./utils";
 export class AppiumServer {
     private _appium;
     private _server;
+
     constructor(private _port: number) {
         this.resolveAppiumDependency();
     }
 
-    // This is need to be passed to appium driver
     get port() {
-        utils.log("PORT " + this._port)
+        utils.log("PORT: " + this._port)
         return this._port;
     }
 
@@ -19,14 +19,36 @@ export class AppiumServer {
         this._port = port;
     }
 
-    // This is for the process
     get server() {
         return this._server;
     }
 
-    public start() { }
+    public start() {
+        utils.log("Starting server ...");
+        this._server = child_process.spawn(this._appium, ["-p", this._port.toString()], {
+            shell: true,
+            detached: false
+        });
+        return utils.waitForOutput(this._server, /listener started/, 60000);
+    }
 
-    public stop() { }
+    public stop() {
+        utils.log("Stopping server ...");
+        var isAlive = true;
+        if (isAlive) {
+            return new Promise((resolve, reject) => {
+                this._server.on("close", (code, signal) => {
+                    console.log(`Appium terminated due ${signal}`);
+                    resolve();
+                });
+                // TODO: What about "error".
+                this._server.kill('SIGINT');
+                this._server = null;
+            });
+        } else {
+            return Promise.resolve();
+        }
+    }
 
     // Resolve appium dependency
     private resolveAppiumDependency() {
@@ -52,34 +74,3 @@ export class AppiumServer {
         this._appium = appium;
     }
 }
-
-// TODO Move in AppiumServer class
-let server;
-
-export function startAppiumServer(port) {
-    // Here should be used this.appium / this.port
-    server = child_process.spawn("appium", ["-p", port], {
-        shell: true,
-        detached: false
-    });
-    return utils.waitForOutput(server, /listener started/, 60000);
-}
-
-export function stopAppiumServer(port) {
-    // todo: check if allready dead?
-    var isAlive = true;
-    if (isAlive) {
-        return new Promise((resolve, reject) => {
-            server.on("close", (code, signal) => {
-                console.log(`Appium terminated due ${signal}`);
-                resolve();
-            });
-            // TODO: What about "error".
-            server.kill('SIGINT');
-            server = null;
-        });
-    } else {
-        return Promise.resolve();
-    }
-}
-
