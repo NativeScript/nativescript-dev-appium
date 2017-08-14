@@ -241,3 +241,19 @@ export function waitForOutput(process, matcher, timeout) {
         });
     });
 }
+
+export function executeCommand(args, cwd?) {
+    cwd = cwd || process.cwd();
+    let command;
+    if (/^win/.test(process.platform)) {
+        command = "cmd.exe"
+    }
+
+    const output = childProcess.spawnSync(command, args.split(" "), {
+        shell: true,
+        cwd: process.cwd(),
+        encoding: "UTF8"
+    });
+
+    return output.output[1].trim();
+}

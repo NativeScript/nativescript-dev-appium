@@ -8,6 +8,7 @@ import { resolveCapabilities } from "./capabilities-helper";
 import { AppiumDriver } from './appium-driver';
 import { ElementHelper } from './element-helper';
 import { createAppiumDriver } from './appium-driver';
+import * as portastic from "portastic";
 export * from "./appium-driver";
 
 // TODO: Update variables consider also this from utils. 
@@ -17,12 +18,14 @@ const config = (() => {
         .option("testFolder", { describe: "e2e test folder name", default: "e2e", type: "string" })
         .option("capabilities", { describe: "Capabilities", type: "string" })
         .option("sauceLab", { describe: "SauceLab", default: false, type: "boolean" })
+        .option("port", { alias: "p", describe: "Execution port", type: "string" })
         .option("verbose", { alias: "v", describe: "Log actions", default: false, type: "boolean" })
         .help()
         .argv;
 
     const config = {
         executionPath: options.path,
+        port: options.port,
         loglevel: options.verbose,
         testFolder: options.testFolder,
         runType: options.runType || process.env.npm_config_runType,
@@ -41,10 +44,14 @@ const {
     isSauceLab
 } = config;
 
-const server = new AppiumServer(9200);
+const server = new AppiumServer();
 
-export function startServer() {
-    return server.start();
+export async function startServer(port?: number) {
+    server.port = port || config.port;
+    if (!port) {
+        server.port = (await portastic.find({ min: 8000, max: 9080 }))[0];
+    }
+    return await server.start();
 };
 
 export function stopServer() {

@@ -1,11 +1,11 @@
 export declare class AppiumServer {
-    private _port;
     private _appium;
     private _server;
-    constructor(_port: number);
+    private _port;
+    constructor();
     port: number;
     readonly server: any;
-    start(): Promise<{}>;
-    stop(): Promise<void> | Promise<{}>;
+    start(): Promise<any>;
+    stop(): Promise<void>;
     private resolveAppiumDependency();
 }

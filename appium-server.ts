@@ -1,17 +1,18 @@
 import * as child_process from "child_process";
 import * as fs from "fs";
 import * as utils from "./utils";
+import * as path from "path";
 
 export class AppiumServer {
     private _appium;
     private _server;
+    private _port: number;
 
-    constructor(private _port: number) {
+    constructor() {
         this.resolveAppiumDependency();
     }
 
     get port() {
-        utils.log("PORT: " + this._port)
         return this._port;
     }
 
@@ -23,31 +24,14 @@ export class AppiumServer {
         return this._server;
     }
 
-    public start() {
-        utils.log("Starting server ...");
-        this._server = child_process.spawn(this._appium, ["-p", this._port.toString()], {
-            shell: true,
-            detached: false
-        });
-        return utils.waitForOutput(this._server, /listener started/, 60000);
+    public async start() {
+        this._server = await require(this._appium).main({ "port": this._port });
+
+        return this._server;
     }
 
-    public stop() {
-        utils.log("Stopping server ...");
-        var isAlive = true;
-        if (isAlive) {
-            return new Promise((resolve, reject) => {
-                this._server.on("close", (code, signal) => {
-                    console.log(`Appium terminated due ${signal}`);
-                    resolve();
-                });
-                // TODO: What about "error".
-                this._server.kill('SIGINT');
-                this._server = null;
-            });
-        } else {
-            return Promise.resolve();
-        }
+    public async stop() {
+        await this._server.close();
     }
 
     // Resolve appium dependency
@@ -68,7 +52,8 @@ export class AppiumServer {
             utils.log("Using project-local Appium binary.");
             appium = projectAppiumBinary;
         } else {
-            utils.log("Using global Appium binary.");
+            appium = utils.executeCommand("which appium");
+            utils.log("Using global Appium binary. " + appium);
         }
 
         this._appium = appium;
