@@ -18,10 +18,10 @@ export declare class AppiumDriver {
     readonly driver: any;
     navBack(): Promise<any>;
     findElementByXPath(xPath: string, waitForElement?: number): Promise<UIElement>;
-    findElementsByXPath(xPath: string, waitForElement?: number): Promise<UIElement>;
+    findElementsByXPath(xPath: string, waitForElement?: number): Promise<any>;
     findElementByText(text: string, match?: SearchOptions, waitForElement?: number): Promise<UIElement>;
-    findElementsByText(text: string, match?: SearchOptions, waitForElement?: number): Promise<UIElement>;
-    findElementsByClassName(className: string, waitForElement?: number): Promise<UIElement>;
+    findElementsByText(text: string, match?: SearchOptions, waitForElement?: number): Promise<any>;
+    findElementsByClassName(className: string, waitForElement?: number): Promise<any>;
     takeScreenshot(fileName: string): any;
     quit(): Promise<void>;
 }

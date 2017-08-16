@@ -8,21 +8,21 @@ export class UIElement {
     }
 
     public async tap() {
-        return await this.element.element.tap();
+        return await this.element.tap();
     }
 
     public async location() {
-        const location = await this.element.element.getLocation();
+        const location = await this.element.getLocation();
         const point = new Point(location.x, location.y);
         return point;
     }
 
     public async size() {
-        return await this.element.element.size();
+        return await this.element.size();
     }
 
     public async text() {
-        return await this.element.element.text();
+        return await this.element.text();
     }
 
     public async driver() {
@@ -30,18 +30,18 @@ export class UIElement {
     }
 
     public async log() {
-        console.log(await this.element.element);
+        console.log(await this.element);
     }
 
     public async isDisplayed() {
-        return await this.element.element.isDisplayed();
+        return await this.element.isDisplayed();
     }
 
     public async getAttribute(attr) {
-        return await this.element.element.getAttribute(attr);
+        return await this.element.getAttribute(attr);
     }
 
     public async isVisible(){
-        
+        this.element;
     }
 }

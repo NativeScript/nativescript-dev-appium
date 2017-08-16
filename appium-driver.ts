@@ -111,24 +111,24 @@ export class AppiumDriver {
     }
 
     public async findElementsByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
-        return new UIElement(await this._driver.waitForElementsByXPath(xPath, waitForElement));
+        return await this._driver.waitForElementsByXPath(xPath, waitForElement);
     }
 
     public async findElementByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const shouldMatch = match === SearchOptions.exact ? true : false;
-        return new UIElement(await this.findElementByXPath(this.elementHelper.getXPathByText(text, shouldMatch), waitForElement));
+        return await this.findElementByXPath(this.elementHelper.getXPathByText(text, shouldMatch), waitForElement);
     }
 
     public async findElementsByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const shouldMatch = match === SearchOptions.exact ? true : false;
-        return new UIElement(await this.findElementsByXPath(this.elementHelper.getXPathByText(text, shouldMatch), waitForElement));
+        return await this.findElementsByXPath(this.elementHelper.getXPathByText(text, shouldMatch), waitForElement);
     }
 
     public async findElementsByClassName(className: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const fullClassName = this.elementHelper.getElementClass(className);
-        return new UIElement(await this._driver.waitForElementsByClassName(fullClassName, waitForElement));
+        return await this._driver.waitForElementsByClassName(fullClassName, waitForElement);
     }
-    
+
     public takeScreenshot(fileName: string) {
         return this._driver.takeScreenshot().then(
             function (image, err) {
