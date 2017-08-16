@@ -10,6 +10,7 @@ import { ElementHelper } from './element-helper';
 import { createAppiumDriver } from './appium-driver';
 import * as portastic from "portastic";
 export * from "./appium-driver";
+export * from "./search-options";
 
 // TODO: Update variables consider also this from utils. 
 const config = (() => {
@@ -49,7 +50,7 @@ const server = new AppiumServer();
 export async function startServer(port?: number) {
     server.port = port || config.port;
     if (!port) {
-        server.port = (await portastic.find({ min: 8000, max: 9080 }))[0];
+        server.port = (await portastic.find({ min: 8600, max: 9080 }))[0];
     }
     return await server.start();
 };

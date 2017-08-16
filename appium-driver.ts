@@ -8,6 +8,7 @@ chaiAsPromised.transferPromiseness = wd.transferPromiseness;
 
 import { searchCustomCapabilities } from "./capabilities-helper";
 import { ElementHelper } from "./element-helper";
+import { SearchOptions } from "./search-options";
 import * as  utils from "./utils";
 import * as  path from "path";
 import * as glob from "glob";
@@ -108,9 +109,19 @@ export class AppiumDriver {
         return this._driver.waitForElementsByXPath(xPath, waitForElement);
     }
 
-    public findElementByText(text: string, match: 'exact' | 'contains', waitForElement: number = AppiumDriver.defaultWaitTime) {
-        const shouldMatch = match == 'exact' ? true : false;
+    public findElementByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = AppiumDriver.defaultWaitTime) {
+        const shouldMatch = match === SearchOptions.exact ? true : false;
         return this.findElementByXPath(this.elementHelper.getXPathByText(text, shouldMatch), waitForElement);
+    }
+
+    public findElementsByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = AppiumDriver.defaultWaitTime) {
+        const shouldMatch = match === SearchOptions.exact ? true : false;
+        return this.findElementsByXPath(this.elementHelper.getXPathByText(text, shouldMatch), waitForElement);
+    }
+
+    public findElementsByClassName(className: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
+        const fullClassName = this.elementHelper.getElementClass(className);
+        return this._driver.waitForElementsByClassName(fullClassName, waitForElement);
     }
 
     public click() {
@@ -123,8 +134,8 @@ export class AppiumDriver {
 
     public takeScreenshot(fileName: string) {
         return this._driver.takeScreenshot().then(
-            function(image, err) {
-                fs.writeFile(fileName, image, 'base64', function(err) {
+            function (image, err) {
+                fs.writeFile(fileName, image, 'base64', function (err) {
                     console.log(err);
                 });
             }

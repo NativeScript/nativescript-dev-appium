@@ -1,4 +1,5 @@
 import { contains } from "./utils";
+import { log } from "./utils";
 
 export class ElementHelper {
 
@@ -35,7 +36,7 @@ export class ElementHelper {
     }
 
     public findByTextLocator(controlType, value, exactMatch) {
-        console.log("Should be exact match: " + exactMatch);
+        log("Should be exact match: " + exactMatch);
         let artbutes = ["label", "value", "hint"];
         if (contains(this.platform, "android")) {
             artbutes = ["content-desc", "resource-id", "text"];
@@ -50,7 +51,7 @@ export class ElementHelper {
 
         searchedString = searchedString.substring(0, searchedString.lastIndexOf(" or "));
         const result = "//" + controlType + "[" + searchedString + "]";
-        console.log("Xpath: " + result);
+        log("Xpath: " + result);
 
         return result;
     }

@@ -7,6 +7,7 @@ export class AppiumServer {
     private _appium;
     private _server;
     private _port: number;
+    private _runType: string;
 
     constructor() {
         this.resolveAppiumDependency();
@@ -20,18 +21,43 @@ export class AppiumServer {
         this._port = port;
     }
 
+    set runType(runType: string) {
+        this._runType = runType;
+    }
+
+    get runType(){
+        return this._runType;
+    }
+
     get server() {
         return this._server;
     }
 
     public async start() {
-        this._server = await require(this._appium).main({ "port": this._port });
+        utils.log("Starting server...");
+        this._server = child_process.spawn(this._appium, ["-p", this._port.toString()], {
+            shell: true,
+            detached: false
+        });
 
-        return this._server;
+        return utils.waitForOutput(this._server, /listener started/, 60000);
     }
 
     public async stop() {
-        await this._server.close();
+        utils.log("Stoppiing server...");
+        let isAlive = true;
+        if (isAlive) {
+            return new Promise((resolve, reject) => {
+                this._server.on("close", (code, signal) => {
+                    utils.log(`Appium terminated due ${signal}`);
+                })
+                // TODO: What about error
+                this._server.kill("SIGINT");
+                this._server = null;
+            });
+        } else {
+            return Promise.resolve();
+        }
     }
 
     // Resolve appium dependency
@@ -52,12 +78,7 @@ export class AppiumServer {
             utils.log("Using project-local Appium binary.");
             appium = projectAppiumBinary;
         } else {
-            const innerCommand = utils.isWin() ? "where" : "which";
-            appium = utils.executeCommand(innerCommand + " appium").split("\n")[0];
-            if (appium && utils.isWin() && !appium.endsWith("cmd")) {
-                appium = utils.resolve(path.dirname(appium), "node_modules", "appium");
-            }
-            utils.log("Using global Appium binary. " + appium);
+            utils.log("Using global Appium binary.");
         }
 
         this._appium = appium;

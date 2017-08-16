@@ -61,9 +61,7 @@ export function updatePackageJsonDep(packageJsonPath, isTscProj) {
         add('mocha-junit-reporter', '^1.13.0');
         add('mocha-multi', '^0.11.0');
         add('chai-as-promised', '~7.1.1');
-        add('wd', '^1.4.0');
-        add('colors', '^1.1.2');
-        if (isTscProj) {
+         if (isTscProj) {
             add('tslib', '^1.7.1');
             add("@types/node", "^7.0.5");
             add("@types/chai", "^4.0.2");
