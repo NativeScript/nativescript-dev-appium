@@ -1,4 +1,4 @@
-import { AppiumDriver, createDriver } from "nativescript-dev-appium";
+import { AppiumDriver, createDriver, SearchOptions } from "nativescript-dev-appium";
 
 describe("scenario simple", () => {
     const defaultWaitTime = 5000;
@@ -14,9 +14,9 @@ describe("scenario simple", () => {
     });
 
     it("should find an element", async () => {
-        const tapButton = await driver.findElementByText("TAP", "exact");
+        const tapButton = await driver.findElementByText("TAP");
         await tapButton.click();
-        const messageLabel = await driver.findElementByText("41 taps left", "exact");
+        const messageLabel = await driver.findElementByText("41 taps left", SearchOptions.contains);
         console.log(await messageLabel.text());
     });
 });

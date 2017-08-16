@@ -8,6 +8,6 @@ export declare class AppiumServer {
     runType: string;
     readonly server: any;
     start(): Promise<{}>;
-    stop(): Promise<void | {}>;
+    stop(): Promise<{}>;
     private resolveAppiumDependency();
 }

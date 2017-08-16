@@ -9,7 +9,7 @@ import { AppiumDriver } from './appium-driver';
 import { ElementHelper } from './element-helper';
 import { createAppiumDriver } from './appium-driver';
 import * as portastic from "portastic";
-export * from "./appium-driver";
+export { AppiumDriver }from "./appium-driver";
 export * from "./search-options";
 
 // TODO: Update variables consider also this from utils. 
@@ -46,7 +46,6 @@ const {
 } = config;
 
 const server = new AppiumServer();
-
 export async function startServer(port?: number) {
     server.port = port || config.port;
     if (!port) {
@@ -55,8 +54,8 @@ export async function startServer(port?: number) {
     return await server.start();
 };
 
-export function stopServer() {
-    return server.stop();
+export async function stopServer() {
+    return await server.stop();
 };
 
 const caps: any = resolveCapabilities(capabilities, runType);

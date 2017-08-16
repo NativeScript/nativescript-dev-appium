@@ -1,5 +1,6 @@
 export declare var should: any;
 import { SearchOptions } from "./search-options";
+import { UIElement } from "./ui-element";
 export declare function createAppiumDriver(runType: string, port: number, caps: any, isSauceLab?: boolean): AppiumDriver;
 export declare class AppiumDriver {
     private _driver;
@@ -15,13 +16,11 @@ export declare class AppiumDriver {
     readonly platformName: any;
     readonly platformVesrion: any;
     readonly driver: any;
-    findElementByXPath(xPath: string, waitForElement?: number): any;
-    findElementsByXPath(xPath: string, waitForElement?: number): any;
-    findElementByText(text: string, match?: SearchOptions, waitForElement?: number): any;
-    findElementsByText(text: string, match?: SearchOptions, waitForElement?: number): any;
-    findElementsByClassName(className: string, waitForElement?: number): any;
-    click(): any;
-    tap(): any;
+    findElementByXPath(xPath: string, waitForElement?: number): Promise<UIElement>;
+    findElementsByXPath(xPath: string, waitForElement?: number): Promise<UIElement>;
+    findElementByText(text: string, match?: SearchOptions, waitForElement?: number): Promise<UIElement>;
+    findElementsByText(text: string, match?: SearchOptions, waitForElement?: number): Promise<UIElement>;
+    findElementsByClassName(className: string, waitForElement?: number): Promise<UIElement>;
     takeScreenshot(fileName: string): any;
-    quit(): any;
+    quit(): Promise<void>;
 }

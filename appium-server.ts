@@ -25,7 +25,7 @@ export class AppiumServer {
         this._runType = runType;
     }
 
-    get runType(){
+    get runType() {
         return this._runType;
     }
 
@@ -43,21 +43,16 @@ export class AppiumServer {
         return utils.waitForOutput(this._server, /listener started/, 60000);
     }
 
-    public async stop() {
-        utils.log("Stoppiing server...");
-        let isAlive = true;
-        if (isAlive) {
-            return new Promise((resolve, reject) => {
-                this._server.on("close", (code, signal) => {
-                    utils.log(`Appium terminated due ${signal}`);
-                })
-                // TODO: What about error
-                this._server.kill("SIGINT");
-                this._server = null;
-            });
-        } else {
-            return Promise.resolve();
-        }
+    public stop() {
+        return new Promise((resolve, reject) => {
+            this._server.on("close", (code, signal) => {
+                utils.log(`Appium terminated due signal: ${signal} and code: ${code}`);
+                resolve();
+            })
+            utils.log("Stopping server...");
+            this._server.kill("SIGINT");
+            this._server = null;
+        });
     }
 
     // Resolve appium dependency

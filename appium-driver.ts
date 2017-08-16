@@ -9,6 +9,7 @@ chaiAsPromised.transferPromiseness = wd.transferPromiseness;
 import { searchCustomCapabilities } from "./capabilities-helper";
 import { ElementHelper } from "./element-helper";
 import { SearchOptions } from "./search-options";
+import { UIElement } from "./ui-element";
 import * as  utils from "./utils";
 import * as  path from "path";
 import * as glob from "glob";
@@ -101,35 +102,27 @@ export class AppiumDriver {
         return this._driver;
     }
 
-    public findElementByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
-        return this._driver.waitForElementByXPath(xPath, waitForElement);
+    public async findElementByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
+        return new UIElement(await this._driver.waitForElementByXPath(xPath, waitForElement));
     }
 
-    public findElementsByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
-        return this._driver.waitForElementsByXPath(xPath, waitForElement);
+    public async findElementsByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
+        return new UIElement(await this._driver.waitForElementsByXPath(xPath, waitForElement));
     }
 
-    public findElementByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = AppiumDriver.defaultWaitTime) {
+    public async findElementByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const shouldMatch = match === SearchOptions.exact ? true : false;
-        return this.findElementByXPath(this.elementHelper.getXPathByText(text, shouldMatch), waitForElement);
+        return new UIElement(await this.findElementByXPath(this.elementHelper.getXPathByText(text, shouldMatch), waitForElement));
     }
 
-    public findElementsByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = AppiumDriver.defaultWaitTime) {
+    public async findElementsByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const shouldMatch = match === SearchOptions.exact ? true : false;
-        return this.findElementsByXPath(this.elementHelper.getXPathByText(text, shouldMatch), waitForElement);
+        return new UIElement(await this.findElementsByXPath(this.elementHelper.getXPathByText(text, shouldMatch), waitForElement));
     }
 
-    public findElementsByClassName(className: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
+    public async findElementsByClassName(className: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const fullClassName = this.elementHelper.getElementClass(className);
-        return this._driver.waitForElementsByClassName(fullClassName, waitForElement);
-    }
-
-    public click() {
-        return this._driver.click();
-    }
-
-    public tap() {
-        return this._driver.tap();
+        return new UIElement(await this._driver.waitForElementsByClassName(fullClassName, waitForElement));
     }
 
     public takeScreenshot(fileName: string) {
@@ -142,7 +135,9 @@ export class AppiumDriver {
         );
     }
 
-    public quit() {
-        return this._driver.quit();
+    public async quit() {
+        console.log("Killing driver");
+        await this._driver.quit();
+        console.log("Driver is dead");
     }
 }
