@@ -128,7 +128,7 @@ export class AppiumDriver {
         const fullClassName = this.elementHelper.getElementClass(className);
         return new UIElement(await this._driver.waitForElementsByClassName(fullClassName, waitForElement));
     }
-
+    
     public takeScreenshot(fileName: string) {
         return this._driver.takeScreenshot().then(
             function (image, err) {

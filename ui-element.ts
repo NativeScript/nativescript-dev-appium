@@ -1,3 +1,5 @@
+import { Point } from "./point";
+
 export class UIElement {
     constructor(private element: any) { }
 
@@ -10,7 +12,9 @@ export class UIElement {
     }
 
     public async location() {
-        return await this.element.element.getLocation();
+        const location = await this.element.element.getLocation();
+        const point = new Point(location.x, location.y);
+        return point;
     }
 
     public async size() {
@@ -26,6 +30,18 @@ export class UIElement {
     }
 
     public async log() {
-        return await this.element.element;
+        console.log(await this.element.element);
+    }
+
+    public async isDisplayed() {
+        return await this.element.element.isDisplayed();
+    }
+
+    public async getAttribute(attr) {
+        return await this.element.element.getAttribute(attr);
+    }
+
+    public async isVisible(){
+        
     }
 }
