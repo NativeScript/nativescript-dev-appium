@@ -51,7 +51,6 @@ export class AppiumServer {
             })
             utils.log("Stopping server...");
             this._server.kill("SIGINT");
-            this._server = null;
         });
     }
 

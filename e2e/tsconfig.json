@@ -1,14 +1,24 @@
 {
-    "extends": "../tsconfig",
     "compilerOptions": {
-        "noEmitHelpers": false,
-        "importHelpers": true,
+        "module": "commonjs",
+        "target": "es5",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
         "noEmitOnError": true,
+        "importHelpers": true,
         "sourceMap": true,
         "types": [
             "node",
             "mocha",
             "chai"
-        ]
-    }
+        ],
+        "lib": [
+            "es6",
+            "dom"
+        ],
+        "baseUrl": "."
+    },
+    "exclude": [
+        "node_modules"
+    ]
 }
