@@ -102,6 +102,10 @@ export class AppiumDriver {
         return this._driver;
     }
 
+    public async navBack() {
+        return await this._driver.back();
+    }
+
     public async findElementByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
         return new UIElement(await this._driver.waitForElementByXPath(xPath, waitForElement));
     }

@@ -16,6 +16,7 @@ export declare class AppiumDriver {
     readonly platformName: any;
     readonly platformVesrion: any;
     readonly driver: any;
+    navBack(): Promise<any>;
     findElementByXPath(xPath: string, waitForElement?: number): Promise<UIElement>;
     findElementsByXPath(xPath: string, waitForElement?: number): Promise<UIElement>;
     findElementByText(text: string, match?: SearchOptions, waitForElement?: number): Promise<UIElement>;
