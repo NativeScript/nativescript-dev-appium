@@ -23,5 +23,6 @@ export declare class AppiumDriver {
     findElementsByText(text: string, match?: SearchOptions, waitForElement?: number): Promise<any>;
     findElementsByClassName(className: string, waitForElement?: number): Promise<any>;
     takeScreenshot(fileName: string): any;
+    compareScreen(expected: string, actual: string, output: string): Promise<{}>;
     quit(): Promise<void>;
 }

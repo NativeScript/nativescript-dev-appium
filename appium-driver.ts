@@ -10,10 +10,14 @@ import { searchCustomCapabilities } from "./capabilities-helper";
 import { ElementHelper } from "./element-helper";
 import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
-import * as  utils from "./utils";
-import * as  path from "path";
-import * as glob from "glob";
+
+import * as blinkDiff from "blink-diff";
 import * as fs from "fs";
+import * as glob from "glob";
+import * as path from "path";
+import * as utils from "./utils";
+
+const pngFileExt = '.png';
 
 export function createAppiumDriver(runType: string, port: number, caps: any, isSauceLab: boolean = false): AppiumDriver {
     let driverConfig: any = {
@@ -130,6 +134,10 @@ export class AppiumDriver {
     }
 
     public takeScreenshot(fileName: string) {
+        if (!fileName.endsWith(pngFileExt)) {
+            fileName.concat(pngFileExt);
+        }
+
         return this._driver.takeScreenshot().then(
             function (image, err) {
                 fs.writeFile(fileName, image, 'base64', function (err) {
@@ -137,6 +145,37 @@ export class AppiumDriver {
                 });
             }
         );
+    }
+
+    public compareScreen(expected: string, actual: string, output: string) {
+        return new Promise((resolve, reject) => {
+            let diff = new blinkDiff({
+                imageAPath: actual,
+                imageBPath: expected,
+                imageOutputPath: output,
+                // TODO: extend ...
+            });
+
+            diff.run(function (error, result) {
+                if (error) {
+                    throw error;
+                } else {
+                    let message;
+                    let resultCode = diff.hasPassed(result.code);
+                    if (resultCode) {
+                        message = "Screen compare passed!";
+                        console.log(message);
+                        console.log('Found ' + result.differences + ' differences.');
+                        resolve(message);
+                    } else {
+                        message = "Screen compare failed!"
+                        console.log(message);
+                        console.log('Found ' + result.differences + ' differences.');
+                        reject(message);
+                    }
+                }
+            });
+        });
     }
 
     public async quit() {

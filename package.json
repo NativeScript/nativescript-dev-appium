@@ -20,6 +20,7 @@
   ],
   "dependencies": {
     "app-root-path": "^2.0.1",
+    "blink-diff": "^1.0.13",
     "colors": "^1.1.2",
     "glob": "*",
     "portastic": "^1.0.1",
