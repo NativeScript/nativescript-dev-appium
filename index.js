@@ -41,11 +41,11 @@ const {
 } = config;
 
 const appLocation = utils.appLocation;
-const appium = process.platform === "win32" ? "appium.cmd" : "appium";
 const projectDir = utils.projectDir();
 const pluginBinary = utils.pluginBinary();
 const projectBinary = utils.projectBinary();
 const pluginRoot = utils.pluginRoot();
+let appium = process.platform === "win32" ? "appium.cmd" : "appium";
 const pluginAppiumBinary = utils.resolve(pluginBinary, appium);
 const projectAppiumBinary = utils.resolve(projectBinary, appium);
 
