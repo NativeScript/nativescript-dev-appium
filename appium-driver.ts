@@ -17,8 +17,6 @@ import * as glob from "glob";
 import * as path from "path";
 import * as utils from "./utils";
 
-const pngFileExt = '.png';
-
 export function createAppiumDriver(runType: string, port: number, caps: any, isSauceLab: boolean = false): AppiumDriver {
     let driverConfig: any = {
         host: "localhost",
@@ -44,12 +42,12 @@ export function createAppiumDriver(runType: string, port: number, caps: any, isS
     if (utils.appLocation) {
         caps.app = isSauceLab ? "sauce-storage:" + utils.appLocation : utils.appLocation;
     } else if (!caps.app) {
-        console.log("Getting caps.app!");
+        utils.log("Getting caps.app!");
         caps.app = getAppPath(caps.platformName.toLowerCase(), runType.toLowerCase());
     }
 
     utils.log("Creating driver!");
-    return new AppiumDriver(driver.init(caps), runType, port, caps, false);
+    return new AppiumDriver(driver.init(caps), wd, runType, port, caps, false);
 }
 
 function configureLogging(driver) {
@@ -85,8 +83,9 @@ function getAppPath(platform, runType) {
 export class AppiumDriver {
     private static defaultWaitTime: number = 5000;
     private elementHelper: ElementHelper;
+    private static pngFileExt = '.png';
 
-    constructor(private _driver: any, private _runType: string, private _port: number, private caps, private _isSauceLab: boolean = false, private _capsLocation?: string) {
+    constructor(private _driver: any, private _wd, private _runType: string, private _port: number, private caps, private _isSauceLab: boolean = false, private _capsLocation?: string) {
         this.elementHelper = new ElementHelper(this.caps.platformName.toLowerCase(), this.caps.platformVersion.toLowerCase());
     }
 
@@ -111,11 +110,12 @@ export class AppiumDriver {
     }
 
     public async findElementByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
-        return new UIElement(await this._driver.waitForElementByXPath(xPath, waitForElement));
+        const searchM = "waitForElementByXPath";
+        return await new UIElement(await this._driver.waitForElementByXPath(xPath, waitForElement), this._driver, searchM, xPath, waitForElement);
     }
 
     public async findElementsByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
-        return await this._driver.waitForElementsByXPath(xPath, waitForElement);
+        return await AppiumDriver.convertArrayToUIElements(await this._driver.waitForElementsByXPath(xPath, waitForElement));
     }
 
     public async findElementByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = AppiumDriver.defaultWaitTime) {
@@ -130,12 +130,12 @@ export class AppiumDriver {
 
     public async findElementsByClassName(className: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const fullClassName = this.elementHelper.getElementClass(className);
-        return await this._driver.waitForElementsByClassName(fullClassName, waitForElement);
+        return await AppiumDriver.convertArrayToUIElements(this._driver.waitForElementsByClassName(fullClassName, waitForElement));
     }
 
     public takeScreenshot(fileName: string) {
-        if (!fileName.endsWith(pngFileExt)) {
-            fileName.concat(pngFileExt);
+        if (!fileName.endsWith(AppiumDriver.pngFileExt)) {
+            fileName.concat(AppiumDriver.pngFileExt);
         }
 
         return this._driver.takeScreenshot().then(
@@ -182,5 +182,11 @@ export class AppiumDriver {
         console.log("Killing driver");
         await this._driver.quit();
         console.log("Driver is dead");
+    }
+
+    private static async convertArrayToUIElements(array) {
+        return array.forEach(async element => {
+            new UIElement(await element, null, null);
+        });
     }
 }

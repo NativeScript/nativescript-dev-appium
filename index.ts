@@ -72,6 +72,3 @@ export function createDriver() {
 export function elementHelper() {
     return new ElementHelper(this.caps.platformName.toLowerCase(), this.caps.platformVersion.toLowerCase());
 }
-
-process.on("exit", (server) => utils.shutdown(server));
-process.on('uncaughtException', (server) => utils.shutdown(server)); 

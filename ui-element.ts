@@ -1,47 +1,71 @@
 import { Point } from "./point";
 
 export class UIElement {
-    constructor(private element: any) { }
+    private _args;
+    constructor(private _element: any, private _driver: any, private _searchMethod: string, ...args) {
+        this._args = args;
+    }
 
     public async click() {
-        return await this.element.click();
+        return await this._element.click();
     }
 
     public async tap() {
-        return await this.element.tap();
+        return await this._element.tap();
     }
 
     public async location() {
-        const location = await this.element.getLocation();
+        const location = await this._element.getLocation();
         const point = new Point(location.x, location.y);
         return point;
     }
 
     public async size() {
-        return await this.element.size();
+        await this.refetch();
+        return await this._element.size();
     }
 
     public async text() {
-        return await this.element.text();
+        await this.refetch();
+        return await this._element.text();
     }
 
-    public async driver() {
-        return await this.element;
+    public async element() {
+        this.refetch();
+        return await this._element;
     }
 
     public async log() {
-        console.log(await this.element);
+        console.dir(await this.element());
     }
 
     public async isDisplayed() {
-        return await this.element.isDisplayed();
+        if (this.element() === null) {
+            return false;
+        }
+        return await this._element.isDisplayed();
+    }
+
+    public async exists() {
+        await this.refetch();
+        if (this.element() === null) {
+            return false;
+        }
+
+        return true;
     }
 
     public async getAttribute(attr) {
-        return await this.element.getAttribute(attr);
+        return await this._element.getAttribute(attr);
     }
 
-    public async isVisible(){
-        this.element;
+    public async refetch() {
+        try {
+            this._element = await this._driver[this._searchMethod](this._args[0], 300);
+        } catch (error) {
+            this._element = null;
+        }
+
+        return this._element;
     }
 }

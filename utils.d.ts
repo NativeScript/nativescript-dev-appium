@@ -19,6 +19,6 @@ export declare function log(message: any): void;
 export declare function loglogOut(line: any, force: any): void;
 export declare function logErr(line: any, force: any): void;
 export declare function shutdown(processToKill: any): void;
-export declare function waitForOutput(process: any, matcher: any, timeout: any): Promise<{}>;
+export declare function waitForOutput(process: any, matcher: any, timeout: any): Promise<boolean>;
 export declare function executeCommand(args: any, cwd?: any): string;
 export declare function isWin(): boolean;

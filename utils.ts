@@ -225,18 +225,18 @@ function killPid(pid) {
 }
 
 export function waitForOutput(process, matcher, timeout) {
-    return new Promise(function (resolve, reject) {
+    return new Promise<boolean>(function (resolve, reject) {
         var abortWatch = setTimeout(function () {
             process.kill();
             console.log("Timeout expired, output not detected for: " + matcher);
-            reject(new Error("Timeout expired, output not detected for: " + matcher));
+            reject(false);
         }, timeout);
 
         process.stdout.on("data", function (data) {
             var line = "" + data;
             if (matcher.test(line)) {
                 clearTimeout(abortWatch);
-                resolve();
+                resolve(true);
             }
         });
     });

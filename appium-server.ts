@@ -5,7 +5,7 @@ import * as path from "path";
 
 export class AppiumServer {
     private _appium;
-    private _server;
+    private _server: child_process.ChildProcess;
     private _port: number;
     private _runType: string;
 
@@ -40,7 +40,13 @@ export class AppiumServer {
             detached: false
         });
 
-        return utils.waitForOutput(this._server, /listener started/, 60000);
+        const responce: boolean = await utils.waitForOutput(this._server, /listener started/, 60000);
+
+        if (!responce) {
+            throw new Error("Timeout expired. Appium server did't start correctly!")
+        }
+
+        return responce;
     }
 
     public stop() {
@@ -51,6 +57,11 @@ export class AppiumServer {
             })
             utils.log("Stopping server...");
             this._server.kill("SIGINT");
+            try {
+                this._server.kill();
+            } catch (error) {
+                console.log(error);
+            }
         });
     }
 
