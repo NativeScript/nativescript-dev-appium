@@ -20,12 +20,12 @@ export declare class AppiumDriver {
     readonly driver: any;
     navBack(): Promise<any>;
     findElementByXPath(xPath: string, waitForElement?: number): Promise<UIElement>;
-    findElementsByXPath(xPath: string, waitForElement?: number): Promise<any>;
+    findElementsByXPath(xPath: string, waitForElement?: number): Promise<UIElement[]>;
     findElementByText(text: string, match?: SearchOptions, waitForElement?: number): Promise<UIElement>;
-    findElementsByText(text: string, match?: SearchOptions, waitForElement?: number): Promise<any>;
-    findElementsByClassName(className: string, waitForElement?: number): Promise<any>;
+    findElementsByText(text: string, match?: SearchOptions, waitForElement?: number): Promise<UIElement[]>;
+    findElementsByClassName(className: string, waitForElement?: number): Promise<UIElement[]>;
     takeScreenshot(fileName: string): any;
     compareScreen(expected: string, actual: string, output: string): Promise<{}>;
     quit(): Promise<void>;
-    private static convertArrayToUIElements(array);
+    private convertArrayToUIElements(array, searchM, args);
 }

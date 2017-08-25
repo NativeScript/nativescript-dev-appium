@@ -54,11 +54,17 @@ export class AppiumServer {
             this._server.on("close", (code, signal) => {
                 utils.log(`Appium terminated due signal: ${signal} and code: ${code}`);
                 resolve();
-            })
+            });
+
+            this._server.on("exit", (code, signal) => {
+                utils.log(`Appium terminated due signal: ${signal} and code: ${code}`);
+                resolve();
+            });
+
             utils.log("Stopping server...");
-            this._server.kill("SIGINT");
             try {
-                this._server.kill();
+                utils.shutdown(this._server);
+                this._server.kill("SIGINT");
             } catch (error) {
                 console.log(error);
             }

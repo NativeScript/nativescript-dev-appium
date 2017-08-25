@@ -1,33 +1,29 @@
 import { Point } from "./point";
 
 export class UIElement {
-    private _args;
-    constructor(private _element: any, private _driver: any, private _searchMethod: string, ...args) {
-        this._args = args;
+    constructor(private _element: any, private _driver: any, private _searchMethod: string, private _searchParams: string, private _index?: number) {
     }
 
     public async click() {
-        return await this._element.click();
+        return (await this.element()).click();
     }
 
     public async tap() {
-        return await this._element.tap();
+        return (await this.element()).tap();
     }
 
     public async location() {
-        const location = await this._element.getLocation();
+        const location = (await this.element()).getLocation();
         const point = new Point(location.x, location.y);
         return point;
     }
 
     public async size() {
-        await this.refetch();
-        return await this._element.size();
+        return await (await this.element()).size();
     }
 
     public async text() {
-        await this.refetch();
-        return await this._element.text();
+        return await (await this.element()).text();
     }
 
     public async element() {
@@ -35,33 +31,29 @@ export class UIElement {
         return await this._element;
     }
 
+    public async isDisplayed() {
+        return this.element() === null ? false : await this._element.isDisplayed();
+    }
+
+    public async exists() {
+        return this.element() === null ? false : true;
+    }
+
+    public async getAttribute(attr) {
+        return await (await this.element()).getAttribute(attr);
+    }
+
     public async log() {
         console.dir(await this.element());
     }
 
-    public async isDisplayed() {
-        if (this.element() === null) {
-            return false;
-        }
-        return await this._element.isDisplayed();
-    }
-
-    public async exists() {
-        await this.refetch();
-        if (this.element() === null) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public async getAttribute(attr) {
-        return await this._element.getAttribute(attr);
-    }
-
     public async refetch() {
         try {
-            this._element = await this._driver[this._searchMethod](this._args[0], 300);
+            if (this._index && this._index !== null) {
+                this._element = (await this._driver[this._searchMethod](this._searchParams, 1000))[this._index];
+            } else {
+                this._element = await this._driver[this._searchMethod](this._searchParams, 1000);
+            }
         } catch (error) {
             this._element = null;
         }

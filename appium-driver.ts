@@ -111,11 +111,11 @@ export class AppiumDriver {
 
     public async findElementByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const searchM = "waitForElementByXPath";
-        return await new UIElement(await this._driver.waitForElementByXPath(xPath, waitForElement), this._driver, searchM, xPath, waitForElement);
+        return await new UIElement(await this._driver.waitForElementByXPath(xPath, waitForElement), this._driver, searchM, xPath);
     }
 
     public async findElementsByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
-        return await AppiumDriver.convertArrayToUIElements(await this._driver.waitForElementsByXPath(xPath, waitForElement));
+        return await this.convertArrayToUIElements(await this._driver.waitForElementsByXPath(xPath, waitForElement), "waitForElementByXPath", xPath);
     }
 
     public async findElementByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = AppiumDriver.defaultWaitTime) {
@@ -130,8 +130,9 @@ export class AppiumDriver {
 
     public async findElementsByClassName(className: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const fullClassName = this.elementHelper.getElementClass(className);
-        return await AppiumDriver.convertArrayToUIElements(this._driver.waitForElementsByClassName(fullClassName, waitForElement));
+        return await this.convertArrayToUIElements(this._driver.waitForElementsByClassName(fullClassName, waitForElement), "waitForElementByClassName", fullClassName);
     }
+
 
     public takeScreenshot(fileName: string) {
         if (!fileName.endsWith(AppiumDriver.pngFileExt)) {
@@ -140,9 +141,7 @@ export class AppiumDriver {
 
         return this._driver.takeScreenshot().then(
             function (image, err) {
-                fs.writeFile(fileName, image, 'base64', function (err) {
-                    console.log(err);
-                });
+                fs.writeFileSync(fileName, image, 'base64');
             }
         );
     }
@@ -166,12 +165,12 @@ export class AppiumDriver {
                         message = "Screen compare passed!";
                         console.log(message);
                         console.log('Found ' + result.differences + ' differences.');
-                        resolve(message);
+                        resolve(true);
                     } else {
                         message = "Screen compare failed!"
                         console.log(message);
                         console.log('Found ' + result.differences + ' differences.');
-                        reject(message);
+                        reject(false);
                     }
                 }
             });
@@ -184,9 +183,14 @@ export class AppiumDriver {
         console.log("Driver is dead");
     }
 
-    private static async convertArrayToUIElements(array) {
-        return array.forEach(async element => {
-            new UIElement(await element, null, null);
+    private async convertArrayToUIElements(array, searchM, args) {
+        let i = 0;
+        const arrayOfUIElements = new Array<UIElement>();
+        array.forEach(async element => {
+            arrayOfUIElements.push(new UIElement(await element, this._driver, searchM, args, i));
+            i++;
         });
+
+        return arrayOfUIElements;
     }
 }

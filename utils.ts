@@ -219,7 +219,7 @@ export function shutdown(processToKill) {
     }
 }
 
-function killPid(pid) {
+export function killPid(pid) {
     let output = childProcess.execSync('taskkill /PID ' + pid + ' /T /F');
     log(output);
 }
