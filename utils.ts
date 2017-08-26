@@ -83,7 +83,7 @@ export function copy(src, dest, verbose) {
 
     if (isDirectory(src)) {
         if (!fileExists(dest)) {
-            log("CREATE Directory: " + dest);
+            console.info("CREATE Directory: " + dest);
             fs.mkdirSync(dest);
         }
         const files = getAllFileNames(src);
@@ -96,7 +96,7 @@ export function copy(src, dest, verbose) {
         fs.writeFileSync(dest, fs.readFileSync(src));
     }
     if (verbose) {
-        log("File " + src + " is coppied to " + dest);
+        console.info("File " + src + " is coppied to " + dest);
     }
 
     return dest;
@@ -104,7 +104,7 @@ export function copy(src, dest, verbose) {
 
 function isDirectory(fullName) {
     try {
-        if (fs.statSync(fullName).isDirectory()) {
+        if (fileExists(fullName) && fs.statSync(fullName).isDirectory()) {
             return true;
         }
     } catch (e) {
@@ -117,7 +117,7 @@ function isDirectory(fullName) {
 
 export function isFile(fullName) {
     try {
-        if (fs.statSync(fullName).isFile()) {
+        if (fileExists(fullName) && fs.statSync(fullName).isFile()) {
             return true;
         }
     } catch (e) {
