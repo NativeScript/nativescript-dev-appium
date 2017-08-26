@@ -27,6 +27,7 @@ export function resolve(mainPath, ...args) {
 }
 
 export function projectDir() {
+    console.log("PROJECT DIR ", require('app-root-path').toString());
     return require('app-root-path').toString();
 }
 
