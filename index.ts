@@ -9,7 +9,7 @@ import { AppiumDriver } from './appium-driver';
 import { ElementHelper } from './element-helper';
 import { createAppiumDriver } from './appium-driver';
 import * as portastic from "portastic";
-export { AppiumDriver }from "./appium-driver";
+export { AppiumDriver } from "./appium-driver";
 export * from "./search-options";
 
 // TODO: Update variables consider also this from utils. 
@@ -58,7 +58,7 @@ export async function stopServer() {
     return await server.stop();
 };
 
-const caps: any = resolveCapabilities(capabilities, runType);
+const caps = resolveCapabilities(capabilities, runType);
 export function createDriver() {
     if (!caps) {
         throw new Error("Provided path to appium capabilities is not correct!");

@@ -4,6 +4,7 @@ import { UIElement } from "./ui-element";
 export declare function createAppiumDriver(runType: string, port: number, caps: any, isSauceLab?: boolean): AppiumDriver;
 export declare class AppiumDriver {
     private _driver;
+    private _driverConfig;
     private _wd;
     private _runType;
     private _port;
@@ -13,7 +14,8 @@ export declare class AppiumDriver {
     private static defaultWaitTime;
     private elementHelper;
     private static pngFileExt;
-    constructor(_driver: any, _wd: any, _runType: string, _port: number, caps: any, _isSauceLab?: boolean, _capsLocation?: string);
+    private static partialUrl;
+    constructor(_driver: any, _driverConfig: any, _wd: any, _runType: string, _port: number, caps: any, _isSauceLab?: boolean, _capsLocation?: string);
     readonly capabilities: any;
     readonly platformName: any;
     readonly platformVesrion: any;
@@ -24,6 +26,8 @@ export declare class AppiumDriver {
     findElementByText(text: string, match?: SearchOptions, waitForElement?: number): Promise<UIElement>;
     findElementsByText(text: string, match?: SearchOptions, waitForElement?: number): Promise<UIElement[]>;
     findElementsByClassName(className: string, waitForElement?: number): Promise<UIElement[]>;
+    source(): Promise<string>;
+    sessionId(): Promise<any>;
     takeScreenshot(fileName: string): any;
     compareScreen(expected: string, actual: string, output: string): Promise<{}>;
     quit(): Promise<void>;

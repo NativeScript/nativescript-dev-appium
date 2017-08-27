@@ -4,7 +4,7 @@ import * as path from "path";
 import * as utils from "./utils";
 import { updatePackageJsonDep } from "./package-json-helper";
 const pluginRoot = utils.pluginRoot();
-const projectDir = utils.projectDir();
+const projectDir = utils.projectDir;
 const packageJsonPath = utils.resolve(projectDir, "package.json");
 const isTscProj = utils.searchFiles(projectDir, "tsconfig*.json").length > 0;
 

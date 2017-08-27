@@ -9,13 +9,14 @@ export const mochaCustomOptions = process.env.npm_config_mochaOptions;
 export const capabilitiesName = "appium.capabilities.json";
 export const appLocation = process.env.npm_config_appLocation;
 export const executionPath = process.env.npm_config_executionPath;
+export const projectDir = require('app-root-path').toString();
 
 export function resolve(mainPath, ...args) {
     if (!path.isAbsolute(mainPath)) {
         if (mainPath.startsWith('~')) {
             mainPath = path.join(process.env.HOME, mainPath.slice(1));
         } else {
-            mainPath = path.resolve(projectDir(), mainPath);
+            mainPath = path.resolve(projectDir, mainPath);
         }
     }
 
@@ -26,21 +27,17 @@ export function resolve(mainPath, ...args) {
     return fullPath;
 }
 
-export function projectDir() {
-    console.log("PROJECT DIR ", require('app-root-path').toString());
-    return require('app-root-path').toString();
-}
-
-export function pluginBinary() {
-    return resolve(__dirname, "node_modules", ".bin");
-}
 
 export function projectBinary() {
-    return resolve(projectDir(), "node_modules", ".bin");
+    return resolve(projectDir, "node_modules", ".bin");
 }
 
 export function pluginRoot() {
     return resolve(__dirname);
+}
+
+export function pluginBinary() {
+    return resolve(__dirname, "node_modules", ".bin");
 }
 
 export function fileExists(p) {
@@ -59,6 +56,32 @@ export function fileExists(p) {
         logErr("Exception fs.statSync (" + path + "): " + e, true);
         throw e;
     }
+}
+
+function isDirectory(fullName) {
+    try {
+        if (fileExists(fullName) && fs.statSync(fullName).isDirectory()) {
+            return true;
+        }
+    } catch (e) {
+        console.log(e.message);
+        return false;
+    }
+
+    return false;
+}
+
+export function isFile(fullName) {
+    try {
+        if (fileExists(fullName) && fs.statSync(fullName).isFile()) {
+            return true;
+        }
+    } catch (e) {
+        logErr(e.message, true);
+        return false;
+    }
+
+    return false;
 }
 
 export function executeNpmInstall(cwd) {
@@ -101,32 +124,6 @@ export function copy(src, dest, verbose) {
     }
 
     return dest;
-}
-
-function isDirectory(fullName) {
-    try {
-        if (fileExists(fullName) && fs.statSync(fullName).isDirectory()) {
-            return true;
-        }
-    } catch (e) {
-        console.log(e.message);
-        return false;
-    }
-
-    return false;
-}
-
-export function isFile(fullName) {
-    try {
-        if (fileExists(fullName) && fs.statSync(fullName).isFile()) {
-            return true;
-        }
-    } catch (e) {
-        logErr(e.message, true);
-        return false;
-    }
-
-    return false;
 }
 
 function getAllFileNames(folder) {
@@ -227,14 +224,15 @@ export function killPid(pid) {
 
 export function waitForOutput(process, matcher, timeout) {
     return new Promise<boolean>(function (resolve, reject) {
-        var abortWatch = setTimeout(function () {
+        let abortWatch = setTimeout(function () {
             process.kill();
             console.log("Timeout expired, output not detected for: " + matcher);
             reject(false);
         }, timeout);
 
         process.stdout.on("data", function (data) {
-            var line = "" + data;
+            let line = "" + data;
+            console.log(line);
             if (matcher.test(line)) {
                 clearTimeout(abortWatch);
                 resolve(true);

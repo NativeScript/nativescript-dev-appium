@@ -16,6 +16,7 @@ import * as fs from "fs";
 import * as glob from "glob";
 import * as path from "path";
 import * as utils from "./utils";
+import * as http from "http";
 
 export function createAppiumDriver(runType: string, port: number, caps: any, isSauceLab: boolean = false): AppiumDriver {
     let driverConfig: any = {
@@ -47,7 +48,7 @@ export function createAppiumDriver(runType: string, port: number, caps: any, isS
     }
 
     utils.log("Creating driver!");
-    return new AppiumDriver(driver.init(caps), wd, runType, port, caps, false);
+    return new AppiumDriver(driver.init(caps), driverConfig, wd, runType, port, caps, false);
 }
 
 function configureLogging(driver) {
@@ -84,8 +85,9 @@ export class AppiumDriver {
     private static defaultWaitTime: number = 5000;
     private elementHelper: ElementHelper;
     private static pngFileExt = '.png';
+    private static partialUrl = "/wd/hub/session/";
 
-    constructor(private _driver: any, private _wd, private _runType: string, private _port: number, private caps, private _isSauceLab: boolean = false, private _capsLocation?: string) {
+    constructor(private _driver: any, private _driverConfig, private _wd, private _runType: string, private _port: number, private caps, private _isSauceLab: boolean = false, private _capsLocation?: string) {
         this.elementHelper = new ElementHelper(this.caps.platformName.toLowerCase(), this.caps.platformVersion.toLowerCase());
     }
 
@@ -134,6 +136,20 @@ export class AppiumDriver {
     }
 
 
+    public async source() {
+        const session = await this.driver.getSessionId();
+        const source = http.get("http://" + this._driverConfig.host + ":" + this._driverConfig.port + AppiumDriver.partialUrl + session + "/source");
+        return new Promise<string>((resolve, reject) => {
+            source.on("finish", function (data) {
+                return resolve(data);
+            });
+        })
+    }
+
+    public async  sessionId() {
+        return await this.driver.getSessionId();
+    }
+    
     public takeScreenshot(fileName: string) {
         if (!fileName.endsWith(AppiumDriver.pngFileExt)) {
             fileName.concat(AppiumDriver.pngFileExt);

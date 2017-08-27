@@ -73,7 +73,7 @@ export class AppiumServer {
 
     // Resolve appium dependency
     private resolveAppiumDependency() {
-        const projectDir = utils.projectDir();
+        const projectDir = utils.projectDir;
         const pluginBinary = utils.pluginBinary();
         const projectBinary = utils.projectBinary();
         const pluginRoot = utils.pluginRoot();

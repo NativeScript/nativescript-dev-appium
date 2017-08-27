@@ -25,7 +25,7 @@ function configureDevDependencies(packageJson, adderCallback) {
         console.info("Installing new dependencies...");
         //Run `npm install` after everything else.
         setTimeout(function () {
-            utils.executeNpmInstall(utils.projectDir());
+            utils.executeNpmInstall(utils.projectDir);
         }, 300);
     }
 }
