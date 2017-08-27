@@ -1,7 +1,7 @@
 import { Point } from "./point";
 
 export class UIElement {
-    constructor(private _element: any, private _driver: any, private _searchMethod: string, private _searchParams: string, private _index?: number) {
+    constructor(private _element: any, private _driver: any, private _webio: any, private _searchMethod: string, private _searchParams: string, private _index?: number) {
     }
 
     public async click() {
@@ -37,6 +37,14 @@ export class UIElement {
 
     public async exists() {
         return this.element() === null ? false : true;
+    }
+
+    public async waitForExistNot(wait: number = 3000) {
+        return await this._webio.waitForExist(this._searchParams, wait, true);
+    }
+
+    public async waitForExist(wait: number = 3000) {
+        return this._webio.waitForExist(this._searchParams, wait, false);
     }
 
     public async getAttribute(attr) {

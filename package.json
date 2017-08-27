@@ -19,6 +19,7 @@
     }
   ],
   "dependencies": {
+    "@types/webdriverio": "^4.8.4",
     "app-root-path": "^2.0.1",
     "blink-diff": "^1.0.13",
     "colors": "^1.1.2",
@@ -26,6 +27,7 @@
     "portastic": "^1.0.1",
     "wd": "^1.4.0",
     "wdio-appium-service": "^0.2.3",
+    "webdriverio": "^4.8.0",
     "yargs": "^8.0.2"
   },
   "author": "Telerik",

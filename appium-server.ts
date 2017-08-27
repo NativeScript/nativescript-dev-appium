@@ -35,7 +35,7 @@ export class AppiumServer {
 
     public async start() {
         utils.log("Starting server...");
-        this._server = child_process.spawn(this._appium, ["-p", this._port.toString()], {
+        this._server = child_process.spawn(this._appium, ["-p", this._port.toString(), "--log-level", "debug"], {
             shell: true,
             detached: false
         });

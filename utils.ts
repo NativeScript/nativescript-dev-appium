@@ -232,7 +232,7 @@ export function waitForOutput(process, matcher, timeout) {
 
         process.stdout.on("data", function (data) {
             let line = "" + data;
-            console.log(line);
+            log(line);
             if (matcher.test(line)) {
                 clearTimeout(abortWatch);
                 resolve(true);

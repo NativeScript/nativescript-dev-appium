@@ -17,8 +17,9 @@ import * as glob from "glob";
 import * as path from "path";
 import * as utils from "./utils";
 import * as http from "http";
+import * as webdriverio from 'webdriverio';
 
-export function createAppiumDriver(runType: string, port: number, caps: any, isSauceLab: boolean = false): AppiumDriver {
+export async function createAppiumDriver(runType: string, port: number, caps: any, isSauceLab: boolean = false) {
     let driverConfig: any = {
         host: "localhost",
         port: port
@@ -37,7 +38,7 @@ export function createAppiumDriver(runType: string, port: number, caps: any, isS
         }
     }
 
-    const driver = wd.promiseChainRemote(driverConfig);
+    const driver = await wd.promiseChainRemote(driverConfig);
     configureLogging(driver);
 
     if (utils.appLocation) {
@@ -48,7 +49,17 @@ export function createAppiumDriver(runType: string, port: number, caps: any, isS
     }
 
     utils.log("Creating driver!");
-    return new AppiumDriver(driver.init(caps), driverConfig, wd, runType, port, caps, false);
+
+    const webio = webdriverio.remote({
+        baseUrl: driverConfig.host,
+        port: driverConfig.port,
+        logLevel: 'warn',
+        desiredCapabilities: caps
+    });
+
+    await driver.init(caps)
+
+    return new AppiumDriver(driver, webio, driver.sessionID, driverConfig, runType, port, caps, false);;
 }
 
 function configureLogging(driver) {
@@ -87,8 +98,9 @@ export class AppiumDriver {
     private static pngFileExt = '.png';
     private static partialUrl = "/wd/hub/session/";
 
-    constructor(private _driver: any, private _driverConfig, private _wd, private _runType: string, private _port: number, private caps, private _isSauceLab: boolean = false, private _capsLocation?: string) {
+    constructor(private _driver: any, private webio: any, private _sessionId, private _driverConfig, private _runType: string, private _port: number, private caps, private _isSauceLab: boolean = false, private _capsLocation?: string) {
         this.elementHelper = new ElementHelper(this.caps.platformName.toLowerCase(), this.caps.platformVersion.toLowerCase());
+        this.webio.requestHandler.sessionID = this._sessionId;
     }
 
     get capabilities() {
@@ -107,13 +119,21 @@ export class AppiumDriver {
         return this._driver;
     }
 
+    public async wdio() {
+        return await this.webio;
+    }
+
+    public async click(args) {
+        return await this.webio.click(args);
+    }
+
     public async navBack() {
         return await this._driver.back();
     }
 
     public async findElementByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const searchM = "waitForElementByXPath";
-        return await new UIElement(await this._driver.waitForElementByXPath(xPath, waitForElement), this._driver, searchM, xPath);
+        return await new UIElement(await this._driver.waitForElementByXPath(xPath, waitForElement), this._driver, this.webio, searchM, xPath);
     }
 
     public async findElementsByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
@@ -135,21 +155,22 @@ export class AppiumDriver {
         return await this.convertArrayToUIElements(this._driver.waitForElementsByClassName(fullClassName, waitForElement), "waitForElementByClassName", fullClassName);
     }
 
+    public async waitForElementByAccessibilityId(id, waitForElement: number = AppiumDriver.defaultWaitTime) {
+        return new UIElement(await this._driver.waitForElementByAccessibilityId(id, waitForElement), this._driver, this.webio, "waitForElementByAccessibilityId", id);
+    }
+
+    public async waitForElementsByAccessibilityId(id: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
+        return await this.convertArrayToUIElements(this._driver.waitForElementsByAccessibilityId(id, waitForElement), "waitForElementsByAccessibilityId", id);
+    }
 
     public async source() {
-        const session = await this.driver.getSessionId();
-        const source = http.get("http://" + this._driverConfig.host + ":" + this._driverConfig.port + AppiumDriver.partialUrl + session + "/source");
-        return new Promise<string>((resolve, reject) => {
-            source.on("finish", function (data) {
-                return resolve(data);
-            });
-        })
+        return await this.webio.source();
     }
 
     public async  sessionId() {
         return await this.driver.getSessionId();
     }
-    
+
     public takeScreenshot(fileName: string) {
         if (!fileName.endsWith(AppiumDriver.pngFileExt)) {
             fileName.concat(AppiumDriver.pngFileExt);
@@ -195,7 +216,12 @@ export class AppiumDriver {
 
     public async quit() {
         console.log("Killing driver");
-        await this._driver.quit();
+        try {
+            this.webio.end();
+            await this._driver.quit();
+        } catch (error) {
+
+        }
         console.log("Driver is dead");
     }
 
@@ -203,7 +229,7 @@ export class AppiumDriver {
         let i = 0;
         const arrayOfUIElements = new Array<UIElement>();
         array.forEach(async element => {
-            arrayOfUIElements.push(new UIElement(await element, this._driver, searchM, args, i));
+            arrayOfUIElements.push(new UIElement(await element, this._driver, this.wdio, searchM, args, i));
             i++;
         });
 

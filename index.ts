@@ -10,6 +10,9 @@ import { ElementHelper } from './element-helper';
 import { createAppiumDriver } from './appium-driver';
 import * as portastic from "portastic";
 export { AppiumDriver } from "./appium-driver";
+export { ElementHelper } from "./element-helper";
+export { Point } from "./point";
+export { UIElement } from "./ui-element";
 export * from "./search-options";
 
 // TODO: Update variables consider also this from utils. 
@@ -69,6 +72,6 @@ export function createDriver() {
     return createAppiumDriver(runType, server.port, caps, isSauceLab);
 };
 
-export function elementHelper() {
+export function elementHelper(): ElementHelper {
     return new ElementHelper(this.caps.platformName.toLowerCase(), this.caps.platformVersion.toLowerCase());
 }
