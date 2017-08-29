@@ -23,3 +23,4 @@ export declare function killPid(pid: any): void;
 export declare function waitForOutput(process: any, matcher: any, timeout: any): Promise<boolean>;
 export declare function executeCommand(args: any, cwd?: any): string;
 export declare function isWin(): boolean;
+export declare function getStorage(capabilities: any): any;

@@ -256,3 +256,22 @@ export function executeCommand(args, cwd?): string {
 export function isWin() {
     return /^win/.test(process.platform);
 }
+
+export function getStorage(capabilities: any) {
+    let storage = createStorageFolder(resolve(projectDir, testFolder), "resources");
+    storage = createStorageFolder(storage, "images");
+    const appName = capabilities.app.substring(capabilities.app.lastIndexOf("/") + 1, capabilities.app.lastIndexOf("."));
+    storage = createStorageFolder(storage, appName);
+    storage = createStorageFolder(storage, capabilities.deviceName);
+
+    return storage;
+}
+
+function createStorageFolder(storage, direcotry) {
+    storage = resolve(storage, direcotry)
+    if (!fileExists(storage)) {
+        fs.mkdirSync(storage);
+    }
+
+    return storage;
+}

@@ -97,10 +97,12 @@ export class AppiumDriver {
     private elementHelper: ElementHelper;
     private static pngFileExt = '.png';
     private static partialUrl = "/wd/hub/session/";
+    private _storage: string;
 
     constructor(private _driver: any, private webio: any, private _sessionId, private _driverConfig, private _runType: string, private _port: number, private caps, private _isSauceLab: boolean = false, private _capsLocation?: string) {
         this.elementHelper = new ElementHelper(this.caps.platformName.toLowerCase(), this.caps.platformVersion.toLowerCase());
         this.webio.requestHandler.sessionID = this._sessionId;
+        this._storage = utils.getStorage(this.capabilities);
     }
 
     get capabilities() {
@@ -171,27 +173,61 @@ export class AppiumDriver {
         return await this.driver.getSessionId();
     }
 
-    public takeScreenshot(fileName: string) {
-        if (!fileName.endsWith(AppiumDriver.pngFileExt)) {
-            fileName.concat(AppiumDriver.pngFileExt);
+    public async compareScreen(imageName: string, timeOutSeconds: number, tollerance: number) {
+        if (!imageName.endsWith(AppiumDriver.pngFileExt)) {
+            imageName = imageName.concat(AppiumDriver.pngFileExt);
         }
 
-        return this._driver.takeScreenshot().then(
-            function (image, err) {
-                fs.writeFileSync(fileName, image, 'base64');
+        let actualImage = await this.takeScreenshot(utils.resolve(this._storage, imageName.replace(".", "_actual.")));
+        let expectedImage = utils.resolve(this._storage, imageName);
+        if (!utils.fileExists(expectedImage)) {
+            console.log("To confirm the image the '_actual' sufix should be removed from image name: ", expectedImage);
+            return false;
+        }
+
+        let diffImage = expectedImage.replace(".", "_diff.");
+        let result = await this.compareImages(expectedImage, actualImage, diffImage);
+        if (!result) {
+            let eventStartTime = Date.now().valueOf();
+            let counter = 1;
+            timeOutSeconds *= 1000;
+            while ((Date.now().valueOf() - eventStartTime) <= timeOutSeconds && !result) {
+                let actualImage = await this.takeScreenshot(utils.resolve(this._storage, imageName.replace(".", "_actual" + "_" + counter + ".")));
+                result = await this.compareImages(expectedImage, actualImage, diffImage);
+                counter++;
             }
-        );
+        } else {
+            fs.unlinkSync(diffImage);
+            fs.unlinkSync(actualImage);
+        }
+
+        return result;
     }
 
-    public compareScreen(expected: string, actual: string, output: string) {
-        return new Promise((resolve, reject) => {
-            let diff = new blinkDiff({
-                imageAPath: actual,
-                imageBPath: expected,
-                imageOutputPath: output,
-                // TODO: extend ...
-            });
+    public takeScreenshot(fileName: string) {
+        if (!fileName.endsWith(AppiumDriver.pngFileExt)) {
+            fileName = fileName.concat(AppiumDriver.pngFileExt);
+        }
 
+        return new Promise<string>((resolve, reject) => {
+            this._driver.takeScreenshot().then(
+                function (image, err) {
+                    fs.writeFileSync(fileName, image, 'base64');
+                    resolve(fileName);
+                }
+            )
+        });
+    }
+
+    public compareImages(expected: string, actual: string, output: string) {
+        let diff = new blinkDiff({
+            imageAPath: actual,
+            imageBPath: expected,
+            imageOutputPath: output,
+            // TODO: extend ...
+        });
+
+        return new Promise<boolean>((resolve, reject) => {
             diff.run(function (error, result) {
                 if (error) {
                     throw error;
@@ -202,12 +238,14 @@ export class AppiumDriver {
                         message = "Screen compare passed!";
                         console.log(message);
                         console.log('Found ' + result.differences + ' differences.');
-                        resolve(true);
+                        return resolve(true);
                     } else {
                         message = "Screen compare failed!"
                         console.log(message);
                         console.log('Found ' + result.differences + ' differences.');
-                        reject(false);
+                        console.log('Diff image ' + output);
+
+                        return resolve(false);
                     }
                 }
             });

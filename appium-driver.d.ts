@@ -16,6 +16,7 @@ export declare class AppiumDriver {
     private elementHelper;
     private static pngFileExt;
     private static partialUrl;
+    private _storage;
     constructor(_driver: any, webio: any, _sessionId: any, _driverConfig: any, _runType: string, _port: number, caps: any, _isSauceLab?: boolean, _capsLocation?: string);
     readonly capabilities: any;
     readonly platformName: any;
@@ -33,8 +34,9 @@ export declare class AppiumDriver {
     waitForElementsByAccessibilityId(id: string, waitForElement?: number): Promise<UIElement[]>;
     source(): Promise<any>;
     sessionId(): Promise<any>;
-    takeScreenshot(fileName: string): any;
-    compareScreen(expected: string, actual: string, output: string): Promise<{}>;
+    compareScreen(imageName: string, timeOutSeconds: number, tollerance: number): Promise<boolean>;
+    takeScreenshot(fileName: string): Promise<string>;
+    compareImages(expected: string, actual: string, output: string): Promise<boolean>;
     quit(): Promise<void>;
     private convertArrayToUIElements(array, searchM, args);
 }
