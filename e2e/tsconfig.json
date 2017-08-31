@@ -4,7 +4,6 @@
         "target": "es5",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "noEmitOnError": true,
         "importHelpers": true,
         "sourceMap": true,
         "types": [
@@ -15,10 +14,6 @@
         "lib": [
             "es6",
             "dom"
-        ],
-        "baseUrl": "."
-    },
-    "exclude": [
-        "node_modules"
-    ]
+        ]
+    }
 }

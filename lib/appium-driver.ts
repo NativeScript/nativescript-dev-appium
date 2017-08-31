@@ -7,7 +7,7 @@ export var should = chai.should();
 chaiAsPromised.transferPromiseness = wd.transferPromiseness;
 
 import { searchCustomCapabilities } from "./capabilities-helper";
-import { ElementHelper } from "./element-helper";
+import { ElementHelper } from "./element-helper"; 
 import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
 

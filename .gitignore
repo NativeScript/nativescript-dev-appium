@@ -1,4 +1,4 @@
 node_modules
 *.tgz
-*.js
+**/lib/**/*.js
 *.map

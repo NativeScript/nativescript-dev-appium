@@ -1,0 +1,11 @@
+import { AppiumDriver } from './appium-driver';
+import { ElementHelper } from './element-helper';
+export { AppiumDriver } from "./appium-driver";
+export { ElementHelper } from "./element-helper";
+export { Point } from "./point";
+export { UIElement } from "./ui-element";
+export * from "./search-options";
+export declare function startServer(port?: number): Promise<boolean>;
+export declare function stopServer(): Promise<{}>;
+export declare function createDriver(): Promise<AppiumDriver>;
+export declare function elementHelper(): ElementHelper;

@@ -9,8 +9,8 @@
         "**/.hg": true,
         "**/CVS": true,
         "**/.DS_Store": true,
-        "*.js": true,
-        "*.map": true,
-        "*.d.ts": true
+        "**/lib/*.js": true,
+        "**/lib/*.map": true,
+        "**/lib/*.d.ts": true
     }
 }
