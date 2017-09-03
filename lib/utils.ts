@@ -240,9 +240,9 @@ export function isWin() {
 export function getStorage(args: INsCapabilities) {
     let storage = createStorageFolder(resolve(args.projectDir, args.testFolder), "resources");
     storage = createStorageFolder(storage, "images");
-    const appName = this._args.appiumCaps.app.substring(this._args.appiumCaps.app.lastIndexOf("/") + 1, this._args.appiumCaps.app.lastIndexOf("."));
+    const appName = args.appiumCaps.app.substring(args.appiumCaps.app.lastIndexOf("/") + 1, args.appiumCaps.app.lastIndexOf("."));
     storage = createStorageFolder(storage, appName);
-    storage = createStorageFolder(storage, this._args.appiumCaps.deviceName);
+    storage = createStorageFolder(storage, args.appiumCaps.deviceName);
 
     return storage;
 }
