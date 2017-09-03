@@ -1,11 +1,13 @@
 /// <reference types="node" />
 import * as child_process from "child_process";
+import { INsCapabilities } from "./ins-capabilities";
 export declare class AppiumServer {
-    private _appium;
+    private _args;
     private _server;
+    private _appium;
     private _port;
     private _runType;
-    constructor();
+    constructor(_args: INsCapabilities);
     port: number;
     runType: string;
     readonly server: child_process.ChildProcess;

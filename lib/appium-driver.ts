@@ -7,25 +7,24 @@ export var should = chai.should();
 chaiAsPromised.transferPromiseness = wd.transferPromiseness;
 
 import { searchCustomCapabilities } from "./capabilities-helper";
-import { ElementHelper } from "./element-helper"; 
+import { ElementHelper } from "./element-helper";
 import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
+import { log, getStorage, resolve, fileExists } from "./utils";
+import { INsCapabilities } from "./ins-capabilities";
 
 import * as blinkDiff from "blink-diff";
-import * as fs from "fs";
+import { unlinkSync, writeFileSync } from "fs";
 import * as glob from "glob";
-import * as path from "path";
-import * as utils from "./utils";
-import * as http from "http";
 import * as webdriverio from 'webdriverio';
 
-export async function createAppiumDriver(runType: string, port: number, caps: any, isSauceLab: boolean = false) {
+export async function createAppiumDriver(port: number, args: INsCapabilities) {
     let driverConfig: any = {
         host: "localhost",
         port: port
     };
 
-    if (isSauceLab) {
+    if (args.isSauceLab) {
         const sauceUser = process.env.SAUCE_USER;
         const sauceKey = process.env.SAUCE_KEY;
 
@@ -39,38 +38,38 @@ export async function createAppiumDriver(runType: string, port: number, caps: an
     }
 
     const driver = await wd.promiseChainRemote(driverConfig);
-    configureLogging(driver);
+    configureLogging(driver, args.verbose);
 
-    if (utils.appLocation) {
-        caps.app = isSauceLab ? "sauce-storage:" + utils.appLocation : utils.appLocation;
-    } else if (!caps.app) {
-        utils.log("Getting caps.app!");
-        caps.app = getAppPath(caps.platformName.toLowerCase(), runType.toLowerCase());
+    if (args.appiumCaps.app) {
+        args.appiumCaps.app = args.isSauceLab ? "sauce-storage:" + args.appRootPath : args.appRootPath;
+    } else if (!args.appiumCaps.app) {
+        log("Getting caps.app!", args.verbose);
+        args.appiumCaps.app = getAppPath(args.appiumCaps.platformName.toLowerCase(), args.runType.toLowerCase());
     }
 
-    utils.log("Creating driver!");
+    log("Creating driver!", args.verbose);
 
     const webio = webdriverio.remote({
         baseUrl: driverConfig.host,
         port: driverConfig.port,
         logLevel: 'warn',
-        desiredCapabilities: caps
+        desiredCapabilities: args.appiumCaps
     });
 
-    await driver.init(caps)
-
-    return new AppiumDriver(driver, webio, driver.sessionID, driverConfig, runType, port, caps, false);;
+    (await driver.init(args.appiumCaps));
+    const sessionId = await driver.sessionID;
+    return new AppiumDriver(driver, webio, sessionId, driverConfig, args);
 }
 
-function configureLogging(driver) {
+function configureLogging(driver, verbose) {
     driver.on("status", function (info) {
-        utils.log(info.cyan);
+        log(info.cyan, verbose);
     });
     driver.on("command", function (meth, path, data) {
-        utils.log(" > " + meth.yellow + path.grey + " " + (data || ""));
+        log(" > " + meth.yellow + path.grey + " " + (data || ""), verbose);
     });
     driver.on("http", function (meth, path, data) {
-        utils.log(" > " + meth.magenta + path + " " + (data || "").grey);
+        log(" > " + meth.magenta + path + " " + (data || "").grey, verbose);
     });
 };
 
@@ -99,22 +98,22 @@ export class AppiumDriver {
     private static partialUrl = "/wd/hub/session/";
     private _storage: string;
 
-    constructor(private _driver: any, private webio: any, private _sessionId, private _driverConfig, private _runType: string, private _port: number, private caps, private _isSauceLab: boolean = false, private _capsLocation?: string) {
-        this.elementHelper = new ElementHelper(this.caps.platformName.toLowerCase(), this.caps.platformVersion.toLowerCase());
+    constructor(private _driver: any, private webio: any, private _sessionId, private _driverConfig, private _args: INsCapabilities) {
+        this.elementHelper = new ElementHelper(this._args.appiumCaps.platformName.toLowerCase(), this._args.appiumCaps.platformVersion.toLowerCase());
         this.webio.requestHandler.sessionID = this._sessionId;
-        this._storage = utils.getStorage(this.capabilities);
+        this._storage = getStorage(this._args);
     }
 
     get capabilities() {
-        return this.caps;
+        return this._args.appiumCaps;
     }
 
     get platformName() {
-        return this.caps.platformName;
+        return this._args.appiumCaps.platformName;
     }
 
     get platformVesrion() {
-        return this.caps.platformVesrion;
+        return this._args.appiumCaps.platformVesrion;
     }
 
     get driver() {
@@ -178,9 +177,9 @@ export class AppiumDriver {
             imageName = imageName.concat(AppiumDriver.pngFileExt);
         }
 
-        let actualImage = await this.takeScreenshot(utils.resolve(this._storage, imageName.replace(".", "_actual.")));
-        let expectedImage = utils.resolve(this._storage, imageName);
-        if (!utils.fileExists(expectedImage)) {
+        let actualImage = await this.takeScreenshot(resolve(this._storage, imageName.replace(".", "_actual.")));
+        let expectedImage = resolve(this._storage, imageName);
+        if (!fileExists(expectedImage)) {
             console.log("To confirm the image the '_actual' sufix should be removed from image name: ", expectedImage);
             return false;
         }
@@ -192,13 +191,13 @@ export class AppiumDriver {
             let counter = 1;
             timeOutSeconds *= 1000;
             while ((Date.now().valueOf() - eventStartTime) <= timeOutSeconds && !result) {
-                let actualImage = await this.takeScreenshot(utils.resolve(this._storage, imageName.replace(".", "_actual" + "_" + counter + ".")));
+                let actualImage = await this.takeScreenshot(resolve(this._storage, imageName.replace(".", "_actual" + "_" + counter + ".")));
                 result = await this.compareImages(expectedImage, actualImage, diffImage);
                 counter++;
             }
         } else {
-            fs.unlinkSync(diffImage);
-            fs.unlinkSync(actualImage);
+            unlinkSync(diffImage);
+            unlinkSync(actualImage);
         }
 
         return result;
@@ -212,7 +211,7 @@ export class AppiumDriver {
         return new Promise<string>((resolve, reject) => {
             this._driver.takeScreenshot().then(
                 function (image, err) {
-                    fs.writeFileSync(fileName, image, 'base64');
+                    writeFileSync(fileName, image, 'base64');
                     resolve(fileName);
                 }
             )

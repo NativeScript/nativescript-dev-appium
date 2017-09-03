@@ -36,7 +36,6 @@ export class ElementHelper {
     }
 
     public findByTextLocator(controlType, value, exactMatch) {
-        log("Should be exact match: " + exactMatch);
         let artbutes = ["label", "value", "hint"];
         if (contains(this.platform, "android")) {
             artbutes = ["content-desc", "resource-id", "text"];
@@ -51,7 +50,7 @@ export class ElementHelper {
 
         searchedString = searchedString.substring(0, searchedString.lastIndexOf(" or "));
         const result = "//" + controlType + "[" + searchedString + "]";
-        log("Xpath: " + result);
+        log("Xpath: " + result, true);
 
         return result;
     }

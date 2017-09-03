@@ -1,23 +1,20 @@
 export declare var should: any;
 import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
-export declare function createAppiumDriver(runType: string, port: number, caps: any, isSauceLab?: boolean): Promise<AppiumDriver>;
+import { INsCapabilities } from "./ins-capabilities";
+export declare function createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
 export declare class AppiumDriver {
     private _driver;
     private webio;
     private _sessionId;
     private _driverConfig;
-    private _runType;
-    private _port;
-    private caps;
-    private _isSauceLab;
-    private _capsLocation;
+    private _args;
     private static defaultWaitTime;
     private elementHelper;
     private static pngFileExt;
     private static partialUrl;
     private _storage;
-    constructor(_driver: any, webio: any, _sessionId: any, _driverConfig: any, _runType: string, _port: number, caps: any, _isSauceLab?: boolean, _capsLocation?: string);
+    constructor(_driver: any, webio: any, _sessionId: any, _driverConfig: any, _args: INsCapabilities);
     readonly capabilities: any;
     readonly platformName: any;
     readonly platformVesrion: any;

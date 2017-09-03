@@ -6,7 +6,7 @@
         "emitDecoratorMetadata": true,
         "noEmitHelpers": false,
         "importHelpers": true,
-        "noEmitOnError": true,
+        "noEmitOnError": false,
         "declaration": true,
         "sourceMap": true,
         "lib": [

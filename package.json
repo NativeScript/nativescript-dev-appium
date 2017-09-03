@@ -1,54 +1,55 @@
 {
-    "name": "nativescript-dev-appium",
-    "version": "2.1.1",
-    "description": "A NativeScript plugin to help integrate and run Appium tests",
-    "main": "./lib/index.js",
-    "directories": {
-        "lib": "./lib"
+  "name": "nativescript-dev-appium",
+  "version": "2.1.1",
+  "description": "A NativeScript plugin to help integrate and run Appium tests",
+  "main": "./lib/index.js",
+  "directories": {
+    "lib": "./lib"
+  },
+  "keywords": [
+    "nativescript",
+    "appium",
+    "test"
+  ],
+  "maintainers": [
+    {
+      "name": "hdeshev",
+      "email": "hristo.deshev@telerik.com"
     },
-    "keywords": [
-        "nativescript",
-        "appium",
-        "test"
-    ],
-    "maintainers": [{
-            "name": "hdeshev",
-            "email": "hristo.deshev@telerik.com"
-        },
-        {
-            "name": "SvetoslavTsenov",
-            "email": "tsenov@progress.com"
-        }
-    ],
-    "dependencies": {
-        "@types/webdriverio": "^4.8.4",
-        "app-root-path": "^2.0.1",
-        "blink-diff": "^1.0.13",
-        "colors": "^1.1.2",
-        "glob": "*",
-        "portastic": "^1.0.1",
-        "wd": "^1.4.0",
-        "webdriverio": "^4.8.0",
-        "yargs": "^8.0.2"
-    },
-    "author": "Telerik",
-    "license": "MIT",
-    "devDependencies": {
-        "@types/node": "^7.0.5",
-        "chai": "~4.0.0",
-        "chai-as-promised": "~7.0.0",
-        "tslint": "^4.5.1",
-        "typescript": "^2.4.2",
-        "tslib": "^1.7.1",
-        "mocha": "~3.5.0",
-        "mocha-junit-reporter": "^1.13.0",
-        "mocha-multi": "^0.11.0",
-        "@types/chai": "^4.0.2",
-        "@types/mocha": "^2.2.41"
-    },
-    "scripts": {
-        "preinstall": "node ./lib/preinstall.js",
-        "compile": "tsc --watch",
-        "e2e": "tsc -p e2e && mocha --opts ./e2e/config/mocha.opts --"
+    {
+      "name": "SvetoslavTsenov",
+      "email": "tsenov@progress.com"
     }
+  ],
+  "dependencies": {
+    "@types/webdriverio": "^4.8.4",
+    "app-root-path": "^2.0.1",
+    "blink-diff": "^1.0.13",
+    "colors": "^1.1.2",
+    "glob": "*",
+    "portastic": "^1.0.1",
+    "wd": "^1.4.0",
+    "webdriverio": "^4.8.0",
+    "yargs": "^8.0.2"
+  },
+  "author": "Telerik",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^7.0.5",
+    "chai": "~4.0.0",
+    "chai-as-promised": "~7.0.0",
+    "tslint": "^4.5.1",
+    "typescript": "^2.4.2",
+    "tslib": "^1.7.1",
+    "mocha": "~3.5.0",
+    "mocha-junit-reporter": "^1.13.0",
+    "mocha-multi": "^0.11.0",
+    "@types/chai": "^4.0.2",
+    "@types/mocha": "^2.2.41"
+  },
+  "scripts": {
+    "preinstall": "node ./lib/preinstall.js",
+    "compile": "tsc --watch",
+    "e2e": "tsc -p e2e && mocha --opts ./e2e/config/mocha.opts --"
+  }
 }
