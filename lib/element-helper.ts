@@ -3,7 +3,10 @@ import { log } from "./utils";
 
 export class ElementHelper {
 
-    constructor(private platform: string, private platformVersion: number) { }
+    private isAndroid: boolean;
+    constructor(private platform: string, private platformVersion: number) {
+        this.isAndroid = this.platform === "android";
+    }
 
     public getXPathElement(name) {
         const tempName = name.toLowerCase().replace(/\-/g, "");
@@ -37,15 +40,23 @@ export class ElementHelper {
 
     public findByTextLocator(controlType, value, exactMatch) {
         let artbutes = ["label", "value", "hint"];
-        if (contains(this.platform, "android")) {
+        if (this.isAndroid) {
             artbutes = ["content-desc", "resource-id", "text"];
         }
 
         let searchedString = "";
         if (exactMatch) {
-            artbutes.forEach((atr) => { searchedString += "@" + atr + "='" + value + "'" + " or " });
+            if (this.isAndroid) {
+                artbutes.forEach((atr) => { searchedString += "translate(@" + atr + ",'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='" + value.toLowerCase() + "'" + " or " });
+            } else {
+                artbutes.forEach((atr) => { searchedString += "@" + atr + "='" + value + "'" + " or " });
+            }
         } else {
-            artbutes.forEach((atr) => { searchedString += "contains(@" + atr + ",'" + value + "')" + " or " });
+            if (this.isAndroid) {
+                artbutes.forEach((atr) => { searchedString += "contains(translate(@" + atr + ",'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'" + value.toLowerCase() + "')" + " or " });
+            } else {
+                artbutes.forEach((atr) => { searchedString += "contains(@" + atr + ",'" + value + "')" + " or " });
+            }
         }
 
         searchedString = searchedString.substring(0, searchedString.lastIndexOf(" or "));

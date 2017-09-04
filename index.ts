@@ -1,15 +1,15 @@
 import * as portastic from "portastic";
-import { AppiumServer } from './appium-server';
-import { createAppiumDriver } from './appium-driver';
-import { AppiumDriver } from './appium-driver';
-import { ElementHelper } from './element-helper';
-import { NsCapabilities } from './ns-capabilities';
+import { AppiumServer } from './lib/appium-server';
+import { createAppiumDriver } from './lib/appium-driver';
+import { AppiumDriver } from './lib/appium-driver';
+import { ElementHelper } from './lib/element-helper';
+import { NsCapabilities } from './lib/ns-capabilities';
 
-export { AppiumDriver } from "./appium-driver";
-export { ElementHelper } from "./element-helper";
-export { UIElement } from "./ui-element";
-export { Point } from "./point";
-export { SearchOptions } from "./search-options";
+export { AppiumDriver } from "./lib/appium-driver";
+export { ElementHelper } from "./lib/element-helper";
+export { UIElement } from "./lib/ui-element";
+export { Point } from "./lib/point";
+export { SearchOptions } from "./lib/search-options";
 
 const nsCapabilities = new NsCapabilities();
 const server = new AppiumServer(nsCapabilities);

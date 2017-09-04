@@ -1,6 +1,7 @@
 export declare class ElementHelper {
     private platform;
     private platformVersion;
+    private isAndroid;
     constructor(platform: string, platformVersion: number);
     getXPathElement(name: any): string;
     getElementClass(name: any): string;

@@ -28,7 +28,6 @@ export class NsCapabilities implements INsCapabilities {
         this._testFolder = parser.testFolder;
         this._runType = parser.runType;
         this._isSauceLab = parser.isSauceLab;
-        console.log(" this._appiumCaps = resolveCapabilities(this._appiumCapsLocation, parser.runType, parser.appRootPath);", this._appiumCaps = resolveCapabilities(this._appiumCapsLocation, parser.runType, parser.appRootPath))
         this._appiumCaps = resolveCapabilities(this._appiumCapsLocation, parser.runType, parser.appRootPath);
     }
 
