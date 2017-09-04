@@ -5,15 +5,15 @@ export class UIElement {
     }
 
     public async click() {
-        return (await this.element()).click();
+        return await (await this.element()).click();
     }
 
     public async tap() {
-        return (await this.element()).tap();
+        return await (await this.element()).tap();
     }
 
     public async location() {
-        const location = (await this.element()).getLocation();
+        const location = await (await this.element()).getLocation();
         const point = new Point(location.x, location.y);
         return point;
     }
@@ -32,7 +32,10 @@ export class UIElement {
     }
 
     public async isDisplayed() {
-        return this.element() === null ? false : await this._element.isDisplayed();
+        const el = (await this.element());
+        console.log("", await el);
+        console.log("",this._webio);
+        return await el === null ? false : (await this._element.isDisplayed());
     }
 
     public async exists() {

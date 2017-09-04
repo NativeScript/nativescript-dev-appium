@@ -61,7 +61,7 @@ export class ElementHelper {
 
         searchedString = searchedString.substring(0, searchedString.lastIndexOf(" or "));
         const result = "//" + controlType + "[" + searchedString + "]";
-        log("Xpath: " + result, true);
+        log("Xpath: " + result, false);
 
         return result;
     }
