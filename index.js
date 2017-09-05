@@ -61,7 +61,6 @@ function createDriver() {
 exports.createDriver = createDriver;
 ;
 function elementHelper() {
-    return new element_helper_1.ElementHelper(this.caps.platformName.toLowerCase(), this.caps.platformVersion.toLowerCase());
+    return new element_helper_1.ElementHelper(nsCapabilities.appiumCaps.platformName.toLowerCase(), nsCapabilities.appiumCaps.platformVersion.toLowerCase());
 }
 exports.elementHelper = elementHelper;
-//# sourceMappingURL=index.js.map

@@ -36,5 +36,5 @@ export function createDriver() {
 };
 
 export function elementHelper(): ElementHelper {
-    return new ElementHelper(this.caps.platformName.toLowerCase(), this.caps.platformVersion.toLowerCase());
+    return new ElementHelper(nsCapabilities.appiumCaps.platformName.toLowerCase(), nsCapabilities.appiumCaps.platformVersion.toLowerCase());
 }

@@ -153,15 +153,15 @@ export class AppiumDriver {
 
     public async findElementsByClassName(className: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const fullClassName = this.elementHelper.getElementClass(className);
-        return await this.convertArrayToUIElements(this._driver.waitForElementsByClassName(fullClassName, waitForElement), "waitForElementByClassName", fullClassName);
+        return await this.convertArrayToUIElements(await this._driver.waitForElementsByClassName(fullClassName, waitForElement), "waitForElementByClassName", fullClassName);
     }
 
-    public async waitForElementByAccessibilityId(id, waitForElement: number = AppiumDriver.defaultWaitTime) {
+    public async findElementByAccessibilityId(id, waitForElement: number = AppiumDriver.defaultWaitTime) {
         return new UIElement(await this._driver.waitForElementByAccessibilityId(id, waitForElement), this._driver, this.webio, "waitForElementByAccessibilityId", id);
     }
 
-    public async waitForElementsByAccessibilityId(id: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
-        return await this.convertArrayToUIElements(this._driver.waitForElementsByAccessibilityId(id, waitForElement), "waitForElementsByAccessibilityId", id);
+    public async findElementsByAccessibilityId(id: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
+        return await this.convertArrayToUIElements(await this._driver.waitForElementsByAccessibilityId(id, waitForElement), "waitForElementsByAccessibilityId", id);
     }
 
     public async source() {
@@ -265,6 +265,9 @@ export class AppiumDriver {
     private async convertArrayToUIElements(array, searchM, args) {
         let i = 0;
         const arrayOfUIElements = new Array<UIElement>();
+        if(!array || array === undefined){
+            return arrayOfUIElements;
+        }
         array.forEach(async element => {
             arrayOfUIElements.push(new UIElement(await element, this._driver, this.wdio, searchM, args, i));
             i++;

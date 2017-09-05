@@ -27,15 +27,13 @@ export class UIElement {
     }
 
     public async element() {
-        this.refetch();
+        this._element = await this.refetch();
         return await this._element;
     }
 
     public async isDisplayed() {
         const el = (await this.element());
-        console.log("", await el);
-        console.log("",this._webio);
-        return await el === null ? false : (await this._element.isDisplayed());
+        return (await el) === null ? false : (await this._element.isDisplayed());
     }
 
     public async exists() {
@@ -61,14 +59,12 @@ export class UIElement {
     public async refetch() {
         try {
             if (this._index && this._index !== null) {
-                this._element = (await this._driver[this._searchMethod](this._searchParams, 1000))[this._index];
+                return (await this._driver[this._searchMethod](this._searchParams, 1000))[this._index];
             } else {
-                this._element = await this._driver[this._searchMethod](this._searchParams, 1000);
+                return await this._driver[this._searchMethod](this._searchParams, 1000);
             }
         } catch (error) {
-            this._element = null;
+            return null;
         }
-
-        return this._element;
     }
 }

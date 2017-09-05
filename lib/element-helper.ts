@@ -10,16 +10,16 @@ export class ElementHelper {
 
     public getXPathElement(name) {
         const tempName = name.toLowerCase().replace(/\-/g, "");
-        if (contains(this.platform, "android")) {
-            return this.getAndroidClass(tempName);
+        if (this.isAndroid) {
+            return "//*/" + this.getAndroidClass(tempName);
         } else {
-            return this.getiOSClassByName(tempName, this.platformVersion);
+            return "//*/" + this.getiOSClassByName(tempName, this.platformVersion);
         }
     };
 
     public getElementClass(name) {
         const tempName = name.toLowerCase().replace(/\-/g, "");
-        if (contains(this.platform, "android")) {
+        if (this.isAndroid) {
             return this.getAndroidClass(tempName);
         } else {
             return this.getiOSClassByName(tempName, this.platformVersion);

@@ -27,8 +27,8 @@ export declare class AppiumDriver {
     findElementByText(text: string, match?: SearchOptions, waitForElement?: number): Promise<UIElement>;
     findElementsByText(text: string, match?: SearchOptions, waitForElement?: number): Promise<UIElement[]>;
     findElementsByClassName(className: string, waitForElement?: number): Promise<UIElement[]>;
-    waitForElementByAccessibilityId(id: any, waitForElement?: number): Promise<UIElement>;
-    waitForElementsByAccessibilityId(id: string, waitForElement?: number): Promise<UIElement[]>;
+    findElementByAccessibilityId(id: any, waitForElement?: number): Promise<UIElement>;
+    findElementsByAccessibilityId(id: string, waitForElement?: number): Promise<UIElement[]>;
     source(): Promise<any>;
     sessionId(): Promise<any>;
     compareScreen(imageName: string, timeOutSeconds: number, tollerance: number): Promise<boolean>;
