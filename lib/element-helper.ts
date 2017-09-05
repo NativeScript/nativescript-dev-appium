@@ -3,20 +3,23 @@ import { log } from "./utils";
 
 export class ElementHelper {
 
-    constructor(private platform: string, private platformVersion: number) { }
+    private isAndroid: boolean;
+    constructor(private platform: string, private platformVersion: number) {
+        this.isAndroid = this.platform === "android";
+    }
 
     public getXPathElement(name) {
         const tempName = name.toLowerCase().replace(/\-/g, "");
-        if (contains(this.platform, "android")) {
-            return this.getAndroidClass(tempName);
+        if (this.isAndroid) {
+            return "//*/" + this.getAndroidClass(tempName);
         } else {
-            return this.getiOSClassByName(tempName, this.platformVersion);
+            return "//*/" + this.getiOSClassByName(tempName, this.platformVersion);
         }
     };
 
     public getElementClass(name) {
         const tempName = name.toLowerCase().replace(/\-/g, "");
-        if (contains(this.platform, "android")) {
+        if (this.isAndroid) {
             return this.getAndroidClass(tempName);
         } else {
             return this.getiOSClassByName(tempName, this.platformVersion);
@@ -36,22 +39,29 @@ export class ElementHelper {
     }
 
     public findByTextLocator(controlType, value, exactMatch) {
-        log("Should be exact match: " + exactMatch);
         let artbutes = ["label", "value", "hint"];
-        if (contains(this.platform, "android")) {
+        if (this.isAndroid) {
             artbutes = ["content-desc", "resource-id", "text"];
         }
 
         let searchedString = "";
         if (exactMatch) {
-            artbutes.forEach((atr) => { searchedString += "@" + atr + "='" + value + "'" + " or " });
+            if (this.isAndroid) {
+                artbutes.forEach((atr) => { searchedString += "translate(@" + atr + ",'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='" + value.toLowerCase() + "'" + " or " });
+            } else {
+                artbutes.forEach((atr) => { searchedString += "@" + atr + "='" + value + "'" + " or " });
+            }
         } else {
-            artbutes.forEach((atr) => { searchedString += "contains(@" + atr + ",'" + value + "')" + " or " });
+            if (this.isAndroid) {
+                artbutes.forEach((atr) => { searchedString += "contains(translate(@" + atr + ",'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'" + value.toLowerCase() + "')" + " or " });
+            } else {
+                artbutes.forEach((atr) => { searchedString += "contains(@" + atr + ",'" + value + "')" + " or " });
+            }
         }
 
         searchedString = searchedString.substring(0, searchedString.lastIndexOf(" or "));
         const result = "//" + controlType + "[" + searchedString + "]";
-        log("Xpath: " + result);
+        log("Xpath: " + result, false);
 
         return result;
     }

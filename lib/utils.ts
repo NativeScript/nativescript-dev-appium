@@ -2,21 +2,14 @@ import * as path from "path";
 import * as fs from "fs";
 import * as childProcess from "child_process";
 require('colors');
-
-export const verbose = process.env.npm_config_loglevel === "verbose";
-export const testFolder = process.env.npm_config_testFolder || "e2e";
-export const mochaCustomOptions = process.env.npm_config_mochaOptions;
-export const capabilitiesName = "appium.capabilities.json";
-export const appLocation = process.env.npm_config_appLocation;
-export const executionPath = process.env.npm_config_executionPath;
-export const projectDir = require('app-root-path').toString();
+import { INsCapabilities } from "./ins-capabilities";
 
 export function resolve(mainPath, ...args) {
     if (!path.isAbsolute(mainPath)) {
         if (mainPath.startsWith('~')) {
             mainPath = path.join(process.env.HOME, mainPath.slice(1));
         } else {
-            mainPath = path.resolve(projectDir, mainPath);
+            mainPath = path.resolve(mainPath);
         }
     }
 
@@ -25,19 +18,6 @@ export function resolve(mainPath, ...args) {
         fullPath = path.resolve(fullPath, p);
     });
     return fullPath;
-}
-
-
-export function projectBinary() {
-    return resolve(projectDir, "node_modules", ".bin");
-}
-
-export function pluginRoot() {
-    return resolve(__dirname);
-}
-
-export function pluginBinary() {
-    return resolve(__dirname, "node_modules", ".bin");
 }
 
 export function fileExists(p) {
@@ -183,29 +163,29 @@ export function searchFiles(folder, words, recursive: boolean = true, files = ne
     return files;
 }
 
-export function log(message) {
+export function log(message, verbose) {
     if (verbose) {
         console.log(message);
     }
 }
 
-export function loglogOut(line, force) {
-    if (verbose || force) {
+export function loglogOut(line, verbose) {
+    if (verbose) {
         process.stdout.write(line);
     }
 }
 
-export function logErr(line, force) {
-    if (verbose || force) {
+export function logErr(line, verbose) {
+    if (verbose) {
         process.stderr.write(line);
     }
 }
 
-export function shutdown(processToKill) {
+export function shutdown(processToKill, verbose) {
     try {
         if (processToKill) {
             if (process.platform === "win32") {
-                killPid(processToKill.pid);
+                killPid(processToKill.pid, verbose);
             } else {
                 processToKill.kill();
             }
@@ -217,12 +197,12 @@ export function shutdown(processToKill) {
     }
 }
 
-export function killPid(pid) {
+export function killPid(pid, verbose) {
     let output = childProcess.execSync('taskkill /PID ' + pid + ' /T /F');
-    log(output);
+    log(output, verbose);
 }
 
-export function waitForOutput(process, matcher, timeout) {
+export function waitForOutput(process, matcher, timeout, verbose) {
     return new Promise<boolean>(function (resolve, reject) {
         let abortWatch = setTimeout(function () {
             process.kill();
@@ -232,7 +212,7 @@ export function waitForOutput(process, matcher, timeout) {
 
         process.stdout.on("data", function (data) {
             let line = "" + data;
-            log(line);
+            log(line, verbose);
             if (matcher.test(line)) {
                 clearTimeout(abortWatch);
                 resolve(true);
@@ -257,12 +237,12 @@ export function isWin() {
     return /^win/.test(process.platform);
 }
 
-export function getStorage(capabilities: any) {
-    let storage = createStorageFolder(resolve(projectDir, testFolder), "resources");
+export function getStorage(args: INsCapabilities) {
+    let storage = createStorageFolder(resolve(args.projectDir, args.testFolder), "resources");
     storage = createStorageFolder(storage, "images");
-    const appName = capabilities.app.substring(capabilities.app.lastIndexOf("/") + 1, capabilities.app.lastIndexOf("."));
+    const appName = args.appiumCaps.app.substring(args.appiumCaps.app.lastIndexOf("/") + 1, args.appiumCaps.app.lastIndexOf("."));
     storage = createStorageFolder(storage, appName);
-    storage = createStorageFolder(storage, capabilities.deviceName);
+    storage = createStorageFolder(storage, args.appiumCaps.deviceName);
 
     return storage;
 }

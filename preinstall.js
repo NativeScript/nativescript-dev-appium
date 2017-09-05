@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var fs = require("fs");
 var path = require("path");
 var utils = require("./lib/utils");
+var parser = require("./lib/utils");
 var package_json_helper_1 = require("./lib/package-json-helper");
 var pluginRoot = utils.pluginRoot();
 var projectDir = utils.projectDir;
@@ -14,7 +15,7 @@ if (path.dirname(packageJsonPath) !== "nativescript-dev-appium") {
     package_json_helper_1.updatePackageJsonDep(packageJsonPath, isTscProj);
 }
 // Copy e2e-tests folder if doesn't exist
-var e2eTests = utils.testFolder;
+var e2eTests = parser.testFolder;
 var e2eTestsDir = utils.resolve(projectDir, e2eTests);
 if (!utils.fileExists(e2eTestsDir)) {
     fs.mkdirSync(e2eTestsDir);

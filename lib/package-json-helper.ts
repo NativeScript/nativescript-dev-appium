@@ -1,10 +1,10 @@
-const fs = require("fs");
-const path = require("path");
-import * as  utils from "./utils";
+import { readFileSync, writeFileSync } from "fs";
+import { dirname } from "path";
+import { log, executeNpmInstall, fileExists } from "./utils";
 
 let pendingNpmInstall = false;
 
-function configureDevDependencies(packageJson, adderCallback) {
+function configureDevDependencies(packageJson, appRootPath, adderCallback, verbose) {
     if (!packageJson.devDependencies) {
         packageJson.devDependencies = {};
     }
@@ -25,22 +25,22 @@ function configureDevDependencies(packageJson, adderCallback) {
         console.info("Installing new dependencies...");
         //Run `npm install` after everything else.
         setTimeout(function () {
-            utils.executeNpmInstall(utils.projectDir);
+            executeNpmInstall(appRootPath);
         }, 300);
     }
 }
 
-export function updatePackageJsonDep(packageJsonPath, isTscProj) {
+export function updatePackageJsonDep(packageJsonPath, appRootPath, isTscProj, verbose) {
     let packageJson: any = {};
-    if (!utils.fileExists(packageJsonPath)) {
+    if (!fileExists(packageJsonPath)) {
         console.error(packageJson, true);
 
         return
     } else {
-        utils.log("PackageJsonPath: " + packageJsonPath);
-        packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
-        const projectDir = path.dirname(packageJsonPath);
-        utils.log(packageJson);
+        log("PackageJsonPath: " + packageJsonPath, verbose);
+        packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"));
+        const projectDir = dirname(packageJsonPath);
+        log(packageJson, verbose);
     }
 
     if (!packageJson.scripts) {
@@ -56,27 +56,27 @@ export function updatePackageJsonDep(packageJsonPath, isTscProj) {
         }
     }
 
-    configureDevDependencies(packageJson, (add) => {
+    configureDevDependencies(packageJson, appRootPath, (add) => {
         add("chai", "~4.1.1");
         add("mocha", "~3.5.0");
         add('mocha-junit-reporter', '^1.13.0');
         add('mocha-multi', '^0.11.0');
         add('chai-as-promised', '~7.1.1');
-         if (isTscProj) {
+        if (isTscProj) {
             add('tslib', '^1.7.1');
             add("@types/node", "^7.0.5");
             add("@types/chai", "^4.0.2");
             add("@types/mocha", "^2.2.41");
         }
-    });
+    }, verbose);
 
     console.warn("WARNING: nativescript-dev-appium no longer installs Appium as a local dependency!");
     console.log("Add appium as a local dependency (see README) or we'll attempt to run it from PATH.");
 
-    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+    writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
-    if (fs.existsSync(packageJsonPath) && pendingNpmInstall) {
-        packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
-        utils.log(packageJson);
+    if (fileExists(packageJsonPath) && pendingNpmInstall) {
+        packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"));
+        log(packageJson, verbose);
     }
 }

@@ -1,15 +1,15 @@
 import * as child_process from "child_process";
-import * as fs from "fs";
-import * as utils from "./utils";
-import * as path from "path";
+import { log, resolve, waitForOutput, shutdown, fileExists } from "./utils";
+import { INsCapabilities } from "./ins-capabilities";
 
 export class AppiumServer {
-    private _appium;
     private _server: child_process.ChildProcess;
+    private _appium;
     private _port: number;
     private _runType: string;
 
-    constructor() {
+    constructor(private _args: INsCapabilities) {
+        this._runType = this._args.runType;
         this.resolveAppiumDependency();
     }
 
@@ -34,13 +34,13 @@ export class AppiumServer {
     }
 
     public async start() {
-        utils.log("Starting server...");
+        log("Starting server...", this._args.verbose);
         this._server = child_process.spawn(this._appium, ["-p", this._port.toString(), "--log-level", "debug"], {
             shell: true,
             detached: false
         });
 
-        const responce: boolean = await utils.waitForOutput(this._server, /listener started/, 60000);
+        const responce: boolean = await waitForOutput(this._server, /listener started/, 60000, this._args.verbose);
 
         if (!responce) {
             throw new Error("Timeout expired. Appium server did't start correctly!")
@@ -52,18 +52,18 @@ export class AppiumServer {
     public stop() {
         return new Promise((resolve, reject) => {
             this._server.on("close", (code, signal) => {
-                utils.log(`Appium terminated due signal: ${signal} and code: ${code}`);
+                log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
                 resolve();
             });
 
             this._server.on("exit", (code, signal) => {
-                utils.log(`Appium terminated due signal: ${signal} and code: ${code}`);
+                log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
                 resolve();
             });
 
-            utils.log("Stopping server...");
+            log("Stopping server...", this._args.verbose);
             try {
-                utils.shutdown(this._server);
+                shutdown(this._server, this._args.verbose);
                 this._server.kill("SIGINT");
             } catch (error) {
                 console.log(error);
@@ -73,23 +73,23 @@ export class AppiumServer {
 
     // Resolve appium dependency
     private resolveAppiumDependency() {
-        const projectDir = utils.projectDir;
-        const pluginBinary = utils.pluginBinary();
-        const projectBinary = utils.projectBinary();
-        const pluginRoot = utils.pluginRoot();
+        const projectDir = this._args.projectDir;
+        const pluginBinary = this._args.pluginBinary;
+        const projectBinary = this._args.projectBinary;
+        const pluginRoot = this._args.pluginRoot;
 
         let appium = process.platform === "win32" ? "appium.cmd" : "appium";
-        const pluginAppiumBinary = utils.resolve(pluginBinary, appium);
-        const projectAppiumBinary = utils.resolve(projectBinary, appium);
+        const pluginAppiumBinary = resolve(pluginBinary, appium);
+        const projectAppiumBinary = resolve(projectBinary, appium);
 
-        if (fs.existsSync(pluginAppiumBinary)) {
-            utils.log("Using plugin-local Appium binary.");
+        if (fileExists(pluginAppiumBinary)) {
+            log("Using plugin-local Appium binary.", this._args.verbose);
             appium = pluginAppiumBinary;
-        } else if (fs.existsSync(projectAppiumBinary)) {
-            utils.log("Using project-local Appium binary.");
+        } else if (fileExists(projectAppiumBinary)) {
+            log("Using project-local Appium binary.", this._args.verbose);
             appium = projectAppiumBinary;
         } else {
-            utils.log("Using global Appium binary.");
+            log("Using global Appium binary.", this._args.verbose);
         }
 
         this._appium = appium;

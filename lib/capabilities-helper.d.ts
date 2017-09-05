@@ -1,3 +1,3 @@
 /// <reference types="node" />
-export declare function resolveCapabilities(capsLocation: string, runType: string): {};
-export declare function searchCustomCapabilities(capabilitiesLocation: any): Buffer;
+export declare function resolveCapabilities(capsLocation: string, runType: string, projectDir: string, verbose?: boolean): {};
+export declare function searchCustomCapabilities(capabilitiesLocation: any, projectDir: any, verbose?: boolean): Buffer;
