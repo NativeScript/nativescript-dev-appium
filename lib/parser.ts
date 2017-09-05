@@ -12,7 +12,7 @@ const config = (() => {
         .option("sauceLab", { describe: "SauceLab", default: false, type: "boolean" })
         .option("port", { alias: "p", describe: "Execution port", type: "string" })
         .option("verbose", { alias: "v", describe: "Log actions", type: "boolean" })
-        .option("path", { alias: "p", describe: "path", default: process.cwd(), type: "string" })
+        .option("path", { describe: "path", default: process.cwd(), type: "string" })
         .help()
         .argv;
 
