@@ -7,7 +7,6 @@ export class NsCapabilities implements INsCapabilities {
     private _projectBinary;
     private _pluginRoot;
     private _pluginBinary;
-    private _appRootPath;
     private _port;
     private _verbose;
     private _appiumCapsLocation;
@@ -22,7 +21,6 @@ export class NsCapabilities implements INsCapabilities {
         this._projectBinary = parser.projectBinary;
         this._pluginRoot = parser.pluginRoot;
         this._pluginBinary = parser.pluginBinary;
-        this._appRootPath = parser.appRootPath;
         this._appPath = parser.appPath;
         this._port = parser.port;
         this._verbose = parser.verbose;
@@ -30,14 +28,13 @@ export class NsCapabilities implements INsCapabilities {
         this._testFolder = parser.testFolder;
         this._runType = parser.runType;
         this._isSauceLab = parser.isSauceLab;
-        this._appiumCaps = resolveCapabilities(this._appiumCapsLocation, parser.runType, parser.appRootPath);
+        this._appiumCaps = resolveCapabilities(this._appiumCapsLocation, parser.runType, parser.projectDir);
     }
 
     get projectDir() { return this._projectDir; }
     get projectBinary() { return this._projectBinary; }
     get pluginRoot() { return this._pluginRoot; }
     get pluginBinary() { return this._pluginBinary; }
-    get appRootPath() { return this._appRootPath; }
     get port() { return this._port; }
     get verbose() { return this._verbose; }
     get appiumCapsLocation() { return this._appiumCapsLocation; }

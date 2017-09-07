@@ -4,7 +4,6 @@ export declare class NsCapabilities implements INsCapabilities {
     private _projectBinary;
     private _pluginRoot;
     private _pluginBinary;
-    private _appRootPath;
     private _port;
     private _verbose;
     private _appiumCapsLocation;
@@ -12,12 +11,12 @@ export declare class NsCapabilities implements INsCapabilities {
     private _testFolder;
     private _runType;
     private _isSauceLab;
+    private _appPath;
     constructor();
     readonly projectDir: any;
     readonly projectBinary: any;
     readonly pluginRoot: any;
     readonly pluginBinary: any;
-    readonly appRootPath: any;
     readonly port: any;
     readonly verbose: any;
     readonly appiumCapsLocation: any;
@@ -25,4 +24,5 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly testFolder: any;
     readonly runType: any;
     readonly isSauceLab: any;
+    readonly appPath: string;
 }

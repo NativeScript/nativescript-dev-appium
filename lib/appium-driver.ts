@@ -44,8 +44,9 @@ export async function createAppiumDriver(port: number, args: INsCapabilities) {
         args.appiumCaps.app = getAppPath(args.appiumCaps.platformName.toLowerCase(), args.runType.toLowerCase());
     }
 
-    args.appiumCaps.app = args.isSauceLab ? "sauce-storage:" + args.appRootPath : args.appRootPath;
-
+    args.appiumCaps.app = args.isSauceLab ? "sauce-storage:" + args.appiumCaps.app : args.appiumCaps.app;
+    args.appPath = args.appiumCaps.app;
+    
     log("Creating driver!", args.verbose);
 
     const webio = webdriverio.remote({

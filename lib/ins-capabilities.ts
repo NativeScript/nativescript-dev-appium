@@ -3,7 +3,6 @@ export interface INsCapabilities {
     projectBinary: string;
     pluginRoot: string;
     pluginBinary: string;
-    appRootPath: string;
     port: number;
     verbose: boolean;
     appiumCapsLocation: string;

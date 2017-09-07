@@ -3,7 +3,6 @@ export interface INsCapabilities {
     projectBinary: string;
     pluginRoot: string;
     pluginBinary: string;
-    appRootPath: string;
     port: number;
     verbose: boolean;
     appiumCapsLocation: string;
@@ -11,4 +10,5 @@ export interface INsCapabilities {
     testFolder: string;
     runType: string;
     isSauceLab: boolean;
+    appPath: string;
 }

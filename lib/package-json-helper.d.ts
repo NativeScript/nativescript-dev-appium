@@ -1,1 +1,1 @@
-export declare function updatePackageJsonDep(packageJsonPath: any, appRootPath: any, isTscProj: any, verbose: any): void;
+export declare function updatePackageJsonDep(packageJsonPath: any, projectDir: any, isTscProj: any, verbose: any): void;
