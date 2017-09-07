@@ -72,6 +72,9 @@ export class ElementHelper {
                 return "android.widget.ProgressBar";
             case "button":
                 return "android.widget.Button";
+            case "image-button":
+            case "imagebutton":
+                return "android.widget.ImageButton";
             case "datepicker":
                 return "android.widget.DatePicker";
             case "htmlview":
@@ -130,6 +133,8 @@ export class ElementHelper {
             case "activityindicator":
                 return this.createIosElement("ActivityIndicator");
             case "button":
+            case "image-button":
+            case "imagebutton":
                 return this.createIosElement("Button");
             case "datepicker":
                 return this.createIosElement("DatePicker");
