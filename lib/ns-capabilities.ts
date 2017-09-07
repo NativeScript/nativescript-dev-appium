@@ -43,4 +43,5 @@ export class NsCapabilities implements INsCapabilities {
     get runType() { return this._runType; }
     get isSauceLab() { return this._isSauceLab; }
     get appPath() { return this._appPath; }
+    set appPath(appPath: string) { this._appPath = appPath; }
 }

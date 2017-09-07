@@ -9,6 +9,6 @@ export interface INsCapabilities {
     appiumCaps: any;
     testFolder: string;
     runType: string;
-    isSauceLab: boolean;  
-    appPath: string;  
+    isSauceLab: boolean;
+    appPath: string;
 }

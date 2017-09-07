@@ -24,5 +24,5 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly testFolder: any;
     readonly runType: any;
     readonly isSauceLab: any;
-    readonly appPath: string;
+    appPath: string;
 }
