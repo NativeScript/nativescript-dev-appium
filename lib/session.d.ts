@@ -1,11 +1,13 @@
 import { AppiumDriver } from "./appium-driver";
 import { AppiumServer } from "./appium-server";
 export declare class Session {
+    private _appiumServer;
     private _args;
     private _appiumDriver;
-    private _appiumServer;
-    constructor(_args: any, _appiumDriver: AppiumDriver, _appiumServer: AppiumServer);
+    private _port;
+    constructor(_appiumServer: AppiumServer, _args: any, _appiumDriver?: AppiumDriver);
+    readonly port: any;
     readonly runType: any;
-    readonly appiumDriver: AppiumDriver;
+    appiumDriver: AppiumDriver;
     readonly appiumServer: AppiumServer;
 }

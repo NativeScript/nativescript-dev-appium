@@ -93,15 +93,18 @@ function getAppPath(platform, runType) {
 
 export class AppiumDriver {
     private static defaultWaitTime: number = 5000;
-    private elementHelper: ElementHelper;
     private static pngFileExt = '.png';
     private static partialUrl = "/wd/hub/session/";
+
+    private _elementHelper: ElementHelper;
     private _storage: string;
+    private _isAlive: boolean = false;
 
     constructor(private _driver: any, private webio: any, private _sessionId, private _driverConfig, private _args: INsCapabilities) {
-        this.elementHelper = new ElementHelper(this._args.appiumCaps.platformName.toLowerCase(), this._args.appiumCaps.platformVersion.toLowerCase());
+        this._elementHelper = new ElementHelper(this._args.appiumCaps.platformName.toLowerCase(), this._args.appiumCaps.platformVersion.toLowerCase());
         this.webio.requestHandler.sessionID = this._sessionId;
         this._storage = getStorage(this._args);
+        this._isAlive = true;
     }
 
     get capabilities() {
@@ -114,6 +117,14 @@ export class AppiumDriver {
 
     get platformVesrion() {
         return this._args.appiumCaps.platformVesrion;
+    }
+
+    get elementHelper() {
+        return this._elementHelper;
+    }
+
+    get isAlive() {
+        return this._isAlive;
     }
 
     get driver() {
@@ -143,16 +154,16 @@ export class AppiumDriver {
 
     public async findElementByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const shouldMatch = match === SearchOptions.exact ? true : false;
-        return await this.findElementByXPath(this.elementHelper.getXPathByText(text, shouldMatch), waitForElement);
+        return await this.findElementByXPath(this._elementHelper.getXPathByText(text, shouldMatch), waitForElement);
     }
 
     public async findElementsByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const shouldMatch = match === SearchOptions.exact ? true : false;
-        return await this.findElementsByXPath(this.elementHelper.getXPathByText(text, shouldMatch), waitForElement);
+        return await this.findElementsByXPath(this._elementHelper.getXPathByText(text, shouldMatch), waitForElement);
     }
 
     public async findElementsByClassName(className: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
-        const fullClassName = this.elementHelper.getElementClass(className);
+        const fullClassName = this._elementHelper.getElementClass(className);
         return await this.convertArrayToUIElements(await this._driver.waitForElementsByClassName(fullClassName, waitForElement), "waitForElementByClassName", fullClassName);
     }
 
@@ -254,18 +265,19 @@ export class AppiumDriver {
     public async quit() {
         console.log("Killing driver");
         try {
-            this.webio.end();
             await this._driver.quit();
+            await this.webio.end();
         } catch (error) {
-
+            console.dir(error);
         }
+        this._isAlive = false;
         console.log("Driver is dead");
     }
 
     private async convertArrayToUIElements(array, searchM, args) {
         let i = 0;
         const arrayOfUIElements = new Array<UIElement>();
-        if(!array || array === undefined){
+        if (!array || array === null) {
             return arrayOfUIElements;
         }
         array.forEach(async element => {

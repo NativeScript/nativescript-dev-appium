@@ -1,4 +1,5 @@
 export declare var should: any;
+import { ElementHelper } from "./element-helper";
 import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
 import { INsCapabilities } from "./ins-capabilities";
@@ -10,14 +11,17 @@ export declare class AppiumDriver {
     private _driverConfig;
     private _args;
     private static defaultWaitTime;
-    private elementHelper;
     private static pngFileExt;
     private static partialUrl;
+    private _elementHelper;
     private _storage;
+    private _isAlive;
     constructor(_driver: any, webio: any, _sessionId: any, _driverConfig: any, _args: INsCapabilities);
     readonly capabilities: any;
     readonly platformName: any;
     readonly platformVesrion: any;
+    readonly elementHelper: ElementHelper;
+    readonly isAlive: boolean;
     readonly driver: any;
     wdio(): Promise<any>;
     click(args: any): Promise<any>;
