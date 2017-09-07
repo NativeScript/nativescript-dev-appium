@@ -3,11 +3,9 @@ import { ElementHelper } from "./element-helper";
 import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
 import { INsCapabilities } from "./ins-capabilities";
-export declare function createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
 export declare class AppiumDriver {
     private _driver;
     private webio;
-    private _sessionId;
     private _driverConfig;
     private _args;
     private static defaultWaitTime;
@@ -16,7 +14,8 @@ export declare class AppiumDriver {
     private _elementHelper;
     private _storage;
     private _isAlive;
-    constructor(_driver: any, webio: any, _sessionId: any, _driverConfig: any, _args: INsCapabilities);
+    private constructor();
+    inint(): Promise<void>;
     readonly capabilities: any;
     readonly platformName: any;
     readonly platformVesrion: any;
@@ -38,6 +37,7 @@ export declare class AppiumDriver {
     compareScreen(imageName: string, timeOutSeconds: number, tollerance: number): Promise<boolean>;
     takeScreenshot(fileName: string): Promise<string>;
     compareImages(expected: string, actual: string, output: string): Promise<boolean>;
+    static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
     quit(): Promise<void>;
     private convertArrayToUIElements(array, searchM, args);
 }

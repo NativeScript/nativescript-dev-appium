@@ -18,48 +18,6 @@ import { unlinkSync, writeFileSync } from "fs";
 import * as glob from "glob";
 import * as webdriverio from 'webdriverio';
 
-export async function createAppiumDriver(port: number, args: INsCapabilities) {
-    let driverConfig: any = {
-        host: "localhost",
-        port: port
-    };
-
-    if (args.isSauceLab) {
-        const sauceUser = process.env.SAUCE_USER;
-        const sauceKey = process.env.SAUCE_KEY;
-
-        if (!sauceKey || !sauceUser) {
-            throw new Error("Sauce Labs Username or Access Key is missing! Check environment variables for SAUCE_USER and SAUCE_KEY !!!");
-        }
-
-        driverConfig = {
-            host: "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub"
-        }
-    }
-
-    const driver = await wd.promiseChainRemote(driverConfig);
-    configureLogging(driver, args.verbose);
-
-    if (args.appiumCaps.app) {
-        args.appiumCaps.app = args.isSauceLab ? "sauce-storage:" + args.appRootPath : args.appRootPath;
-    } else if (!args.appiumCaps.app) {
-        log("Getting caps.app!", args.verbose);
-        args.appiumCaps.app = getAppPath(args.appiumCaps.platformName.toLowerCase(), args.runType.toLowerCase());
-    }
-
-    log("Creating driver!", args.verbose);
-
-    const webio = webdriverio.remote({
-        baseUrl: driverConfig.host,
-        port: driverConfig.port,
-        logLevel: 'warn',
-        desiredCapabilities: args.appiumCaps
-    });
-
-    (await driver.init(args.appiumCaps));
-    const sessionId = await driver.sessionID;
-    return new AppiumDriver(driver, webio, sessionId, driverConfig, args);
-}
 
 function configureLogging(driver, verbose) {
     driver.on("status", function (info) {
@@ -100,11 +58,16 @@ export class AppiumDriver {
     private _storage: string;
     private _isAlive: boolean = false;
 
-    constructor(private _driver: any, private webio: any, private _sessionId, private _driverConfig, private _args: INsCapabilities) {
+    private constructor(private _driver: any, private webio: any, private _driverConfig, private _args: INsCapabilities) {
         this._elementHelper = new ElementHelper(this._args.appiumCaps.platformName.toLowerCase(), this._args.appiumCaps.platformVersion.toLowerCase());
-        this.webio.requestHandler.sessionID = this._sessionId;
+        this.webio.requestHandler.sessionID = this._driver.sessionID;
         this._storage = getStorage(this._args);
         this._isAlive = true;
+    }
+
+    public async inint() {
+        await this._driver.init(this._args.appiumCaps);
+        this.webio.requestHandler.sessionID = this._driver.sessionID;
     }
 
     get capabilities() {
@@ -262,6 +225,48 @@ export class AppiumDriver {
         });
     }
 
+
+    public static async createAppiumDriver(port: number, args: INsCapabilities) {
+        let driverConfig: any = {
+            host: "localhost",
+            port: port
+        };
+
+        if (args.isSauceLab) {
+            const sauceUser = process.env.SAUCE_USER;
+            const sauceKey = process.env.SAUCE_KEY;
+
+            if (!sauceKey || !sauceUser) {
+                throw new Error("Sauce Labs Username or Access Key is missing! Check environment variables for SAUCE_USER and SAUCE_KEY !!!");
+            }
+
+            driverConfig = {
+                host: "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub"
+            }
+        }
+
+        const driver = await wd.promiseChainRemote(driverConfig);
+        configureLogging(driver, args.verbose);
+
+        if (args.appiumCaps.app) {
+            args.appiumCaps.app = args.isSauceLab ? "sauce-storage:" + args.appRootPath : args.appRootPath;
+        } else if (!args.appiumCaps.app) {
+            log("Getting caps.app!", args.verbose);
+            args.appiumCaps.app = getAppPath(args.appiumCaps.platformName.toLowerCase(), args.runType.toLowerCase());
+        }
+
+        log("Creating driver!", args.verbose);
+
+        const webio = webdriverio.remote({
+            baseUrl: driverConfig.host,
+            port: driverConfig.port,
+            logLevel: 'warn',
+            desiredCapabilities: args.appiumCaps
+        });
+
+        (await driver.init(args.appiumCaps));
+        return new AppiumDriver(driver, webio, driverConfig, args);
+    }
     public async quit() {
         console.log("Killing driver");
         try {

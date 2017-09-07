@@ -1,6 +1,5 @@
 import * as portastic from "portastic";
 import { AppiumServer } from "./lib/appium-server";
-import { createAppiumDriver } from "./lib/appium-driver";
 import { AppiumDriver } from "./lib/appium-driver";
 import { ElementHelper } from "./lib/element-helper";
 import { NsCapabilities } from "./lib/ns-capabilities";
@@ -41,9 +40,10 @@ export async function createDriver() {
     let appiumDriver = TestManager.getSession(server.port).appiumDriver;
     if (appiumDriver !== null && appiumDriver.isAlive) {
         return appiumDriver;
-    } else {
-        appiumDriver = await createAppiumDriver(server.port, nsCapabilities);
-        TestManager.getSession(server.port).appiumDriver = appiumDriver;
+    } else if (appiumDriver === null) {
+        TestManager.getSession(server.port).appiumDriver = await AppiumDriver.createAppiumDriver(server.port, nsCapabilities);
+    } else if (appiumDriver !== null && !appiumDriver.isAlive) {
+        await TestManager.getSession(server.port).appiumDriver.inint();
     }
 
     return await TestManager.getSession(server.port).appiumDriver;
