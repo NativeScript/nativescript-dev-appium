@@ -13,6 +13,7 @@ const config = (() => {
         .option("port", { alias: "p", describe: "Execution port", type: "string" })
         .option("verbose", { alias: "v", describe: "Log actions", type: "boolean" })
         .option("path", { describe: "path", default: process.cwd(), type: "string" })
+        .option("appPath", { describe: "application path", type: "string" })
         .help()
         .argv;
 
@@ -37,7 +38,8 @@ const config = (() => {
         runType: options.runType || process.env.npm_config_runType,
         appiumCapsLocation: options.appiumCapsLocation || join(appRootPath, options.testFolder, "config", capabilitiesName),
         isSauceLab: options.sauceLab,
-        verbose: options.verbose || process.env.npm_config_loglevel === "verbose"
+        verbose: options.verbose || process.env.npm_config_loglevel === "verbose",
+        appPath: options.appPath
     }
     return config;
 })();
@@ -53,5 +55,6 @@ export const {
     appiumCapsLocation,
     testFolder,
     runType,
-    isSauceLab
+    isSauceLab,
+    appPath
 } = config;

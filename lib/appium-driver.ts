@@ -27,11 +27,9 @@ export async function createAppiumDriver(port: number, args: INsCapabilities) {
     if (args.isSauceLab) {
         const sauceUser = process.env.SAUCE_USER;
         const sauceKey = process.env.SAUCE_KEY;
-
         if (!sauceKey || !sauceUser) {
             throw new Error("Sauce Labs Username or Access Key is missing! Check environment variables for SAUCE_USER and SAUCE_KEY !!!");
         }
-
         driverConfig = {
             host: "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub"
         }
@@ -40,12 +38,13 @@ export async function createAppiumDriver(port: number, args: INsCapabilities) {
     const driver = await wd.promiseChainRemote(driverConfig);
     configureLogging(driver, args.verbose);
 
-    if (args.appiumCaps.app) {
-        args.appiumCaps.app = args.isSauceLab ? "sauce-storage:" + args.appRootPath : args.appRootPath;
-    } else if (!args.appiumCaps.app) {
+    args.appiumCaps.app = args.appiumCaps.app || args.appPath;
+    if (!args.appiumCaps.app) {
         log("Getting caps.app!", args.verbose);
         args.appiumCaps.app = getAppPath(args.appiumCaps.platformName.toLowerCase(), args.runType.toLowerCase());
     }
+
+    args.appiumCaps.app = args.isSauceLab ? "sauce-storage:" + args.appRootPath : args.appRootPath;
 
     log("Creating driver!", args.verbose);
 
@@ -265,7 +264,7 @@ export class AppiumDriver {
     private async convertArrayToUIElements(array, searchM, args) {
         let i = 0;
         const arrayOfUIElements = new Array<UIElement>();
-        if(!array || array === undefined){
+        if (!array || array === undefined) {
             return arrayOfUIElements;
         }
         array.forEach(async element => {

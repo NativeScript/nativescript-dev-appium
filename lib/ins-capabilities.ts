@@ -11,4 +11,5 @@ export interface INsCapabilities {
     testFolder: string;
     runType: string;
     isSauceLab: boolean;  
+    appPath: string;  
 }

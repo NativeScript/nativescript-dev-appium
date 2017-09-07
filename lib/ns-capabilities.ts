@@ -15,6 +15,7 @@ export class NsCapabilities implements INsCapabilities {
     private _testFolder;
     private _runType;
     private _isSauceLab;
+    private _appPath: string;
 
     constructor() {
         this._projectDir = parser.projectDir;
@@ -22,6 +23,7 @@ export class NsCapabilities implements INsCapabilities {
         this._pluginRoot = parser.pluginRoot;
         this._pluginBinary = parser.pluginBinary;
         this._appRootPath = parser.appRootPath;
+        this._appPath = parser.appPath;
         this._port = parser.port;
         this._verbose = parser.verbose;
         this._appiumCapsLocation = parser.appiumCapsLocation;
@@ -43,4 +45,5 @@ export class NsCapabilities implements INsCapabilities {
     get testFolder() { return this._testFolder; }
     get runType() { return this._runType; }
     get isSauceLab() { return this._isSauceLab; }
+    get appPath() { return this._appPath; }
 }
