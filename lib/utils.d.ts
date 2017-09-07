@@ -15,3 +15,4 @@ export declare function waitForOutput(process: any, matcher: any, timeout: any, 
 export declare function executeCommand(args: any, cwd?: any): string;
 export declare function isWin(): boolean;
 export declare function getStorage(args: INsCapabilities): any;
+export declare function getAppPath(platform: any, runType: any): any;

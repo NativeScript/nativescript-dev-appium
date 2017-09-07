@@ -13,41 +13,10 @@ import { UIElement } from "./ui-element";
 import { log, getStorage, resolve, fileExists } from "./utils";
 import { INsCapabilities } from "./ins-capabilities";
 
-import * as blinkDiff from "blink-diff";
 import { unlinkSync, writeFileSync } from "fs";
-import * as glob from "glob";
-import * as webdriverio from 'webdriverio';
-
-
-function configureLogging(driver, verbose) {
-    driver.on("status", function (info) {
-        log(info.cyan, verbose);
-    });
-    driver.on("command", function (meth, path, data) {
-        log(" > " + meth.yellow + path.grey + " " + (data || ""), verbose);
-    });
-    driver.on("http", function (meth, path, data) {
-        log(" > " + meth.magenta + path + " " + (data || "").grey, verbose);
-    });
-};
-
-function getAppPath(platform, runType) {
-    if (platform.includes("android")) {
-        const apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
-        return apks[0];
-    } else if (platform.includes("ios")) {
-        if (runType.includes("sim")) {
-            const simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
-            return simulatorApps[0];
-        } else if (runType.includes("device")) {
-            const deviceApps = glob.sync("platforms/ios/build/device/**/*.ipa");
-            return deviceApps[0];
-        }
-    } else {
-        throw new Error("No 'app' capability provided and incorrect 'runType' convention used: " + runType +
-            ". In order to automatically search and locate app package please use 'android','ios-device','ios-simulator' in your 'runType' option. E.g --runType android23, --runType ios-simulator10iPhone6");
-    }
-};
+import * as blinkDiff from "blink-diff";
+import * as webdriverio from "webdriverio";
+import { getAppPath } from "./utils";
 
 export class AppiumDriver {
     private static defaultWaitTime: number = 5000;
@@ -63,11 +32,6 @@ export class AppiumDriver {
         this.webio.requestHandler.sessionID = this._driver.sessionID;
         this._storage = getStorage(this._args);
         this._isAlive = true;
-    }
-
-    public async inint() {
-        await this._driver.init(this._args.appiumCaps);
-        this.webio.requestHandler.sessionID = this._driver.sessionID;
     }
 
     get capabilities() {
@@ -246,7 +210,7 @@ export class AppiumDriver {
         }
 
         const driver = await wd.promiseChainRemote(driverConfig);
-        configureLogging(driver, args.verbose);
+        AppiumDriver.configureLogging(driver, args.verbose);
 
         if (args.appiumCaps.app) {
             args.appiumCaps.app = args.isSauceLab ? "sauce-storage:" + args.appRootPath : args.appRootPath;
@@ -267,6 +231,12 @@ export class AppiumDriver {
         (await driver.init(args.appiumCaps));
         return new AppiumDriver(driver, webio, driverConfig, args);
     }
+
+    public async inint() {
+        await this._driver.init(this._args.appiumCaps);
+        this.webio.requestHandler.sessionID = this._driver.sessionID;
+    }
+
     public async quit() {
         console.log("Killing driver");
         try {
@@ -292,4 +262,16 @@ export class AppiumDriver {
 
         return arrayOfUIElements;
     }
+
+    private static configureLogging(driver, verbose) {
+        driver.on("status", function (info) {
+            log(info.cyan, verbose);
+        });
+        driver.on("command", function (meth, path, data) {
+            log(" > " + meth.yellow + path.grey + " " + (data || ""), verbose);
+        });
+        driver.on("http", function (meth, path, data) {
+            log(" > " + meth.magenta + path + " " + (data || "").grey, verbose);
+        });
+    };
 }

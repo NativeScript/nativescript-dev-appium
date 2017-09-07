@@ -15,7 +15,6 @@ export declare class AppiumDriver {
     private _storage;
     private _isAlive;
     private constructor();
-    inint(): Promise<void>;
     readonly capabilities: any;
     readonly platformName: any;
     readonly platformVesrion: any;
@@ -38,6 +37,8 @@ export declare class AppiumDriver {
     takeScreenshot(fileName: string): Promise<string>;
     compareImages(expected: string, actual: string, output: string): Promise<boolean>;
     static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
+    inint(): Promise<void>;
     quit(): Promise<void>;
     private convertArrayToUIElements(array, searchM, args);
+    private static configureLogging(driver, verbose);
 }

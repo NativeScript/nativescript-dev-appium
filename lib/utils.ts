@@ -1,6 +1,8 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as childProcess from "child_process";
+import * as glob from "glob";
+
 require('colors');
 import { INsCapabilities } from "./ins-capabilities";
 
@@ -246,6 +248,24 @@ export function getStorage(args: INsCapabilities) {
 
     return storage;
 }
+
+export function getAppPath(platform, runType) {
+    if (platform.includes("android")) {
+        const apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
+        return apks[0];
+    } else if (platform.includes("ios")) {
+        if (runType.includes("sim")) {
+            const simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
+            return simulatorApps[0];
+        } else if (runType.includes("device")) {
+            const deviceApps = glob.sync("platforms/ios/build/device/**/*.ipa");
+            return deviceApps[0];
+        }
+    } else {
+        throw new Error("No 'app' capability provided and incorrect 'runType' convention used: " + runType +
+            ". In order to automatically search and locate app package please use 'android','ios-device','ios-simulator' in your 'runType' option. E.g --runType android23, --runType ios-simulator10iPhone6");
+    }
+};
 
 function createStorageFolder(storage, direcotry) {
     storage = resolve(storage, direcotry)
