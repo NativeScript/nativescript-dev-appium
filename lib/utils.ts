@@ -204,12 +204,12 @@ export function killPid(pid, verbose) {
     log(output, verbose);
 }
 
-export function waitForOutput(process, matcher, timeout, verbose) {
+export function waitForOutput(process, matcher, errorMatcher, timeout, verbose) {
     return new Promise<boolean>(function (resolve, reject) {
         let abortWatch = setTimeout(function () {
             process.kill();
             console.log("Timeout expired, output not detected for: " + matcher);
-            reject(false);
+            resolve(false);
         }, timeout);
 
         process.stdout.on("data", function (data) {
@@ -218,6 +218,10 @@ export function waitForOutput(process, matcher, timeout, verbose) {
             if (matcher.test(line)) {
                 clearTimeout(abortWatch);
                 resolve(true);
+            }
+            if (errorMatcher.test(line)) {
+                clearTimeout(abortWatch);
+                resolve(false);
             }
         });
     });

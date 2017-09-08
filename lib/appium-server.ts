@@ -45,12 +45,12 @@ export class AppiumServer {
 
     public async start() {
         log("Starting server...", this._args.verbose);
-        this._server = child_process.spawn(this._appium, ["-p", this._port.toString(), "--log-level", "debug"], {
+        this._server = child_process.spawn(this._appium, ["-p", this.port.toString(), "--log-level", "debug"], {
             shell: true,
             detached: false
         });
 
-        const responce: boolean = await waitForOutput(this._server, /listener started/, 60000, this._args.verbose);
+        const responce: boolean = await waitForOutput(this._server, /listener started/, /Error: listen/, 60000, this._args.verbose);
 
         return responce;
     }
