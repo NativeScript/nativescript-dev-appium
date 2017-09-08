@@ -1,5 +1,5 @@
 import * as child_process from "child_process";
-import { log, resolve, waitForOutput, shutdown, fileExists } from "./utils";
+import { log, resolve, waitForOutput, shutdown, fileExists, isWin } from "./utils";
 import { INsCapabilities } from "./ins-capabilities";
 
 export class AppiumServer {
@@ -69,8 +69,12 @@ export class AppiumServer {
 
             log("Stopping server...", this._args.verbose);
             try {
-                this._server.kill("SIGINT");
-                shutdown(this._server, this._args.verbose);
+                if (isWin) {
+                    shutdown(this._server, this._args.verbose);
+                } else {
+                    shutdown(this._server, this._args.verbose);
+                    this._server.kill("SIGINT");
+                }
             } catch (error) {
                 console.log(error);
             }

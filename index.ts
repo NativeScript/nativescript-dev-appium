@@ -29,7 +29,7 @@ export async function startServer(port?: number) {
     while (retry && !hasStarted && retryCount < 5) {
         let tempPort = appiumServer.port + 10;
         tempPort = (await portastic.find({ min: tempPort, max: 9180 }))[0];
-        console.log("----------_P " ,tempPort);
+        console.log("Trying port: ", tempPort);
         appiumServer.port = tempPort;
         hasStarted = await appiumServer.start();
         retryCount++;

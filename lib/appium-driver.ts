@@ -235,6 +235,7 @@ export class AppiumDriver {
     public async inint() {
         await this._driver.init(this._args.appiumCaps);
         this.webio.requestHandler.sessionID = this._driver.sessionID;
+        this._isAlive = true;
     }
 
     public async quit() {
