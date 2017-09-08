@@ -4,7 +4,7 @@ import { log, executeNpmInstall, fileExists } from "./utils";
 
 let pendingNpmInstall = false;
 
-function configureDevDependencies(packageJson, appRootPath, adderCallback, verbose) {
+function configureDevDependencies(packageJson, projectDir, adderCallback, verbose) {
     if (!packageJson.devDependencies) {
         packageJson.devDependencies = {};
     }
@@ -25,12 +25,12 @@ function configureDevDependencies(packageJson, appRootPath, adderCallback, verbo
         console.info("Installing new dependencies...");
         //Run `npm install` after everything else.
         setTimeout(function () {
-            executeNpmInstall(appRootPath);
+            executeNpmInstall(projectDir);
         }, 300);
     }
 }
 
-export function updatePackageJsonDep(packageJsonPath, appRootPath, isTscProj, verbose) {
+export function updatePackageJsonDep(packageJsonPath, projectDir, isTscProj, verbose) {
     let packageJson: any = {};
     if (!fileExists(packageJsonPath)) {
         console.error(packageJson, true);
@@ -56,7 +56,7 @@ export function updatePackageJsonDep(packageJsonPath, appRootPath, isTscProj, ve
         }
     }
 
-    configureDevDependencies(packageJson, appRootPath, (add) => {
+    configureDevDependencies(packageJson, projectDir, (add) => {
         add("chai", "~4.1.1");
         add("mocha", "~3.5.0");
         add('mocha-junit-reporter', '^1.13.0');

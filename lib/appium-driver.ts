@@ -196,6 +196,14 @@ export class AppiumDriver {
             port: port
         };
 
+        const driver = await wd.promiseChainRemote(driverConfig);
+        AppiumDriver.configureLogging(driver, args.verbose);
+
+        if (!args.appiumCaps.app) {
+            log("Getting caps.app!", args.verbose);
+            args.appiumCaps.app = getAppPath(args.appiumCaps.platformName.toLowerCase(), args.runType.toLowerCase());
+        }
+
         if (args.isSauceLab) {
             const sauceUser = process.env.SAUCE_USER;
             const sauceKey = process.env.SAUCE_KEY;
@@ -207,16 +215,8 @@ export class AppiumDriver {
             driverConfig = {
                 host: "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub"
             }
-        }
 
-        const driver = await wd.promiseChainRemote(driverConfig);
-        AppiumDriver.configureLogging(driver, args.verbose);
-
-        if (args.appiumCaps.app) {
-            args.appiumCaps.app = args.isSauceLab ? "sauce-storage:" + args.appRootPath : args.appRootPath;
-        } else if (!args.appiumCaps.app) {
-            log("Getting caps.app!", args.verbose);
-            args.appiumCaps.app = getAppPath(args.appiumCaps.platformName.toLowerCase(), args.runType.toLowerCase());
+            args.appiumCaps.app = "sauce-storage:" + args.appiumCaps.app
         }
 
         log("Creating driver!", args.verbose);
@@ -228,7 +228,7 @@ export class AppiumDriver {
             desiredCapabilities: args.appiumCaps
         });
 
-        (await driver.init(args.appiumCaps));
+        await driver.init(args.appiumCaps);
         return new AppiumDriver(driver, webio, driverConfig, args);
     }
 

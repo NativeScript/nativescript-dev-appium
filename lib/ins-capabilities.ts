@@ -3,12 +3,12 @@ export interface INsCapabilities {
     projectBinary: string;
     pluginRoot: string;
     pluginBinary: string;
-    appRootPath: string;
     port: number;
     verbose: boolean;
     appiumCapsLocation: string;
     appiumCaps: any;
     testFolder: string;
     runType: string;
-    isSauceLab: boolean;  
+    isSauceLab: boolean;
+    appPath: string;
 }

@@ -13,6 +13,7 @@ const config = (() => {
         .option("port", { alias: "p", describe: "Execution port", type: "string" })
         .option("verbose", { alias: "v", describe: "Log actions", type: "boolean" })
         .option("path", { describe: "path", default: process.cwd(), type: "string" })
+        .option("appPath", { describe: "application path", type: "string" })
         .help()
         .argv;
 
@@ -31,13 +32,13 @@ const config = (() => {
         projectBinary: projectBinary,
         pluginRoot: pluginRoot,
         pluginBinary: pluginBinary,
-        appRootPath: appRootPath,
         port: options.port || process.env.npm_config_port,
         testFolder: options.testFolder || process.env.npm_config_testFolder || "e2e",
         runType: options.runType || process.env.npm_config_runType,
-        appiumCapsLocation: options.appiumCapsLocation || join(appRootPath, options.testFolder, "config", capabilitiesName),
+        appiumCapsLocation: options.appiumCapsLocation || join(projectDir, options.testFolder, "config", capabilitiesName),
         isSauceLab: options.sauceLab,
-        verbose: options.verbose || process.env.npm_config_loglevel === "verbose"
+        verbose: options.verbose || process.env.npm_config_loglevel === "verbose",
+        appPath: options.appPath
     }
     return config;
 })();
@@ -47,11 +48,11 @@ export const {
     projectBinary,
     pluginRoot,
     pluginBinary,
-    appRootPath,
     port,
     verbose,
     appiumCapsLocation,
     testFolder,
     runType,
-    isSauceLab
+    isSauceLab,
+    appPath
 } = config;

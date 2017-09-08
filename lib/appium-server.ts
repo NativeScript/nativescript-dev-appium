@@ -7,9 +7,11 @@ export class AppiumServer {
     private _appium;
     private _port: number;
     private _runType: string;
+    private _hasStarted: boolean;
 
     constructor(private _args: INsCapabilities) {
         this._runType = this._args.runType;
+        this._hasStarted = false;
         this.resolveAppiumDependency();
     }
 
@@ -33,6 +35,14 @@ export class AppiumServer {
         return this._server;
     }
 
+    get hasStarted() {
+        return this._hasStarted;
+    }
+
+    set hasStarted(hasStarted) {
+        this._hasStarted = hasStarted;
+    }
+
     public async start() {
         log("Starting server...", this._args.verbose);
         this._server = child_process.spawn(this._appium, ["-p", this._port.toString(), "--log-level", "debug"], {
@@ -41,10 +51,6 @@ export class AppiumServer {
         });
 
         const responce: boolean = await waitForOutput(this._server, /listener started/, 60000, this._args.verbose);
-
-        if (!responce) {
-            throw new Error("Timeout expired. Appium server did't start correctly!")
-        }
 
         return responce;
     }

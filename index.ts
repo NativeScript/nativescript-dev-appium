@@ -3,8 +3,6 @@ import { AppiumServer } from "./lib/appium-server";
 import { AppiumDriver } from "./lib/appium-driver";
 import { ElementHelper } from "./lib/element-helper";
 import { NsCapabilities } from "./lib/ns-capabilities";
-import { Session } from "./lib/session";
-import { TestManager } from "./lib/test-manager";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { ElementHelper } from "./lib/element-helper";
@@ -13,38 +11,57 @@ export { Point } from "./lib/point";
 export { SearchOptions } from "./lib/search-options";
 
 const nsCapabilities = new NsCapabilities();
-const server = new AppiumServer(nsCapabilities);
+const appiumServer = new AppiumServer(nsCapabilities);
+
+let appiumDriver = null;
+
 export async function startServer(port?: number) {
-    server.port = port || nsCapabilities.port;
-    if (!server.port) {
-        server.port = (await portastic.find({ min: 8600, max: 9080 }))[0];
+    appiumServer.port = port || nsCapabilities.port;
+    let retry = false;
+    if (!appiumServer.port) {
+        appiumServer.port = (await portastic.find({ min: 8600, max: 9080 }))[0];
+        retry = true;
     }
 
-    const session = new Session(server, nsCapabilities, null);
-    const startedServer = await server.start();
-    TestManager.addSession(session);
+    let hasStarted = await appiumServer.start();
+    let retryCount = 0;
+    if (retry && !hasStarted && retryCount < 5) {
+        appiumServer.port = await portastic.find({ min: 8600, max: 9080 }).filter(appiumServer.port)[0];
+        hasStarted = await appiumServer.start();
+        retryCount++;
+    }
+
+    if (!hasStarted) {
+        throw new Error("Appium driver failed to start!!! Run with --verbose option for more info!");
+    }
+
+    appiumServer.hasStarted = hasStarted;
 };
 
 export async function stopServer() {
-    TestManager.removeSession(server.port);
-    return await server.stop();
+    if (appiumServer.hasStarted) {
+        await appiumServer.stop();
+    }
 };
 
 export async function createDriver() {
+    if (!appiumServer.hasStarted) {
+        throw new Error("Server is not available!");
+    }
     if (!nsCapabilities.appiumCapsLocation) {
         throw new Error("Provided path to appium capabilities is not correct!");
     }
     if (!nsCapabilities.runType) {
         throw new Error("--runType is missing! Make sure it is provided correctly! It is used to parse the configuration for appium driver!");
     }
-    let appiumDriver = TestManager.getSession(server.port).appiumDriver;
+
     if (appiumDriver !== null && appiumDriver.isAlive) {
         return appiumDriver;
     } else if (appiumDriver === null) {
-        TestManager.getSession(server.port).appiumDriver = await AppiumDriver.createAppiumDriver(server.port, nsCapabilities);
+        appiumDriver = await AppiumDriver.createAppiumDriver(appiumServer.port, nsCapabilities);
     } else if (appiumDriver !== null && !appiumDriver.isAlive) {
-        await TestManager.getSession(server.port).appiumDriver.inint();
+        await appiumDriver.inint();
     }
 
-    return await TestManager.getSession(server.port).appiumDriver;
+    return appiumDriver;
 };
