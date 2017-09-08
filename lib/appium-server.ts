@@ -69,8 +69,8 @@ export class AppiumServer {
 
             log("Stopping server...", this._args.verbose);
             try {
-                shutdown(this._server, this._args.verbose);
                 this._server.kill("SIGINT");
+                shutdown(this._server, this._args.verbose);
             } catch (error) {
                 console.log(error);
             }

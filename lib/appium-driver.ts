@@ -243,7 +243,6 @@ export class AppiumDriver {
             await this._driver.quit();
             await this.webio.end();
         } catch (error) {
-            console.dir(error);
         }
         this._isAlive = false;
         console.log("Driver is dead");

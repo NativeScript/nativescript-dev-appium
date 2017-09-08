@@ -26,7 +26,7 @@ export async function startServer(port?: number) {
     let hasStarted = await appiumServer.start();
     let retryCount = 0;
     if (retry && !hasStarted && retryCount < 5) {
-        appiumServer.port = await portastic.find({ min: 8600, max: 9080 }).filter(appiumServer.port)[0];
+        appiumServer.port = await portastic.find({ min: appiumServer.port + 10, max: 9080 }).filter(appiumServer.port)[0];
         hasStarted = await appiumServer.start();
         retryCount++;
     }
@@ -39,6 +39,7 @@ export async function startServer(port?: number) {
 };
 
 export async function stopServer() {
+    await appiumDriver.quit();
     if (appiumServer.hasStarted) {
         await appiumServer.stop();
     }
