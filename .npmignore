@@ -1,2 +1,5 @@
 node_modules
 *.tgz
+*.ts
+lib/*.ts
+!e2e/*.ts
