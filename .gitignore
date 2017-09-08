@@ -1,6 +1,9 @@
 node_modules
 *.tgz
 **/lib/**/*.js
+!**/lib/package-json-helper.js
+!**/lib/utils.js
 **/lib/**/*.map
 *.map
 index.js
+postinstall.d.ts

@@ -3,3 +3,5 @@ node_modules
 *.ts
 lib/*.ts
 !e2e/*.ts
+**/lib/**/*.map
+*.map
