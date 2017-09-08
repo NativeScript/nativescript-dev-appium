@@ -48,7 +48,7 @@
     "@types/mocha": "^2.2.41"
   },
   "scripts": {
-    "preinstall": "node ./lib/preinstall.js",
+    "postinstall": "node ./postinstall.js",
     "compile": "tsc --watch",
     "e2e": "tsc -p e2e && mocha --opts ./e2e/config/mocha.opts --"
   }
