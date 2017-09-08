@@ -18,7 +18,7 @@ const config = (() => {
         .argv;
 
     let appRootPath = options.path;
-    if (appRootPath === "nativescript-dev-appium") {
+    if (appRootPath.includes("nativescript-dev-appium") || appRootPath.includes("mocha")) {
         appRootPath = require('app-root-path').toString();
     }
 

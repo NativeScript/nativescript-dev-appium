@@ -13,95 +13,25 @@ import { UIElement } from "./ui-element";
 import { log, getStorage, resolve, fileExists } from "./utils";
 import { INsCapabilities } from "./ins-capabilities";
 
-import * as blinkDiff from "blink-diff";
 import { unlinkSync, writeFileSync } from "fs";
-import * as glob from "glob";
-import * as webdriverio from 'webdriverio';
-
-export async function createAppiumDriver(port: number, args: INsCapabilities) {
-    let driverConfig: any = {
-        host: "localhost",
-        port: port
-    };
-
-    if (args.isSauceLab) {
-        const sauceUser = process.env.SAUCE_USER;
-        const sauceKey = process.env.SAUCE_KEY;
-        if (!sauceKey || !sauceUser) {
-            throw new Error("Sauce Labs Username or Access Key is missing! Check environment variables for SAUCE_USER and SAUCE_KEY !!!");
-        }
-        driverConfig = {
-            host: "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub"
-        }
-    }
-
-    const driver = await wd.promiseChainRemote(driverConfig);
-    configureLogging(driver, args.verbose);
-
-    args.appiumCaps.app = args.appiumCaps.app || args.appPath;
-    if (!args.appiumCaps.app) {
-        log("Getting caps.app!", args.verbose);
-        args.appiumCaps.app = getAppPath(args.appiumCaps.platformName.toLowerCase(), args.runType.toLowerCase());
-    }
-
-    args.appiumCaps.app = args.isSauceLab ? "sauce-storage:" + args.appiumCaps.app : args.appiumCaps.app;
-    args.appPath = args.appiumCaps.app;
-    
-    log("Creating driver!", args.verbose);
-
-    const webio = webdriverio.remote({
-        baseUrl: driverConfig.host,
-        port: driverConfig.port,
-        logLevel: 'warn',
-        desiredCapabilities: args.appiumCaps
-    });
-
-    (await driver.init(args.appiumCaps));
-    const sessionId = await driver.sessionID;
-    return new AppiumDriver(driver, webio, sessionId, driverConfig, args);
-}
-
-function configureLogging(driver, verbose) {
-    driver.on("status", function (info) {
-        log(info.cyan, verbose);
-    });
-    driver.on("command", function (meth, path, data) {
-        log(" > " + meth.yellow + path.grey + " " + (data || ""), verbose);
-    });
-    driver.on("http", function (meth, path, data) {
-        log(" > " + meth.magenta + path + " " + (data || "").grey, verbose);
-    });
-};
-
-function getAppPath(platform, runType) {
-    if (platform.includes("android")) {
-        const apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
-        return apks[0];
-    } else if (platform.includes("ios")) {
-        if (runType.includes("sim")) {
-            const simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
-            return simulatorApps[0];
-        } else if (runType.includes("device")) {
-            const deviceApps = glob.sync("platforms/ios/build/device/**/*.ipa");
-            return deviceApps[0];
-        }
-    } else {
-        throw new Error("No 'app' capability provided and incorrect 'runType' convention used: " + runType +
-            ". In order to automatically search and locate app package please use 'android','ios-device','ios-simulator' in your 'runType' option. E.g --runType android23, --runType ios-simulator10iPhone6");
-    }
-};
+import * as blinkDiff from "blink-diff";
+import * as webdriverio from "webdriverio";
+import { getAppPath } from "./utils";
 
 export class AppiumDriver {
     private static defaultWaitTime: number = 5000;
-    private elementHelper: ElementHelper;
     private static pngFileExt = '.png';
     private static partialUrl = "/wd/hub/session/";
-    private _storage: string;
 
-    constructor(private _driver: any, private webio: any, private _sessionId, private _driverConfig, private _args: INsCapabilities) {
-        this.elementHelper = new ElementHelper(this._args.appiumCaps.platformName.toLowerCase(), this._args.appiumCaps.platformVersion.toLowerCase());
-        this.webio.requestHandler.sessionID = this._sessionId;
+    private _elementHelper: ElementHelper;
+    private _storage: string;
+    private _isAlive: boolean = false;
+
+    private constructor(private _driver: any, private webio: any, private _driverConfig, private _args: INsCapabilities) {
+        this._elementHelper = new ElementHelper(this._args.appiumCaps.platformName.toLowerCase(), this._args.appiumCaps.platformVersion.toLowerCase());
+        this.webio.requestHandler.sessionID = this._driver.sessionID;
         this._storage = getStorage(this._args);
+        this._isAlive = true;
     }
 
     get capabilities() {
@@ -114,6 +44,14 @@ export class AppiumDriver {
 
     get platformVesrion() {
         return this._args.appiumCaps.platformVesrion;
+    }
+
+    get elementHelper() {
+        return this._elementHelper;
+    }
+
+    get isAlive() {
+        return this._isAlive;
     }
 
     get driver() {
@@ -143,16 +81,16 @@ export class AppiumDriver {
 
     public async findElementByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const shouldMatch = match === SearchOptions.exact ? true : false;
-        return await this.findElementByXPath(this.elementHelper.getXPathByText(text, shouldMatch), waitForElement);
+        return await this.findElementByXPath(this._elementHelper.getXPathByText(text, shouldMatch), waitForElement);
     }
 
     public async findElementsByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const shouldMatch = match === SearchOptions.exact ? true : false;
-        return await this.findElementsByXPath(this.elementHelper.getXPathByText(text, shouldMatch), waitForElement);
+        return await this.findElementsByXPath(this._elementHelper.getXPathByText(text, shouldMatch), waitForElement);
     }
 
     public async findElementsByClassName(className: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
-        const fullClassName = this.elementHelper.getElementClass(className);
+        const fullClassName = this._elementHelper.getElementClass(className);
         return await this.convertArrayToUIElements(await this._driver.waitForElementsByClassName(fullClassName, waitForElement), "waitForElementByClassName", fullClassName);
     }
 
@@ -251,21 +189,69 @@ export class AppiumDriver {
         });
     }
 
+
+    public static async createAppiumDriver(port: number, args: INsCapabilities) {
+        let driverConfig: any = {
+            host: "localhost",
+            port: port
+        };
+
+        const driver = await wd.promiseChainRemote(driverConfig);
+        AppiumDriver.configureLogging(driver, args.verbose);
+
+        if (!args.appiumCaps.app) {
+            log("Getting caps.app!", args.verbose);
+            args.appiumCaps.app = getAppPath(args.appiumCaps.platformName.toLowerCase(), args.runType.toLowerCase());
+        }
+
+        if (args.isSauceLab) {
+            const sauceUser = process.env.SAUCE_USER;
+            const sauceKey = process.env.SAUCE_KEY;
+
+            if (!sauceKey || !sauceUser) {
+                throw new Error("Sauce Labs Username or Access Key is missing! Check environment variables for SAUCE_USER and SAUCE_KEY !!!");
+            }
+
+            driverConfig = {
+                host: "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub"
+            }
+
+            args.appiumCaps.app = "sauce-storage:" + args.appiumCaps.app
+        }
+
+        log("Creating driver!", args.verbose);
+
+        const webio = webdriverio.remote({
+            baseUrl: driverConfig.host,
+            port: driverConfig.port,
+            logLevel: 'warn',
+            desiredCapabilities: args.appiumCaps
+        });
+
+        await driver.init(args.appiumCaps);
+        return new AppiumDriver(driver, webio, driverConfig, args);
+    }
+
+    public async inint() {
+        await this._driver.init(this._args.appiumCaps);
+        this.webio.requestHandler.sessionID = this._driver.sessionID;
+    }
+
     public async quit() {
         console.log("Killing driver");
         try {
-            this.webio.end();
             await this._driver.quit();
+            await this.webio.end();
         } catch (error) {
-
         }
+        this._isAlive = false;
         console.log("Driver is dead");
     }
 
     private async convertArrayToUIElements(array, searchM, args) {
         let i = 0;
         const arrayOfUIElements = new Array<UIElement>();
-        if (!array || array === undefined) {
+        if (!array || array === null) {
             return arrayOfUIElements;
         }
         array.forEach(async element => {
@@ -275,4 +261,16 @@ export class AppiumDriver {
 
         return arrayOfUIElements;
     }
+
+    private static configureLogging(driver, verbose) {
+        driver.on("status", function (info) {
+            log(info.cyan, verbose);
+        });
+        driver.on("command", function (meth, path, data) {
+            log(" > " + meth.yellow + path.grey + " " + (data || ""), verbose);
+        });
+        driver.on("http", function (meth, path, data) {
+            log(" > " + meth.magenta + path + " " + (data || "").grey, verbose);
+        });
+    };
 }

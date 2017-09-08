@@ -7,10 +7,12 @@ export declare class AppiumServer {
     private _appium;
     private _port;
     private _runType;
+    private _hasStarted;
     constructor(_args: INsCapabilities);
     port: number;
     runType: string;
     readonly server: child_process.ChildProcess;
+    hasStarted: boolean;
     start(): Promise<boolean>;
     stop(): Promise<{}>;
     private resolveAppiumDependency();
