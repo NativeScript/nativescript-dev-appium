@@ -14,9 +14,7 @@ const nsCapabilities = new NsCapabilities();
 const appiumServer = new AppiumServer(nsCapabilities);
 
 let appiumDriver = null;
-let counter = 0;
 export async function startServer(port?: number) {
-    counter++;
     appiumServer.port = port || nsCapabilities.port;
     let retry = false;
     if (!appiumServer.port) {
@@ -26,10 +24,10 @@ export async function startServer(port?: number) {
 
     let hasStarted = await appiumServer.start();
     let retryCount = 0;
-    while (retry && !hasStarted && retryCount < 5) {
+    while (retry && !hasStarted && retryCount < 10) {
         let tempPort = appiumServer.port + 10;
         tempPort = (await portastic.find({ min: tempPort, max: 9180 }))[0];
-        console.log("Trying port: ", tempPort);
+        console.log("Trying to use port: ", tempPort);
         appiumServer.port = tempPort;
         hasStarted = await appiumServer.start();
         retryCount++;
@@ -47,9 +45,6 @@ export async function stopServer() {
     if (appiumServer.hasStarted) {
         await appiumServer.stop();
     }
-
-    counter++;
-    console.log("Counter: " + counter);
 };
 
 export async function createDriver() {
