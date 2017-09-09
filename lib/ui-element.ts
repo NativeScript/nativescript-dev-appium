@@ -1,7 +1,8 @@
 import { Point } from "./point";
+import { SwipeDirection } from "./swipe-direction";
 
 export class UIElement {
-    constructor(private _element: any, private _driver: any, private _webio: any, private _searchMethod: string, private _searchParams: string, private _index?: number) {
+    constructor(private _element: any, private _driver: any, private _wd: any, private _webio: any, private _searchMethod: string, private _searchParams: string, private _index?: number) {
     }
 
     public async click() {
@@ -10,6 +11,10 @@ export class UIElement {
 
     public async tap() {
         return await (await this.element()).tap();
+    }
+
+    public async doubleTap() {
+        return await this._driver.execute('mobile: doubleTap', { element: (await this.element()).value.ELEMENT });
     }
 
     public async location() {
@@ -50,6 +55,31 @@ export class UIElement {
 
     public async getAttribute(attr) {
         return await (await this.element()).getAttribute(attr);
+    }
+
+    public async scroll(direction: SwipeDirection, yOffset: number, xOffset: number = 0) {
+        //await this._driver.execute("mobile: scroll", [{direction: 'up'}])
+        //await this._driver.execute('mobile: scroll', { direction: direction === 0 ? "down" : "up", element: this._element.ELEMENT });
+
+        if (this._webio.isIOS) {
+            direction = direction === SwipeDirection.down ? -1 : 1;
+        } else {
+            direction = direction === SwipeDirection.down ? 1 : -1;
+        }
+        const location = await this.location();
+
+        const x = location.x + 5;
+        const y = location.y + 5;
+        const yEnd = direction * yOffset;
+        const duration = (y - yEnd) * 10;
+        let action = new this._wd.TouchAction(this._driver);
+        action
+            .press({ x: x, y: y })
+            .wait(duration)
+            .moveTo({ x: xOffset, y: yEnd })
+            .release();
+        await action.perform();
+        await this._driver.sleep(3000);
     }
 
     public async log() {

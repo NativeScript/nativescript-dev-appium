@@ -27,7 +27,7 @@ export class AppiumDriver {
     private _logPath: string;
     private _isAlive: boolean = false;
 
-    private constructor(private _driver: any, private webio: any, private _driverConfig, private _args: INsCapabilities) {
+    private constructor(private _driver: any, private _wd, private webio: any, private _driverConfig, private _args: INsCapabilities) {
         this._elementHelper = new ElementHelper(this._args.appiumCaps.platformName.toLowerCase(), this._args.appiumCaps.platformVersion.toLowerCase());
         this.webio.requestHandler.sessionID = this._driver.sessionID;
         this._isAlive = true;
@@ -61,6 +61,10 @@ export class AppiumDriver {
         return await this.webio;
     }
 
+    public async wd() {
+        return await this._wd;
+    }
+
     public async click(args) {
         return await this.webio.click(args);
     }
@@ -71,7 +75,7 @@ export class AppiumDriver {
 
     public async findElementByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const searchM = "waitForElementByXPath";
-        return await new UIElement(await this._driver.waitForElementByXPath(xPath, waitForElement), this._driver, this.webio, searchM, xPath);
+        return await new UIElement(await this._driver.waitForElementByXPath(xPath, waitForElement), this._driver, this._wd, this.webio, searchM, xPath);
     }
 
     public async findElementsByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
@@ -94,11 +98,27 @@ export class AppiumDriver {
     }
 
     public async findElementByAccessibilityId(id, waitForElement: number = AppiumDriver.defaultWaitTime) {
-        return new UIElement(await this._driver.waitForElementByAccessibilityId(id, waitForElement), this._driver, this.webio, "waitForElementByAccessibilityId", id);
+        return new UIElement(await this._driver.waitForElementByAccessibilityId(id, waitForElement), this._driver, this._wd, this.webio, "waitForElementByAccessibilityId", id);
     }
 
     public async findElementsByAccessibilityId(id: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
         return await this.convertArrayToUIElements(await this._driver.waitForElementsByAccessibilityId(id, waitForElement), "waitForElementsByAccessibilityId", id);
+    }
+
+    public async scroll(y: number, x: number, yOffset: number, duration: number = 250, xOffset: number = 0) {
+        let direction = 1;
+        if (this.webio.isIOS) {
+            direction = -1;
+        }
+
+        const action = new this._wd.TouchAction(this._driver);
+        action
+            .press({ x: x, y: y })
+            .wait(duration)
+            .moveTo({ x: xOffset, y: direction * yOffset })
+            .release();
+        await action.perform();
+        await this._driver.sleep(150);
     }
 
     public async source() {
@@ -205,7 +225,6 @@ export class AppiumDriver {
         });
     }
 
-
     public static async createAppiumDriver(port: number, args: INsCapabilities) {
         let driverConfig: any = {
             host: "localhost",
@@ -245,7 +264,7 @@ export class AppiumDriver {
         });
 
         await driver.init(args.appiumCaps);
-        return new AppiumDriver(driver, webio, driverConfig, args);
+        return new AppiumDriver(driver, wd, webio, driverConfig, args);
     }
 
     public async inint() {
@@ -272,7 +291,7 @@ export class AppiumDriver {
             return arrayOfUIElements;
         }
         array.forEach(async element => {
-            arrayOfUIElements.push(new UIElement(await element, this._driver, this.wdio, searchM, args, i));
+            arrayOfUIElements.push(new UIElement(await element, this._driver, this._wd, this.wdio, searchM, args, i));
             i++;
         });
 

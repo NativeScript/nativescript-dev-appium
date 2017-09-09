@@ -5,6 +5,7 @@ import { UIElement } from "./ui-element";
 import { INsCapabilities } from "./ins-capabilities";
 export declare class AppiumDriver {
     private _driver;
+    private _wd;
     private webio;
     private _driverConfig;
     private _args;
@@ -23,6 +24,7 @@ export declare class AppiumDriver {
     readonly isAlive: boolean;
     readonly driver: any;
     wdio(): Promise<any>;
+    wd(): Promise<any>;
     click(args: any): Promise<any>;
     navBack(): Promise<any>;
     findElementByXPath(xPath: string, waitForElement?: number): Promise<UIElement>;
@@ -32,6 +34,7 @@ export declare class AppiumDriver {
     findElementsByClassName(className: string, waitForElement?: number): Promise<UIElement[]>;
     findElementByAccessibilityId(id: any, waitForElement?: number): Promise<UIElement>;
     findElementsByAccessibilityId(id: string, waitForElement?: number): Promise<UIElement[]>;
+    scroll(y: number, x: number, yOffset: number, duration?: number, xOffset?: number): Promise<void>;
     source(): Promise<any>;
     sessionId(): Promise<any>;
     compareScreen(imageName: string, timeOutSeconds: number, tollerance: number): Promise<boolean>;
