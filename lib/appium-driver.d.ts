@@ -13,6 +13,7 @@ export declare class AppiumDriver {
     private static partialUrl;
     private _elementHelper;
     private _storage;
+    private _logPath;
     private _isAlive;
     private constructor();
     readonly capabilities: any;
@@ -35,6 +36,7 @@ export declare class AppiumDriver {
     sessionId(): Promise<any>;
     compareScreen(imageName: string, timeOutSeconds: number, tollerance: number): Promise<boolean>;
     takeScreenshot(fileName: string): Promise<string>;
+    logScreenshoot(fileName: string): Promise<string>;
     compareImages(expected: string, actual: string, output: string): Promise<boolean>;
     static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
     inint(): Promise<void>;

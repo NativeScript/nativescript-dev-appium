@@ -13,6 +13,12 @@ describe("scenario simple", () => {
         console.log("Driver quits!");
     });
 
+    afterEach(async function () {
+        if (this.currentTest.state === "failed") {
+            await driver.logScreenshoot(this.currentTest.title);
+        }
+    });
+
     it("should find an element", async () => {
         const tapButton = await driver.findElementByText("TAP");
         await tapButton.click();

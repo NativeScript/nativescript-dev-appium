@@ -3,6 +3,7 @@ import { AppiumServer } from "./lib/appium-server";
 import { AppiumDriver } from "./lib/appium-driver";
 import { ElementHelper } from "./lib/element-helper";
 import { NsCapabilities } from "./lib/ns-capabilities";
+import { shutdown } from "./lib/utils";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { ElementHelper } from "./lib/element-helper";
@@ -41,8 +42,10 @@ export async function startServer(port?: number) {
 };
 
 export async function stopServer() {
-    await appiumDriver.quit();
-    if (appiumServer.hasStarted) {
+    if (appiumDriver !== null && appiumDriver.isAlive) {
+        await appiumDriver.quit();
+    }
+    if (appiumServer !== null && appiumServer.hasStarted) {
         await appiumServer.stop();
     }
 };
@@ -68,3 +71,7 @@ export async function createDriver() {
 
     return appiumDriver;
 };
+
+process.on("uncaughtException", (appiumServer) => shutdown(appiumServer, nsCapabilities.verbose));
+process.on("exit", (appiumServer) => shutdown(appiumServer, nsCapabilities.verbose));
+process.on("SIGINT", (appiumServer) => shutdown(appiumServer, nsCapabilities.verbose));

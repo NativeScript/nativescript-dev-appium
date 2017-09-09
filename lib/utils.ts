@@ -195,7 +195,7 @@ export function shutdown(processToKill, verbose) {
             console.log("Shut down!!!");
         }
     } catch (error) {
-        logErr(error, true);
+        logErr(error, verbose);
     }
 }
 
@@ -246,6 +246,15 @@ export function isWin() {
 export function getStorage(args: INsCapabilities) {
     let storage = createStorageFolder(resolve(args.projectDir, args.testFolder), "resources");
     storage = createStorageFolder(storage, "images");
+    const appName = args.appiumCaps.app.substring(args.appiumCaps.app.lastIndexOf("/") + 1, args.appiumCaps.app.lastIndexOf("."));
+    storage = createStorageFolder(storage, appName);
+    storage = createStorageFolder(storage, args.appiumCaps.deviceName);
+
+    return storage;
+}
+
+export function getReportPath(args: INsCapabilities) {
+    let storage = createStorageFolder(resolve(args.projectDir, args.testFolder), "reports");
     const appName = args.appiumCaps.app.substring(args.appiumCaps.app.lastIndexOf("/") + 1, args.appiumCaps.app.lastIndexOf("."));
     storage = createStorageFolder(storage, appName);
     storage = createStorageFolder(storage, args.appiumCaps.deviceName);

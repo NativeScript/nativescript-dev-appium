@@ -10,13 +10,12 @@ import { searchCustomCapabilities } from "./capabilities-helper";
 import { ElementHelper } from "./element-helper";
 import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
-import { log, getStorage, resolve, fileExists } from "./utils";
+import { log, getStorage, resolve, fileExists, getAppPath, getReportPath } from "./utils";
 import { INsCapabilities } from "./ins-capabilities";
 
 import { unlinkSync, writeFileSync } from "fs";
 import * as blinkDiff from "blink-diff";
 import * as webdriverio from "webdriverio";
-import { getAppPath } from "./utils";
 
 export class AppiumDriver {
     private static defaultWaitTime: number = 5000;
@@ -25,12 +24,12 @@ export class AppiumDriver {
 
     private _elementHelper: ElementHelper;
     private _storage: string;
+    private _logPath: string;
     private _isAlive: boolean = false;
 
     private constructor(private _driver: any, private webio: any, private _driverConfig, private _args: INsCapabilities) {
         this._elementHelper = new ElementHelper(this._args.appiumCaps.platformName.toLowerCase(), this._args.appiumCaps.platformVersion.toLowerCase());
         this.webio.requestHandler.sessionID = this._driver.sessionID;
-        this._storage = getStorage(this._args);
         this._isAlive = true;
     }
 
@@ -115,6 +114,9 @@ export class AppiumDriver {
             imageName = imageName.concat(AppiumDriver.pngFileExt);
         }
 
+        if (!this._storage) {
+            this._storage = getStorage(this._args);
+        }
         let actualImage = await this.takeScreenshot(resolve(this._storage, imageName.replace(".", "_actual.")));
         let expectedImage = resolve(this._storage, imageName);
         if (!fileExists(expectedImage)) {
@@ -154,6 +156,20 @@ export class AppiumDriver {
                 }
             )
         });
+    }
+
+
+    public async logScreenshoot(fileName: string) {
+        if (!this._logPath && !fileExists(fileName)) {
+            this._logPath = getReportPath(this._args);
+        }
+        if (!fileName.endsWith(AppiumDriver.pngFileExt)) {
+            fileName = fileName.concat(AppiumDriver.pngFileExt);
+        }
+
+        const imgPath = await this.takeScreenshot(resolve(this._logPath, fileName));
+
+        return imgPath;
     }
 
     public compareImages(expected: string, actual: string, output: string) {
