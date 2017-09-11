@@ -176,7 +176,7 @@ export class AppiumDriver {
      * @param xOffset 
      * @param retryCount 
      */
-    public async scrollToElement(direction: SwipeDirection, element, startPoint: Point, yOffset: number, xOffset: number = 0, retryCount: number = 5) {
+    public async scrollToElement(direction: SwipeDirection, element: any, startPoint: Point, yOffset: number, xOffset: number = 0, retryCount: number = 5) {
         let el = null
         while (el === null && retryCount > 0) {
             try {
@@ -187,7 +187,7 @@ export class AppiumDriver {
             } catch (error) {
                 await scroll(this._wd, this._driver, direction, this.webio.isIOS, startPoint.y, startPoint.x, yOffset, xOffset);
             }
-            if (el != null) {
+            if (el !== null && (await el.isDisplayed())) {
                 break;
             }
 

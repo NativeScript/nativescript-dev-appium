@@ -284,12 +284,12 @@ export function getAppPath(platform, runType) {
 
 export function calculateOffset(direction, y: number, yOffset: number, x: number, xOffset: number, isIOS: boolean) {
     let speed = 10;
-    let yEnd = (Math.abs(yOffset) + y);
-    let xEnd = Math.abs(xOffset - x);
+    let yEnd = Math.abs(yOffset);
+    let xEnd = Math.abs(xOffset);
     let duration = Math.abs(yEnd) * speed;
 
     if (isIOS) {
-        speed = 10;
+        speed = 100;
         if (direction === SwipeDirection.down) {
             direction = -1;
             yEnd = direction * yEnd;
@@ -299,12 +299,27 @@ export function calculateOffset(direction, y: number, yOffset: number, x: number
             xEnd = direction * xEnd;
         }
     } else {
-        duration = Math.abs(yOffset) * speed;
-    }
+        if (direction === SwipeDirection.down) {
+            yEnd = Math.abs(yOffset - y);
+        }
+        if (direction === SwipeDirection.up) {
+            yEnd = direction * Math.abs((Math.abs(yOffset) + y));
+        }
 
-    if (yOffset < xOffset && x !== xOffset && Math.abs(x - xOffset) > Math.abs(y - yOffset)) {
-        duration = Math.abs(xOffset) * speed;
-        xEnd = direction * xOffset;
+        duration = Math.abs(yOffset) * speed;
+
+        if (direction === SwipeDirection.right) {
+            xEnd = Math.abs(xOffset - x);
+        }
+
+        if (direction === SwipeDirection.left) {
+            xEnd = Math.abs(xOffset + x);
+        }
+
+        if (yOffset < xOffset && x) {
+            duration = Math.abs(xOffset) * speed;
+        }
+
     }
 
     console.log("ENDPOINT", { point: new Point(xEnd, yEnd), duration: duration });
