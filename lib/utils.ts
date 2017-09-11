@@ -248,7 +248,9 @@ export function isWin() {
 export function getStorage(args: INsCapabilities) {
     let storage = createStorageFolder(resolve(args.projectDir, args.testFolder), "resources");
     storage = createStorageFolder(storage, "images");
-    const appName = args.appiumCaps.app.substring(args.appiumCaps.app.lastIndexOf("/") + 1, args.appiumCaps.app.lastIndexOf("."));
+    const appName = args.appiumCaps.app
+                        .substring(args.appiumCaps.app.lastIndexOf("/") + 1, args.appiumCaps.app.lastIndexOf("."))
+                        .replace("-release","").replace("-debug","");
     storage = createStorageFolder(storage, appName);
     storage = createStorageFolder(storage, args.appiumCaps.deviceName);
 
