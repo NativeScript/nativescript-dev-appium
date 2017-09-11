@@ -16,10 +16,11 @@ export declare class AppiumDriver {
     private static pngFileExt;
     private static partialUrl;
     private _elementHelper;
-    private _locators;
-    private _storage;
-    private _logPath;
+    private _imageHelper;
     private _isAlive;
+    private _locators;
+    private _logPath;
+    private _storage;
     private constructor();
     readonly capabilities: any;
     readonly platformName: any;
@@ -118,7 +119,6 @@ export declare class AppiumDriver {
     compareScreen(imageName: string, timeOutSeconds: number, tollerance: number): Promise<boolean>;
     takeScreenshot(fileName: string): Promise<string>;
     logScreenshoot(fileName: string): Promise<string>;
-    compareImages(expected: string, actual: string, output: string): Promise<boolean>;
     static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
     inint(): Promise<void>;
     quit(): Promise<void>;
