@@ -24,4 +24,3 @@ if (!utils_1.fileExists(e2eLocalFolderPath)) {
         console.log("JavaScript project: not adding a test sample ...");
     }
 }
-//# sourceMappingURL=postinstall.js.map

@@ -282,7 +282,7 @@ export function getAppPath(platform, runType) {
     }
 };
 
-export function calculateOffset(direction, y: number, yOffset: number, x: number, xOffset: number, isIOS: boolean) {
+export function calculateOffset(direction, y: number, yOffset: number, x: number, xOffset: number, isIOS: boolean, verbose) {
     let speed = 10;
     let yEnd = Math.abs(yOffset);
     let xEnd = Math.abs(xOffset);
@@ -321,8 +321,7 @@ export function calculateOffset(direction, y: number, yOffset: number, x: number
         }
 
     }
-
-    console.log("ENDPOINT", { point: new Point(xEnd, yEnd), duration: duration });
+    log({ point: new Point(xEnd, yEnd), duration: duration }, verbose);
 
     return { point: new Point(xEnd, yEnd), duration: duration };
 }
@@ -335,15 +334,14 @@ export function calculateOffset(direction, y: number, yOffset: number, x: number
  * @param duration 
  * @param xOffset 
  */
-export async function scroll(wd, driver, direction: SwipeDirection, isIOS: boolean, y: number, x: number, yOffset: number, xOffset: number = 0) {
+export async function scroll(wd, driver, direction: SwipeDirection, isIOS: boolean, y: number, x: number, yOffset: number, xOffset: number, verbose) {
     if (x === 0) {
         x = 20;
     }
     if (y === 0) {
         y = 20;
     }
-    const endPoint = calculateOffset(direction, y, yOffset, x, xOffset, isIOS);
-    console.log("ENDPOINT", endPoint);
+    const endPoint = calculateOffset(direction, y, yOffset, x, xOffset, isIOS, verbose);
     const action = new wd.TouchAction(driver);
     action
         .press({ x: x, y: y })

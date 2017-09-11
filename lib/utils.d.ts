@@ -19,7 +19,7 @@ export declare function isWin(): boolean;
 export declare function getStorage(args: INsCapabilities): any;
 export declare function getReportPath(args: INsCapabilities): any;
 export declare function getAppPath(platform: any, runType: any): any;
-export declare function calculateOffset(direction: any, y: number, yOffset: number, x: number, xOffset: number, isIOS: boolean): {
+export declare function calculateOffset(direction: any, y: number, yOffset: number, x: number, xOffset: number, isIOS: boolean, verbose: any): {
     point: Point;
     duration: number;
 };
@@ -31,4 +31,4 @@ export declare function calculateOffset(direction: any, y: number, yOffset: numb
  * @param duration
  * @param xOffset
  */
-export declare function scroll(wd: any, driver: any, direction: SwipeDirection, isIOS: boolean, y: number, x: number, yOffset: number, xOffset?: number): Promise<void>;
+export declare function scroll(wd: any, driver: any, direction: SwipeDirection, isIOS: boolean, y: number, x: number, yOffset: number, xOffset: number, verbose: any): Promise<void>;

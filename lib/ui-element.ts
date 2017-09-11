@@ -103,7 +103,7 @@ export class UIElement {
 
         const x = location.x === 0 ? 10 : location.x;
         const y = location.y === 0 ? 15 : location.y;
-        const endPoint = calculateOffset(direction, y, yOffset, x, xOffset, this._webio.isIOS);
+        const endPoint = calculateOffset(direction, y, yOffset, x, xOffset, this._webio.isIOS, false);
 
         let action = new this._wd.TouchAction(this._driver);
         action
