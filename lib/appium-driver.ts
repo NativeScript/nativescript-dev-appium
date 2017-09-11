@@ -10,8 +10,19 @@ import { searchCustomCapabilities } from "./capabilities-helper";
 import { ElementHelper } from "./element-helper";
 import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
-import { log, getStorage, resolve, fileExists, getAppPath, getReportPath } from "./utils";
+import { SwipeDirection } from "./swipe-direction";
+import {
+    log,
+    getStorage,
+    resolve,
+    fileExists,
+    getAppPath,
+    getReportPath,
+    calculateOffset,
+    scroll
+} from "./utils";
 import { INsCapabilities } from "./ins-capabilities";
+import { Point } from "./point";
 
 import { unlinkSync, writeFileSync } from "fs";
 import * as blinkDiff from "blink-diff";
@@ -73,39 +84,128 @@ export class AppiumDriver {
         return await this._driver.back();
     }
 
+    /**
+     * 
+     * @param xPath 
+     * @param waitForElement 
+     */
     public async findElementByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const searchM = "waitForElementByXPath";
         return await new UIElement(await this._driver.waitForElementByXPath(xPath, waitForElement), this._driver, this._wd, this.webio, searchM, xPath);
     }
 
+    /**
+     * 
+     * @param xPath
+     * @param waitForElement 
+     */
     public async findElementsByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
         return await this.convertArrayToUIElements(await this._driver.waitForElementsByXPath(xPath, waitForElement), "waitForElementByXPath", xPath);
     }
 
+    /**
+     * Search for element by given text. The seacrch is case insensitive for android
+     * @param text 
+     * @param match 
+     * @param waitForElement 
+     */
     public async findElementByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const shouldMatch = match === SearchOptions.exact ? true : false;
         return await this.findElementByXPath(this._elementHelper.getXPathByText(text, shouldMatch), waitForElement);
     }
 
+    /**
+     * Search for elements by given text. The seacrch is case insensitive for android
+     * @param text 
+     * @param match 
+     * @param waitForElement 
+     */
     public async findElementsByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const shouldMatch = match === SearchOptions.exact ? true : false;
         return await this.findElementsByXPath(this._elementHelper.getXPathByText(text, shouldMatch), waitForElement);
     }
 
+    /**
+     * Searches for element by element native class name like button, textView etc which will be translated to android.widgets.Button or XCUIElementTypeButton (iOS 10 and higher) or UIElementButton (iOS 9)
+     * Notice this is not the same as css class
+     * @param className 
+     * @param waitForElement 
+     */
     public async findElementsByClassName(className: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const fullClassName = this._elementHelper.getElementClass(className);
         return await this.convertArrayToUIElements(await this._driver.waitForElementsByClassName(fullClassName, waitForElement), "waitForElementByClassName", fullClassName);
     }
 
+    /**
+     * Find element by automationText
+     * @param id 
+     * @param waitForElement 
+     */
     public async findElementByAccessibilityId(id, waitForElement: number = AppiumDriver.defaultWaitTime) {
         return new UIElement(await this._driver.waitForElementByAccessibilityId(id, waitForElement), this._driver, this._wd, this.webio, "waitForElementByAccessibilityId", id);
     }
 
+    /**
+     * Find elements by automationText
+     * @param id 
+     * @param waitForElement 
+     */
     public async findElementsByAccessibilityId(id: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
         return await this.convertArrayToUIElements(await this._driver.waitForElementsByAccessibilityId(id, waitForElement), "waitForElementsByAccessibilityId", id);
     }
 
-    public async scroll(y: number, x: number, yOffset: number, duration: number = 250, xOffset: number = 0) {
+    /**
+     * Scrolls from point to other point with minimum inertia
+     * @param y 
+     * @param x 
+     * @param yOffset 
+     * @param duration 
+     * @param xOffset 
+     */
+    public async scroll(direction, SwipeDirection, y: number, x: number, yOffset: number, xOffset: number = 0) {
+        scroll(this._wd, this._driver, direction, this.webio.isIOS, y, x, yOffset, xOffset);
+    }
+
+    /**
+     * 
+     * @param direction 
+     * @param SwipeDirection 
+     * @param element 
+     * @param startPoint 
+     * @param yOffset 
+     * @param xOffset 
+     * @param retryCount 
+     */
+    public async scrollToElement(direction: SwipeDirection, element, startPoint: Point, yOffset: number, xOffset: number = 0, retryCount: number = 5) {
+        let el = null
+        while (el === null && retryCount > 0) {
+            try {
+                el = await element();
+                if (!(await el.isDisplayed())) {
+                    await scroll(this._wd, this._driver, direction, this.webio.isIOS, startPoint.y, startPoint.x, yOffset, xOffset);
+                }
+            } catch (error) {
+                await scroll(this._wd, this._driver, direction, this.webio.isIOS, startPoint.y, startPoint.x, yOffset, xOffset);
+            }
+            if (el != null) {
+                break;
+            }
+
+            retryCount--;
+        }
+
+        return el;
+    }
+
+    /**
+     * Swipe from point with offset and inertia according to duatio 
+     * @param y 
+     * @param x 
+     * @param yOffset 
+     * @param inertia 
+     * @param xOffset 
+     */
+    public async swipe(y: number, x: number, yOffset: number, inertia: number = 250, xOffset: number = 0) {
         let direction = 1;
         if (this.webio.isIOS) {
             direction = -1;
@@ -114,7 +214,7 @@ export class AppiumDriver {
         const action = new this._wd.TouchAction(this._driver);
         action
             .press({ x: x, y: y })
-            .wait(duration)
+            .wait(inertia)
             .moveTo({ x: xOffset, y: direction * yOffset })
             .release();
         await action.perform();

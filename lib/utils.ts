@@ -5,6 +5,8 @@ import * as glob from "glob";
 
 require('colors');
 import { INsCapabilities } from "./ins-capabilities";
+import { Point } from "./point";
+import { SwipeDirection } from "./swipe-direction";
 
 export function resolve(mainPath, ...args) {
     if (!path.isAbsolute(mainPath)) {
@@ -279,6 +281,63 @@ export function getAppPath(platform, runType) {
             ". In order to automatically search and locate app package please use 'android','ios-device','ios-simulator' in your 'runType' option. E.g --runType android23, --runType ios-simulator10iPhone6");
     }
 };
+
+export function calculateOffset(direction, y: number, yOffset: number, x: number, xOffset: number, isIOS: boolean) {
+    let speed = 10;
+    let yEnd = (Math.abs(yOffset) + y);
+    let xEnd = Math.abs(xOffset - x);
+    let duration = Math.abs(yEnd) * speed;
+
+    if (isIOS) {
+        speed = 10;
+        if (direction === SwipeDirection.down) {
+            direction = -1;
+            yEnd = direction * yEnd;
+        }
+        if (direction === SwipeDirection.right) {
+            direction = -1;
+            xEnd = direction * xEnd;
+        }
+    } else {
+        duration = Math.abs(yOffset) * speed;
+    }
+
+    if (yOffset < xOffset && x !== xOffset && Math.abs(x - xOffset) > Math.abs(y - yOffset)) {
+        duration = Math.abs(xOffset) * speed;
+        xEnd = direction * xOffset;
+    }
+
+    console.log("ENDPOINT", { point: new Point(xEnd, yEnd), duration: duration });
+
+    return { point: new Point(xEnd, yEnd), duration: duration };
+}
+
+/**
+ * Scrolls from point to other point with minimum inertia
+ * @param y 
+ * @param x 
+ * @param yOffset 
+ * @param duration 
+ * @param xOffset 
+ */
+export async function scroll(wd, driver, direction: SwipeDirection, isIOS: boolean, y: number, x: number, yOffset: number, xOffset: number = 0) {
+    if (x === 0) {
+        x = 20;
+    }
+    if (y === 0) {
+        y = 20;
+    }
+    const endPoint = calculateOffset(direction, y, yOffset, x, xOffset, isIOS);
+    console.log("ENDPOINT", endPoint);
+    const action = new wd.TouchAction(driver);
+    action
+        .press({ x: x, y: y })
+        .wait(endPoint.duration)
+        .moveTo({ x: endPoint.point.x, y: endPoint.point.y })
+        .release();
+    await action.perform();
+    await driver.sleep(150);
+}
 
 function createStorageFolder(storage, direcotry) {
     storage = resolve(storage, direcotry)

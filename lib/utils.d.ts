@@ -1,4 +1,6 @@
 import { INsCapabilities } from "./ins-capabilities";
+import { Point } from "./point";
+import { SwipeDirection } from "./swipe-direction";
 export declare function resolve(mainPath: any, ...args: any[]): any;
 export declare function fileExists(p: any): boolean;
 export declare function isFile(fullName: any): boolean;
@@ -17,3 +19,16 @@ export declare function isWin(): boolean;
 export declare function getStorage(args: INsCapabilities): any;
 export declare function getReportPath(args: INsCapabilities): any;
 export declare function getAppPath(platform: any, runType: any): any;
+export declare function calculateOffset(direction: any, y: number, yOffset: number, x: number, xOffset: number, isIOS: boolean): {
+    point: Point;
+    duration: number;
+};
+/**
+ * Scrolls from point to other point with minimum inertia
+ * @param y
+ * @param x
+ * @param yOffset
+ * @param duration
+ * @param xOffset
+ */
+export declare function scroll(wd: any, driver: any, direction: SwipeDirection, isIOS: boolean, y: number, x: number, yOffset: number, xOffset?: number): Promise<void>;
