@@ -11,6 +11,8 @@ import { ElementHelper } from "./element-helper";
 import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
 import { SwipeDirection } from "./swipe-direction";
+import { Locator } from "./locators";
+
 import {
     log,
     getStorage,
@@ -34,12 +36,14 @@ export class AppiumDriver {
     private static partialUrl = "/wd/hub/session/";
 
     private _elementHelper: ElementHelper;
+    private _locators: Locator;
     private _storage: string;
     private _logPath: string;
     private _isAlive: boolean = false;
 
     private constructor(private _driver: any, private _wd, private webio: any, private _driverConfig, private _args: INsCapabilities) {
         this._elementHelper = new ElementHelper(this._args.appiumCaps.platformName.toLowerCase(), this._args.appiumCaps.platformVersion.toLowerCase());
+        this._locators = new Locator(this._args);
         this.webio.requestHandler.sessionID = this._driver.sessionID;
         this._isAlive = true;
     }
@@ -58,6 +62,10 @@ export class AppiumDriver {
 
     get elementHelper() {
         return this._elementHelper;
+    }
+
+    get locators(){
+        return this._locators;
     }
 
     get isAlive() {

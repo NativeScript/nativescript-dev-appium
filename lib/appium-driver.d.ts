@@ -3,6 +3,7 @@ import { ElementHelper } from "./element-helper";
 import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
 import { SwipeDirection } from "./swipe-direction";
+import { Locator } from "./locators";
 import { INsCapabilities } from "./ins-capabilities";
 import { Point } from "./point";
 export declare class AppiumDriver {
@@ -15,6 +16,7 @@ export declare class AppiumDriver {
     private static pngFileExt;
     private static partialUrl;
     private _elementHelper;
+    private _locators;
     private _storage;
     private _logPath;
     private _isAlive;
@@ -23,6 +25,7 @@ export declare class AppiumDriver {
     readonly platformName: any;
     readonly platformVesrion: any;
     readonly elementHelper: ElementHelper;
+    readonly locators: Locator;
     readonly isAlive: boolean;
     readonly driver: any;
     wdio(): Promise<any>;
