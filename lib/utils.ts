@@ -6,7 +6,7 @@ import * as glob from "glob";
 require('colors');
 import { INsCapabilities } from "./ins-capabilities";
 import { Point } from "./point";
-import { SwipeDirection } from "./swipe-direction";
+import { Direction } from "./direction";
 
 export function resolve(mainPath, ...args) {
     if (!path.isAbsolute(mainPath)) {
@@ -292,29 +292,29 @@ export function calculateOffset(direction, y: number, yOffset: number, x: number
 
     if (isIOS) {
         speed = 100;
-        if (direction === SwipeDirection.down) {
+        if (direction === Direction.down) {
             direction = -1;
             yEnd = direction * yEnd;
         }
-        if (direction === SwipeDirection.right) {
+        if (direction === Direction.right) {
             direction = -1;
             xEnd = direction * xEnd;
         }
     } else {
-        if (direction === SwipeDirection.down) {
+        if (direction === Direction.down) {
             yEnd = Math.abs(yOffset - y);
         }
-        if (direction === SwipeDirection.up) {
+        if (direction === Direction.up) {
             yEnd = direction * Math.abs((Math.abs(yOffset) + y));
         }
 
         duration = Math.abs(yOffset) * speed;
 
-        if (direction === SwipeDirection.right) {
+        if (direction === Direction.right) {
             xEnd = Math.abs(xOffset - x);
         }
 
-        if (direction === SwipeDirection.left) {
+        if (direction === Direction.left) {
             xEnd = Math.abs(xOffset + x);
         }
 
@@ -336,7 +336,7 @@ export function calculateOffset(direction, y: number, yOffset: number, x: number
  * @param duration 
  * @param xOffset 
  */
-export async function scroll(wd, driver, direction: SwipeDirection, isIOS: boolean, y: number, x: number, yOffset: number, xOffset: number, verbose) {
+export async function scroll(wd, driver, direction: Direction, isIOS: boolean, y: number, x: number, yOffset: number, xOffset: number, verbose) {
     if (x === 0) {
         x = 20;
     }

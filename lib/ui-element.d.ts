@@ -1,5 +1,5 @@
 import { Point } from "./point";
-import { SwipeDirection } from "./swipe-direction";
+import { Direction } from "./direction";
 export declare class UIElement {
     private _element;
     private _driver;
@@ -59,7 +59,7 @@ export declare class UIElement {
      * @param yOffset
      * @param xOffset
      */
-    scroll(direction: SwipeDirection, yOffset: number, xOffset?: number): Promise<void>;
+    scroll(direction: Direction, yOffset: number, xOffset?: number): Promise<void>;
     log(): Promise<void>;
     refetch(): Promise<any>;
 }

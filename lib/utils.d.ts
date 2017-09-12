@@ -1,6 +1,6 @@
 import { INsCapabilities } from "./ins-capabilities";
 import { Point } from "./point";
-import { SwipeDirection } from "./swipe-direction";
+import { Direction } from "./direction";
 export declare function resolve(mainPath: any, ...args: any[]): any;
 export declare function fileExists(p: any): boolean;
 export declare function isFile(fullName: any): boolean;
@@ -31,4 +31,4 @@ export declare function calculateOffset(direction: any, y: number, yOffset: numb
  * @param duration
  * @param xOffset
  */
-export declare function scroll(wd: any, driver: any, direction: SwipeDirection, isIOS: boolean, y: number, x: number, yOffset: number, xOffset: number, verbose: any): Promise<void>;
+export declare function scroll(wd: any, driver: any, direction: Direction, isIOS: boolean, y: number, x: number, yOffset: number, xOffset: number, verbose: any): Promise<void>;

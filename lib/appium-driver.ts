@@ -10,7 +10,7 @@ import { searchCustomCapabilities } from "./capabilities-helper";
 import { ElementHelper } from "./element-helper";
 import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
-import { SwipeDirection } from "./swipe-direction";
+import { Direction } from "./direction";
 import {
     log,
     getStorage,
@@ -176,7 +176,7 @@ export class AppiumDriver {
      * @param xOffset 
      * @param retryCount 
      */
-    public async scrollToElement(direction: SwipeDirection, element: any, startPoint: Point, yOffset: number, xOffset: number = 0, retryCount: number = 7) {
+    public async scrollToElement(direction: Direction, element: any, startPoint: Point, yOffset: number, xOffset: number = 0, retryCount: number = 7) {
         let el = null
         while (el === null && retryCount > 0) {
             try {

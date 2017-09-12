@@ -1,4 +1,4 @@
-export const enum SwipeDirection {
+export const enum Direction {
     down,
     up,
     left,
