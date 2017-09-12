@@ -248,9 +248,7 @@ export function isWin() {
 export function getStorage(args: INsCapabilities) {
     let storage = createStorageFolder(resolve(args.projectDir, args.testFolder), "resources");
     storage = createStorageFolder(storage, "images");
-    const appName = args.appiumCaps.app
-                        .substring(args.appiumCaps.app.lastIndexOf("/") + 1, args.appiumCaps.app.lastIndexOf("."))
-                        .replace("-release","").replace("-debug","");
+    const appName = getAppName(args);
     storage = createStorageFolder(storage, appName);
     storage = createStorageFolder(storage, args.appiumCaps.deviceName);
 
@@ -259,11 +257,19 @@ export function getStorage(args: INsCapabilities) {
 
 export function getReportPath(args: INsCapabilities) {
     let storage = createStorageFolder(resolve(args.projectDir, args.testFolder), "reports");
-    const appName = args.appiumCaps.app.substring(args.appiumCaps.app.lastIndexOf("/") + 1, args.appiumCaps.app.lastIndexOf("."));
+    const appName = getAppName(args);
     storage = createStorageFolder(storage, appName);
     storage = createStorageFolder(storage, args.appiumCaps.deviceName);
 
     return storage;
+}
+
+function getAppName(args: INsCapabilities) {
+    const appName = args.appiumCaps.app
+    .substring(args.appiumCaps.app.lastIndexOf("/") + 1, args.appiumCaps.app.lastIndexOf("."))
+    .replace("-release", "").replace("-debug", "");
+
+    return appName;
 }
 
 export function getAppPath(platform, runType) {
