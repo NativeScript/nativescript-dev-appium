@@ -250,7 +250,7 @@ export class AppiumDriver {
             this._logPath = getReportPath(this._args);
         }
         let actualImage = await this.takeScreenshot(resolve(this._logPath, imageName.replace(".", "_actual.")));
-        let diffImage = expectedImage.replace(".", "_diff.");
+        let diffImage = actualImage.replace(".", "_diff.");
         let result = await this.compareImages(expectedImage, actualImage, diffImage);
         if (!result) {
             let eventStartTime = Date.now().valueOf();
