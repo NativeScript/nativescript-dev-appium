@@ -1,5 +1,5 @@
 import { Point } from "./point";
-import { SwipeDirection } from "./swipe-direction";
+import { Direction } from "./direction";
 import { calculateOffset } from "./utils";
 
 export class UIElement {
@@ -96,7 +96,7 @@ export class UIElement {
      * @param yOffset 
      * @param xOffset 
      */
-    public async scroll(direction: SwipeDirection, yOffset: number, xOffset: number = 0) {
+    public async scroll(direction: Direction, yOffset: number, xOffset: number = 0) {
         //await this._driver.execute("mobile: scroll", [{direction: 'up'}])
         //await this._driver.execute('mobile: scroll', { direction: direction === 0 ? "down" : "up", element: this._element.ELEMENT });
         const location = await this.location();

@@ -2,7 +2,7 @@ export declare var should: any;
 import { ElementHelper } from "./element-helper";
 import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
-import { SwipeDirection } from "./swipe-direction";
+import { Direction } from "./direction";
 import { Locator } from "./locators";
 import { INsCapabilities } from "./ins-capabilities";
 import { Point } from "./point";
@@ -96,7 +96,7 @@ export declare class AppiumDriver {
      * @param xOffset
      * @param retryCount
      */
-    scrollToElement(direction: SwipeDirection, element: any, startPoint: Point, yOffset: number, xOffset?: number, retryCount?: number): Promise<any>;
+    scrollToElement(direction: Direction, element: any, startPoint: Point, yOffset: number, xOffset?: number, retryCount?: number): Promise<any>;
     /**
      * Swipe from point with offset and inertia according to duatio
      * @param y

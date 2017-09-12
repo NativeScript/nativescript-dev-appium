@@ -10,8 +10,8 @@ export { ElementHelper } from "./lib/element-helper";
 export { UIElement } from "./lib/ui-element";
 export { Point } from "./lib/point";
 export { SearchOptions } from "./lib/search-options";
-export { SwipeDirection } from "./lib/swipe-direction";
 export { Locator } from "./lib/locators";
+export { Direction } from "./lib/direction";
 
 const nsCapabilities = new NsCapabilities();
 const appiumServer = new AppiumServer(nsCapabilities);
