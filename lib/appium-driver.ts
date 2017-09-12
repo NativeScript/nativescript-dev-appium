@@ -63,7 +63,7 @@ export class AppiumDriver {
         return this._elementHelper;
     }
 
-    get locators(){
+    get locators() {
         return this._locators;
     }
 
@@ -138,9 +138,18 @@ export class AppiumDriver {
      * @param className 
      * @param waitForElement 
      */
+    public async findElementByClassName(className: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
+        return new UIElement(await this._driver.waitForElementByClassName(className, waitForElement), this._driver, this._wd, this.webio, "waitForElementByClassName", className);
+    }
+
+    /**
+     * Searches for element by element native class name like button, textView etc which will be translated to android.widgets.Button or XCUIElementTypeButton (iOS 10 and higher) or UIElementButton (iOS 9)
+     * Notice this is not the same as css class
+     * @param className 
+     * @param waitForElement 
+     */
     public async findElementsByClassName(className: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
-        const fullClassName = this._elementHelper.getElementClass(className);
-        return await this.convertArrayToUIElements(await this._driver.waitForElementsByClassName(fullClassName, waitForElement), "waitForElementByClassName", fullClassName);
+        return await this.convertArrayToUIElements(await this._driver.waitForElementsByClassName(className, waitForElement), "waitForElementByClassName", className);
     }
 
     /**

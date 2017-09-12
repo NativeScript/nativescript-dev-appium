@@ -64,6 +64,13 @@ export declare class AppiumDriver {
      * @param className
      * @param waitForElement
      */
+    findElementByClassName(className: string, waitForElement?: number): Promise<UIElement>;
+    /**
+     * Searches for element by element native class name like button, textView etc which will be translated to android.widgets.Button or XCUIElementTypeButton (iOS 10 and higher) or UIElementButton (iOS 9)
+     * Notice this is not the same as css class
+     * @param className
+     * @param waitForElement
+     */
     findElementsByClassName(className: string, waitForElement?: number): Promise<UIElement[]>;
     /**
      * Find element by automationText

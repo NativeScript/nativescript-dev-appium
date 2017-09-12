@@ -40,7 +40,10 @@ export class UIElement {
      * Get size of element
      */
     public async size() {
-        return await (await this.element()).size();
+        const size = await (await this.element()).getSize();
+        const point = new Point(size.height, size.width);
+
+        return point;
     }
 
     public async text() {
@@ -96,13 +99,82 @@ export class UIElement {
      * @param yOffset 
      * @param xOffset 
      */
-    public async scroll(direction: Direction, yOffset: number, xOffset: number = 0) {
+    public async scrollInElement(direction: Direction, yOffset: number = 0, xOffset: number = 0) {
         //await this._driver.execute("mobile: scroll", [{direction: 'up'}])
         //await this._driver.execute('mobile: scroll', { direction: direction === 0 ? "down" : "up", element: this._element.ELEMENT });
         const location = await this.location();
+        const size = await this.size();
+        const x = location.x === 0 ? 10 : location.x;
+        let y = (location.y + 15);
+        if (yOffset === 0) {
+            yOffset = location.y + size.y - 15;
+        }
+
+        if (direction === Direction.down) {
+            y = (location.y + size.y) - 15;
+            if (yOffset === 0) {
+                yOffset = location.y + size.y - 15;
+            }
+        }
+        if (direction === Direction.up) {
+            if (yOffset === 0) {
+                yOffset = size.y - 15;
+            }
+        }
+
+        const endPoint = calculateOffset(direction, y, yOffset, x, xOffset, this._webio.isIOS, false);
+        if (direction === Direction.down) {
+            endPoint.point.y += location.y;
+        }
+        let action = new this._wd.TouchAction(this._driver);
+        action
+            .press({ x: x, y: y })
+            .wait(endPoint.duration)
+            .moveTo({ x: endPoint.point.x, y: endPoint.point.y })
+            .release();
+        await action.perform();
+        await this._driver.sleep(150);
+    }
+
+
+    /**
+     * Scroll with offset from elemnt with minimum inertia
+     * @param direction
+     * @param yOffset 
+     * @param xOffset 
+     */
+    public async scrollToElement(direction: Direction, elementToSearch, yOffset: number = 0, xOffset: number = 0) {
+        //await this._driver.execute("mobile: scroll", [{direction: 'up'}])
+        //await this._driver.execute('mobile: scroll', { direction: direction === 0 ? "down" : "up", element: this._element.ELEMENT });
+        let el: UIElement = null;
+        let retries = 7;
+        while (el === null && retries >= 0) {
+            try {
+                el = await elementToSearch();
+                if (!el || el === null || !el.isDisplayed()) {
+                    await this.scrollInElement(direction, yOffset, xOffset);
+                }
+            } catch (error) {
+                await this.scrollInElement(direction, yOffset, xOffset);
+            }
+
+            retries--;
+        }
+        return el;
+    }
+
+    /**
+ * Scroll with offset from elemnt with minimum inertia
+ * @param direction
+ * @param yOffset 
+ * @param xOffset 
+ */
+    public async drag(direction: Direction, yOffset: number, xOffset: number = 0) {
+        const location = await this.location();
 
         const x = location.x === 0 ? 10 : location.x;
-        const y = location.y === 0 ? 15 : location.y;
+        const y = location.y === 0 ? 10 : location.y;
+
         const endPoint = calculateOffset(direction, y, yOffset, x, xOffset, this._webio.isIOS, false);
 
         let action = new this._wd.TouchAction(this._driver);

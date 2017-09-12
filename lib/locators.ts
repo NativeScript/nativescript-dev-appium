@@ -6,28 +6,34 @@ export class Locator {
 
     constructor(private _args: INsCapabilities) {
         this._elementsList = new Map<string, string>();
-        if (this._args.appiumCaps.platformName.includes("android")) {
-            this.loadAndroidClasses();
+        if (this._args.appiumCaps.platformName.toLowerCase().includes("android")) {
+            this.loadAndroidElements();
+        }else{
+            this.loadIOSElements();
         }
     }
 
     get button() {
-        return this.getElementByName(name);
+        return this.getElementByName("button");
     }
 
-    get allELementsList(){
+    get listView() {
+        return this.getElementByName("listview");
+    }
+
+    get allELementsList() {
         return this._elementsList;
     }
 
-    private getElementByName(name) {
+    private getElementByName(name): string {
         if (!this._elementsList.has(name)) {
             throw new Error("This " + name + " does not appear to to be a standard NativeScript UI component.");
         }
 
-        return !this._elementsList.get(name);
+        return this._elementsList.get(name);
     }
 
-    private loadAndroidClasses() {
+    private loadAndroidElements() {
         this._elementsList.set("activityindicator", "android.widget.ProgressBar");
         this._elementsList.set("button", "android.widget.Button");
         this._elementsList.set("image", "org.nativescript.widgets.ImageView");
@@ -60,7 +66,7 @@ export class Locator {
         this._elementsList.set("webview", "android.widget.WebView");
     }
 
-    private loadIOSClassByName() {
+    private loadIOSElements() {
         this._elementsList.set("activityindicator", this.createIosElement("ActivityIndicator"));
         this._elementsList.set("button", this.createIosElement("Button"));
         this._elementsList.set("image-button", this.createIosElement("Button"));

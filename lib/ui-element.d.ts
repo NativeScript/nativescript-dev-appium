@@ -28,7 +28,7 @@ export declare class UIElement {
     /**
      * Get size of element
      */
-    size(): Promise<any>;
+    size(): Promise<Point>;
     text(): Promise<any>;
     /**
      * Get web driver element
@@ -59,7 +59,21 @@ export declare class UIElement {
      * @param yOffset
      * @param xOffset
      */
-    scroll(direction: Direction, yOffset: number, xOffset?: number): Promise<void>;
+    scrollInElement(direction: Direction, yOffset?: number, xOffset?: number): Promise<void>;
+    /**
+     * Scroll with offset from elemnt with minimum inertia
+     * @param direction
+     * @param yOffset
+     * @param xOffset
+     */
+    scrollToElement(direction: Direction, elementToSearch: any, yOffset?: number, xOffset?: number): Promise<UIElement>;
+    /**
+ * Scroll with offset from elemnt with minimum inertia
+ * @param direction
+ * @param yOffset
+ * @param xOffset
+ */
+    drag(direction: Direction, yOffset: number, xOffset?: number): Promise<void>;
     log(): Promise<void>;
     refetch(): Promise<any>;
 }
