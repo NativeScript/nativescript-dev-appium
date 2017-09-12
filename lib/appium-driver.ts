@@ -239,21 +239,25 @@ export class AppiumDriver {
         if (!this._storage) {
             this._storage = getStorage(this._args);
         }
-        let actualImage = await this.takeScreenshot(resolve(this._storage, imageName.replace(".", "_actual.")));
         let expectedImage = resolve(this._storage, imageName);
         if (!fileExists(expectedImage)) {
+            await this.takeScreenshot(resolve(this._storage, imageName.replace(".", "_actual.")));
             console.log("To confirm the image the '_actual' sufix should be removed from image name: ", expectedImage);
             return false;
         }
 
+        let actualImage = await this.takeScreenshot(resolve(this._logPath, imageName.replace(".", "_actual.")));
         let diffImage = expectedImage.replace(".", "_diff.");
         let result = await this.compareImages(expectedImage, actualImage, diffImage);
+        if (!this._logPath) {
+            this._logPath = getReportPath(this._args);
+        }
         if (!result) {
             let eventStartTime = Date.now().valueOf();
             let counter = 1;
             timeOutSeconds *= 1000;
             while ((Date.now().valueOf() - eventStartTime) <= timeOutSeconds && !result) {
-                let actualImage = await this.takeScreenshot(resolve(this._storage, imageName.replace(".", "_actual" + "_" + counter + ".")));
+                let actualImage = await this.takeScreenshot(resolve(this._logPath, imageName.replace(".", "_actual" + "_" + counter + ".")));
                 result = await this.compareImages(expectedImage, actualImage, diffImage);
                 counter++;
             }
