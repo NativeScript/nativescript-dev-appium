@@ -1,4 +1,6 @@
 export const enum SwipeDirection {
     down,
-    up
+    up,
+    left,
+    right
 }

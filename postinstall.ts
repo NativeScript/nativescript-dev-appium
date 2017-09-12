@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { mkdirSync} from "fs";
+import { mkdirSync } from "fs";
 import { dirname } from "path";
 import { copy, fileExists, resolve, searchFiles } from "./lib/utils";
 import { updatePackageJsonDep } from "./lib/package-json-helper";

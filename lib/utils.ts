@@ -5,6 +5,8 @@ import * as glob from "glob";
 
 require('colors');
 import { INsCapabilities } from "./ins-capabilities";
+import { Point } from "./point";
+import { SwipeDirection } from "./swipe-direction";
 
 export function resolve(mainPath, ...args) {
     if (!path.isAbsolute(mainPath)) {
@@ -246,7 +248,9 @@ export function isWin() {
 export function getStorage(args: INsCapabilities) {
     let storage = createStorageFolder(resolve(args.projectDir, args.testFolder), "resources");
     storage = createStorageFolder(storage, "images");
-    const appName = args.appiumCaps.app.substring(args.appiumCaps.app.lastIndexOf("/") + 1, args.appiumCaps.app.lastIndexOf("."));
+    const appName = args.appiumCaps.app
+                        .substring(args.appiumCaps.app.lastIndexOf("/") + 1, args.appiumCaps.app.lastIndexOf("."))
+                        .replace("-release","").replace("-debug","");
     storage = createStorageFolder(storage, appName);
     storage = createStorageFolder(storage, args.appiumCaps.deviceName);
 
@@ -279,6 +283,76 @@ export function getAppPath(platform, runType) {
             ". In order to automatically search and locate app package please use 'android','ios-device','ios-simulator' in your 'runType' option. E.g --runType android23, --runType ios-simulator10iPhone6");
     }
 };
+
+export function calculateOffset(direction, y: number, yOffset: number, x: number, xOffset: number, isIOS: boolean, verbose) {
+    let speed = 10;
+    let yEnd = Math.abs(yOffset);
+    let xEnd = Math.abs(xOffset);
+    let duration = Math.abs(yEnd) * speed;
+
+    if (isIOS) {
+        speed = 100;
+        if (direction === SwipeDirection.down) {
+            direction = -1;
+            yEnd = direction * yEnd;
+        }
+        if (direction === SwipeDirection.right) {
+            direction = -1;
+            xEnd = direction * xEnd;
+        }
+    } else {
+        if (direction === SwipeDirection.down) {
+            yEnd = Math.abs(yOffset - y);
+        }
+        if (direction === SwipeDirection.up) {
+            yEnd = direction * Math.abs((Math.abs(yOffset) + y));
+        }
+
+        duration = Math.abs(yOffset) * speed;
+
+        if (direction === SwipeDirection.right) {
+            xEnd = Math.abs(xOffset - x);
+        }
+
+        if (direction === SwipeDirection.left) {
+            xEnd = Math.abs(xOffset + x);
+        }
+
+        if (yOffset < xOffset && x) {
+            duration = Math.abs(xOffset) * speed;
+        }
+
+    }
+    log({ point: new Point(xEnd, yEnd), duration: duration }, verbose);
+
+    return { point: new Point(xEnd, yEnd), duration: duration };
+}
+
+/**
+ * Scrolls from point to other point with minimum inertia
+ * @param y 
+ * @param x 
+ * @param yOffset 
+ * @param duration 
+ * @param xOffset 
+ */
+export async function scroll(wd, driver, direction: SwipeDirection, isIOS: boolean, y: number, x: number, yOffset: number, xOffset: number, verbose) {
+    if (x === 0) {
+        x = 20;
+    }
+    if (y === 0) {
+        y = 20;
+    }
+    const endPoint = calculateOffset(direction, y, yOffset, x, xOffset, isIOS, verbose);
+    const action = new wd.TouchAction(driver);
+    action
+        .press({ x: x, y: y })
+        .wait(endPoint.duration)
+        .moveTo({ x: endPoint.point.x, y: endPoint.point.y })
+        .release();
+    await action.perform();
+    await driver.sleep(150);
+}
 
 function createStorageFolder(storage, direcotry) {
     storage = resolve(storage, direcotry)
