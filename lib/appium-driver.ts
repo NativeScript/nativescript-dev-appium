@@ -24,9 +24,9 @@ import {
 } from "./utils";
 import { INsCapabilities } from "./ins-capabilities";
 import { Point } from "./point";
-
+import { ImageHelper } from "./image-helper"
+import { ImageOptions } from "./image-options"
 import { unlinkSync, writeFileSync } from "fs";
-import * as blinkDiff from "blink-diff";
 import * as webdriverio from "webdriverio";
 
 export class AppiumDriver {
@@ -35,16 +35,18 @@ export class AppiumDriver {
     private static partialUrl = "/wd/hub/session/";
 
     private _elementHelper: ElementHelper;
-    private _locators: Locator;
-    private _storage: string;
-    private _logPath: string;
+    private _imageHelper: ImageHelper;
     private _isAlive: boolean = false;
+    private _locators: Locator;
+    private _logPath: string;
+    private _storage: string;
 
     private constructor(private _driver: any, private _wd, private webio: any, private _driverConfig, private _args: INsCapabilities) {
         this._elementHelper = new ElementHelper(this._args.appiumCaps.platformName.toLowerCase(), this._args.appiumCaps.platformVersion.toLowerCase());
+        this._imageHelper = new ImageHelper();
+        this._isAlive = true;
         this._locators = new Locator(this._args);
         this.webio.requestHandler.sessionID = this._driver.sessionID;
-        this._isAlive = true;
     }
 
     get capabilities() {
@@ -243,7 +245,7 @@ export class AppiumDriver {
         return await this.webio.source();
     }
 
-    public async  sessionId() {
+    public async sessionId() {
         return await this.driver.getSessionId();
     }
 
@@ -266,22 +268,25 @@ export class AppiumDriver {
             this._logPath = getReportPath(this._args);
         }
         let actualImage = await this.takeScreenshot(resolve(this._logPath, imageName.replace(".", "_actual.")));
-        let diffImage = actualImage.replace(".", "_diff.");
-        let result = await this.compareImages(expectedImage, actualImage, diffImage);
+        let diffImage = actualImage.replace("actual", "diff");
+        let result = await this._imageHelper.compareImages(actualImage, expectedImage, diffImage, tollerance);
         if (!result) {
             let eventStartTime = Date.now().valueOf();
             let counter = 1;
             timeOutSeconds *= 1000;
             while ((Date.now().valueOf() - eventStartTime) <= timeOutSeconds && !result) {
                 let actualImage = await this.takeScreenshot(resolve(this._logPath, imageName.replace(".", "_actual" + "_" + counter + ".")));
-                result = await this.compareImages(expectedImage, actualImage, diffImage);
+                result = await this._imageHelper.compareImages(actualImage, expectedImage, diffImage, tollerance);
                 counter++;
             }
         } else {
-            unlinkSync(diffImage);
-            unlinkSync(actualImage);
+            if (fileExists(diffImage)) {
+                unlinkSync(diffImage);
+            }
+            if (fileExists(actualImage)) {
+                unlinkSync(actualImage);
+            }
         }
-
         return result;
     }
 
@@ -300,7 +305,6 @@ export class AppiumDriver {
         });
     }
 
-
     public async logScreenshoot(fileName: string) {
         if (!this._logPath && !fileExists(fileName)) {
             this._logPath = getReportPath(this._args);
@@ -310,41 +314,7 @@ export class AppiumDriver {
         }
 
         const imgPath = await this.takeScreenshot(resolve(this._logPath, fileName));
-
         return imgPath;
-    }
-
-    public compareImages(expected: string, actual: string, output: string) {
-        let diff = new blinkDiff({
-            imageAPath: actual,
-            imageBPath: expected,
-            imageOutputPath: output,
-            // TODO: extend ...
-        });
-
-        return new Promise<boolean>((resolve, reject) => {
-            diff.run(function (error, result) {
-                if (error) {
-                    throw error;
-                } else {
-                    let message;
-                    let resultCode = diff.hasPassed(result.code);
-                    if (resultCode) {
-                        message = "Screen compare passed!";
-                        console.log(message);
-                        console.log('Found ' + result.differences + ' differences.');
-                        return resolve(true);
-                    } else {
-                        message = "Screen compare failed!"
-                        console.log(message);
-                        console.log('Found ' + result.differences + ' differences.');
-                        console.log('Diff image ' + output);
-
-                        return resolve(false);
-                    }
-                }
-            });
-        });
     }
 
     public static async createAppiumDriver(port: number, args: INsCapabilities) {
