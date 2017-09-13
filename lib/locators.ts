@@ -8,7 +8,7 @@ export class Locator {
         this._elementsList = new Map<string, string>();
         if (this._platformName.toLowerCase().includes("android")) {
             this.loadAndroidElements();
-        }else{
+        } else {
             this.loadIOSElements();
         }
     }
@@ -19,6 +19,11 @@ export class Locator {
 
     get listView() {
         return this.getElementByName("listview");
+    }
+
+
+    get image() {
+        return this.getElementByName("image");
     }
 
     get allELementsList() {
