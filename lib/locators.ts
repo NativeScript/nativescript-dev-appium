@@ -4,9 +4,9 @@ export class Locator {
 
     private _elementsList: Map<string, string>;
 
-    constructor(private _args: INsCapabilities) {
+    constructor(private _platformName: string, private _platformVersion) {
         this._elementsList = new Map<string, string>();
-        if (this._args.appiumCaps.platformName.toLowerCase().includes("android")) {
+        if (this._platformName.toLowerCase().includes("android")) {
             this.loadAndroidElements();
         }else{
             this.loadIOSElements();
@@ -25,7 +25,7 @@ export class Locator {
         return this._elementsList;
     }
 
-    private getElementByName(name): string {
+    public getElementByName(name): string {
         if (!this._elementsList.has(name)) {
             throw new Error("This " + name + " does not appear to to be a standard NativeScript UI component.");
         }
@@ -100,7 +100,7 @@ export class Locator {
 
     private createIosElement(element) {
         let elementType = "UIA";
-        if (parseFloat(this._args.appiumCaps.platformVersion) >= 10) {
+        if (parseFloat(this._platformVersion) >= 10) {
             elementType = "XCUIElementType";
         }
 

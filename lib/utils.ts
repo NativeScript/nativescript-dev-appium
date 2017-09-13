@@ -187,7 +187,7 @@ export function logErr(line, verbose) {
 
 export function shutdown(processToKill, verbose) {
     try {
-        if (processToKill) {
+        if (processToKill && processToKill !== null) {
             if (process.platform === "win32") {
                 killPid(processToKill.pid, verbose);
             } else {
@@ -266,8 +266,8 @@ export function getReportPath(args: INsCapabilities) {
 
 function getAppName(args: INsCapabilities) {
     const appName = args.appiumCaps.app
-    .substring(args.appiumCaps.app.lastIndexOf("/") + 1, args.appiumCaps.app.lastIndexOf("."))
-    .replace("-release", "").replace("-debug", "");
+        .substring(args.appiumCaps.app.lastIndexOf("/") + 1, args.appiumCaps.app.lastIndexOf("."))
+        .replace("-release", "").replace("-debug", "");
 
     return appName;
 }

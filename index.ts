@@ -41,6 +41,10 @@ export async function startServer(port?: number) {
     }
 
     appiumServer.hasStarted = hasStarted;
+
+    process.on("uncaughtException", () => shutdown(appiumServer.server, nsCapabilities.verbose));
+    process.on("exit", () => shutdown(appiumServer.server, nsCapabilities.verbose));
+    process.on("SIGINT", () => shutdown(appiumServer.server, nsCapabilities.verbose));
 };
 
 export async function stopServer() {
@@ -72,8 +76,4 @@ export async function createDriver() {
     }
 
     return appiumDriver;
-};
-
-process.on("uncaughtException", (appiumServer) => shutdown(appiumServer, nsCapabilities.verbose));
-process.on("exit", (appiumServer) => shutdown(appiumServer, nsCapabilities.verbose));
-process.on("SIGINT", (appiumServer) => shutdown(appiumServer, nsCapabilities.verbose));
+}

@@ -42,7 +42,7 @@ export class AppiumDriver {
 
     private constructor(private _driver: any, private _wd, private webio: any, private _driverConfig, private _args: INsCapabilities) {
         this._elementHelper = new ElementHelper(this._args.appiumCaps.platformName.toLowerCase(), this._args.appiumCaps.platformVersion.toLowerCase());
-        this._locators = new Locator(this._args);
+        this._locators = new Locator(this._args.appiumCaps.platformName, this._args.appiumCaps.platformVersion);
         this.webio.requestHandler.sessionID = this._driver.sessionID;
         this._isAlive = true;
     }

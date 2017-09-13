@@ -112,8 +112,11 @@ export class UIElement {
 
         if (direction === Direction.down) {
             y = (location.y + size.y) - 15;
-            if (yOffset === 0) {
-                yOffset = location.y + size.y - 15;
+            
+            if (!this._webio.isIOS) {
+                if (yOffset === 0) {
+                    yOffset = location.y + size.y - 15;
+                }
             }
         }
         if (direction === Direction.up) {
@@ -151,7 +154,8 @@ export class UIElement {
         while (el === null && retries >= 0) {
             try {
                 el = await elementToSearch();
-                if (!el || el === null || !el.isDisplayed()) {
+                if (!el || el === null || !(await el.isDisplayed())) {
+                    el = null;
                     await this.scrollInElement(direction, yOffset, xOffset);
                 }
             } catch (error) {
