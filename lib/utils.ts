@@ -208,7 +208,7 @@ export function killPid(pid, verbose) {
 
 export function waitForOutput(process, matcher, errorMatcher, timeout, verbose) {
     return new Promise<boolean>(function (resolve, reject) {
-        let abortWatch = setTimeout(function () {
+        const abortWatch = setTimeout(function () {
             process.kill();
             console.log("Timeout expired, output not detected for: " + matcher);
             resolve(false);

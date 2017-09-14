@@ -15,6 +15,7 @@ export class NsCapabilities implements INsCapabilities {
     private _runType;
     private _isSauceLab;
     private _appPath: string;
+    private _emulatorOptions: string;
 
     constructor() {
         this._projectDir = parser.projectDir;
@@ -44,4 +45,5 @@ export class NsCapabilities implements INsCapabilities {
     get isSauceLab() { return this._isSauceLab; }
     get appPath() { return this._appPath; }
     set appPath(appPath: string) { this._appPath = appPath; }
+    get emulatorOptions() { return (this._emulatorOptions || "-wipe-data -gpu on") }
 }

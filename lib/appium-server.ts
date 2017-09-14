@@ -45,7 +45,8 @@ export class AppiumServer {
 
     public async start() {
         log("Starting server...", this._args.verbose);
-        this._server = child_process.spawn(this._appium, ["-p", this.port.toString(), "--log-level", "debug"], {
+        const logLevel = this._args.verbose === true ? "debug" : "info";
+        this._server = child_process.spawn(this._appium, ["-p", this.port.toString(), "--log-level", logLevel], {
             shell: true,
             detached: false
         });
@@ -64,6 +65,17 @@ export class AppiumServer {
 
             this._server.on("exit", (code, signal) => {
                 log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
+                console.log(this._server.killed);
+                resolve();
+            });
+
+            this._server.on("error", (code, signal) => {
+                log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
+                resolve();
+            });
+
+            this._server.on("disconnect", (code, signal) => {
+                log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
                 resolve();
             });
 
@@ -74,6 +86,7 @@ export class AppiumServer {
                 } else {
                     this._server.kill("SIGINT");
                     shutdown(this._server, this._args.verbose);
+                    //this._server.kill("SIGKILL");
                 }
             } catch (error) {
                 console.log(error);

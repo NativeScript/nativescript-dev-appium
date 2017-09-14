@@ -21,6 +21,7 @@ export declare class AppiumDriver {
     private _locators;
     private _logPath;
     private _storage;
+    private static _devices;
     private constructor();
     readonly capabilities: any;
     readonly platformName: any;

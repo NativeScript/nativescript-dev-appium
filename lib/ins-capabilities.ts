@@ -11,4 +11,5 @@ export interface INsCapabilities {
     runType: string;
     isSauceLab: boolean;
     appPath: string;
+    emulatorOptions: string;
 }

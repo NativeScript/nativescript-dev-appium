@@ -25,6 +25,7 @@ import {
 import { INsCapabilities } from "./ins-capabilities";
 import { Point } from "./point";
 import { ImageHelper } from "./image-helper"
+import { EmulatorManager } from "./emulator-manager";
 import { ImageOptions } from "./image-options"
 import { unlinkSync, writeFileSync } from "fs";
 import * as webdriverio from "webdriverio";
@@ -40,6 +41,8 @@ export class AppiumDriver {
     private _locators: Locator;
     private _logPath: string;
     private _storage: string;
+
+    private static _devices: Map<string, EmulatorManager> = new Map();
 
     private constructor(private _driver: any, private _wd, private webio: any, private _driverConfig, private _args: INsCapabilities) {
         this._elementHelper = new ElementHelper(this._args.appiumCaps.platformName.toLowerCase(), this._args.appiumCaps.platformVersion.toLowerCase());
@@ -260,7 +263,7 @@ export class AppiumDriver {
         let expectedImage = resolve(this._storage, imageName);
         if (!fileExists(expectedImage)) {
             await this.takeScreenshot(resolve(this._storage, imageName.replace(".", "_actual.")));
-            console.log("To confirm the image the '_actual' sufix should be removed from image name: ", expectedImage);
+            console.log("Remove the 'actual' suffix to continue using the image as expected one ", expectedImage);
             return false;
         }
 
@@ -323,6 +326,10 @@ export class AppiumDriver {
             port: port
         };
 
+        if (args.appiumCaps.platformName.toLowerCase() === "android") {
+        }
+
+        await EmulatorManager.startEmulator(args);
         const driver = await wd.promiseChainRemote(driverConfig);
         AppiumDriver.configureLogging(driver, args.verbose);
 
@@ -368,8 +375,9 @@ export class AppiumDriver {
     public async quit() {
         console.log("Killing driver");
         try {
+            await EmulatorManager.stop(this._args);
             await this._driver.quit();
-            await this.webio.end();
+
         } catch (error) {
         }
         this._isAlive = false;
