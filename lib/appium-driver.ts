@@ -260,16 +260,29 @@ export class AppiumDriver {
         if (!this._storage) {
             this._storage = getStorage(this._args);
         }
-        let expectedImage = resolve(this._storage, imageName);
-        if (!fileExists(expectedImage)) {
-            await this.takeScreenshot(resolve(this._storage, imageName.replace(".", "_actual.")));
-            console.log("Remove the 'actual' suffix to continue using the image as expected one ", expectedImage);
-            return false;
-        }
-
+        
         if (!this._logPath) {
             this._logPath = getReportPath(this._args);
         }
+
+        let expectedImage = resolve(this._storage, imageName);
+        
+        // Firts capture of screen when the expected image is not available
+        if (!fileExists(expectedImage)) {
+            await this.takeScreenshot(resolve(this._storage, imageName.replace(".", "_actual.")));
+            console.log("Remove the 'actual' suffix to continue using the image as expected one ", expectedImage);
+            let eventStartTime = Date.now().valueOf();
+            let counter = 1;
+            timeOutSeconds *= 1000;
+
+            while ((Date.now().valueOf() - eventStartTime) <= timeOutSeconds) {
+                let actualImage = await this.takeScreenshot(resolve(this._logPath, imageName.replace(".", "_actual" + "_" + counter + ".")));
+                counter++;                
+            }
+            
+            return false;
+        }
+
         let actualImage = await this.takeScreenshot(resolve(this._logPath, imageName.replace(".", "_actual.")));
         let diffImage = actualImage.replace("actual", "diff");
         let result = await this._imageHelper.compareImages(actualImage, expectedImage, diffImage, tollerance);
@@ -290,6 +303,7 @@ export class AppiumDriver {
                 unlinkSync(actualImage);
             }
         }
+
         return result;
     }
 
