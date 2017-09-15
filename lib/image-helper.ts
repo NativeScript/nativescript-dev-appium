@@ -8,7 +8,7 @@ export class ImageHelper {
     }
 
     public thresholdType() {
-        return ImageOptions.percent;
+        return ImageOptions.pixel;
     }
 
     public threshold() {

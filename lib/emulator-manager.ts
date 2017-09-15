@@ -7,8 +7,27 @@ const EMULATOR = resolve(ANDROID_HOME, "emulator", "emulator");
 const ADB = resolve(ANDROID_HOME, "platform-tools", "adb");
 
 export class EmulatorManager {
-    private static _emulators: Map<string, child_process.ChildProcess> = new Map();
+    private static _emulators: Map<string, EmulatorManager> = new Map();
     private static _emulatorIds: Map<string, string> = new Map();
+
+    constructor(private _id, private _args, private _emulatorProc: child_process.ChildProcess, private _shouldKill) {
+    }
+
+    get id() {
+        return this._id;
+    }
+
+    get emulatorProc() {
+        return this._emulatorProc;
+    }
+
+    get args() {
+        return this._args;
+    }
+
+    get shouldKill() {
+        return this._shouldKill;
+    }
 
     public static async startEmulator(args: INsCapabilities) {
         if (!args.appiumCaps.avd || args.appiumCaps.avd === "") {
@@ -26,11 +45,10 @@ export class EmulatorManager {
             detached: false
         });
 
-        const responce: boolean = await waitForOutput(emulator, new RegExp(args.appiumCaps.avd, "i"), /Error/, args.appiumCaps.lt || 180000, args.verbose);
-
-        if (responce) {
+        const responce: boolean = await waitForOutput(emulator, new RegExp(args.appiumCaps.avd, "i"), new RegExp("Error", "i"), args.appiumCaps.lt || 180000, args.verbose);
+        if (responce === true) {
             EmulatorManager.waitUntilEmulatorBoot(id, args.appiumCaps.lt || 180000);
-            EmulatorManager._emulators.set(args.runType, emulator);
+            EmulatorManager._emulators.set(args.runType, new EmulatorManager(id, args, emulator, true));
         } else {
             log("Emulator is probably already started!", args.verbose);
         }
@@ -41,40 +59,43 @@ export class EmulatorManager {
     public static stop(args: INsCapabilities) {
         if (EmulatorManager._emulators.has(args.runType)) {
 
-            const emulator = EmulatorManager._emulators.get(args.runType);
-            return new Promise((resolve, reject) => {
-                emulator.on("close", (code, signal) => {
-                    log(`Emulator terminated due signal: ${signal} and code: ${code}`, args.verbose);
-                    resolve();
-                });
+            const emu = EmulatorManager._emulators.get(args.runType);
+            executeCommand(ADB + " -s emulator-" + emu.id + " emu kill");
 
-                emulator.on("exit", (code, signal) => {
-                    log(`Emulator terminated due signal: ${signal} and code: ${code}`, args.verbose);
-                    resolve();
-                });
+            // return new Promise((resolve, reject) => {
+            //     emu.emulatorProc.on("close", (code, signal) => {
+            //         log(`Emulator terminated due signal: ${signal} and code: ${code}`, args.verbose);
+            //         resolve();
+            //     });
 
-                emulator.on("error", (code, signal) => {
-                    log(`Emulator terminated due signal: ${signal} and code: ${code}`, args.verbose);
-                    resolve();
-                });
+            //     emu.emulatorProc.on("exit", (code, signal) => {
+            //         log(`Emulator terminated due signal: ${signal} and code: ${code}`, args.verbose);
+            //         resolve();
+            //     });
 
-                emulator.on("disconnect", (code, signal) => {
-                    log(`Emulator terminated due signal: ${signal} and code: ${code}`, args.verbose);
-                    resolve();
-                });
+            //     emu.emulatorProc.on("error", (code, signal) => {
+            //         log(`Emulator terminated due signal: ${signal} and code: ${code}`, args.verbose);
+            //         resolve();
+            //     });
 
-                try {
-                    if (isWin) {
-                        shutdown(emulator, args.verbose);
-                    } else {
-                        shutdown(emulator, args.verbose);
-                        emulator.kill("SIGINT");
-                        //this._emulator.kill("SIGKILL");
-                    }
-                } catch (error) {
-                    console.log(error);
-                }
-            });
+            //     emu.emulatorProc.on("disconnect", (code, signal) => {
+            //         log(`Emulator terminated due signal: ${signal} and code: ${code}`, args.verbose);
+            //         resolve();
+            //     });
+
+            //     try {
+            //         if (isWin) {
+            //             shutdown(emu.emulatorProc, args.verbose);
+            //         } else {
+            //             executeCommand(ADB + " -s emulator-" + emu.id + " emu kill");
+            //             shutdown(emu.emulatorProc, args.verbose);
+            //             emu.emulatorProc.kill("SIGINT");
+            //             //this._emulator.kill("SIGKILL");
+            //         }
+            //     } catch (error) {
+            //         console.log(error);
+            //     }
+            // });
         }
 
     }
@@ -104,22 +125,28 @@ export class EmulatorManager {
      * @param deviceId 
      */
     private static checkIfEmulatorIsRunning(deviceId) {
-        let hasBooted = false;
+        let isBooted = executeCommand(ADB + " -s " + deviceId + " shell getprop sys.boot_completed").trim() === "1";
+        if (isBooted) {
+            isBooted = executeCommand(ADB + " -s " + deviceId + " shell getprop init.svc.bootanim").toLowerCase().trim() === "stopped";
+        }
 
-        let rowData = executeCommand(ADB + " -s " + deviceId + " shell dumpsys activity");
-        let list = rowData.split("\\r\\n");
+        return isBooted;
 
-        list.forEach(line => {
-            if (line.includes("Recent #0")
-                && (line.includes("com.android.launcher")
-                    || line.includes("com.google.android.googlequicksearchbox")
-                    || line.includes("com.google.android.apps.nexuslauncher")
-                    || line.includes(deviceId))) {
-                hasBooted = true;
-            }
-        });
+        // let hasBooted = false;
+        // let rowData = executeCommand(ADB + " -s " + deviceId + " shell dumpsys activity");
+        // let list = rowData.split("\\r\\n");
 
-        return hasBooted;
+        // list.forEach(line => {
+        //     if (line.includes("Recent #0")
+        //         && (line.includes("com.android.launcher")
+        //             || line.includes("com.google.android.googlequicksearchbox")
+        //             || line.includes("com.google.android.apps.nexuslauncher")
+        //             || line.includes(deviceId))) {
+        //         hasBooted = true;
+        //     }
+        // });
+
+        // return hasBooted;
     }
 
     public static emulatorId(platformVersion) {

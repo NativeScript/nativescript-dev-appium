@@ -217,13 +217,14 @@ export function waitForOutput(process, matcher, errorMatcher, timeout, verbose) 
         process.stdout.on("data", function (data) {
             let line = "" + data;
             log(line, verbose);
-            if (matcher.test(line)) {
-                clearTimeout(abortWatch);
-                resolve(true);
-            }
             if (errorMatcher.test(line)) {
                 clearTimeout(abortWatch);
                 resolve(false);
+            }
+            
+            if (matcher.test(line)) {
+                clearTimeout(abortWatch);
+                resolve(true);
             }
         });
     });

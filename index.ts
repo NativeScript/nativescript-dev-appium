@@ -12,6 +12,7 @@ export { Point } from "./lib/point";
 export { SearchOptions } from "./lib/search-options";
 export { Locator } from "./lib/locators";
 export { Direction } from "./lib/direction";
+export { EmulatorManager } from "./lib/emulator-manager";
 
 const nsCapabilities = new NsCapabilities();
 const appiumServer = new AppiumServer(nsCapabilities);
