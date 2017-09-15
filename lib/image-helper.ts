@@ -56,7 +56,7 @@ export class ImageHelper {
         });
     }
 
-    public compareImages(actual: string, expected: string, output: string, valueThreshold: number = this.threshold(), typeThreshold: any = ImageOptions.percent) {
+    public compareImages(actual: string, expected: string, output: string, valueThreshold: number = this.threshold(), typeThreshold: any = ImageOptions.pixel) {
         let diff = new blinkDiff({
             imageAPath: actual,
             imageBPath: expected,
