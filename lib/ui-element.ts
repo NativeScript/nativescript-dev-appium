@@ -99,7 +99,7 @@ export class UIElement {
      * @param yOffset 
      * @param xOffset 
      */
-    public async scrollInElement(direction: Direction, yOffset: number = 0, xOffset: number = 0) {
+    public async scroll(direction: Direction, yOffset: number = 0, xOffset: number = 0) {
         //await this._driver.execute("mobile: scroll", [{direction: 'up'}])
         //await this._driver.execute('mobile: scroll', { direction: direction === 0 ? "down" : "up", element: this._element.ELEMENT });
         const location = await this.location();
@@ -146,7 +146,7 @@ export class UIElement {
      * @param yOffset 
      * @param xOffset 
      */
-    public async scrollToElement(direction: Direction, elementToSearch, yOffset: number = 0, xOffset: number = 0) {
+    public async scrollTo(direction: Direction, elementToSearch, yOffset: number = 0, xOffset: number = 0) {
         //await this._driver.execute("mobile: scroll", [{direction: 'up'}])
         //await this._driver.execute('mobile: scroll', { direction: direction === 0 ? "down" : "up", element: this._element.ELEMENT });
         let el: UIElement = null;
@@ -156,10 +156,10 @@ export class UIElement {
                 el = await elementToSearch();
                 if (!el || el === null || !(await el.isDisplayed())) {
                     el = null;
-                    await this.scrollInElement(direction, yOffset, xOffset);
+                    await this.scroll(direction, yOffset, xOffset);
                 }
             } catch (error) {
-                await this.scrollInElement(direction, yOffset, xOffset);
+                await this.scroll(direction, yOffset, xOffset);
             }
 
             retries--;

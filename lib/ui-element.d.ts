@@ -59,14 +59,14 @@ export declare class UIElement {
      * @param yOffset
      * @param xOffset
      */
-    scrollInElement(direction: Direction, yOffset?: number, xOffset?: number): Promise<void>;
+    scroll(direction: Direction, yOffset?: number, xOffset?: number): Promise<void>;
     /**
      * Scroll with offset from elemnt with minimum inertia
      * @param direction
      * @param yOffset
      * @param xOffset
      */
-    scrollToElement(direction: Direction, elementToSearch: any, yOffset?: number, xOffset?: number): Promise<UIElement>;
+    scrollTo(direction: Direction, elementToSearch: any, yOffset?: number, xOffset?: number): Promise<UIElement>;
     /**
  * Scroll with offset from elemnt with minimum inertia
  * @param direction
