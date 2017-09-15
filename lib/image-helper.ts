@@ -61,13 +61,13 @@ export class ImageHelper {
             imageAPath: actual,
             imageBPath: expected,
             imageOutputPath: output,
-            imageOutputLimit: this.imageOutputLimit,
+            imageOutputLimit: this.imageOutputLimit(),
             thresholdType: typeThreshold,
             threshold: valueThreshold,
-            delta: this.delta,
-            cropImageA: this.cropImageA,
-            cropImageB: this.cropImageB,
-            verbose: this.verbose,
+            delta: this.delta(),
+            cropImageA: this.cropImageA(),
+            cropImageB: this.cropImageB(),
+            verbose: this.verbose(),
         });
 
         return this.runDiff(diff, output);
