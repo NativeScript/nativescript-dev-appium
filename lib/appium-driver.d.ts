@@ -117,7 +117,7 @@ export declare class AppiumDriver {
     swipe(y: number, x: number, yOffset: number, inertia?: number, xOffset?: number): Promise<void>;
     source(): Promise<any>;
     sessionId(): Promise<any>;
-    compareScreen(imageName: string, timeOutSeconds: number, tollerance: number): Promise<boolean>;
+    compareScreen(imageName: string, timeOutSeconds?: number, tollerance?: number): Promise<boolean>;
     takeScreenshot(fileName: string): Promise<string>;
     logScreenshoot(fileName: string): Promise<string>;
     static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;

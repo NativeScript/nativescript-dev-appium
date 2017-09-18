@@ -252,7 +252,7 @@ export class AppiumDriver {
         return await this.driver.getSessionId();
     }
 
-    public async compareScreen(imageName: string, timeOutSeconds: number, tollerance: number) {
+    public async compareScreen(imageName: string, timeOutSeconds: number = 3, tollerance: number = 0.01) {
         if (!imageName.endsWith(AppiumDriver.pngFileExt)) {
             imageName = imageName.concat(AppiumDriver.pngFileExt);
         }
