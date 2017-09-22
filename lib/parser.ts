@@ -14,6 +14,9 @@ const config = (() => {
         .option("verbose", { alias: "v", describe: "Log actions", type: "boolean" })
         .option("path", { describe: "path", default: process.cwd(), type: "string" })
         .option("appPath", { describe: "application path", type: "string" })
+        .option("storage", { describe: "Storage for images folder.", type: "string" })
+        .option("testReports", { describe: "Test reporting folder", type: "string" })
+        .option("reuseDevice", { describe: "Reusing device if available.", type: "boolean", defualt: false })
         .help()
         .argv;
 
@@ -38,7 +41,10 @@ const config = (() => {
         appiumCapsLocation: options.appiumCapsLocation || join(projectDir, options.testFolder, "config", capabilitiesName),
         isSauceLab: options.sauceLab,
         verbose: options.verbose || process.env.npm_config_loglevel === "verbose",
-        appPath: options.appPath
+        appPath: options.appPath,
+        storage: options.storage || process.env.npm_config_STORAGE || process.env.STORAGE,
+        testReports: options.testReports || process.env.npm_config_TEST_REPORTS || process.env.TEST_REPORTS,
+        reuseDevice: options.reuseDevice || process.env.npm_config_REUSE_DEVICEs || process.env.REUSE_DEVICE,
     }
     return config;
 })();
@@ -54,5 +60,8 @@ export const {
     testFolder,
     runType,
     isSauceLab,
-    appPath
+    appPath,
+    storage,
+    testReports,
+    reuseDevice
 } = config;

@@ -12,4 +12,7 @@ export interface INsCapabilities {
     isSauceLab: boolean;
     appPath: string;
     emulatorOptions: string;
+    storage: string;
+    testReports: string;
+    reuseDevice: boolean;
 }

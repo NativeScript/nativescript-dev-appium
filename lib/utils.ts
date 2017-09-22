@@ -221,7 +221,7 @@ export function waitForOutput(process, matcher, errorMatcher, timeout, verbose) 
                 clearTimeout(abortWatch);
                 resolve(false);
             }
-            
+
             if (matcher.test(line)) {
                 clearTimeout(abortWatch);
                 resolve(true);
@@ -247,8 +247,11 @@ export function isWin() {
 }
 
 export function getStorage(args: INsCapabilities) {
-    let storage = createStorageFolder(resolve(args.projectDir, args.testFolder), "resources");
-    storage = createStorageFolder(storage, "images");
+    let storage = args.storage;
+    if (!storage) {
+        storage = createStorageFolder(resolve(args.projectDir, args.testFolder), "resources");
+        storage = createStorageFolder(storage, "images");
+    }
     const appName = getAppName(args);
     storage = createStorageFolder(storage, appName);
     storage = createStorageFolder(storage, args.appiumCaps.deviceName);
@@ -257,12 +260,15 @@ export function getStorage(args: INsCapabilities) {
 }
 
 export function getReportPath(args: INsCapabilities) {
-    let storage = createStorageFolder(resolve(args.projectDir, args.testFolder), "reports");
+    let report = args.testReports;
+    if (!report) {
+        report = createStorageFolder(resolve(args.projectDir, args.testFolder), "reports");
+    }
     const appName = getAppName(args);
-    storage = createStorageFolder(storage, appName);
-    storage = createStorageFolder(storage, args.appiumCaps.deviceName);
+    report = createStorageFolder(report, appName);
+    report = createStorageFolder(report, args.appiumCaps.deviceName);
 
-    return storage;
+    return report;
 }
 
 function getAppName(args: INsCapabilities) {

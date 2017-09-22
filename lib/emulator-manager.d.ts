@@ -22,5 +22,6 @@ export declare class EmulatorManager {
      */
     private static checkIfEmulatorIsRunning(deviceId);
     static emulatorId(platformVersion: any): string;
+    private static startEmulatorProcess(args, id);
     private static loadEmulatorsIds();
 }

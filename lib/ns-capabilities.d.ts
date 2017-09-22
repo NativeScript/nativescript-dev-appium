@@ -9,6 +9,9 @@ export declare class NsCapabilities implements INsCapabilities {
     private _appiumCapsLocation;
     private _appiumCaps;
     private _testFolder;
+    private _storage;
+    private _testReports;
+    private _reuseDevice;
     private _runType;
     private _isSauceLab;
     private _appPath;
@@ -23,6 +26,9 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly appiumCapsLocation: any;
     readonly appiumCaps: any;
     readonly testFolder: any;
+    readonly storage: any;
+    readonly testReports: any;
+    readonly reuseDevice: any;
     readonly runType: any;
     readonly isSauceLab: any;
     appPath: string;

@@ -12,6 +12,9 @@ export class NsCapabilities implements INsCapabilities {
     private _appiumCapsLocation;
     private _appiumCaps;
     private _testFolder;
+    private _storage;
+    private _testReports;
+    private _reuseDevice;
     private _runType;
     private _isSauceLab;
     private _appPath: string;
@@ -27,6 +30,9 @@ export class NsCapabilities implements INsCapabilities {
         this._verbose = parser.verbose;
         this._appiumCapsLocation = parser.appiumCapsLocation;
         this._testFolder = parser.testFolder;
+        this._storage = parser.storage;
+        this._testReports = parser.testReports;
+        this._reuseDevice = parser.reuseDevice;
         this._runType = parser.runType;
         this._isSauceLab = parser.isSauceLab;
         this._appiumCaps = resolveCapabilities(this._appiumCapsLocation, parser.runType, parser.projectDir);
@@ -41,6 +47,9 @@ export class NsCapabilities implements INsCapabilities {
     get appiumCapsLocation() { return this._appiumCapsLocation; }
     get appiumCaps() { return this._appiumCaps; }
     get testFolder() { return this._testFolder; }
+    get storage() { return this._storage; }
+    get testReports() { return this._testReports; }
+    get reuseDevice() { return this._reuseDevice; }
     get runType() { return this._runType; }
     get isSauceLab() { return this._isSauceLab; }
     get appPath() { return this._appPath; }
