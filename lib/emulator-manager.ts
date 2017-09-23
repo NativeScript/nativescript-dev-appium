@@ -5,6 +5,7 @@ import { INsCapabilities } from "./ins-capabilities";
 const ANDROID_HOME = process.env["ANDROID_HOME"];
 const EMULATOR = resolve(ANDROID_HOME, "emulator", "emulator");
 const ADB = resolve(ANDROID_HOME, "platform-tools", "adb");
+const LIST_DEVICES_COMMAND = ADB + " devices";
 
 export class EmulatorManager {
     private static _emulators: Map<string, EmulatorManager> = new Map();
@@ -30,48 +31,43 @@ export class EmulatorManager {
     }
 
     public static async startEmulator(args: INsCapabilities) {
+        if (EmulatorManager._emulatorIds.size === 0) {
+            EmulatorManager.loadEmulatorsIds();
+        }
+
+        if (!args.reuseDevice) {
+            EmulatorManager.kill(EmulatorManager.emulatorId(args.appiumCaps.platformVersion));
+        }
         if (!args.appiumCaps.avd || args.appiumCaps.avd === "") {
             log("No avd name provided! We will not start the emulator!", args.verbose);
             return false;
         }
 
-        if (EmulatorManager._emulatorIds.size === 0) {
-            EmulatorManager.loadEmulatorsIds();
-        }
         let id = EmulatorManager.emulatorId(args.appiumCaps.platformVersion) || "5554";
 
-        const emulator = child_process.spawn(EMULATOR, ["-avd ", args.appiumCaps.avd, "-port ", id, args.emulatorOptions], {
-            shell: true,
-            detached: false
-        });
-
-        let responce: boolean = await EmulatorManager.startEmulatorProcess(args, id);
-        if (responce === true) {
+        const response = await EmulatorManager.startEmulatorProcess(args, id);
+        if (response.response) {
             EmulatorManager.waitUntilEmulatorBoot(id, args.appiumCaps.lt || 180000);
-            EmulatorManager._emulators.set(args.runType, new EmulatorManager(id, args, emulator, true));
-        } else if (responce === false) {
-            try {
-                EmulatorManager.stop(args);
-                responce = await EmulatorManager.startEmulatorProcess(args, id);
-                if (responce) {
-                    EmulatorManager.waitUntilEmulatorBoot(id, args.appiumCaps.lt || 180000);
-                    EmulatorManager._emulators.set(args.runType, new EmulatorManager(id, args, emulator, true));
-                }
-            } catch (error) {
-                log("Couldn't start emulator properly!", true);
-            }
+            EmulatorManager._emulators.set(args.runType, new EmulatorManager(id, args, response.process, !args.reuseDevice));
         } else {
+            EmulatorManager._emulators.set(args.runType, new EmulatorManager(id, args, response.process, !args.reuseDevice));
             log("Emulator is probably already started!", args.verbose);
         }
 
-        return responce
+        return response.response;
     }
 
     public static stop(args: INsCapabilities) {
         if (EmulatorManager._emulators.has(args.runType)) {
             const emu = EmulatorManager._emulators.get(args.runType);
-            executeCommand(ADB + " -s emulator-" + emu.id + " emu kill");
+            if (emu.shouldKill) {
+                EmulatorManager.kill(emu.id);
+            }
         }
+    }
+
+    public static kill(port) {
+        executeCommand(ADB + " -s emulator-" + port + " emu kill");
     }
 
     private static waitUntilEmulatorBoot(deviceId, timeOut: number) {
@@ -117,8 +113,12 @@ export class EmulatorManager {
             detached: false
         });
 
-        const responce: boolean = await waitForOutput(emulator, new RegExp(args.appiumCaps.avd, "i"), new RegExp("Error", "i"), args.appiumCaps.lt || 180000, args.verbose);
-        return responce;
+        let response: boolean = await waitForOutput(emulator, new RegExp(args.appiumCaps.avd, "i"), new RegExp("Error", "i"), args.appiumCaps.lt || 180000, args.verbose);
+        if (response) {
+            response = EmulatorManager.checkIfEmulatorIsRunning(id);
+        }
+
+        return { response: response, process: emulator };
     }
 
     private static loadEmulatorsIds() {

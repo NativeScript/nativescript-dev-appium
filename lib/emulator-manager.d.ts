@@ -15,6 +15,7 @@ export declare class EmulatorManager {
     readonly shouldKill: any;
     static startEmulator(args: INsCapabilities): Promise<boolean>;
     static stop(args: INsCapabilities): void;
+    static kill(port: any): void;
     private static waitUntilEmulatorBoot(deviceId, timeOut);
     /**
      *

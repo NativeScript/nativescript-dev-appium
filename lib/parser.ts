@@ -44,7 +44,7 @@ const config = (() => {
         appPath: options.appPath,
         storage: options.storage || process.env.npm_config_STORAGE || process.env.STORAGE,
         testReports: options.testReports || process.env.npm_config_TEST_REPORTS || process.env.TEST_REPORTS,
-        reuseDevice: options.reuseDevice || process.env.npm_config_REUSE_DEVICEs || process.env.REUSE_DEVICE,
+        reuseDevice: options.reuseDevice || process.env.npm_config_REUSE_DEVICE || process.env.REUSE_DEVICE,
     }
     return config;
 })();

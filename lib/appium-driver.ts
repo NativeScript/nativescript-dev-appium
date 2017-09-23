@@ -24,8 +24,7 @@ import {
 } from "./utils";
 import { INsCapabilities } from "./ins-capabilities";
 import { Point } from "./point";
-import { ImageHelper } from "./image-helper"
-import { EmulatorManager } from "./emulator-manager";
+import { ImageHelper } from "./image-helper";
 import { ImageOptions } from "./image-options"
 import { unlinkSync, writeFileSync } from "fs";
 import * as webdriverio from "webdriverio";
@@ -41,8 +40,6 @@ export class AppiumDriver {
     private _locators: Locator;
     private _logPath: string;
     private _storage: string;
-
-    private static _devices: Map<string, EmulatorManager> = new Map();
 
     private constructor(private _driver: any, private _wd, private webio: any, private _driverConfig, private _args: INsCapabilities) {
         this._elementHelper = new ElementHelper(this._args.appiumCaps.platformName.toLowerCase(), this._args.appiumCaps.platformVersion.toLowerCase());
@@ -260,13 +257,13 @@ export class AppiumDriver {
         if (!this._storage) {
             this._storage = getStorage(this._args);
         }
-        
+
         if (!this._logPath) {
             this._logPath = getReportPath(this._args);
         }
 
         let expectedImage = resolve(this._storage, imageName);
-        
+
         // Firts capture of screen when the expected image is not available
         if (!fileExists(expectedImage)) {
             await this.takeScreenshot(resolve(this._storage, imageName.replace(".", "_actual.")));
@@ -277,9 +274,9 @@ export class AppiumDriver {
 
             while ((Date.now().valueOf() - eventStartTime) <= timeOutSeconds) {
                 let actualImage = await this.takeScreenshot(resolve(this._logPath, imageName.replace(".", "_actual" + "_" + counter + ".")));
-                counter++;                
+                counter++;
             }
-            
+
             return false;
         }
 
@@ -340,10 +337,6 @@ export class AppiumDriver {
             port: port
         };
 
-        if (args.appiumCaps.platformName.toLowerCase() === "android") {
-        }
-
-        await EmulatorManager.startEmulator(args);
         const driver = await wd.promiseChainRemote(driverConfig);
         AppiumDriver.configureLogging(driver, args.verbose);
 
@@ -389,9 +382,7 @@ export class AppiumDriver {
     public async quit() {
         console.log("Killing driver");
         try {
-            await EmulatorManager.stop(this._args);
             await this._driver.quit();
-
         } catch (error) {
         }
         this._isAlive = false;

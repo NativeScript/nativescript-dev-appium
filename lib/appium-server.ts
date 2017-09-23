@@ -1,6 +1,8 @@
 import * as child_process from "child_process";
 import { log, resolve, waitForOutput, shutdown, fileExists, isWin } from "./utils";
 import { INsCapabilities } from "./ins-capabilities";
+import { SimulatorManager } from "./simulator-manager";
+import { EmulatorManager } from "./emulator-manager";
 
 export class AppiumServer {
     private _server: child_process.ChildProcess;
@@ -44,6 +46,15 @@ export class AppiumServer {
     }
 
     public async start() {
+
+        if (this._args.appiumCaps.platformName.toLowerCase() === "android") {
+            await EmulatorManager.startEmulator(this._args);
+        }
+
+        if (this._args.appiumCaps.platformName.toLowerCase().includes("ios")) {
+            await SimulatorManager.startDevice(this._args);
+        }
+
         log("Starting server...", this._args.verbose);
         const logLevel = this._args.verbose === true ? "debug" : "info";
         this._server = child_process.spawn(this._appium, ["-p", this.port.toString(), "--log-level", logLevel], {
@@ -56,7 +67,16 @@ export class AppiumServer {
         return responce;
     }
 
-    public stop() {
+    public async stop() {
+
+        if (this._args.appiumCaps.platformName.toLowerCase() === "android") {
+            await EmulatorManager.stop(this._args);
+        }
+
+        if (this._args.appiumCaps.platformName.toLowerCase().includes("ios")) {
+            await SimulatorManager.stop(this._args);
+        }
+
         return new Promise((resolve, reject) => {
             this._server.on("close", (code, signal) => {
                 log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
