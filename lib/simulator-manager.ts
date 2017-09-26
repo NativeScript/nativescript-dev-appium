@@ -63,7 +63,7 @@ export class SimulatorManager {
                     tempSim.shouldKill = true;
                     tempSim.setState("Booted");
                     SimulatorManager._simulator.set(args.runType, tempSim);
-                    console.log(`Launched simulator with name: ${tempSim.name}; id: ${tempSim.id}; status:${tempSim.state}`);
+                    console.log(`Launched simulator with name: ${tempSim.name}; id: ${tempSim.id}; status: ${tempSim.state}`);
                     args.appiumCaps.udid = id;
 
                     setTimeout(function () {
@@ -81,9 +81,12 @@ export class SimulatorManager {
         if (SimulatorManager._simulator.has(args.runType)) {
             const sim = SimulatorManager._simulator.get(args.runType);
             if (sim.shouldKill) {
+                log(`Killing simulator with id ${sim.id}`, true);
                 executeCommand(SIMCTL + "  shutdown " + sim.id);
+                SimulatorManager.killAll();
             }
         } else {
+            log("Killing all simulators", true);
             SimulatorManager.killAll();
         }
     }

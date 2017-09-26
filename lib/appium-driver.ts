@@ -340,6 +340,10 @@ export class AppiumDriver {
         const driver = await wd.promiseChainRemote(driverConfig);
         AppiumDriver.configureLogging(driver, args.verbose);
 
+        if (args.appPath) {
+            args.appiumCaps.app = args.appPath;
+        }
+
         if (!args.appiumCaps.app) {
             log("Getting caps.app!", args.verbose);
             args.appiumCaps.app = getAppPath(args.appiumCaps.platformName.toLowerCase(), args.runType.toLowerCase());
