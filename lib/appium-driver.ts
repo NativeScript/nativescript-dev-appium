@@ -319,7 +319,7 @@ export class AppiumDriver {
         });
     }
 
-    public async logScreenshoot(fileName: string) {
+    public async logScreenshot(fileName: string) {
         if (!this._logPath && !fileExists(fileName)) {
             this._logPath = getReportPath(this._args);
         }
