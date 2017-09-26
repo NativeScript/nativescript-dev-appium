@@ -41,12 +41,12 @@ export class AppiumDriver {
     private _logPath: string;
     private _storage: string;
 
-    private constructor(private _driver: any, private _wd, private webio: any, private _driverConfig, private _args: INsCapabilities) {
+    private constructor(private _driver: any, private _wd, private _webio: any, private _driverConfig, private _args: INsCapabilities) {
         this._elementHelper = new ElementHelper(this._args.appiumCaps.platformName.toLowerCase(), this._args.appiumCaps.platformVersion.toLowerCase());
         this._imageHelper = new ImageHelper();
         this._isAlive = true;
         this._locators = new Locator(this._args.appiumCaps.platformName, this._args.appiumCaps.platformVersion);
-        this.webio.requestHandler.sessionID = this._driver.sessionID;
+        this._webio.requestHandler.sessionID = this._driver.sessionID;
     }
 
     get capabilities() {
@@ -77,16 +77,16 @@ export class AppiumDriver {
         return this._driver;
     }
 
-    public async wdio() {
-        return await this.webio;
+    public webio() {
+        return this._webio;
     }
 
-    public async wd() {
-        return await this._wd;
+    public wd() {
+        return this._wd;
     }
 
     public async click(args) {
-        return await this.webio.click(args);
+        return await this._webio.click(args);
     }
 
     public async navBack() {
@@ -100,7 +100,7 @@ export class AppiumDriver {
      */
     public async findElementByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
         const searchM = "waitForElementByXPath";
-        return await new UIElement(await this._driver.waitForElementByXPath(xPath, waitForElement), this._driver, this._wd, this.webio, searchM, xPath);
+        return await new UIElement(await this._driver.waitForElementByXPath(xPath, waitForElement), this._driver, this._wd, this._webio, searchM, xPath);
     }
 
     /**
@@ -141,7 +141,7 @@ export class AppiumDriver {
      * @param waitForElement 
      */
     public async findElementByClassName(className: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
-        return new UIElement(await this._driver.waitForElementByClassName(className, waitForElement), this._driver, this._wd, this.webio, "waitForElementByClassName", className);
+        return new UIElement(await this._driver.waitForElementByClassName(className, waitForElement), this._driver, this._wd, this._webio, "waitForElementByClassName", className);
     }
 
     /**
@@ -160,7 +160,7 @@ export class AppiumDriver {
      * @param waitForElement 
      */
     public async findElementByAccessibilityId(id, waitForElement: number = AppiumDriver.defaultWaitTime) {
-        return new UIElement(await this._driver.waitForElementByAccessibilityId(id, waitForElement), this._driver, this._wd, this.webio, "waitForElementByAccessibilityId", id);
+        return new UIElement(await this._driver.waitForElementByAccessibilityId(id, waitForElement), this._driver, this._wd, this._webio, "waitForElementByAccessibilityId", id);
     }
 
     /**
@@ -181,7 +181,7 @@ export class AppiumDriver {
      * @param xOffset 
      */
     public async scroll(direction, SwipeDirection, y: number, x: number, yOffset: number, xOffset: number = 0) {
-        scroll(this._wd, this._driver, direction, this.webio.isIOS, y, x, yOffset, xOffset, this._args.verbose);
+        scroll(this._wd, this._driver, direction, this._webio.isIOS, y, x, yOffset, xOffset, this._args.verbose);
     }
 
     /**
@@ -200,10 +200,10 @@ export class AppiumDriver {
             try {
                 el = await element();
                 if (!(await el.isDisplayed())) {
-                    await scroll(this._wd, this._driver, direction, this.webio.isIOS, startPoint.y, startPoint.x, yOffset, xOffset, this._args.verbose);
+                    await scroll(this._wd, this._driver, direction, this._webio.isIOS, startPoint.y, startPoint.x, yOffset, xOffset, this._args.verbose);
                 }
             } catch (error) {
-                await scroll(this._wd, this._driver, direction, this.webio.isIOS, startPoint.y, startPoint.x, yOffset, xOffset, this._args.verbose);
+                await scroll(this._wd, this._driver, direction, this._webio.isIOS, startPoint.y, startPoint.x, yOffset, xOffset, this._args.verbose);
             }
             if (el !== null && (await el.isDisplayed())) {
                 break;
@@ -227,7 +227,7 @@ export class AppiumDriver {
      */
     public async swipe(y: number, x: number, yOffset: number, inertia: number = 250, xOffset: number = 0) {
         let direction = 1;
-        if (this.webio.isIOS) {
+        if (this._webio.isIOS) {
             direction = -1;
         }
 
@@ -242,7 +242,7 @@ export class AppiumDriver {
     }
 
     public async source() {
-        return await this.webio.source();
+        return await this._webio.source();
     }
 
     public async sessionId() {
@@ -366,7 +366,7 @@ export class AppiumDriver {
 
         log("Creating driver!", args.verbose);
 
-        const webio = webdriverio.remote({
+        const _webio = webdriverio.remote({
             baseUrl: driverConfig.host,
             port: driverConfig.port,
             logLevel: 'warn',
@@ -374,7 +374,7 @@ export class AppiumDriver {
         });
 
         await driver.init(args.appiumCaps);
-        return new AppiumDriver(driver, wd, webio, driverConfig, args);
+        return new AppiumDriver(driver, wd, _webio, driverConfig, args);
     }
 
     public async resetApp() {
@@ -383,7 +383,7 @@ export class AppiumDriver {
 
     public async inint() {
         await this._driver.init(this._args.appiumCaps);
-        this.webio.requestHandler.sessionID = this._driver.sessionID;
+        this._webio.requestHandler.sessionID = this._driver.sessionID;
         this._isAlive = true;
     }
 
