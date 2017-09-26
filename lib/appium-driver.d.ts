@@ -9,7 +9,7 @@ import { Point } from "./point";
 export declare class AppiumDriver {
     private _driver;
     private _wd;
-    private webio;
+    private _webio;
     private _driverConfig;
     private _args;
     private static defaultWaitTime;
@@ -29,8 +29,8 @@ export declare class AppiumDriver {
     readonly locators: Locator;
     readonly isAlive: boolean;
     readonly driver: any;
-    wdio(): Promise<any>;
-    wd(): Promise<any>;
+    webio(): any;
+    wd(): any;
     click(args: any): Promise<any>;
     navBack(): Promise<any>;
     /**
@@ -120,6 +120,7 @@ export declare class AppiumDriver {
     takeScreenshot(fileName: string): Promise<string>;
     logScreenshoot(fileName: string): Promise<string>;
     static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
+    resetApp(): Promise<void>;
     inint(): Promise<void>;
     quit(): Promise<void>;
     private convertArrayToUIElements(array, searchM, args);
