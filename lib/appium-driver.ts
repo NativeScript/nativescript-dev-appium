@@ -377,6 +377,10 @@ export class AppiumDriver {
         return new AppiumDriver(driver, wd, webio, driverConfig, args);
     }
 
+    public async resetApp() {
+        await this._driver.resetApp();
+    }
+
     public async inint() {
         await this._driver.init(this._args.appiumCaps);
         this.webio.requestHandler.sessionID = this._driver.sessionID;
