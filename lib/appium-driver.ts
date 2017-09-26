@@ -404,7 +404,7 @@ export class AppiumDriver {
             return arrayOfUIElements;
         }
         array.forEach(async element => {
-            arrayOfUIElements.push(new UIElement(await element, this._driver, this._wd, this.wdio, searchM, args, i));
+            arrayOfUIElements.push(new UIElement(await element, this._driver, this._wd, this._webio, searchM, args, i));
             i++;
         });
 
