@@ -75,7 +75,7 @@ export class NsCapabilities implements INsCapabilities {
     }
 
     private checkMendatoryCapabiliies() {
-        if (!fileExists(this._appiumCaps.appPath)) {
+        if (!fileExists(this._appiumCaps.app)) {
             this.exceptions.push("The application folder doesn't exist!");
         }
 
