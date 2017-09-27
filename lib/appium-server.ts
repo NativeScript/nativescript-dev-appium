@@ -1,5 +1,5 @@
 import * as child_process from "child_process";
-import { log, resolve, waitForOutput, shutdown, fileExists, isWin } from "./utils";
+import { log, resolve, waitForOutput, shutdown, fileExists, isWin, executeCommand } from "./utils";
 import { INsCapabilities } from "./ins-capabilities";
 import { SimulatorManager } from "./simulator-manager";
 import { EmulatorManager } from "./emulator-manager";
@@ -132,7 +132,14 @@ export class AppiumServer {
             log("Using project-local Appium binary.", this._args.verbose);
             appium = projectAppiumBinary;
         } else {
-            log("Using global Appium binary.", this._args.verbose);
+            const result = executeCommand("npm list -g");
+            if (result.includes("appium")) {
+                log("Using global Appium binary.", this._args.verbose);
+            } else if (result.includes("appium")) {
+                const msg = "Appium not found. Please install appium before runnig tests!";
+                log(msg, this._args.verbose);
+                new Error(msg);
+            }
         }
 
         this._appium = appium;

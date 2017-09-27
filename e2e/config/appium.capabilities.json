@@ -7,8 +7,8 @@
         "lt": 60000,
         "appActivity": "com.tns.NativeScriptActivity",
         "newCommandTimeout": 720,
-        "noReset": false,
-        "fullReset": true,
+        "noReset": true,
+        "fullReset": false,
         "app": ""
     },
     "android21": {
@@ -19,8 +19,8 @@
         "lt": 60000,
         "appActivity": "com.tns.NativeScriptActivity",
         "newCommandTimeout": 720,
-        "noReset": false,
-        "fullReset": true,
+        "noReset": true,
+        "fullReset": false,
         "app": ""
     },
     "android23": {
@@ -31,8 +31,8 @@
         "lt": 60000,
         "appActivity": "com.tns.NativeScriptActivity",
         "newCommandTimeout": 720,
-        "noReset": false,
-        "fullReset": true,
+        "noReset": true,
+        "fullReset": false,
         "app": ""
     },
     "android24": {
@@ -43,8 +43,8 @@
         "lt": 60000,
         "appActivity": "com.tns.NativeScriptActivity",
         "newCommandTimeout": 720,
-        "noReset": false,
-        "fullReset": true,
+        "noReset": true,
+        "fullReset": false,
         "app": ""
     },
     "android25": {
@@ -55,8 +55,8 @@
         "lt": 60000,
         "appActivity": "com.tns.NativeScriptActivity",
         "newCommandTimeout": 720,
-        "noReset": false,
-        "fullReset": true,
+        "noReset": true,
+        "fullReset": false,
         "app": ""
     },
     "android26": {
@@ -67,8 +67,8 @@
         "lt": 60000,
         "appActivity": "com.tns.NativeScriptActivity",
         "newCommandTimeout": 720,
-        "noReset": false,
-        "fullReset": true,
+        "noReset": true,
+        "fullReset": false,
         "app": ""
     },
     "sim.iPhone7.iOS100": {

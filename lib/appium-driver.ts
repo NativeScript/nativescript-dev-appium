@@ -340,15 +340,6 @@ export class AppiumDriver {
         const driver = await wd.promiseChainRemote(driverConfig);
         AppiumDriver.configureLogging(driver, args.verbose);
 
-        if (args.appPath) {
-            args.appiumCaps.app = args.appPath;
-        }
-
-        if (!args.appiumCaps.app) {
-            log("Getting caps.app!", args.verbose);
-            args.appiumCaps.app = getAppPath(args.appiumCaps.platformName.toLowerCase(), args.runType.toLowerCase());
-        }
-
         if (args.isSauceLab) {
             const sauceUser = process.env.SAUCE_USER;
             const sauceKey = process.env.SAUCE_KEY;
@@ -362,6 +353,7 @@ export class AppiumDriver {
             }
 
             args.appiumCaps.app = "sauce-storage:" + args.appiumCaps.app
+            console.log("Using Sauce Labs. The application path is changed to: " + args.appiumCaps.app);
         }
 
         log("Creating driver!", args.verbose);
