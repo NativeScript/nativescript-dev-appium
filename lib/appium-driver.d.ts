@@ -119,6 +119,7 @@ export declare class AppiumDriver {
     compareScreen(imageName: string, timeOutSeconds?: number, tollerance?: number): Promise<boolean>;
     takeScreenshot(fileName: string): Promise<string>;
     logScreenshot(fileName: string): Promise<string>;
+    logPageSource(fileName: string): Promise<void>;
     static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
     resetApp(): Promise<void>;
     inint(): Promise<void>;

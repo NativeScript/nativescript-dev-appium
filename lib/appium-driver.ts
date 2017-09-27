@@ -335,13 +335,13 @@ export class AppiumDriver {
         if (!this._logPath && !fileExists(fileName)) {
             this._logPath = getReportPath(this._args);
         }
-        if (!fileName.endsWith("xml")) {
-            fileName = fileName.concat("xml");
+        if (!fileName.endsWith(".xml")) {
+            fileName = fileName.concat(".xml");
         }
 
         const path = resolve(this._logPath, fileName);
         const xml = await this.source();
-        writeFileSync(path, xml, 'base64');
+        writeFileSync(path, xml.value, 'utf8');
     }
 
     public static async createAppiumDriver(port: number, args: INsCapabilities) {
