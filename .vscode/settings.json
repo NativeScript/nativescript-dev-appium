@@ -1,7 +1,5 @@
 {
     "typescript.check.tscVersion": false,
-    "window.zoomLevel": 0,
-    "workbench.iconTheme": "vscode-icons",
     "vsicons.dontShowNewVersionMessage": true,
     "files.exclude": {
         "**/.git": true,

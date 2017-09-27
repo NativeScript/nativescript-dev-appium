@@ -74,6 +74,10 @@ export declare class UIElement {
  * @param xOffset
  */
     drag(direction: Direction, yOffset: number, xOffset?: number): Promise<void>;
+    /**
+     * Click and hold over an element
+     */
+    hold(): Promise<void>;
     log(): Promise<void>;
     refetch(): Promise<any>;
 }

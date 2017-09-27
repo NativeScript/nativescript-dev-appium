@@ -191,6 +191,18 @@ export class UIElement {
         await this._driver.sleep(150);
     }
 
+    /**
+     * Click and hold over an element
+     */
+    public async hold() {
+        let action = new this._wd.TouchAction(this._driver);
+        action
+            .longPress({el: await this.element()})
+            .release();
+        await action.perform();
+        await this._driver.sleep(150);
+    }
+
     public async log() {
         console.dir(await this.element());
     }

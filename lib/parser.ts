@@ -39,13 +39,14 @@ const config = (() => {
         testFolder: options.testFolder || process.env.npm_config_testFolder || "e2e",
         runType: options.runType || process.env.npm_config_runType,
         appiumCapsLocation: options.appiumCapsLocation || join(projectDir, options.testFolder, "config", capabilitiesName),
-        isSauceLab: options.sauceLab,
+        isSauceLab: options.sauceLab || process.env.npm_config_sauceLab,
         verbose: options.verbose || process.env.npm_config_loglevel === "verbose",
-        appPath: options.appPath,
+        appPath: options.appPath || process.env.npm_config_appPath,
         storage: options.storage || process.env.npm_config_STORAGE || process.env.STORAGE,
         testReports: options.testReports || process.env.npm_config_TEST_REPORTS || process.env.TEST_REPORTS,
         reuseDevice: options.reuseDevice || process.env.npm_config_REUSE_DEVICE || process.env.REUSE_DEVICE,
     }
+         
     return config;
 })();
 

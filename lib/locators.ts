@@ -41,7 +41,7 @@ export class Locator {
     private loadAndroidElements() {
         this._elementsList.set("activityindicator", "android.widget.ProgressBar");
         this._elementsList.set("button", "android.widget.Button");
-        this._elementsList.set("image", "org.nativescript.widgets.ImageView");
+        this._elementsList.set("image", "org.nativescript.widget.ImageView");
         this._elementsList.set("image-button", "android.widget.ImageButton");
         this._elementsList.set("imagebutton", "android.widget.ImageButton");
         this._elementsList.set("datepicker", "android.widget.DatePicker");
@@ -78,7 +78,7 @@ export class Locator {
         this._elementsList.set("imagebutton", this.createIosElement("Button"));
         this._elementsList.set("datepicker", this.createIosElement("DatePicker"));
         this._elementsList.set("htmlview", this.createIosElement("TextView"));
-        this._elementsList.set("image", this.createIosElement("ImageView"));
+        this._elementsList.set("image", this.createIosElement("Image"));
         this._elementsList.set("label", this.createIosElement("StaticText"));
         this._elementsList.set("absolutelayout", this.createIosElement("View"));
         this._elementsList.set("docklayout", this.createIosElement("View"));

@@ -35,6 +35,6 @@ export declare class NsCapabilities implements INsCapabilities {
     appPath: string;
     readonly emulatorOptions: string;
     private resolveAppPath();
-    private checkMendatoryCapabiliies();
+    private checkMandatoryCapabiliies();
     private throwExceptions();
 }

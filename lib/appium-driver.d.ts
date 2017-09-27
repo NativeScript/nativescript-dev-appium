@@ -12,9 +12,9 @@ export declare class AppiumDriver {
     private _webio;
     private _driverConfig;
     private _args;
-    private static defaultWaitTime;
     private static pngFileExt;
     private static partialUrl;
+    private _defaultWaitTime;
     private _elementHelper;
     private _imageHelper;
     private _isAlive;
@@ -22,6 +22,7 @@ export declare class AppiumDriver {
     private _logPath;
     private _storage;
     private constructor();
+    defaultWaitTime: number;
     readonly capabilities: any;
     readonly platformName: any;
     readonly platformVesrion: any;
