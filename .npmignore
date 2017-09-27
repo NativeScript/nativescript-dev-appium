@@ -1,9 +1,9 @@
 node_modules
 *.tgz
-*.ts
-**/*.ts
+/**/*.ts
 /**/*.map
 !/**/*.d.ts
 e2e/reports
+e2e/**/*.js
 !e2e/*.ts
 publish-next.js

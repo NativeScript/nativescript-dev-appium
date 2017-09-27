@@ -1,6 +1,6 @@
 {
     "typescript.check.tscVersion": false,
-    "window.zoomLevel": 1,
+    "window.zoomLevel": 0,
     "workbench.iconTheme": "vscode-icons",
     "vsicons.dontShowNewVersionMessage": true,
     "files.exclude": {
@@ -9,8 +9,9 @@
         "**/.hg": true,
         "**/CVS": true,
         "**/.DS_Store": true,
-        "**/lib/*.js": true,
-        "**/lib/*.map": true,
-        "**/lib/*.d.ts": true
+        "**/*.js": true,
+        "**/*.map": true,
+        "**/*.d.ts": true,
+        "postinstall.js": false
     }
 }

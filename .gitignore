@@ -1,9 +1,7 @@
+.DS_Store
 node_modules
 *.tgz
-**/lib/**/*.js
-!**/lib/package-json-helper.js
-!**/lib/utils.js
+**/*.js
 **/*.map
-index.js
 postinstall.d.ts
 e2e/reports
