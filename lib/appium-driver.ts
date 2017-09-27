@@ -331,6 +331,19 @@ export class AppiumDriver {
         return imgPath;
     }
 
+    public async logPageSource(fileName: string) {
+        if (!this._logPath && !fileExists(fileName)) {
+            this._logPath = getReportPath(this._args);
+        }
+        if (!fileName.endsWith("xml")) {
+            fileName = fileName.concat("xml");
+        }
+
+        const path = resolve(this._logPath, fileName);
+        const xml = await this.source();
+        writeFileSync(path, xml, 'base64');
+    }
+
     public static async createAppiumDriver(port: number, args: INsCapabilities) {
         let driverConfig: any = {
             host: "localhost",
