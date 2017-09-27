@@ -5,14 +5,19 @@ import * as parser from "./parser";
 
 export function resolveCapabilities(capsLocation: string, runType: string, projectDir: string, verbose: boolean = false): {} {
     let caps;
-    let customCapabilitiesConfigs: any = searchCustomCapabilities(capsLocation, projectDir);
+    let customCapabilitiesConfigs: any;
+    if (utils.fileExists(capsLocation)) {
+        customCapabilitiesConfigs = setCustomCapabilities(capsLocation, verbose);
+    } else {
+        customCapabilitiesConfigs = searchCustomCapabilities(capsLocation, projectDir);
+    }
+
     if (customCapabilitiesConfigs) {
         const customCapabilities = JSON.parse(customCapabilitiesConfigs);
         utils.log(customCapabilities, verbose);
 
         caps = customCapabilities[runType];
         if (!caps) {
-            throw new Error("Not suitable runType!!!");
         }
     } else {
         throw new Error("No capabilities found!!!");

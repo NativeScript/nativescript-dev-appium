@@ -39,7 +39,8 @@ export class NsCapabilities implements INsCapabilities {
         this._isSauceLab = parser.isSauceLab;
         this._appiumCaps = resolveCapabilities(this._appiumCapsLocation, parser.runType, parser.projectDir);
         this.resolveAppPath();
-        this.checkMendatoryCapabiliies()
+        this.checkMendatoryCapabiliies();
+        this.throwExceptions();
     }
 
     get projectDir() { return this._projectDir; }
@@ -78,19 +79,19 @@ export class NsCapabilities implements INsCapabilities {
             this.exceptions.push("The application folder doesn't exist!");
         }
 
-        if (!this._appiumCaps._runType) {
+        if (!this._runType) {
             this.exceptions.push("Missing runType! Please select one from appium capabilities file!");
         }
 
-        if (this._appiumCaps.platformName) {
+        if (!this._appiumCaps.platformName) {
             this.exceptions.push("Platform name is missing! Please, check appium capabilities file!");
         }
 
-        if (this._appiumCaps.platformName) {
+        if (!this._appiumCaps.platformName) {
             this.exceptions.push("Platform version is missing! Please, check appium capabilities file!");
         }
 
-        if (this._appiumCaps.deviceName && this._appiumCaps.uidid) {
+        if (!this._appiumCaps.deviceName && !this._appiumCaps.uidid) {
             this.exceptions.push("The device name or uidid are missing! Please, check appium capabilities file!");
         }
     }
