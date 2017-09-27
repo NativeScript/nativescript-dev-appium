@@ -3,7 +3,7 @@ node_modules
 **/lib/**/*.js
 !**/lib/package-json-helper.js
 !**/lib/utils.js
-**/lib/**/*.map
-*.map
+**/*.map
 index.js
 postinstall.d.ts
+e2e/reports

@@ -1,9 +1,8 @@
 node_modules
 *.tgz
 *.ts
-lib/*.ts
+**/*.ts
+/**/*.map
+!/**/*.d.ts
+e2e/reports
 !e2e/*.ts
-**/lib/**/*.map
-!**/lib/**/*.d.ts
-*.map
-!*.d.ts
