@@ -73,7 +73,7 @@ export class AppiumServer {
             await EmulatorManager.stop(this._args);
         }
 
-        if (!this._args.isSauceLab && this._args.appiumCaps.platformName.toLowerCase().includes("ios")) {
+        if (!this._args.isSauceLab && !this._args.reuseDevice && this._args.appiumCaps.platformName.toLowerCase().includes("ios")) {
             await SimulatorManager.stop(this._args);
         }
 
