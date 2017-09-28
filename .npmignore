@@ -7,3 +7,4 @@ e2e/reports
 e2e/**/*.js
 !e2e/*.ts
 publish-next.js
+.vscode

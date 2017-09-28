@@ -5,3 +5,4 @@ node_modules
 **/*.map
 postinstall.d.ts
 e2e/reports
+.vscode
