@@ -150,7 +150,7 @@ export function contains(source, check) {
     return source.indexOf(check) >= 0;
 }
 
-// Search for files and folders. If shoud not match, than the filter will skip this words. Could be use with wildcards
+// Search for files and folders. If should not match, than the filter will skip this words. Could be use with wildcards
 export function searchFiles(folder, words, recursive: boolean = true, files = new Array()): Array<string> {
     const rootFiles = getAllFileNames(folder);
     const regex = createRegexPattern(words);
@@ -293,7 +293,7 @@ export function getAppPath(platform, runType) {
         }
     } else {
         throw new Error("No 'app' capability provided and incorrect 'runType' convention used: " + runType +
-            ". In order to automatically search and locate app package please use 'android','ios-device','ios-simulator' in your 'runType' option. E.g --runType android23, --runType ios-simulator10iPhone6");
+            ". In order to automatically search and locate app package please use 'android','device','sim' in your 'runType' option. E.g --runType android25, --runType sim11iPhone6");
     }
 };
 

@@ -33,7 +33,7 @@ export function searchCustomCapabilities(capabilitiesLocation, projectDir, verbo
     }
 
     // search for default capabilites
-    let customCapabilitiesLocation = utils.searchFiles(projectDir, parser.capabilitiesName)[0];
+    let customCapabilitiesLocation = utils.searchFiles(projectDir, parser.capabilitiesName, false)[0];
     if (utils.fileExists(customCapabilitiesLocation)) {
         return setCustomCapabilities(customCapabilitiesLocation, verbose);
     }

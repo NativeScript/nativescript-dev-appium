@@ -51,7 +51,7 @@ export class AppiumServer {
             await EmulatorManager.startEmulator(this._args);
         }
 
-        if (this._args.appiumCaps.platformName.toLowerCase().includes("ios")) {
+        if (!this._args.isSauceLab && this._args.appiumCaps.platformName.toLowerCase().includes("ios")) {
             await SimulatorManager.startDevice(this._args);
         }
 
@@ -62,9 +62,9 @@ export class AppiumServer {
             detached: false
         });
 
-        const responce: boolean = await waitForOutput(this._server, /listener started/, /Error: listen/, 60000, this._args.verbose);
+        const response: boolean = await waitForOutput(this._server, /listener started/, /Error: listen/, 60000, this._args.verbose);
 
-        return responce;
+        return response;
     }
 
     public async stop() {
@@ -73,7 +73,7 @@ export class AppiumServer {
             await EmulatorManager.stop(this._args);
         }
 
-        if (this._args.appiumCaps.platformName.toLowerCase().includes("ios")) {
+        if (!this._args.isSauceLab && this._args.appiumCaps.platformName.toLowerCase().includes("ios")) {
             await SimulatorManager.stop(this._args);
         }
 

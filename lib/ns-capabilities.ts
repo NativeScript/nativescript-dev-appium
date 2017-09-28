@@ -39,7 +39,7 @@ export class NsCapabilities implements INsCapabilities {
         this._isSauceLab = parser.isSauceLab;
         this._appiumCaps = resolveCapabilities(this._appiumCapsLocation, parser.runType, parser.projectDir);
         this.resolveAppPath();
-        this.checkMendatoryCapabiliies();
+        this.checkMandatoryCapabiliies();
         this.throwExceptions();
     }
 
@@ -70,12 +70,11 @@ export class NsCapabilities implements INsCapabilities {
         if (!this._appiumCaps.app) {
             this._appiumCaps.app = getAppPath(this._appiumCaps.platformName.toLowerCase(), this._runType.toLowerCase());
         }
-
         console.log("Application full path: " + this._appiumCaps.app);
     }
 
-    private checkMendatoryCapabiliies() {
-        if (!fileExists(this._appiumCaps.app)) {
+    private checkMandatoryCapabiliies() {
+        if (!this.isSauceLab && !fileExists(this._appiumCaps.app)) {
             this.exceptions.push("The application folder doesn't exist!");
         }
 

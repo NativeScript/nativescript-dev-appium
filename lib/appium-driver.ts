@@ -6,7 +6,6 @@ chai.use(chaiAsPromised);
 export var should = chai.should();
 chaiAsPromised.transferPromiseness = wd.transferPromiseness;
 
-import { searchCustomCapabilities } from "./capabilities-helper";
 import { ElementHelper } from "./element-helper";
 import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
@@ -30,10 +29,10 @@ import { unlinkSync, writeFileSync } from "fs";
 import * as webdriverio from "webdriverio";
 
 export class AppiumDriver {
-    private static defaultWaitTime: number = 5000;
     private static pngFileExt = '.png';
     private static partialUrl = "/wd/hub/session/";
 
+    private _defaultWaitTime: number = 5000;
     private _elementHelper: ElementHelper;
     private _imageHelper: ImageHelper;
     private _isAlive: boolean = false;
@@ -47,6 +46,14 @@ export class AppiumDriver {
         this._isAlive = true;
         this._locators = new Locator(this._args.appiumCaps.platformName, this._args.appiumCaps.platformVersion);
         this._webio.requestHandler.sessionID = this._driver.sessionID;
+    }
+
+    get defaultWaitTime(): number {
+        return this._defaultWaitTime;
+    }
+
+    set defaultWaitTime(waitTime: number) {
+        this._defaultWaitTime = waitTime;
     }
 
     get capabilities() {
@@ -98,7 +105,7 @@ export class AppiumDriver {
      * @param xPath 
      * @param waitForElement 
      */
-    public async findElementByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
+    public async findElementByXPath(xPath: string, waitForElement: number = this.defaultWaitTime) {
         const searchM = "waitForElementByXPath";
         return await new UIElement(await this._driver.waitForElementByXPath(xPath, waitForElement), this._driver, this._wd, this._webio, searchM, xPath);
     }
@@ -108,8 +115,8 @@ export class AppiumDriver {
      * @param xPath
      * @param waitForElement 
      */
-    public async findElementsByXPath(xPath: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
-        return await this.convertArrayToUIElements(await this._driver.waitForElementsByXPath(xPath, waitForElement), "waitForElementByXPath", xPath);
+    public async findElementsByXPath(xPath: string, waitForElement: number = this.defaultWaitTime) {
+        return await this.convertArrayToUIElements(await this._driver.waitForElementsByXPath(xPath, waitForElement), "waitForElementsByXPath", xPath);
     }
 
     /**
@@ -118,7 +125,7 @@ export class AppiumDriver {
      * @param match 
      * @param waitForElement 
      */
-    public async findElementByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = AppiumDriver.defaultWaitTime) {
+    public async findElementByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = this.defaultWaitTime) {
         const shouldMatch = match === SearchOptions.exact ? true : false;
         return await this.findElementByXPath(this._elementHelper.getXPathByText(text, shouldMatch), waitForElement);
     }
@@ -129,7 +136,7 @@ export class AppiumDriver {
      * @param match 
      * @param waitForElement 
      */
-    public async findElementsByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = AppiumDriver.defaultWaitTime) {
+    public async findElementsByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = this.defaultWaitTime) {
         const shouldMatch = match === SearchOptions.exact ? true : false;
         return await this.findElementsByXPath(this._elementHelper.getXPathByText(text, shouldMatch), waitForElement);
     }
@@ -140,7 +147,7 @@ export class AppiumDriver {
      * @param className 
      * @param waitForElement 
      */
-    public async findElementByClassName(className: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
+    public async findElementByClassName(className: string, waitForElement: number = this.defaultWaitTime) {
         return new UIElement(await this._driver.waitForElementByClassName(className, waitForElement), this._driver, this._wd, this._webio, "waitForElementByClassName", className);
     }
 
@@ -150,8 +157,8 @@ export class AppiumDriver {
      * @param className 
      * @param waitForElement 
      */
-    public async findElementsByClassName(className: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
-        return await this.convertArrayToUIElements(await this._driver.waitForElementsByClassName(className, waitForElement), "waitForElementByClassName", className);
+    public async findElementsByClassName(className: string, waitForElement: number = this.defaultWaitTime) {
+        return await this.convertArrayToUIElements(await this._driver.waitForElementsByClassName(className, waitForElement), "waitForElementsByClassName", className);
     }
 
     /**
@@ -159,7 +166,7 @@ export class AppiumDriver {
      * @param id 
      * @param waitForElement 
      */
-    public async findElementByAccessibilityId(id, waitForElement: number = AppiumDriver.defaultWaitTime) {
+    public async findElementByAccessibilityId(id, waitForElement: number = this.defaultWaitTime) {
         return new UIElement(await this._driver.waitForElementByAccessibilityId(id, waitForElement), this._driver, this._wd, this._webio, "waitForElementByAccessibilityId", id);
     }
 
@@ -168,7 +175,7 @@ export class AppiumDriver {
      * @param id 
      * @param waitForElement 
      */
-    public async findElementsByAccessibilityId(id: string, waitForElement: number = AppiumDriver.defaultWaitTime) {
+    public async findElementsByAccessibilityId(id: string, waitForElement: number = this.defaultWaitTime) {
         return await this.convertArrayToUIElements(await this._driver.waitForElementsByAccessibilityId(id, waitForElement), "waitForElementsByAccessibilityId", id);
     }
 
@@ -350,9 +357,6 @@ export class AppiumDriver {
             port: port
         };
 
-        const driver = await wd.promiseChainRemote(driverConfig);
-        AppiumDriver.configureLogging(driver, args.verbose);
-
         if (args.isSauceLab) {
             const sauceUser = process.env.SAUCE_USER;
             const sauceKey = process.env.SAUCE_KEY;
@@ -361,12 +365,11 @@ export class AppiumDriver {
                 throw new Error("Sauce Labs Username or Access Key is missing! Check environment variables for SAUCE_USER and SAUCE_KEY !!!");
             }
 
-            driverConfig = {
-                host: "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub"
-            }
+            driverConfig = "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub";
+            
 
-            args.appiumCaps.app = "sauce-storage:" + args.appiumCaps.app
-            console.log("Using Sauce Labs. The application path is changed to: " + args.appiumCaps.app);
+            args.appiumCaps.app = "sauce-storage:" + args.appPath;
+            console.log("Using Sauce Labs. The application path is changed to: " + args.appPath);
         }
 
         log("Creating driver!", args.verbose);
@@ -378,6 +381,8 @@ export class AppiumDriver {
             desiredCapabilities: args.appiumCaps
         });
 
+        const driver = await wd.promiseChainRemote(driverConfig);
+        AppiumDriver.configureLogging(driver, args.verbose);
         await driver.init(args.appiumCaps);
         return new AppiumDriver(driver, wd, _webio, driverConfig, args);
     }
