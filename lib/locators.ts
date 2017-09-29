@@ -41,7 +41,7 @@ export class Locator {
     private loadAndroidElements() {
         this._elementsList.set("activityindicator", "android.widget.ProgressBar");
         this._elementsList.set("button", "android.widget.Button");
-        this._elementsList.set("image", "org.nativescript.widget.ImageView");
+        this._elementsList.set("image", "android.widget.ImageView");
         this._elementsList.set("image-button", "android.widget.ImageButton");
         this._elementsList.set("imagebutton", "android.widget.ImageButton");
         this._elementsList.set("datepicker", "android.widget.DatePicker");

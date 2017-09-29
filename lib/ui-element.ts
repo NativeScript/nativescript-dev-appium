@@ -209,7 +209,7 @@ export class UIElement {
 
     public async refetch() {
         try {
-            if (this._index && this._index !== null) {
+            if (this._index != null) {
                 return (await this._driver[this._searchMethod](this._searchParams, 1000))[this._index];
             } else {
                 return await this._driver[this._searchMethod](this._searchParams, 1000);
