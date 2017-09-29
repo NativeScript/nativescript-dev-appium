@@ -1,6 +1,6 @@
 # nativescript-dev-appium
 
-A helper package to make running E2E [Appium](http://appium.io) tests in NativeScript apps easier.
+A package to help with writing and executing e2e [Appium](http://appium.io) tests.
 
 ## <a name='usage'></a>Usage
 
