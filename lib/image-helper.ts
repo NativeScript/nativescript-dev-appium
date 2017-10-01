@@ -45,7 +45,7 @@ export class ImageHelper {
                         console.log('Found ' + result.differences + ' differences.');
                         return resolve(true);
                     } else {
-                        message = "Screen compare failed!"
+                        message = "Screen compare failed!";
                         console.log(message);
                         console.log('Found ' + result.differences + ' differences.');
                         console.log('Diff image: ' + diffImage);

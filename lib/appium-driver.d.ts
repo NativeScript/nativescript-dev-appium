@@ -25,7 +25,7 @@ export declare class AppiumDriver {
     defaultWaitTime: number;
     readonly capabilities: any;
     readonly platformName: any;
-    readonly platformVesrion: any;
+    readonly platformVersion: any;
     readonly elementHelper: ElementHelper;
     readonly locators: Locator;
     readonly isAlive: boolean;
@@ -88,17 +88,16 @@ export declare class AppiumDriver {
     findElementsByAccessibilityId(id: string, waitForElement?: number): Promise<UIElement[]>;
     /**
      * Scrolls from point to other point with minimum inertia
+     * @param direction
      * @param y
      * @param x
      * @param yOffset
-     * @param duration
      * @param xOffset
      */
-    scroll(direction: any, SwipeDirection: any, y: number, x: number, yOffset: number, xOffset?: number): Promise<void>;
+    scroll(direction: Direction, y: number, x: number, yOffset: number, xOffset?: number): Promise<void>;
     /**
      *
      * @param direction
-     * @param SwipeDirection
      * @param element
      * @param startPoint
      * @param yOffset
@@ -123,7 +122,7 @@ export declare class AppiumDriver {
     logPageSource(fileName: string): Promise<void>;
     static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
     resetApp(): Promise<void>;
-    inint(): Promise<void>;
+    init(): Promise<void>;
     quit(): Promise<void>;
     private convertArrayToUIElements(array, searchM, args);
     private static configureLogging(driver, verbose);
