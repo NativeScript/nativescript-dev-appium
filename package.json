@@ -6,6 +6,10 @@
   "directories": {
     "lib": "./lib"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NativeScript/nativescript-dev-appium.git"
+  },
   "keywords": [
     "nativescript",
     "appium",
@@ -30,8 +34,7 @@
     "portastic": "^1.0.1",
     "wd": "^1.4.0",
     "webdriverio": "^4.8.0",
-    "yargs": "^8.0.2",
-    "tslib": "^1.7.1"
+    "yargs": "^8.0.2"
   },
   "author": "Telerik",
   "license": "MIT",

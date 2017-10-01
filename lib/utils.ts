@@ -68,19 +68,6 @@ export function isFile(fullName) {
     return false;
 }
 
-export function executeNpmInstall(cwd) {
-    let spawnArgs = [];
-    let command = "";
-    if (isWin()) {
-        command = "cmd.exe";
-        spawnArgs = ["/c", "npm", "install"];
-    } else {
-        command = "npm";
-        spawnArgs = ["install"];
-    }
-    const npm = childProcess.spawnSync(command, spawnArgs, { cwd: cwd, stdio: "inherit" });
-}
-
 export function copy(src, dest, verbose) {
     if (!fileExists(src)) {
         return Error("Cannot copy: " + src + ". Source doesn't exist: " + dest);
