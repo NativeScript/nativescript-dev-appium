@@ -222,7 +222,7 @@ export function executeCommand(args, cwd?): string {
 
     const output = childProcess.spawnSync("", args.split(" "), {
         shell: true,
-        cwd: process.cwd(),
+        cwd: cwd,
         encoding: "UTF8"
     });
 
