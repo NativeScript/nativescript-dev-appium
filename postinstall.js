@@ -20,18 +20,17 @@ const isTypeScriptProject =
     );
 const isWin = /^win/.test(process.platform);
 
-if (basename(appRootPath) !== "nativescript-dev-appium") {
-    updatePackageJsonDependencies(packageJson, isTypeScriptProject);
-}
-
-if (!existsSync(e2eProjectFolderPath)) {
-    mkdirSync(e2eProjectFolderPath);
-    if (isTypeScriptProject) {
-        console.info("TypeScript project - adding a sample test ...");
-        copy(e2ePluginFolderPath, e2eProjectFolderPath);
+function executeNpmInstall(cwd) {
+    let spawnArgs = [];
+    let command = "";
+    if (isWin) {
+        command = "cmd.exe"
+        spawnArgs = ["/c", "npm", "install"];
     } else {
-        console.info("JavaScript project - not adding a sample test ...");
+        command = "npm"
+        spawnArgs = ["install"];
     }
+    childProcess.spawnSync(command, spawnArgs, { cwd, stdio: "inherit" });
 }
 
 function copy(src, dest) {
@@ -51,7 +50,6 @@ function copy(src, dest) {
         entries.forEach(entry => {
             const source = resolve(src, entry);
             const destination = resolve(dest, entry);
-            console.info("Copying " + source + " to " + destination + " ...");
             copy(source, destination);
         });
     } else {
@@ -59,37 +57,41 @@ function copy(src, dest) {
     }
 }
 
-function executeNpmInstall(cwd) {
-    let spawnArgs = [];
-    let command = "";
-    if (isWin) {
-        command = "cmd.exe"
-        spawnArgs = ["/c", "npm", "install"];
-    } else {
-        command = "npm"
-        spawnArgs = ["install"];
-    }
-    childProcess.spawnSync(command, spawnArgs, { cwd, stdio: "inherit" });
+function getDevDependencies() {
+    const requiredDevDependencies = [
+        { name: "chai", version: "~4.1.1" },
+        { name: "chai-as-promised", version: "~7.1.1" },
+        { name: "mocha", version: "~3.5.0" },
+        { name: "mocha-junit-reporter", version: "^1.13.0" },
+        { name: "mocha-multi", version: "^0.11.0" },
+    ];
+
+    const typeScriptDevDependencies = [
+        { name: "tslib", version: "^1.7.1" },
+        { name: "@types/chai", version: "^4.0.2" },
+        { name: "@types/mocha", version: "^2.2.41" },
+        { name: "@types/node", version: "^7.0.5" },
+    ];
+
+    return isTypeScriptProject ?
+        [
+            ...requiredDevDependencies,
+            ...typeScriptDevDependencies,
+        ] :
+        requiredDevDependencies;
 }
 
-function configureDevDependencies(packageJson, adderCallback) {
+function configureDevDependencies(packageJson) {
     if (!packageJson.devDependencies) {
         packageJson.devDependencies = {};
     }
 
-    let pendingNpmInstall = false;
     const devDependencies = packageJson.devDependencies;
-    adderCallback(function (name, version) {
-        if (!devDependencies[name]) {
-            devDependencies[name] = version;
-            console.info("Adding devDependency: '" + name + "@" + version + "' ...");
-            pendingNpmInstall = true;
-        } else {
-            console.info("devDependency: '" + name + "@" + version + "' already added.");
-        }
-    });
+    const newDevDependencies = getDevDependencies();
+    const devDependenciesToInstall = newDevDependencies.filter(({ name }) => !devDependencies[name]);
+    devDependenciesToInstall.forEach(({ name, version }) => devDependencies[name] = version);
 
-    if (pendingNpmInstall) {
+    if (devDependenciesToInstall.length) {
         console.info("Installing new devDependencies ...");
         // Execute `npm install` after everything else
         setTimeout(function () {
@@ -112,22 +114,23 @@ function updatePackageJsonDependencies(packageJson, isTypeScriptProject) {
         }
     }
 
-    configureDevDependencies(packageJson, (add) => {
-        add("chai", "~4.1.1");
-        add("mocha", "~3.5.0");
-        add('mocha-junit-reporter', '^1.13.0');
-        add('mocha-multi', '^0.11.0');
-        add('chai-as-promised', '~7.1.1');
-        if (isTypeScriptProject) {
-            add('tslib', '^1.7.1');
-            add("@types/node", "^7.0.5");
-            add("@types/chai", "^4.0.2");
-            add("@types/mocha", "^2.2.41");
-        }
-    });
-
+    configureDevDependencies(packageJson);
     console.warn("WARNING: nativescript-dev-appium no longer installs Appium as a local dependency!");
     console.info("Add appium as a local dependency (see README) or we'll attempt to run it from PATH.");
-
     writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+}
+
+if (basename(appRootPath) !== "nativescript-dev-appium") {
+    updatePackageJsonDependencies(packageJson, isTypeScriptProject);
+}
+
+if (!existsSync(e2eProjectFolderPath)) {
+    mkdirSync(e2eProjectFolderPath);
+    if (isTypeScriptProject) {
+        console.info("TypeScript project - adding sample config and test ...");
+        console.info("Copying " + e2ePluginFolderPath + " to " + e2eProjectFolderPath + " ...");
+        copy(e2ePluginFolderPath, e2eProjectFolderPath);
+    } else {
+        console.info("JavaScript project - not adding sample config and test ...");
+    }
 }
