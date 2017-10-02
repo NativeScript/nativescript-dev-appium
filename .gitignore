@@ -3,6 +3,5 @@ node_modules
 *.tgz
 **/*.js
 **/*.map
-postinstall.d.ts
 e2e/reports
 .vscode
