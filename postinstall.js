@@ -49,7 +49,7 @@ function copy(src, dest) {
         });
 
         entries.forEach(entry => {
-            const source = resolve(src,  entry);
+            const source = resolve(src, entry);
             const destination = resolve(dest, entry);
             console.info("Copying " + source + " to " + destination + " ...");
             copy(source, destination);
@@ -69,18 +69,16 @@ function executeNpmInstall(cwd) {
         command = "npm"
         spawnArgs = ["install"];
     }
-    const npm = childProcess.spawnSync(command, spawnArgs, { cwd: cwd, stdio: "inherit" });
+    childProcess.spawnSync(command, spawnArgs, { cwd, stdio: "inherit" });
 }
-
-var pendingNpmInstall = false;
 
 function configureDevDependencies(packageJson, adderCallback) {
     if (!packageJson.devDependencies) {
         packageJson.devDependencies = {};
     }
 
-    let devDependencies = packageJson.devDependencies;
-
+    let pendingNpmInstall = false;
+    const devDependencies = packageJson.devDependencies;
     adderCallback(function (name, version) {
         if (!devDependencies[name]) {
             devDependencies[name] = version;
