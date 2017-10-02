@@ -17,13 +17,28 @@ export class Locator {
         return this.getElementByName("button");
     }
 
+    get imageButton() {
+        return this.getElementByName("image-button");
+    }
+
     get listView() {
         return this.getElementByName("listview");
     }
 
+    get textField() {
+        return this.getElementByName("textfield");
+    }
+
+    get textView() {
+        return this.getElementByName("textview");
+    }
 
     get image() {
         return this.getElementByName("image");
+    }
+
+    get nsImage() {
+        return this.getElementByName("ns-image");
     }
 
     get allELementsList() {
@@ -42,6 +57,7 @@ export class Locator {
         this._elementsList.set("activityindicator", "android.widget.ProgressBar");
         this._elementsList.set("button", "android.widget.Button");
         this._elementsList.set("image", "android.widget.ImageView");
+        this._elementsList.set("image", "org.nativescript.widget.ImageView");
         this._elementsList.set("image-button", "android.widget.ImageButton");
         this._elementsList.set("imagebutton", "android.widget.ImageButton");
         this._elementsList.set("datepicker", "android.widget.DatePicker");
@@ -79,6 +95,7 @@ export class Locator {
         this._elementsList.set("datepicker", this.createIosElement("DatePicker"));
         this._elementsList.set("htmlview", this.createIosElement("TextView"));
         this._elementsList.set("image", this.createIosElement("Image"));
+        this._elementsList.set("ns-image", this.createIosElement("Image"));
         this._elementsList.set("label", this.createIosElement("StaticText"));
         this._elementsList.set("absolutelayout", this.createIosElement("View"));
         this._elementsList.set("docklayout", this.createIosElement("View"));
