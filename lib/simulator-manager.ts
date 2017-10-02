@@ -5,7 +5,7 @@ import { INsCapabilities } from "./ins-capabilities";
 const XCRUN = "xcrun ";
 const SIMCTL = XCRUN + " simctl ";
 const XCRUNLISTDEVICES_COMMAND = SIMCTL + " list devices ";
-const BOOT_DEVICE_COMMAND = XCRUN + " instruments -w "
+const BOOT_DEVICE_COMMAND = XCRUN + " instruments -w ";
 const BOOTED = "Booted";
 const SHUTDOWN = "Shutdown";
 const OSASCRIPT_QUIT_SIMULATOR_COMMAND = "osascript -e 'tell application \"Simulator\" to quit'";
@@ -128,7 +128,7 @@ export class SimulatorManager {
     }
 
     private static parseSimulator(sim) {
-        var parts = sim.split(" (");
+        const parts = sim.split(" (");
         if (parts.length < 2) {
             return undefined;
         }

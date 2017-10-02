@@ -64,8 +64,8 @@ export class AppiumDriver {
         return this._args.appiumCaps.platformName;
     }
 
-    get platformVesrion() {
-        return this._args.appiumCaps.platformVesrion;
+    get platformVersion() {
+        return this._args.appiumCaps.platformVersion;
     }
 
     get elementHelper() {
@@ -181,20 +181,19 @@ export class AppiumDriver {
 
     /**
      * Scrolls from point to other point with minimum inertia
-     * @param y 
-     * @param x 
-     * @param yOffset 
-     * @param duration 
-     * @param xOffset 
+     * @param direction
+     * @param y
+     * @param x
+     * @param yOffset
+     * @param xOffset
      */
-    public async scroll(direction, SwipeDirection, y: number, x: number, yOffset: number, xOffset: number = 0) {
+    public async scroll(direction: Direction, y: number, x: number, yOffset: number, xOffset: number = 0) {
         scroll(this._wd, this._driver, direction, this._webio.isIOS, y, x, yOffset, xOffset, this._args.verbose);
     }
 
     /**
      * 
-     * @param direction 
-     * @param SwipeDirection 
+     * @param direction
      * @param element 
      * @param startPoint 
      * @param yOffset 
@@ -202,7 +201,7 @@ export class AppiumDriver {
      * @param retryCount 
      */
     public async scrollTo(direction: Direction, element: any, startPoint: Point, yOffset: number, xOffset: number = 0, retryCount: number = 7) {
-        let el = null
+        let el = null;
         while (el === null && retryCount > 0) {
             try {
                 el = await element();
@@ -391,7 +390,7 @@ export class AppiumDriver {
         await this._driver.resetApp();
     }
 
-    public async inint() {
+    public async init() {
         await this._driver.init(this._args.appiumCaps);
         this._webio.requestHandler.sessionID = this._driver.sessionID;
         this._isAlive = true;

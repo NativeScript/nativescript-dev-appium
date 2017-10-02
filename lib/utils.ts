@@ -72,10 +72,10 @@ export function executeNpmInstall(cwd) {
     let spawnArgs = [];
     let command = "";
     if (isWin()) {
-        command = "cmd.exe"
+        command = "cmd.exe";
         spawnArgs = ["/c", "npm", "install"];
     } else {
-        command = "npm"
+        command = "npm";
         spawnArgs = ["install"];
     }
     const npm = childProcess.spawnSync(command, spawnArgs, { cwd: cwd, stdio: "inherit" });
@@ -293,9 +293,9 @@ export function getAppPath(platform, runType) {
         }
     } else {
         throw new Error("No 'app' capability provided and incorrect 'runType' convention used: " + runType +
-            ". In order to automatically search and locate app package please use 'android','device','sim' in your 'runType' option. E.g --runType android25, --runType sim11iPhone6");
+            ". In order to automatically search and locate app package please use 'android','device','sim' in your 'runType' option. E.g --runType android25, --runType sim.iPhone7.iOS110");
     }
-};
+}
 
 export function calculateOffset(direction, y: number, yOffset: number, x: number, xOffset: number, isIOS: boolean, verbose) {
     let speed = 10;
@@ -345,8 +345,7 @@ export function calculateOffset(direction, y: number, yOffset: number, x: number
  * Scrolls from point to other point with minimum inertia
  * @param y 
  * @param x 
- * @param yOffset 
- * @param duration 
+ * @param yOffset
  * @param xOffset 
  */
 export async function scroll(wd, driver, direction: Direction, isIOS: boolean, y: number, x: number, yOffset: number, xOffset: number, verbose) {
@@ -368,7 +367,7 @@ export async function scroll(wd, driver, direction: Direction, isIOS: boolean, y
 }
 
 function createStorageFolder(storage, direcotry) {
-    storage = resolve(storage, direcotry)
+    storage = resolve(storage, direcotry);
     if (!fileExists(storage)) {
         fs.mkdirSync(storage);
     }
