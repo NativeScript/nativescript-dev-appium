@@ -122,15 +122,14 @@ function updatePackageJsonDependencies(packageJson, isTypeScriptProject) {
 
 if (basename(appRootPath) !== "nativescript-dev-appium") {
     updatePackageJsonDependencies(packageJson, isTypeScriptProject);
-}
-
-if (!existsSync(e2eProjectFolderPath)) {
-    mkdirSync(e2eProjectFolderPath);
-    if (isTypeScriptProject) {
-        console.info("TypeScript project - adding sample config and test ...");
-        console.info("Copying " + e2ePluginFolderPath + " to " + e2eProjectFolderPath + " ...");
-        copy(e2ePluginFolderPath, e2eProjectFolderPath);
-    } else {
-        console.info("JavaScript project - not adding sample config and test ...");
+    if (!existsSync(e2eProjectFolderPath)) {
+        mkdirSync(e2eProjectFolderPath);
+        if (isTypeScriptProject) {
+            console.info("TypeScript project - adding sample config and test ...");
+            console.info("Copying " + e2ePluginFolderPath + " to " + e2eProjectFolderPath + " ...");
+            copy(e2ePluginFolderPath, e2eProjectFolderPath);
+        } else {
+            console.info("JavaScript project - not adding sample config and test ...");
+        }
     }
 }
