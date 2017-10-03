@@ -5,7 +5,7 @@ export { Point } from "./lib/point";
 export { SearchOptions } from "./lib/search-options";
 export { Locator } from "./lib/locators";
 export { Direction } from "./lib/direction";
-export { EmulatorManager } from "./lib/emulator-manager";
+export { DeviceController } from "./lib/device-controller";
 export declare function startServer(port?: number): Promise<void>;
 export declare function stopServer(): Promise<void>;
 export declare function createDriver(): Promise<any>;

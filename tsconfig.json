@@ -1,17 +1,19 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es5",
+        "target": "es6",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "noEmitHelpers": false,
-        "importHelpers": true,
+        "importHelpers": false,
         "noEmitOnError": false,
         "declaration": true,
         "sourceMap": true,
         "lib": [
-            "es6",
+            "es5",
             "dom",
+            "es2015.core",
+            "es2015.collection",
             "es2015.iterable",
             "es2015.promise"
         ],

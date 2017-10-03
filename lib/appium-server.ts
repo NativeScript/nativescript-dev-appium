@@ -1,8 +1,7 @@
 import * as child_process from "child_process";
 import { log, resolve, waitForOutput, shutdown, fileExists, isWin, executeCommand } from "./utils";
 import { INsCapabilities } from "./ins-capabilities";
-import { SimulatorManager } from "./simulator-manager";
-import { EmulatorManager } from "./emulator-manager";
+import { DeviceController } from "./device-controller";
 
 export class AppiumServer {
     private _server: child_process.ChildProcess;
@@ -46,16 +45,9 @@ export class AppiumServer {
     }
 
     public async start() {
-
-        if (this._args.appiumCaps.platformName.toLowerCase() === "android") {
-            await EmulatorManager.startEmulator(this._args);
-        }
-
-        if (!this._args.isSauceLab && this._args.appiumCaps.platformName.toLowerCase().includes("ios")) {
-            await SimulatorManager.startDevice(this._args);
-        }
-
+        const device = await DeviceController.startDevice(this._args)
         log("Starting server...", this._args.verbose);
+        this._args.appiumCaps["udid"] = device.token;
         const logLevel = this._args.verbose === true ? "debug" : "info";
         this._server = child_process.spawn(this._appium, ["-p", this.port.toString(), "--log-level", logLevel], {
             shell: true,
@@ -68,15 +60,7 @@ export class AppiumServer {
     }
 
     public async stop() {
-
-        if (this._args.appiumCaps.platformName.toLowerCase() === "android") {
-            await EmulatorManager.stop(this._args);
-        }
-
-        if (!this._args.isSauceLab && !this._args.reuseDevice && this._args.appiumCaps.platformName.toLowerCase().includes("ios")) {
-            await SimulatorManager.stop(this._args);
-        }
-
+        await DeviceController.stop(this._args);
         return new Promise((resolve, reject) => {
             this._server.on("close", (code, signal) => {
                 log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
@@ -85,7 +69,6 @@ export class AppiumServer {
 
             this._server.on("exit", (code, signal) => {
                 log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
-                console.log(this._server.killed);
                 resolve();
             });
 
@@ -103,10 +86,13 @@ export class AppiumServer {
             try {
                 if (isWin) {
                     shutdown(this._server, this._args.verbose);
+                    this._server.kill("SIGINT");
+                    this._server.kill("SIGINT");
                 } else {
                     this._server.kill("SIGINT");
+                    this._server.kill("SIGINT");
+                    this._server.kill("SIGKILL");
                     shutdown(this._server, this._args.verbose);
-                    //this._server.kill("SIGKILL");
                 }
             } catch (error) {
                 console.log(error);
