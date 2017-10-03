@@ -113,11 +113,8 @@ export class EmulatorManager {
             detached: false
         });
 
-        let response: boolean = await waitForOutput(emulator, new RegExp(args.appiumCaps.avd, "i"), new RegExp("Error", "i"), args.appiumCaps.lt || 180000, args.verbose);
-        if (response) {
-            response = EmulatorManager.checkIfEmulatorIsRunning(id);
-        }
-
+        let response = EmulatorManager.checkIfEmulatorIsRunning(id);
+        console.log("KORRRRR", response);
         return { response: response, process: emulator };
     }
 

@@ -85,7 +85,6 @@ export class AppiumServer {
 
             this._server.on("exit", (code, signal) => {
                 log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
-                console.log(this._server.killed);
                 resolve();
             });
 
@@ -103,10 +102,11 @@ export class AppiumServer {
             try {
                 if (isWin) {
                     shutdown(this._server, this._args.verbose);
+                    this._server.kill("SIGINT");                    
                 } else {
                     this._server.kill("SIGINT");
+                    this._server.kill("SIGINT");
                     shutdown(this._server, this._args.verbose);
-                    //this._server.kill("SIGKILL");
                 }
             } catch (error) {
                 console.log(error);
