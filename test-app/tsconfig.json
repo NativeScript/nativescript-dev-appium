@@ -1,14 +1,14 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es5",
+        "target": "es6",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "noEmitHelpers": false,
-        "importHelpers": true,
+        "importHelpers": false,
         "noEmitOnError": false,
         "lib": [
-            "es6",
+            "es5",
             "dom",
             "es2015.core",
             "es2015.collection",

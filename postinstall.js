@@ -67,7 +67,7 @@ function getDevDependencies() {
     ];
 
     const typeScriptDevDependencies = [
-        { name: "tslib", version: "^1.7.1" },
+        //{ name: "tslib", version: "^1.7.1" },
         { name: "@types/chai", version: "^4.0.2" },
         { name: "@types/mocha", version: "^2.2.41" },
         { name: "@types/node", version: "^7.0.5" },
