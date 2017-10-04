@@ -5,10 +5,10 @@
 e2e/reports
 e2e/**/*.js
 !e2e/*.ts
+!e2e/tsconfig.json
 publish-next.js
 test-app
 .vscode
 .git
 .gitignore
 .npmignore
-tsconfig.json
