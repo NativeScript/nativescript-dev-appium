@@ -5,7 +5,7 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "noEmitHelpers": false,
-        "importHelpers": false,
+        "importHelpers": true,
         "noEmitOnError": false,
         "lib": [
             "es5",
