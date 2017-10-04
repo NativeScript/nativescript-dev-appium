@@ -62,7 +62,7 @@ function getDevDependencies() {
         { name: "chai", version: "~4.1.1" },
         { name: "chai-as-promised", version: "~7.1.1" },
         { name: "mocha", version: "~3.5.0" },
-        { name: "mocha-junit-reporter", version: "^1.13.0" },
+        { name: "mocha-junit-reporter", version: "^1.13.0" }, 
         { name: "mocha-multi", version: "^0.11.0" },
     ];
 

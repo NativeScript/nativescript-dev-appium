@@ -4,25 +4,15 @@
         "target": "es6",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "noEmitHelpers": false,
         "importHelpers": false,
-        "noEmitOnError": false,
-        "lib": [
-            "es5",
-            "dom",
-            "es2015.core",
-            "es2015.collection",
-            "es2015.iterable",
-            "es2015.promise"
+        "types": [
+            "node",
+            "mocha",
+            "chai"
         ],
-        "baseUrl": ".",
-        "paths": {
-            "*": [
-                "./node_modules/*"
-            ]
-        }
-    },
-    "exclude": [
-        "node_modules"
-    ]
+        "lib": [
+            "es6",
+            "dom"
+        ]
+    }
 }
