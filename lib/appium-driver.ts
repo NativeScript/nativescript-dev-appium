@@ -365,7 +365,7 @@ export class AppiumDriver {
             }
 
             driverConfig = "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub";
-            
+
 
             args.appiumCaps.app = "sauce-storage:" + args.appPath;
             console.log("Using Sauce Labs. The application path is changed to: " + args.appPath);
@@ -400,7 +400,10 @@ export class AppiumDriver {
         console.log("Killing driver");
         try {
             await this._driver.quit();
+            await this._driver.quit();
+            await this._webio.quit();
         } catch (error) {
+            console.log("", error);
         }
         this._isAlive = false;
         console.log("Driver is dead");
