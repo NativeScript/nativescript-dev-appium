@@ -2,6 +2,8 @@
   "name": "nativescript-dev-appium",
   "version": "3.0.0",
   "description": "A NativeScript plugin to help integrate and run Appium tests",
+  "author": "Telerik",
+  "license": "MIT",
   "main": "./index.js",
   "directories": {
     "lib": "./lib"
@@ -27,18 +29,16 @@
   ],
   "dependencies": {
     "app-root-path": "^2.0.1",
-    "mobile-devices-controller": "^0.0.3"
-  },
-  "author": "Telerik",
-  "license": "MIT",
-  "devDependencies": {
-    "blink-diff": "^1.0.13",
-    "colors": "^1.1.2",
-    "glob": "*",
     "portastic": "^1.0.1",
+    "mobile-devices-controller": "^0.0.3",
+    "colors": "^1.1.2",
+    "blink-diff": "^1.0.13",
+    "glob": "*",
     "wd": "^1.4.0",
     "webdriverio": "^4.8.0",
-    "yargs": "^8.0.2",
+    "yargs": "^8.0.2"
+  },
+  "devDependencies": {
     "@types/node": "^7.0.5",
     "@types/webdriverio": "^4.8.4",
     "typescript": "^2.5.0"
