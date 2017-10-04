@@ -23,8 +23,30 @@
         }
     },
     "exclude": [
-        "node_modules",
-        "platforms",
-        "**/*.aot.ts"
+        "node_modules"
     ]
+}
+
+
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es6",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "importHelpers": false,
+        "types": [
+            "node",
+            "mocha",
+            "chai"
+        ],
+        "lib": [
+            "es5",
+            "dom",
+            "es2015.core",
+            "es2015.collection",
+            "es2015.iterable",
+            "es2015.promise"
+        ]
+    }
 }
