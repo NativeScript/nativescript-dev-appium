@@ -9,7 +9,7 @@ import {
     IDevice,
     Platform,
     Status
-} from "devices-controller";
+} from "mobile-devices-controller";
 
 
 export class DeviceController {
