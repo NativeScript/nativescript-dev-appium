@@ -1,4 +1,3 @@
-node_modules
 *.tgz
 /**/*.ts
 /**/*.map
@@ -9,3 +8,7 @@ e2e/**/*.js
 publish-next.js
 test-app
 .vscode
+.git
+.gitignore
+.npmignore
+tsconfig.json
