@@ -3,25 +3,19 @@
   "license": "SEE LICENSE IN <your-license-filename>",
   "readme": "NativeScript Application",
   "repository": "<fill-your-repository-here>",
-  "nativescript": {
-    "id": "org.nativescript.testapp",
-    "tns-android": {
-      "version": "3.2.0"
-    },
-    "tns-ios": {
-      "version": "3.2.0"
-    }
-  },
-  "dependencies": {
-    "nativescript-theme-core": "~1.0.2",
-    "tns-core-modules": "~3.2.0"
-  },
   "devDependencies": {
-    "babel-traverse": "6.26.0",
-    "babel-types": "6.26.0",
-    "babylon": "6.18.0",
-    "lazy": "1.0.11",
-    "nativescript-dev-typescript": "~0.5.0",
-    "typescript": "~2.2.1"
+    "typescript": "~2.5.1", 
+    "@types/chai": "^4.0.2",
+    "@types/mocha": "^2.2.41",
+    "@types/node": "^7.0.5",
+    "babel-traverse": "6.25.0",
+    "babel-types": "6.25.0",
+    "babylon": "6.17.4",
+    "chai": "~4.1.1",
+    "chai-as-promised": "~7.1.1",
+    "mocha": "~3.5.0",
+    "mocha-junit-reporter": "^1.13.0",
+    "mocha-multi": "^0.11.0",
+    "mocha-typescript": "^1.1.9"
   }
 }
