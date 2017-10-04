@@ -36,7 +36,9 @@
     "glob": "*",
     "wd": "^1.4.0",
     "webdriverio": "^4.8.0",
-    "yargs": "^8.0.2"
+    "yargs": "^8.0.2",
+    "chai": "~4.1.1",
+    "chai-as-promised": "~7.1.1"
   },
   "devDependencies": {
     "@types/node": "^7.0.5",
