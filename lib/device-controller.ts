@@ -28,7 +28,7 @@ export class DeviceController {
             device = DeviceController.getDevicesByStatus(devices, Status.SHUTDOWN);
         }
 
-        // If there is no  shutdown device
+        // If there is no shutdown device
         if (!device || device === null) {
             device = DeviceController.getDevicesByStatus(devices, Status.BOOTED);
         }
@@ -42,7 +42,7 @@ export class DeviceController {
         if (!device || device === null && args.reuseDevice) {
             device = DeviceController.getDevicesByStatus(devices, Status.SHUTDOWN);
         }
-        
+
         if (device.status === Status.SHUTDOWN) {
             await DeviceManager.startDevice(device);
             console.log("Started device: ", device);
@@ -52,6 +52,15 @@ export class DeviceController {
                 DeviceController.kill(device);
                 await DeviceManager.startDevice(device);
             }
+        }
+
+        if (device.token && args.appiumCaps.platformName.toLowerCase() === Platform.ANDROID) {
+            const density = AndroidManager.getPhysicalDensity(device.token);
+            const offsetPixels = AndroidManager.getPixelsOffset(device.token);
+            device.config = {
+                density: density,
+                offsetPixels: offsetPixels,
+            };
         }
 
         DeviceController._emulators.set(args.runType, device);

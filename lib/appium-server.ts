@@ -45,9 +45,9 @@ export class AppiumServer {
     }
 
     public async start() {
-        const device = await DeviceController.startDevice(this._args)
+        const device = await DeviceController.startDevice(this._args);
         log("Starting server...", this._args.verbose);
-        this._args.appiumCaps["udid"] = device.token;
+        this._args.device = device;
         const logLevel = this._args.verbose === true ? "debug" : "info";
         this._server = child_process.spawn(this._appium, ["-p", this.port.toString(), "--log-level", logLevel], {
             shell: true,
