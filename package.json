@@ -1,53 +1,51 @@
 {
-  "name": "nativescript-dev-appium",
-  "version": "3.0.0",
-  "description": "A NativeScript plugin to help integrate and run Appium tests",
-  "author": "Telerik",
-  "license": "MIT",
-  "main": "./index.js",
-  "directories": {
-    "lib": "./lib"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/NativeScript/nativescript-dev-appium.git"
-  },
-  "keywords": [
-    "nativescript",
-    "appium",
-    "test"
-  ],
-  "maintainers": [
-    {
-      "name": "hdeshev",
-      "email": "hristo.deshev@telerik.com"
+    "name": "nativescript-dev-appium",
+    "version": "3.0.0",
+    "description": "A NativeScript plugin to help integrate and run Appium tests",
+    "author": "Telerik",
+    "license": "MIT",
+    "main": "./index.js",
+    "directories": {
+        "lib": "./lib"
     },
-    {
-      "name": "SvetoslavTsenov",
-      "email": "tsenov@progress.com"
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/NativeScript/nativescript-dev-appium.git"
+    },
+    "keywords": [
+        "nativescript",
+        "appium",
+        "test"
+    ],
+    "maintainers": [{
+            "name": "hdeshev",
+            "email": "hristo.deshev@telerik.com"
+        },
+        {
+            "name": "SvetoslavTsenov",
+            "email": "tsenov@progress.com"
+        }
+    ],
+    "dependencies": {
+        "app-root-path": "^2.0.1",
+        "portastic": "^1.0.1",
+        "mobile-devices-controller": "^0.0.3",
+        "colors": "^1.1.2",
+        "blink-diff": "^1.0.13",
+        "glob": "*",
+        "wd": "^1.4.0",
+        "webdriverio": "^4.8.0",
+        "yargs": "^8.0.2",
+        "chai": "~4.1.1",
+        "chai-as-promised": "~7.1.1"
+    },
+    "devDependencies": {
+        "@types/node": "^7.0.5",
+        "@types/webdriverio": "^4.8.4",
+        "typescript": "^2.5.0"
+    },
+    "scripts": {
+        "postinstall": "node ./postinstall.js",
+        "compile": "tsc --watch"
     }
-  ],
-  "dependencies": {
-    "app-root-path": "^2.0.1",
-    "portastic": "^1.0.1",
-    "mobile-devices-controller": "^0.0.3",
-    "colors": "^1.1.2",
-    "blink-diff": "^1.0.13",
-    "glob": "*",
-    "wd": "^1.4.0",
-    "webdriverio": "^4.8.0",
-    "yargs": "^8.0.2",
-    "chai": "~4.1.1",
-    "chai-as-promised": "~7.1.1"
-  },
-  "devDependencies": {
-    "@types/node": "^7.0.5",
-    "@types/webdriverio": "^4.8.4",
-    "typescript": "^2.5.0"
-  },
-  "scripts": {
-    "postinstall": "node ./postinstall.js",
-    "compile": "tsc --watch",
-    "e2e": "tsc -p e2e && mocha --opts ./e2e/config/mocha.opts --"
-  }
 }
