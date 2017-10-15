@@ -172,7 +172,7 @@ export function logErr(line, verbose) {
     }
 }
 
-export function shutdown(processToKill, verbose) {
+export function shutdown(processToKill: childProcess.ChildProcess, verbose) {
     try {
         if (processToKill && processToKill !== null) {
             if (process.platform === "win32") {
@@ -180,6 +180,7 @@ export function shutdown(processToKill, verbose) {
             } else {
                 processToKill.kill();
             }
+            processToKill.killed = true;
             processToKill = null;
             console.log("Shut down!!!");
         }

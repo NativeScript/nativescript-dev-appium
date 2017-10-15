@@ -64,7 +64,7 @@ export class DeviceController {
             }
         }
 
-        if (device === null) {
+        if (!device || device === null) {
             device = new Device(args.appiumCaps.deviceName, args.appiumCaps.platformVersion, undefined, args.appiumCaps.platform, "5554", undefined);
         }
 

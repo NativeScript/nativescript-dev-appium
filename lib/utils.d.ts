@@ -1,3 +1,5 @@
+/// <reference types="node" />
+import * as childProcess from "child_process";
 import { INsCapabilities } from "./ins-capabilities";
 import { Point } from "./point";
 import { Direction } from "./direction";
@@ -10,7 +12,7 @@ export declare function searchFiles(folder: any, words: any, recursive?: boolean
 export declare function log(message: any, verbose: any): void;
 export declare function loglogOut(line: any, verbose: any): void;
 export declare function logErr(line: any, verbose: any): void;
-export declare function shutdown(processToKill: any, verbose: any): void;
+export declare function shutdown(processToKill: childProcess.ChildProcess, verbose: any): void;
 export declare function killPid(pid: any, verbose: any): void;
 export declare function waitForOutput(process: any, matcher: any, errorMatcher: any, timeout: any, verbose: any): Promise<boolean>;
 export declare function executeCommand(args: any, cwd?: any): string;

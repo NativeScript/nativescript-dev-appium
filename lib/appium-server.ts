@@ -88,6 +88,7 @@ export class AppiumServer {
                     shutdown(this._server, this._args.verbose);
                     this._server.kill("SIGINT");
                     this._server.kill("SIGINT");
+                    this._server = null;
                 } else {
                     this._server.kill("SIGINT");
                     this._server.kill("SIGINT");

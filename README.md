@@ -33,13 +33,13 @@ $ tns build ios
 The command that will run the tests should specify the targeted platform using the `runType` option as shown below. This way a capabilities will be selected from the [capabilities config file](#customCapabilities).
 
 ```
-$ npm run e2e -- --runType android23
+$ npm run e2e -- --runType android25
 ```
 
 or
 
 ```
-$ npm run e2e -- --runType ios-simulator10iPhone6
+$ npm run e2e -- --runType sim.iPhone7.iOS110
 ```
 
 Generated tests are standard [Mocha](http://mochajs.org) tests.
@@ -73,13 +73,12 @@ Thus, the same configuration can be used by both apps without duplication of fil
 
 If you wish to use another location of the capapabilities file instead default ones, you can specify it with `--capsLocation` option. Remember that the path provided has to be relative to the root directory.
 
-Notice that once custom capabilities are provided you will be able to pick any of them using the `--runType` option (e.g. `--runType android21`). Sample content of `appium.capabilities.json` file could be:
+Notice that once custom capabilities are provided you will be able to pick any of them using the `--runType` option (e.g. `--runType android25`). Sample content of `appium.capabilities.json` file could be:
 
 ```
 {
     "android21": {
             "browserName": "",
-            "appium-version": "1.6.3",
             "platformName": "Android",
             "platformVersion": "5.0",
             "deviceName": "Android Emulator",
@@ -87,22 +86,20 @@ Notice that once custom capabilities are provided you will be able to pick any o
             "app": ""
         
     },
-    "android23": {
+    "android25": {
             "browserName": "",
-            "appium-version": "1.6.5",
             "platformName": "Android",
-            "platformVersion": "6.0",
+            "platformVersion": "7.0",
             "deviceName": "Android Emulator",
             "noReset": false,
             "app": ""
         
     },
-    "ios-simulator10iPhone6": {
+    "sim.iPhone7.iOS110": {
             "browserName": "",
-            "appium-version": "1.6.5",
             "platformName": "iOS",
             "platformVersion": "10.0",
-            "deviceName": "iPhone 6 Simulator",
+            "deviceName": "iPhone 7 110",
             "app": ""
         
     }
@@ -125,7 +122,7 @@ As you can see, the `app` property can be left an empty string which will force 
 Examples:
 
 ```
-$ npm run e2e --runType android23 --sauceLab --appLocation demo.apk --capsLocation "/e2e-tests/config"
+$ npm run e2e --runType android25 --sauceLab --appLocation demo.apk --capsLocation "/e2e-tests/config"
 
 ```
 
