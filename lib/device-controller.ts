@@ -16,6 +16,10 @@ export class DeviceController {
     private static _emulators: Map<string, IDevice> = new Map();
 
     public static async startDevice(args: INsCapabilities) {
+        if (args.isSauceLab || args.ignoreDeviceController) {
+            return DeviceController.getDefaultDevice(args);
+        }
+
         const allDevices = (await DeviceManager.getAllDevices(args.appiumCaps.platformName.toLowerCase()));
         if (!allDevices || allDevices === null || allDevices.size === 0) {
             console.log("We couldn't find any devices. We will try to prossede to appium! Maybe avd manager is missing")
@@ -65,7 +69,7 @@ export class DeviceController {
         }
 
         if (!device || device === null) {
-            device = new Device(args.appiumCaps.deviceName, args.appiumCaps.platformVersion, undefined, args.appiumCaps.platform, "5554", undefined);
+            device = DeviceController.getDefaultDevice(args);
         }
 
         DeviceController._emulators.set(args.runType, device);
@@ -74,7 +78,7 @@ export class DeviceController {
     }
 
     public static async stop(args: INsCapabilities) {
-        if (DeviceController._emulators.has(args.runType) && !args.reuseDevice) {
+        if (DeviceController._emulators.has(args.runType) && !args.reuseDevice && !args.isSauceLab && !args.ignoreDeviceController) {
             const device = DeviceController._emulators.get(args.runType);
             await DeviceManager.kill(device);
         }
@@ -82,6 +86,11 @@ export class DeviceController {
 
     public static async kill(device: IDevice) {
         await DeviceManager.kill(device);
+    }
+
+
+    private static getDefaultDevice(args) {
+        return new Device(args.appiumCaps.deviceName, args.appiumCaps.platformVersion, undefined, args.appiumCaps.platform, "5554", undefined);
     }
 
     private static device(runType) {
