@@ -1,7 +1,15 @@
 import * as blinkDiff from "blink-diff";
-import { ImageOptions} from "./image-options";
+import { ImageOptions } from "./image-options";
+import { INsCapabilities } from "./ins-capabilities";
 
 export class ImageHelper {
+
+    constructor(private _args: INsCapabilities) {
+    }
+
+    private getOffsetPixels() {
+        return this._args.device.config ? this._args.device.config.offsetPixels : 40; // TODO: iOS = 40
+    }
 
     public imageOutputLimit() {
         return ImageOptions.outputAll;
@@ -20,11 +28,11 @@ export class ImageHelper {
     }
 
     public cropImageA() {
-        return { x: 0, y: 40 }; // Android = 35, iOS = 40
+        return { x: 0, y: this.getOffsetPixels() };
     }
 
     public cropImageB() {
-        return { x: 0, y: 40 }; // Android = 35, iOS = 40
+        return { x: 0, y: this.getOffsetPixels() };
     }
 
     public verbose() {

@@ -30,7 +30,7 @@
   "dependencies": {
     "app-root-path": "^2.0.1",
     "portastic": "^1.0.1",
-    "mobile-devices-controller": "^0.0.3",
+    "mobile-devices-controller": "~0.0.4",
     "colors": "^1.1.2",
     "blink-diff": "^1.0.13",
     "glob": "*",

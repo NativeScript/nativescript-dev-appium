@@ -2,6 +2,7 @@ import * as parser from "./parser"
 import { INsCapabilities } from "./ins-capabilities";
 import { resolveCapabilities } from "./capabilities-helper";
 import { getAppPath, fileExists, logErr } from "./utils";
+import { IDevice } from "mobile-devices-controller";
 
 export class NsCapabilities implements INsCapabilities {
     private _projectDir;
@@ -20,6 +21,7 @@ export class NsCapabilities implements INsCapabilities {
     private _isSauceLab;
     private _appPath: string;
     private _emulatorOptions: string;
+    private _device: IDevice;
     private exceptions: Array<string> = new Array();
 
     constructor() {
@@ -59,6 +61,8 @@ export class NsCapabilities implements INsCapabilities {
     get isSauceLab() { return this._isSauceLab; }
     get appPath() { return this._appPath; }
     set appPath(appPath: string) { this._appPath = appPath; }
+    get device() { return this._device; }
+    set device(device: IDevice) { this._device = device; }
     get emulatorOptions() { return (this._emulatorOptions || "-wipe-data -gpu on") }
 
     private resolveAppPath() {
@@ -90,8 +94,8 @@ export class NsCapabilities implements INsCapabilities {
             this.exceptions.push("Platform version is missing! Please, check appium capabilities file!");
         }
 
-        if (!this._appiumCaps.deviceName && !this._appiumCaps.uidid) {
-            this.exceptions.push("The device name or uidid are missing! Please, check appium capabilities file!");
+        if (!this._appiumCaps.deviceName && !this._appiumCaps.udid) {
+            this.exceptions.push("The device name or udid are missing! Please, check appium capabilities file!");
         }
     }
 

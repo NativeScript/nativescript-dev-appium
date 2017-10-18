@@ -1,4 +1,5 @@
 import { INsCapabilities } from "./ins-capabilities";
+import { IDevice } from "mobile-devices-controller";
 export declare class NsCapabilities implements INsCapabilities {
     private _projectDir;
     private _projectBinary;
@@ -16,6 +17,7 @@ export declare class NsCapabilities implements INsCapabilities {
     private _isSauceLab;
     private _appPath;
     private _emulatorOptions;
+    private _device;
     private exceptions;
     constructor();
     readonly projectDir: any;
@@ -33,6 +35,7 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly runType: any;
     readonly isSauceLab: any;
     appPath: string;
+    device: IDevice;
     readonly emulatorOptions: string;
     private resolveAppPath();
     private checkMandatoryCapabiliies();

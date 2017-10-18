@@ -1,3 +1,4 @@
+import { IDevice } from "mobile-devices-controller";
 export interface INsCapabilities {
     projectDir: string;
     projectBinary: string;
@@ -15,4 +16,5 @@ export interface INsCapabilities {
     storage: string;
     testReports: string;
     reuseDevice: boolean;
+    device: IDevice;
 }
