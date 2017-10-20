@@ -73,7 +73,7 @@ export async function createDriver() {
     } else if (appiumDriver === null) {
         appiumDriver = await AppiumDriver.createAppiumDriver(appiumServer.port, nsCapabilities);
     } else if (appiumDriver !== null && !appiumDriver.isAlive) {
-        await appiumDriver.inint();
+        await appiumDriver.init();
     }
 
     return appiumDriver;

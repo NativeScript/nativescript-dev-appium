@@ -90,7 +90,7 @@ export class DeviceController {
 
 
     private static getDefaultDevice(args) {
-        return new Device(args.appiumCaps.deviceName, args.appiumCaps.platformVersion, undefined, args.appiumCaps.platform, "5554", undefined);
+        return new Device(args.appiumCaps.deviceName, args.appiumCaps.platformVersion, undefined, args.appiumCaps.platformName, undefined, undefined);
     }
 
     private static device(runType) {
