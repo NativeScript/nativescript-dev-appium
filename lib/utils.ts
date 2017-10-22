@@ -3,7 +3,6 @@ import * as fs from "fs";
 import * as childProcess from "child_process";
 import * as glob from "glob";
 
-require('colors');
 import { INsCapabilities } from "./ins-capabilities";
 import { Point } from "./point";
 import { Direction } from "./direction";
