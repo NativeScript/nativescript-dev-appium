@@ -3,12 +3,12 @@ import * as child_process from "child_process";
 import { INsCapabilities } from "./ins-capabilities";
 
 import {
-    DeviceManager,
-    AndroidManager,
-    IOSManager,
     IDevice,
+    Device,
+    DeviceManager,
     Platform,
-    Status
+    Status,
+    DeviceType
 } from "mobile-devices-controller";
 
 
@@ -16,51 +16,56 @@ export class DeviceController {
     private static _emulators: Map<string, IDevice> = new Map();
 
     public static async startDevice(args: INsCapabilities) {
-        const devices = (await DeviceManager.getAllDevices(args.appiumCaps.platformName.toLowerCase(), args.appiumCaps.deviceName));
-        if (!devices || devices === null || devices.size) {
-            console.log("Available devices:\n", devices);
-            throw new Error(`No such device ${args.appiumCaps.deviceName}!!!\n Check availabe emulators!!!`);
+        const allDevices = (await DeviceManager.getAllDevices(args.appiumCaps.platformName.toLowerCase()));
+        if (!allDevices || allDevices === null || allDevices.size === 0) {
+            console.log("We couldn't find any devices. We will try to prossede to appium! Maybe avd manager is missing")
+            console.log("Available devices:\n", allDevices);
+        }
+
+        let searchedDevices = allDevices.get(args.appiumCaps.deviceName);
+        if (!searchedDevices || searchedDevices.length === 0) {
+            console.log(`No such device ${args.appiumCaps.deviceName}!!!\n Check your device name!!!`);
+            console.log("Available devices:\n", allDevices);
         }
 
         let device: IDevice;
-        // Should find new device
-        if (!args.reuseDevice) {
-            device = DeviceController.getDevicesByStatus(devices, Status.SHUTDOWN);
-        }
 
-        // If there is no shutdown device
-        if (!device || device === null) {
-            device = DeviceController.getDevicesByStatus(devices, Status.BOOTED);
-        }
+        if (searchedDevices && searchedDevices.length > 0) {
 
-        // If there is no booted device
-        if (!device || device === null) {
-            device = DeviceController.getDevicesByStatus(devices, Status.FREE);
-        }
-
-        // In case reuse device is true but there weren't any booted devices. We need to fall back and boot new one.
-        if (!device || device === null && args.reuseDevice) {
-            device = DeviceController.getDevicesByStatus(devices, Status.SHUTDOWN);
-        }
-
-        if (device.status === Status.SHUTDOWN) {
-            await DeviceManager.startDevice(device);
-            console.log("Started device: ", device);
-        } else {
-            console.log("Device is alredy started", device);
+            // Should find new device
             if (!args.reuseDevice) {
-                DeviceController.kill(device);
+                device = DeviceController.getDevicesByStatus(searchedDevices, Status.SHUTDOWN);
+            }
+
+            // If there is no shutdown device
+            if (!device || device === null) {
+                device = DeviceController.getDevicesByStatus(searchedDevices, Status.BOOTED);
+            }
+
+            // If there is no booted device
+            if (!device || device === null) {
+                device = DeviceController.getDevicesByStatus(searchedDevices, Status.FREE);
+            }
+
+            // In case reuse device is true but there weren't any booted devices. We need to fall back and boot new one.
+            if (!device || device === null && args.reuseDevice) {
+                device = DeviceController.getDevicesByStatus(searchedDevices, Status.SHUTDOWN);
+            }
+
+            if (device.status === Status.SHUTDOWN) {
                 await DeviceManager.startDevice(device);
+                console.log("Started device: ", device);
+            } else {
+                console.log("Device is alredy started", device);
+                if (!args.reuseDevice) {
+                    DeviceController.kill(device);
+                    await DeviceManager.startDevice(device);
+                }
             }
         }
 
-        if (device.token && args.appiumCaps.platformName.toLowerCase() === Platform.ANDROID) {
-            const density = AndroidManager.getPhysicalDensity(device.token);
-            const offsetPixels = AndroidManager.getPixelsOffset(device.token);
-            device.config = {
-                density: density,
-                offsetPixels: offsetPixels,
-            };
+        if (device === null) {
+            device = new Device(args.appiumCaps.deviceName, args.appiumCaps.platformVersion, undefined, args.appiumCaps.platform, "5554", undefined);
         }
 
         DeviceController._emulators.set(args.runType, device);

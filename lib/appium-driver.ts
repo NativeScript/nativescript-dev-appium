@@ -366,7 +366,6 @@ export class AppiumDriver {
 
             driverConfig = "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub";
 
-
             args.appiumCaps.app = "sauce-storage:" + args.appPath;
             console.log("Using Sauce Labs. The application path is changed to: " + args.appPath);
         }
