@@ -17,7 +17,7 @@ export class DeviceController {
 
     public static async startDevice(args: INsCapabilities) {
         if (args.isSauceLab || args.ignoreDeviceController) {
-            return DeviceController.getDefaultDevice(args);
+            return DeviceController.getDefaultDevice(args); 
         }
 
         const allDevices = (await DeviceManager.getAllDevices(args.appiumCaps.platformName.toLowerCase()));
@@ -44,11 +44,6 @@ export class DeviceController {
             // If there is no shutdown device
             if (!device || device === null) {
                 device = DeviceController.getDevicesByStatus(searchedDevices, Status.BOOTED);
-            }
-
-            // If there is no booted device
-            if (!device || device === null) {
-                device = DeviceController.getDevicesByStatus(searchedDevices, Status.FREE);
             }
 
             // In case reuse device is true but there weren't any booted devices. We need to fall back and boot new one.
