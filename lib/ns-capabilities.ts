@@ -21,6 +21,7 @@ export class NsCapabilities implements INsCapabilities {
     private _isSauceLab;
     private _appPath: string;
     private _emulatorOptions: string;
+    private _device: IDevice;
     private _ignoreDeviceController: boolean;
     private exceptions: Array<string> = new Array();
 
