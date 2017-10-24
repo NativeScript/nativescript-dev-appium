@@ -29,15 +29,16 @@
   ],
   "dependencies": {
     "app-root-path": "^2.0.1",
-    "portastic": "^1.0.1",
-    "mobile-devices-controller": "~0.0.4",
     "blink-diff": "^1.0.13",
+    "chai": "~4.1.1",
+    "chai-as-promised": "~7.1.1",
+    "colors": "~1.1.2",
     "glob": "*",
+    "mobile-devices-controller": "~0.0.4",
+    "portastic": "^1.0.1",
     "wd": "^1.4.0",
     "webdriverio": "^4.8.0",
-    "yargs": "^8.0.2",
-    "chai": "~4.1.1",
-    "chai-as-promised": "~7.1.1"
+    "yargs": "^8.0.2"
   },
   "devDependencies": {
     "@types/node": "^7.0.5",
