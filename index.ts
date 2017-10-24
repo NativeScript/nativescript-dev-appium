@@ -3,7 +3,7 @@ import { AppiumServer } from "./lib/appium-server";
 import { AppiumDriver } from "./lib/appium-driver";
 import { ElementHelper } from "./lib/element-helper";
 import { NsCapabilities } from "./lib/ns-capabilities";
-import { shutdown } from "./lib/utils";
+import { error, info, warn, shutdown } from "./lib/utils";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { ElementHelper } from "./lib/element-helper";
@@ -19,6 +19,13 @@ const appiumServer = new AppiumServer(nsCapabilities);
 
 let appiumDriver = null;
 export async function startServer(port?: number) {
+
+    console.log("log");
+    error("error");
+    info("info");
+    warn("warn");
+    console.log("log");
+
     appiumServer.port = port || nsCapabilities.port;
     let retry = false;
     if (!appiumServer.port) {

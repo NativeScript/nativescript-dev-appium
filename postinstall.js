@@ -3,6 +3,8 @@
 const { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } = require("fs");
 const { basename, resolve } = require("path");
 
+const { error, info, warn} = require('./lib/utils.js');
+
 const appRootPath = require('app-root-path').toString();
 const childProcess = require("child_process");
 const e2eTests = "e2e";
@@ -120,7 +122,14 @@ function updatePackageJsonDependencies(packageJson, isTypeScriptProject) {
     writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 }
 
-if (basename(appRootPath) !== "nativescript-dev-appium") {
+if (basename(appRootPath) === "nativescript-dev-appium") {
+
+    console.log("Asdf0");
+    error("Error");
+    info("Info");
+    warn("Warn");
+    console.log("Asdf1");
+
     updatePackageJsonDependencies(packageJson, isTypeScriptProject);
     if (!existsSync(e2eProjectFolderPath)) {
         mkdirSync(e2eProjectFolderPath);

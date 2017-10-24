@@ -1,9 +1,11 @@
+import * as colors from "colors";
+
 import * as path from "path";
 import * as fs from "fs";
 import * as childProcess from "child_process";
 import * as glob from "glob";
 
-require('colors');
+
 import { INsCapabilities } from "./ins-capabilities";
 import { Point } from "./point";
 import { Direction } from "./direction";
@@ -158,6 +160,18 @@ export function log(message, verbose) {
     if (verbose) {
         console.log(message);
     }
+}
+
+export function error(message) {
+    console.error(colors.error(message));
+}
+
+export function info(message) {
+    console.info(colors.info(message));
+}
+
+export function warn(message) {
+    console.warn(colors.warn(message));
 }
 
 export function loglogOut(line, verbose) {

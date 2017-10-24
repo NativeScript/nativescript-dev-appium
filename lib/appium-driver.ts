@@ -1,4 +1,3 @@
-require('colors');
 var chai = require("chai");
 import * as wd from "wd";
 var chaiAsPromised = require("chai-as-promised");
