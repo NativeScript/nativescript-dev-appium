@@ -22,6 +22,7 @@ export class NsCapabilities implements INsCapabilities {
     private _appPath: string;
     private _emulatorOptions: string;
     private _device: IDevice;
+    private _ignoreDeviceController: boolean;
     private exceptions: Array<string> = new Array();
 
     constructor() {
@@ -39,6 +40,7 @@ export class NsCapabilities implements INsCapabilities {
         this._reuseDevice = parser.reuseDevice;
         this._runType = parser.runType;
         this._isSauceLab = parser.isSauceLab;
+        this._ignoreDeviceController = parser.ignoreDeviceController;
         this._appiumCaps = resolveCapabilities(this._appiumCapsLocation, parser.runType, parser.projectDir);
         this.resolveAppPath();
         this.checkMandatoryCapabiliies();
@@ -60,6 +62,7 @@ export class NsCapabilities implements INsCapabilities {
     get runType() { return this._runType; }
     get isSauceLab() { return this._isSauceLab; }
     get appPath() { return this._appPath; }
+    get ignoreDeviceController() { return this._ignoreDeviceController; }
     set appPath(appPath: string) { this._appPath = appPath; }
     get device() { return this._device; }
     set device(device: IDevice) { this._device = device; }

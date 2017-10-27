@@ -17,5 +17,6 @@ export interface INsCapabilities {
     storage: string;
     testReports: string;
     reuseDevice: boolean;
-    device: IDevice;
+    device:IDevice;
+    ignoreDeviceController: boolean;
 }

@@ -17,6 +17,7 @@ const config = (() => {
         .option("storage", { describe: "Storage for images folder.", type: "string" })
         .option("testReports", { describe: "Test reporting folder", type: "string" })
         .option("reuseDevice", { describe: "Reusing device if available.", type: "boolean", defualt: false })
+        .option("ignoreDeviceController", { describe: "Use default appium options for running emulatos/ simulators.", type: "boolean", defualt: false })
         .help()
         .argv;
 
@@ -45,8 +46,9 @@ const config = (() => {
         storage: options.storage || process.env.npm_config_STORAGE || process.env.STORAGE,
         testReports: options.testReports || process.env.npm_config_TEST_REPORTS || process.env.TEST_REPORTS,
         reuseDevice: options.reuseDevice || process.env.npm_config_REUSE_DEVICE || process.env.REUSE_DEVICE,
+        ignoreDeviceController: options.ignoreDeviceController,
     };
-         
+
     return config;
 })();
 
@@ -64,5 +66,6 @@ export const {
     appPath,
     storage,
     testReports,
-    reuseDevice
+    reuseDevice,
+    ignoreDeviceController
 } = config;
