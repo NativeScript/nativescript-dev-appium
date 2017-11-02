@@ -218,10 +218,10 @@ export function waitForOutput(process, matcher, errorMatcher, timeout, verbose) 
     });
 }
 
-export function executeCommand(args, cwd?): string {
-    cwd = cwd || process.cwd();
-
-    const output = childProcess.spawnSync("", args.split(" "), {
+export function executeCommand(args, cwd = process.cwd()): string {
+    const commands = args.split(" ");
+    const baseCommand = commands.shift();
+    const output = childProcess.spawnSync(baseCommand, commands, {
         shell: true,
         cwd: cwd,
         encoding: "UTF8"
