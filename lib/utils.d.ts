@@ -15,7 +15,7 @@ export declare function logErr(line: any, verbose: any): void;
 export declare function shutdown(processToKill: childProcess.ChildProcess, verbose: any): void;
 export declare function killPid(pid: any, verbose: any): void;
 export declare function waitForOutput(process: any, matcher: any, errorMatcher: any, timeout: any, verbose: any): Promise<boolean>;
-export declare function executeCommand(args: any, cwd?: any): string;
+export declare function executeCommand(args: any, cwd?: string): string;
 export declare function isWin(): boolean;
 export declare function getStorage(args: INsCapabilities): string;
 export declare function getReportPath(args: INsCapabilities): string;

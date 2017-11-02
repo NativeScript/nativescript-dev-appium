@@ -55,7 +55,7 @@ export class DeviceController {
                 await DeviceManager.startDevice(device);
                 console.log("Started device: ", device);
             } else {
-                console.log("Device is alredy started", device);
+                console.log("Device is already started", device);
                 if (!args.reuseDevice) {
                     DeviceController.kill(device);
                     await DeviceManager.startDevice(device);
