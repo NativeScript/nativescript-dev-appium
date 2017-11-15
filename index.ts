@@ -12,7 +12,7 @@ export { Point } from "./lib/point";
 export { SearchOptions } from "./lib/search-options";
 export { Locator } from "./lib/locators";
 export { Direction } from "./lib/direction";
-export { DeviceController } from "./lib/device-controller";
+export { DeviceManger } from "./lib/device-controller";
 
 const nsCapabilities = new NsCapabilities();
 const appiumServer = new AppiumServer(nsCapabilities);
