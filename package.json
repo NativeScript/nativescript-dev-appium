@@ -35,14 +35,14 @@
     "blink-diff": "^1.0.13",
     "glob": "*",
     "wd": "^1.4.0",
-    "webdriverio": "^4.8.0",
+    "webdriverio": "~4.8.0",
     "yargs": "^8.0.2",
     "chai": "~4.1.1",
     "chai-as-promised": "~7.1.1"
   },
   "devDependencies": {
     "@types/node": "^7.0.5",
-    "@types/webdriverio": "^4.8.4",
+    "@types/webdriverio": "~4.8.4",
     "typescript": "^2.5.0"
   },
   "scripts": {
