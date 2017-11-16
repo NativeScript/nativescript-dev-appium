@@ -84,7 +84,7 @@ export class AppiumServer {
 
             log("Stopping server...", this._args.verbose);
             try {
-                if (isWin) {
+                if (isWin()) {
                     shutdown(this._server, this._args.verbose);
                     this._server.kill("SIGINT");
                     this._server.kill("SIGINT");

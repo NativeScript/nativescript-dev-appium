@@ -175,7 +175,7 @@ export function logErr(line, verbose) {
 export function shutdown(processToKill: childProcess.ChildProcess, verbose) {
     try {
         if (processToKill && processToKill !== null) {
-            if (process.platform === "win32") {
+            if (isWin()) {
                 killPid(processToKill.pid, verbose);
             } else {
                 processToKill.kill();

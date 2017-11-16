@@ -37,20 +37,17 @@ export class DeviceManger {
 
             // Should find new device
             if (!args.reuseDevice) {
-                searchedDevices = DeviceController.filter(allDevices, { status: Status.SHUTDOWN });
-                device = searchedDevices ? searchedDevices[0] : device;
+                device = DeviceController.filter(searchedDevices, { status: Status.SHUTDOWN })[0];
             }
 
             // If there is no shutdown device
             if (!device || device === null || !device.status) {
-                searchedDevices = DeviceController.filter(allDevices, { status: Status.BOOTED });
-                device = searchedDevices ? searchedDevices[0] : device;
+                device = DeviceController.filter(searchedDevices, { status: Status.BOOTED })[0];
             }
 
             // In case reuse device is true but there weren't any booted devices. We need to fall back and boot new one.
             if (!device || device === null && args.reuseDevice) {
-                searchedDevices = DeviceController.filter(allDevices, { status: Status.SHUTDOWN });
-                device = searchedDevices ? searchedDevices[0] : device;
+                device = DeviceController.filter(searchedDevices, { status: Status.SHUTDOWN })[0];
             }
 
             if (device.status === Status.SHUTDOWN) {
