@@ -16,8 +16,9 @@ export class DeviceManger {
     private static _emulators: Map<string, IDevice> = new Map();
 
     public static async startDevice(args: INsCapabilities) {
+        let device: IDevice = DeviceManger.getDefaultDevice(args);
         if (args.isSauceLab || args.ignoreDeviceController) {
-            return DeviceManger.getDefaultDevice(args);
+            return device;
         }
 
         const allDevices = (await DeviceController.getDivices({ platform: args.appiumCaps.platformName }));
@@ -26,29 +27,30 @@ export class DeviceManger {
             console.log("Available devices:\n", allDevices);
         }
 
-        let searchedDevices = DeviceController.filter(allDevices, { name: args.appiumCaps.deviceName });
+        let searchedDevices = DeviceController.filter(allDevices, { name: args.appiumCaps.deviceName, apiLevel: args.appiumCaps.platformVersion });
         if (!searchedDevices || searchedDevices.length === 0) {
             console.log(`No such device ${args.appiumCaps.deviceName}!!!\n Check your device name!!!`);
             console.log("Available devices:\n", allDevices);
         }
-
-        let device: IDevice;
 
         if (searchedDevices && searchedDevices.length > 0) {
 
             // Should find new device
             if (!args.reuseDevice) {
                 searchedDevices = DeviceController.filter(allDevices, { status: Status.SHUTDOWN });
+                device = searchedDevices ? searchedDevices[0] : device;
             }
 
             // If there is no shutdown device
-            if (!device || device === null) {
-                searchedDevices = DeviceController.filter(searchedDevices, { status: Status.BOOTED });
+            if (!device || device === null || !device.status) {
+                searchedDevices = DeviceController.filter(allDevices, { status: Status.BOOTED });
+                device = searchedDevices ? searchedDevices[0] : device;
             }
 
             // In case reuse device is true but there weren't any booted devices. We need to fall back and boot new one.
             if (!device || device === null && args.reuseDevice) {
-                searchedDevices = DeviceController.filter(searchedDevices, { status: Status.SHUTDOWN });
+                searchedDevices = DeviceController.filter(allDevices, { status: Status.SHUTDOWN });
+                device = searchedDevices ? searchedDevices[0] : device;
             }
 
             if (device.status === Status.SHUTDOWN) {
@@ -56,15 +58,12 @@ export class DeviceManger {
                 console.log("Started device: ", device);
             } else {
                 console.log("Device is already started", device);
-                if (!args.reuseDevice) {
+                if (!args.reuseDevice && device.type !== DeviceType.EMULATOR && device.type !== DeviceType.SIMULATOR) {
+                    console.log("Since is it specified without reusing, the device would be shut down and restart!");
                     DeviceController.kill(device);
                     await DeviceController.startDevice(device);
                 }
             }
-        }
-
-        if (!device || device === null) {
-            device = DeviceManger.getDefaultDevice(args);
         }
 
         DeviceManger._emulators.set(args.runType, device);
