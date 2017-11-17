@@ -76,7 +76,7 @@ export class DeviceManger {
     }
 
     public static async kill(device: IDevice) {
-        await DeviceManger.kill(device);
+        await DeviceController.kill(device);
     }
 
 
