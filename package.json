@@ -30,7 +30,7 @@
   "dependencies": {
     "blink-diff": "^1.0.13",
     "mobile-devices-controller": "^1.0.0",
-    "wd": "^1.4.0",
+    "wd": "^1.4.1",
     "webdriverio": "~4.8.0",
     "yargs": "^8.0.2"
   },

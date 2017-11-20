@@ -48,6 +48,10 @@ export class AppiumDriver {
         this._webio.requestHandler.sessionID = this._driver.sessionID;
     }
 
+    get imageHelper() {
+        return this._imageHelper;
+    }
+
     get defaultWaitTime(): number {
         return this._defaultWaitTime;
     }
