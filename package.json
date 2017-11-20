@@ -30,6 +30,7 @@
   "dependencies": {
     "blink-diff": "^1.0.13",
     "mobile-devices-controller": "^1.0.0",
+    "app-root-path": "^2.0.1",
     "wd": "^1.4.1",
     "webdriverio": "~4.8.0",
     "yargs": "^8.0.2"
@@ -40,7 +41,6 @@
     "colors": "^1.1.2",
     "glob": "*",
     "portastic": "^1.0.1",
-    "app-root-path": "^2.0.1",
     "@types/node": "^7.0.5",
     "@types/webdriverio": "~4.8.4",
     "typescript": "^2.5.0"
