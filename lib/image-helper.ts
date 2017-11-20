@@ -38,7 +38,7 @@ export class ImageHelper {
     }
 
     public static cropImageDefaultParams(_args: INsCapabilities) {
-        return { x: 0, y: ImageHelper.getOffsetPixels(_args), width: undefined, height: undefined };
+        return { x: 0, y: ImageHelper.getOffsetPixels(_args)};
     }
 
     private runDiff(diffOptions: blinkDiff, diffImage: string) {
