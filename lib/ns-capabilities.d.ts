@@ -43,8 +43,8 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly ignoreDeviceController: boolean;
     device: IDevice;
     readonly emulatorOptions: string;
+    private isAndroidPlatform();
     private resolveAppPath();
     private checkMandatoryCapabiliies();
     private throwExceptions();
-    isAndroidPlatform(): boolean;
 }

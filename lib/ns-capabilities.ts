@@ -74,6 +74,8 @@ export class NsCapabilities implements INsCapabilities {
     set device(device: IDevice) { this._device = device; }
     get emulatorOptions() { return (this._emulatorOptions || "-wipe-data -gpu on") }
 
+    private isAndroidPlatform() { return this._appiumCaps.platformName.toLowerCase().includes("android"); }
+
     private resolveAppPath() {
         if (this._appPath) {
             this._appiumCaps.app = this._appPath;
@@ -98,7 +100,7 @@ export class NsCapabilities implements INsCapabilities {
             this.exceptions.push("Platform name is missing! Please, check appium capabilities file!");
         }
 
-        if (!this._appiumCaps.platformName) {
+        if (!this._appiumCaps.platformVersion) {
             this.exceptions.push("Platform version is missing! Please, check appium capabilities file!");
         }
 
@@ -117,6 +119,4 @@ export class NsCapabilities implements INsCapabilities {
             throw new Error(`See the ${messagesString} above and fullfill the conditions!!!`);
         }
     }
-
-    isAndroidPlatform() { return this._appiumCaps.platformName.toLowerCase() === "android" ? true : false; }
 }
