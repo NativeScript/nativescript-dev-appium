@@ -114,7 +114,8 @@ function updatePackageJsonDependencies(packageJson, isTypeScriptProject) {
         }
     }
 
-    configureDevDependencies(packageJson);
+    // uncomment after npm is fixed
+    //configureDevDependencies(packageJson);
     console.warn("WARNING: nativescript-dev-appium no longer installs Appium as a local dependency!");
     console.info("Add appium as a local dependency (see README) or we'll attempt to run it from PATH.");
     writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));

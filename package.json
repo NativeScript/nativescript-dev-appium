@@ -34,12 +34,17 @@
     "wd": "^1.4.1",
     "webdriverio": "~4.8.0",
     "yargs": "^8.0.2",
-    "chai": "^4.1.2",
-    "chai-as-promised": "^7.1.1",
     "glob": "*",
     "portastic": "^1.0.1",
     "@types/node": "^7.0.5",
-    "@types/webdriverio": "~4.8.4"
+    "@types/webdriverio": "~4.8.4",
+    "chai": "~4.1.1",
+    "chai-as-promised": "~7.1.1",
+    "mocha": "~3.5.0",
+    "mocha-junit-reporter": "^1.13.0",
+    "mocha-multi": "^0.11.0",
+    "@types/chai": "^4.0.2",
+    "@types/mocha": "^2.2.41"
   },
   "devDependencies": {
     "typescript": "^2.5.0"
