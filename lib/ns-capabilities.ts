@@ -69,7 +69,6 @@ export class NsCapabilities implements INsCapabilities {
     get emulatorOptions() { return (this._emulatorOptions || "-wipe-data -gpu on") }
 
     private resolveAppPath() {
-
         if (this._appPath) {
             this._appiumCaps.app = this._appPath;
         }

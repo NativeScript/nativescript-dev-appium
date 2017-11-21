@@ -175,7 +175,7 @@ export function logErr(line, verbose) {
 export function shutdown(processToKill: childProcess.ChildProcess, verbose) {
     try {
         if (processToKill && processToKill !== null) {
-            if (process.platform === "win32") {
+            if (isWin()) {
                 killPid(processToKill.pid, verbose);
             } else {
                 processToKill.kill();
@@ -269,7 +269,12 @@ function getAppName(args: INsCapabilities) {
 
 export function getAppPath(platform, runType) {
     if (platform.includes("android")) {
-        const apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
+        //platforms/android/build/outputs/apk/
+        //platforms/android/app/build/outputs/apk
+        let apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
+        if (!apks || apks.length === 0) {
+            let apks = glob.sync("platforms/android/app/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
+        }
         return apks[0];
     } else if (platform.includes("ios")) {
         if (runType.includes("sim")) {

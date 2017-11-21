@@ -1,6 +1,6 @@
 {
   "name": "nativescript-dev-appium",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "A NativeScript plugin to help integrate and run Appium tests",
   "author": "NativeScript",
   "license": "MIT",
@@ -28,26 +28,25 @@
     }
   ],
   "dependencies": {
-    "app-root-path": "^2.0.1",
-    "portastic": "^1.0.1",
-    "mobile-devices-controller": "~1.0.0",
-    "colors": "^1.1.2",
     "blink-diff": "^1.0.13",
-    "glob": "*",
-    "wd": "^1.4.0",
+    "mobile-devices-controller": "^1.0.0",
+    "app-root-path": "^2.0.1",
+    "wd": "^1.4.1",
     "webdriverio": "~4.8.0",
     "yargs": "^8.0.2",
-    "chai": "~4.1.1",
-    "chai-as-promised": "~7.1.1"
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "colors": "^1.1.2",
+    "glob": "*",
+    "portastic": "^1.0.1",
+    "@types/node": "^7.0.5",
+    "@types/webdriverio": "~4.8.4"
   },
   "devDependencies": {
-    "@types/node": "^7.0.5",
-    "@types/webdriverio": "~4.8.4",
     "typescript": "^2.5.0"
   },
   "scripts": {
     "postinstall": "node ./postinstall.js",
-    "compile": "tsc --watch",
-    "e2e": "tsc -p e2e && mocha --opts ./e2e/config/mocha.opts --"
+    "compile": "tsc --watch"
   }
 }

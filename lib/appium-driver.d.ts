@@ -6,6 +6,7 @@ import { Direction } from "./direction";
 import { Locator } from "./locators";
 import { INsCapabilities } from "./ins-capabilities";
 import { Point } from "./point";
+import { ImageHelper } from "./image-helper";
 export declare class AppiumDriver {
     private _driver;
     private _wd;
@@ -22,6 +23,7 @@ export declare class AppiumDriver {
     private _logPath;
     private _storage;
     private constructor();
+    readonly imageHelper: ImageHelper;
     defaultWaitTime: number;
     readonly capabilities: any;
     readonly platformName: any;

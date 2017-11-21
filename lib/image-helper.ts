@@ -4,11 +4,17 @@ import { INsCapabilities } from "./ins-capabilities";
 
 export class ImageHelper {
 
+    private _cropImageRec: { x: number, y: number, width: number, height: number };
+    
     constructor(private _args: INsCapabilities) {
     }
 
-    private getOffsetPixels() {
-        return this._args.device.config ? this._args.device.config.offsetPixels : 40; // TODO: iOS = 40
+    get cropImageRec() {
+        return this._cropImageRec;
+    }
+
+    set cropImageRec(rect: { x: number, y: number, width: number, height: number }) {
+        this._cropImageRec = rect;
     }
 
     public imageOutputLimit() {
@@ -27,16 +33,12 @@ export class ImageHelper {
         return 20;
     }
 
-    public cropImageA() {
-        return { x: 0, y: this.getOffsetPixels() };
+    private static getOffsetPixels(args: INsCapabilities) {
+        return args.device.config ? args.device.config.offsetPixels : 0
     }
 
-    public cropImageB() {
-        return { x: 0, y: this.getOffsetPixels() };
-    }
-
-    public verbose() {
-        return false;
+    public static cropImageDefaultParams(_args: INsCapabilities) {
+        return { x: 0, y: ImageHelper.getOffsetPixels(_args)};
     }
 
     private runDiff(diffOptions: blinkDiff, diffImage: string) {
@@ -65,7 +67,9 @@ export class ImageHelper {
     }
 
     public compareImages(actual: string, expected: string, output: string, valueThreshold: number = this.threshold(), typeThreshold: any = ImageOptions.pixel) {
+        const rectToCrop = this._cropImageRec || ImageHelper.cropImageDefaultParams(this._args);
         let diff = new blinkDiff({
+
             imageAPath: actual,
             imageBPath: expected,
             imageOutputPath: output,
@@ -73,9 +77,10 @@ export class ImageHelper {
             thresholdType: typeThreshold,
             threshold: valueThreshold,
             delta: this.delta(),
-            cropImageA: this.cropImageA(),
-            cropImageB: this.cropImageB(),
-            verbose: this.verbose(),
+
+            cropImageA: rectToCrop,
+            cropImageB: rectToCrop,
+            verbose: this._args.verbose,
         });
 
         return this.runDiff(diff, output);
