@@ -2,21 +2,23 @@ import { ImageOptions } from "./image-options";
 import { INsCapabilities } from "./ins-capabilities";
 export declare class ImageHelper {
     private _args;
+    private _cropImageRec;
     constructor(_args: INsCapabilities);
-    private getOffsetPixels();
+    cropImageRec: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    };
     imageOutputLimit(): ImageOptions;
     thresholdType(): ImageOptions;
     threshold(): number;
     delta(): number;
-    cropImageA(): {
+    private static getOffsetPixels(args);
+    static cropImageDefaultParams(_args: INsCapabilities): {
         x: number;
         y: any;
     };
-    cropImageB(): {
-        x: number;
-        y: any;
-    };
-    verbose(): boolean;
     private runDiff(diffOptions, diffImage);
     compareImages(actual: string, expected: string, output: string, valueThreshold?: number, typeThreshold?: any): Promise<boolean>;
 }
