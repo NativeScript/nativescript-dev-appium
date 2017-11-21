@@ -5,7 +5,8 @@ import { INsCapabilities } from "./ins-capabilities";
 export class ImageHelper {
 
     private _cropImageRec: { x: number, y: number, width: number, height: number };
-    
+    private _blockOutAreas: { x: number, y: number, width: number, height: number }[];
+
     constructor(private _args: INsCapabilities) {
     }
 
@@ -15,6 +16,14 @@ export class ImageHelper {
 
     set cropImageRec(rect: { x: number, y: number, width: number, height: number }) {
         this._cropImageRec = rect;
+    }
+
+    get blockOutAreas() {
+        return this._blockOutAreas;
+    }
+
+    set blockOutAreas(rectangles: { x: number, y: number, width: number, height: number }[]) {
+        this._blockOutAreas = rectangles;
     }
 
     public imageOutputLimit() {
@@ -38,7 +47,7 @@ export class ImageHelper {
     }
 
     public static cropImageDefaultParams(_args: INsCapabilities) {
-        return { x: 0, y: ImageHelper.getOffsetPixels(_args)};
+        return { x: 0, y: ImageHelper.getOffsetPixels(_args) };
     }
 
     private runDiff(diffOptions: blinkDiff, diffImage: string) {
@@ -80,9 +89,12 @@ export class ImageHelper {
 
             cropImageA: rectToCrop,
             cropImageB: rectToCrop,
+            blockOut: this._blockOutAreas,
             verbose: this._args.verbose,
         });
 
-        return this.runDiff(diff, output);
+        const result = this.runDiff(diff, output);
+        this._blockOutAreas = undefined;
+        return result;
     }
 }

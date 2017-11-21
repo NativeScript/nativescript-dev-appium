@@ -3,6 +3,7 @@ import { INsCapabilities } from "./ins-capabilities";
 export declare class ImageHelper {
     private _args;
     private _cropImageRec;
+    private _blockOutAreas;
     constructor(_args: INsCapabilities);
     cropImageRec: {
         x: number;
@@ -10,6 +11,12 @@ export declare class ImageHelper {
         width: number;
         height: number;
     };
+    blockOutAreas: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    }[];
     imageOutputLimit(): ImageOptions;
     thresholdType(): ImageOptions;
     threshold(): number;
