@@ -12,3 +12,4 @@ test-app
 .git
 .gitignore
 .npmignore
+package-lock.json
