@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import * as childProcess from "child_process";
-import { INsCapabilities } from "./ins-capabilities";
+import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { Point } from "./point";
 import { Direction } from "./direction";
 export declare function resolve(mainPath: any, ...args: any[]): any;

@@ -13,6 +13,7 @@ export { SearchOptions } from "./lib/search-options";
 export { Locator } from "./lib/locators";
 export { Direction } from "./lib/direction";
 export { DeviceManger } from "./lib/device-controller";
+export { IRectangle } from "./lib/interfaces/rectangle";
 
 const nsCapabilities = new NsCapabilities();
 const appiumServer = new AppiumServer(nsCapabilities);

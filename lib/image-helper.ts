@@ -1,28 +1,29 @@
 import * as blinkDiff from "blink-diff";
 import { ImageOptions } from "./image-options";
-import { INsCapabilities } from "./ins-capabilities";
+import { INsCapabilities } from "./interfaces/ns-capabilities";
+import { IRectangle } from "./interfaces/rectangle";
 
 export class ImageHelper {
 
-    private _cropImageRec: { x: number, y: number, width: number, height: number };
-    private _blockOutAreas: { x: number, y: number, width: number, height: number }[];
+    private _cropImageRect: IRectangle;
+    private _blockOutAreas: IRectangle[];
 
     constructor(private _args: INsCapabilities) {
     }
 
-    get cropImageRec() {
-        return this._cropImageRec;
+    get cropImageRect() {
+        return this._cropImageRect;
     }
 
-    set cropImageRec(rect: { x: number, y: number, width: number, height: number }) {
-        this._cropImageRec = rect;
+    set cropImageRec(rect: IRectangle) {
+        this._cropImageRect = rect;
     }
 
     get blockOutAreas() {
         return this._blockOutAreas;
     }
 
-    set blockOutAreas(rectangles: { x: number, y: number, width: number, height: number }[]) {
+    set blockOutAreas(rectangles: IRectangle[]) {
         this._blockOutAreas = rectangles;
     }
 
@@ -76,7 +77,7 @@ export class ImageHelper {
     }
 
     public compareImages(actual: string, expected: string, output: string, valueThreshold: number = this.threshold(), typeThreshold: any = ImageOptions.pixel) {
-        const rectToCrop = this._cropImageRec || ImageHelper.cropImageDefaultParams(this._args);
+        const rectToCrop = this._cropImageRect || ImageHelper.cropImageDefaultParams(this._args);
         let diff = new blinkDiff({
 
             imageAPath: actual,

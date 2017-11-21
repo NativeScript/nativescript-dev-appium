@@ -6,6 +6,7 @@ export { SearchOptions } from "./lib/search-options";
 export { Locator } from "./lib/locators";
 export { Direction } from "./lib/direction";
 export { DeviceManger } from "./lib/device-controller";
+export { IRectangle } from "./lib/interfaces/rectangle";
 export declare function startServer(port?: number): Promise<void>;
 export declare function stopServer(): Promise<void>;
 export declare function createDriver(): Promise<any>;

@@ -36,7 +36,6 @@
     "yargs": "^8.0.2",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
-    "colors": "^1.1.2",
     "glob": "*",
     "portastic": "^1.0.1",
     "@types/node": "^7.0.5",

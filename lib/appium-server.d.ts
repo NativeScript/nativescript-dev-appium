@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import * as child_process from "child_process";
-import { INsCapabilities } from "./ins-capabilities";
+import { INsCapabilities } from "./interfaces/ns-capabilities";
 export declare class AppiumServer {
     private _args;
     private _server;

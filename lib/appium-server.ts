@@ -1,6 +1,6 @@
 import * as child_process from "child_process";
 import { log, resolve, waitForOutput, shutdown, fileExists, isWin, executeCommand } from "./utils";
-import { INsCapabilities } from "./ins-capabilities";
+import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { DeviceManger } from "./device-controller";
 
 export class AppiumServer {
