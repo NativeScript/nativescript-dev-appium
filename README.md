@@ -2,6 +2,10 @@
 
 A package to help with writing and executing e2e [Appium](http://appium.io) tests.
 
+## Requirments
+
+`nativescript-dev-appium` plugin works with latest android SDK tools, iOS instruments and appium.
+
 ## <a name='usage'></a>Usage
 
 Install it with:
@@ -17,6 +21,21 @@ Or install appium globally (to avoid installing it for every app):
 `$ npm install -g appium`
 
 After installation, you should have a sample test below the `e2e` directory which you can rename of your choice. However, if you rename the folder you will have to specify it using `--testfolder someFolderName` option.
+        Structure:
+
+        my-app
+        ├── app
+        ├── e2e
+            ├── configs
+            ├── reports
+            ├── resources
+            ├── sample-test.ts
+            ├── setup.ts
+            ├── tsconfig.json
+        ├── package.json
+        ├── tsconfig.json
+        
+To avaid any uncompatibilities between e2e tests and application structure and requirments we recommend e2e folder to be excluded from main tsconfig.json `exclude": [ "e2e" ]`
 
 Before running the tests you will have to build your app for the platform on test or both. Navigate to your demo app folder from where you will execute the commands that follow.
 
@@ -39,7 +58,7 @@ $ npm run e2e -- --runType android25
 or
 
 ```
-$ npm run e2e -- --runType sim.iPhone7.iOS110
+$ npm run e2e -- --runType sim.iPhone8.iOS110
 ```
 
 Generated tests are standard [Mocha](http://mochajs.org) tests.
@@ -95,11 +114,11 @@ Notice that once custom capabilities are provided you will be able to pick any o
             "app": ""
         
     },
-    "sim.iPhone7.iOS110": {
+    "sim.iPhone8.iOS110": {
             "browserName": "",
             "platformName": "iOS",
-            "platformVersion": "10.0",
-            "deviceName": "iPhone 7 110",
+            "platformVersion": "11.0",
+            "deviceName": "iPhone 8 110",
             "app": ""
         
     }
@@ -118,6 +137,9 @@ As you can see, the `app` property can be left an empty string which will force 
 |appPath| Provide location of the app package to be tested. This will overwrite all provided capabilities for app| Possible values are:<br/> - app build package name (in case `--sauceLab` option is set it will prepend `sauce-storage:` in front of the app name so app has to be [uploaded to Sauce Labs](https://wiki.saucelabs.com/display/DOCS/Uploading+Mobile+Applications+to+Sauce+Storage+for+Testing) before execution starts)<br/> - path e.g. `platforms/android/build/outputs/apk/demo.apk`.<br/> Example: --appPath demo-debug.apk|
 |sauceLab| Enable tests execution in [Sauce Labs](https://saucelabs.com/). As a prerequisite you will have to define `SAUCE_USER` and `SAUCE_KEY` as [environment variable](https://wiki.saucelabs.com/display/DOCS/Best+Practice%3A+Use+Environment+Variables+for+Authentication+Credentials)| e.g. --sauceLab|
 |capsLocation| Change the location where `appium.capabilities.json` config file can be. It should be relative to the root directory | e.g. --capsLocation /e2e-tests|
+|--port| Appium server port|
+|--storage| Specify remote image storage |
+|-ignoreDeviceController| Setting this option you will use default appium device controller which is recommended when tests are executed on cloud based solutions |
 
 Examples:
 
@@ -126,13 +148,29 @@ $ npm run e2e --runType android25 --sauceLab --appLocation demo.apk --capsLocati
 
 ```
 
+## Features
+
+1. Compare images. Block out areas to ignore in comparison.
+2. Find elements findElementByText, findElementsByXPath, findElementByAccessibilityId etc...
+3. Gesture support: swipe, scroll, drag, scrollTo
+4. Action support: tap, click, doubleTap, hold, 
+5. Element characteristics: lcation, exists, size, isDisplayed
+6. Find strategies: waitForExist, waitForExistNot
+7. Direct access to webdriver and webdriverio
+
 ## Troubleshooting
 
 Use the `--verbose` option to get error details:
 
 ```
-$ npm run appium --runType=android --verbose
+$ npm run appium --runType android25 --verbose
 ```
+
+## Common problems
+
+1. Missing installed appium
+2. Missleading appPath or capabilities location. Please make sure that the path to the app or capabilities location is correct.
+
 
 ## Missing features
 
