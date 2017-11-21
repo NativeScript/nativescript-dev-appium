@@ -273,7 +273,7 @@ export function getAppPath(platform, runType) {
         //platforms/android/app/build/outputs/apk
         let apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
         if (!apks || apks.length === 0) {
-            let apks = glob.sync("platforms/android/app/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
+            apks = glob.sync("platforms/android/app/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
         }
         return apks[0];
     } else if (platform.includes("ios")) {
