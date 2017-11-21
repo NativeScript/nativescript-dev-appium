@@ -1,9 +1,8 @@
+import { INsCapabilities } from "./ins-capabilities";
 export declare class ElementHelper {
-    private _platform;
-    private _platformVersion;
+    private _args;
     private locators;
-    private isAndroid;
-    constructor(_platform: string, _platformVersion: number);
+    constructor(_args: INsCapabilities);
     getXPathElement(name: any): void;
     getXPathByText(text: any, exactMatch: any): string;
     getXPathWithExactText(text: any): string;

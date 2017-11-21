@@ -31,6 +31,8 @@ export declare class AppiumDriver {
     readonly elementHelper: ElementHelper;
     readonly locators: Locator;
     readonly isAlive: boolean;
+    readonly isAndroid: boolean;
+    readonly isIOS: boolean;
     readonly driver: any;
     webio(): any;
     wd(): any;

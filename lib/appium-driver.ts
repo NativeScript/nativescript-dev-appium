@@ -41,10 +41,10 @@ export class AppiumDriver {
     private _storage: string;
 
     private constructor(private _driver: any, private _wd, private _webio: any, private _driverConfig, private _args: INsCapabilities) {
-        this._elementHelper = new ElementHelper(this._args.appiumCaps.platformName.toLowerCase(), this._args.appiumCaps.platformVersion.toLowerCase());
+        this._elementHelper = new ElementHelper(this._args);
         this._imageHelper = new ImageHelper(this._args);
         this._isAlive = true;
-        this._locators = new Locator(this._args.appiumCaps.platformName, this._args.appiumCaps.platformVersion);
+        this._locators = new Locator(this._args);
         this._webio.requestHandler.sessionID = this._driver.sessionID;
     }
 
@@ -82,6 +82,14 @@ export class AppiumDriver {
 
     get isAlive() {
         return this._isAlive;
+    }
+
+    get isAndroid() {
+        return this._args.isAndroid;
+    }
+
+    get isIOS() {
+        return this._args.isIOS;
     }
 
     get driver() {

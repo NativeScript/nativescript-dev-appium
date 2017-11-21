@@ -1,15 +1,14 @@
 import { contains } from "./utils";
 import { log } from "./utils";
+import { INsCapabilities } from "./ins-capabilities";
 import { Locator } from "./locators";
 
 export class ElementHelper {
 
-    private locators : Locator;
+    private locators: Locator;
 
-    private isAndroid: boolean;
-    constructor(private _platform: string, private _platformVersion: number) {
-        this.isAndroid = this._platform === "android";
-        this.locators = new Locator(this._platform, this._platformVersion)
+    constructor(private _args: INsCapabilities) {
+        this.locators = new Locator(this._args)
     }
 
     public getXPathElement(name) {
@@ -31,19 +30,19 @@ export class ElementHelper {
 
     public findByTextLocator(controlType, value, exactMatch) {
         let artbutes = ["label", "value", "hint"];
-        if (this.isAndroid) {
+        if (this._args.isAndroid) {
             artbutes = ["content-desc", "resource-id", "text"];
         }
 
         let searchedString = "";
         if (exactMatch) {
-            if (this.isAndroid) {
+            if (this._args.isAndroid) {
                 artbutes.forEach((atr) => { searchedString += "translate(@" + atr + ",'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='" + value.toLowerCase() + "'" + " or " });
             } else {
                 artbutes.forEach((atr) => { searchedString += "@" + atr + "='" + value + "'" + " or " });
             }
         } else {
-            if (this.isAndroid) {
+            if (this._args.isAndroid) {
                 artbutes.forEach((atr) => { searchedString += "contains(translate(@" + atr + ",'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'" + value.toLowerCase() + "')" + " or " });
             } else {
                 artbutes.forEach((atr) => { searchedString += "contains(@" + atr + ",'" + value + "')" + " or " });

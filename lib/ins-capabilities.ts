@@ -11,12 +11,14 @@ export interface INsCapabilities {
     appiumCaps: any;
     testFolder: string;
     runType: string;
+    isAndroid: boolean;
+    isIOS: boolean;
     isSauceLab: boolean;
     appPath: string;
     emulatorOptions: string;
     storage: string;
     testReports: string;
     reuseDevice: boolean;
-    device:IDevice;
+    device: IDevice;
     ignoreDeviceController: boolean;
 }

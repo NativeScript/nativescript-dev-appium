@@ -18,6 +18,8 @@ export class NsCapabilities implements INsCapabilities {
     private _testReports;
     private _reuseDevice;
     private _runType;
+    private _isAndroid;
+    private _isIOS;
     private _isSauceLab;
     private _appPath: string;
     private _emulatorOptions: string;
@@ -34,14 +36,16 @@ export class NsCapabilities implements INsCapabilities {
         this._port = parser.port;
         this._verbose = parser.verbose;
         this._appiumCapsLocation = parser.appiumCapsLocation;
+        this._appiumCaps = resolveCapabilities(this._appiumCapsLocation, parser.runType, parser.projectDir);
         this._testFolder = parser.testFolder;
         this._storage = parser.storage;
         this._testReports = parser.testReports;
         this._reuseDevice = parser.reuseDevice;
         this._runType = parser.runType;
+        this._isAndroid = this.isAndroidPlatform();
+        this._isIOS = !this._isAndroid;
         this._isSauceLab = parser.isSauceLab;
         this._ignoreDeviceController = parser.ignoreDeviceController;
-        this._appiumCaps = resolveCapabilities(this._appiumCapsLocation, parser.runType, parser.projectDir);
         this.resolveAppPath();
         this.checkMandatoryCapabiliies();
         this.throwExceptions();
@@ -60,6 +64,8 @@ export class NsCapabilities implements INsCapabilities {
     get testReports() { return this._testReports; }
     get reuseDevice() { return this._reuseDevice; }
     get runType() { return this._runType; }
+    get isAndroid() { return this._isAndroid; }
+    get isIOS() { return this._isIOS; }
     get isSauceLab() { return this._isSauceLab; }
     get appPath() { return this._appPath; }
     get ignoreDeviceController() { return this._ignoreDeviceController; }
@@ -111,4 +117,6 @@ export class NsCapabilities implements INsCapabilities {
             throw new Error(`See the ${messagesString} above and fullfill the conditions!!!`);
         }
     }
+
+    isAndroidPlatform() { return this._appiumCaps.platformName.toLowerCase() === "android" ? true : false; }
 }
