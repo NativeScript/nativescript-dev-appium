@@ -17,7 +17,7 @@ const config = (() => {
         .option("storage", { describe: "Storage for images folder.", type: "string" })
         .option("testReports", { describe: "Test reporting folder", type: "string" })
         .option("reuseDevice", { describe: "Reusing device if available.", type: "boolean", defualt: false })
-        .option("ignoreDeviceController", { describe: "Use default appium options for running emulatos/ simulators.", type: "boolean", defualt: false })
+        .option("ignoreDeviceController", {alias:"i-ns-device-controller", describe: "Use default appium options for running emulatos/ simulators.", type: "boolean", defualt: false })
         .help()
         .argv;
 
