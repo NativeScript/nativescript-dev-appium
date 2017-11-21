@@ -4,9 +4,9 @@ export class Locator {
 
     private _elementsList: Map<string, string>;
 
-    constructor(private _platformName: string, private _platformVersion) {
+    constructor(private _args: INsCapabilities) {
         this._elementsList = new Map<string, string>();
-        if (this._platformName.toLowerCase().includes("android")) {
+        if (this._args.isAndroid) {
             this.loadAndroidElements();
         } else {
             this.loadIOSElements();
@@ -105,7 +105,7 @@ export class Locator {
 
     private createIosElement(element) {
         let elementType = "UIA";
-        if (parseFloat(this._platformVersion) >= 10) {
+        if (parseFloat(this._args.appiumCaps.platformVersion) >= 10) {
             elementType = "XCUIElementType";
         }
 

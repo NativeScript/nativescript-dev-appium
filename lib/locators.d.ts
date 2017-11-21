@@ -1,8 +1,8 @@
+import { INsCapabilities } from "./ins-capabilities";
 export declare class Locator {
-    private _platformName;
-    private _platformVersion;
+    private _args;
     private _elementsList;
-    constructor(_platformName: string, _platformVersion: any);
+    constructor(_args: INsCapabilities);
     readonly button: string;
     readonly listView: string;
     readonly image: string;
