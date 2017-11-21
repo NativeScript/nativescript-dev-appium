@@ -47,6 +47,7 @@
   },
   "scripts": {
     "postinstall": "node ./postinstall.js",
-    "compile": "tsc --watch"
+    "prepare": "tsc",
+    "watch": "tsc --watch"
   }
 }
