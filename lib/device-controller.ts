@@ -1,6 +1,6 @@
 import { waitForOutput, resolve, log, isWin, shutdown, executeCommand } from "./utils";
 import * as child_process from "child_process";
-import { INsCapabilities } from "./ins-capabilities";
+import { INsCapabilities } from "./interfaces/ns-capabilities";
 
 import {
     IDevice,

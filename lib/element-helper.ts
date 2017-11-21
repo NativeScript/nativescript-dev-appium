@@ -1,6 +1,6 @@
 import { contains } from "./utils";
 import { log } from "./utils";
-import { INsCapabilities } from "./ins-capabilities";
+import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { Locator } from "./locators";
 
 export class ElementHelper {

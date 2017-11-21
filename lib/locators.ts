@@ -1,4 +1,4 @@
-import { INsCapabilities } from "./ins-capabilities";
+import { INsCapabilities } from "./interfaces/ns-capabilities";
 
 export class Locator {
 

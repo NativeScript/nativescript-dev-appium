@@ -1,4 +1,4 @@
-import { INsCapabilities } from "./ins-capabilities";
+import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDevice } from "mobile-devices-controller";
 export declare class NsCapabilities implements INsCapabilities {
     private _projectDir;

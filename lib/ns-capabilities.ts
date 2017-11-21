@@ -1,5 +1,5 @@
 import * as parser from "./parser"
-import { INsCapabilities } from "./ins-capabilities";
+import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { resolveCapabilities } from "./capabilities-helper";
 import { getAppPath, fileExists, logErr } from "./utils";
 import { IDevice } from "mobile-devices-controller";

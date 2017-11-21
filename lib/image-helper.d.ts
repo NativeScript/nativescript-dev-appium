@@ -1,22 +1,14 @@
 import { ImageOptions } from "./image-options";
-import { INsCapabilities } from "./ins-capabilities";
+import { INsCapabilities } from "./interfaces/ns-capabilities";
+import { IRectangle } from "./interfaces/rectangle";
 export declare class ImageHelper {
     private _args;
-    private _cropImageRec;
+    private _cropImageRect;
     private _blockOutAreas;
     constructor(_args: INsCapabilities);
-    cropImageRec: {
-        x: number;
-        y: number;
-        width: number;
-        height: number;
-    };
-    blockOutAreas: {
-        x: number;
-        y: number;
-        width: number;
-        height: number;
-    }[];
+    readonly cropImageRect: IRectangle;
+    cropImageRec: IRectangle;
+    blockOutAreas: IRectangle[];
     imageOutputLimit(): ImageOptions;
     thresholdType(): ImageOptions;
     threshold(): number;

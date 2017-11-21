@@ -4,7 +4,7 @@ import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
 import { Direction } from "./direction";
 import { Locator } from "./locators";
-import { INsCapabilities } from "./ins-capabilities";
+import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { Point } from "./point";
 import { ImageHelper } from "./image-helper";
 export declare class AppiumDriver {

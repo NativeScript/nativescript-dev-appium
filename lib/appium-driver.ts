@@ -21,7 +21,7 @@ import {
     calculateOffset,
     scroll
 } from "./utils";
-import { INsCapabilities } from "./ins-capabilities";
+import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { Point } from "./point";
 import { ImageHelper } from "./image-helper";
 import { ImageOptions } from "./image-options"
