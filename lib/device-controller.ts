@@ -15,7 +15,7 @@ import {
 export class DeviceManger {
     private static _emulators: Map<string, IDevice> = new Map();
 
-    public static async startDevice(args: INsCapabilities) {
+    public static async startDevice(args: INsCapabilities): Promise<IDevice> {
         let device: IDevice = DeviceManger.getDefaultDevice(args);
         if (args.isSauceLab || args.ignoreDeviceController) {
             return device;
