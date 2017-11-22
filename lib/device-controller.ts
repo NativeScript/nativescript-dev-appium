@@ -27,7 +27,8 @@ export class DeviceManger {
             console.log("Available devices:\n", allDevices);
         }
 
-        let searchedDevices = DeviceController.filter(allDevices, { name: args.appiumCaps.deviceName, apiLevel: args.appiumCaps.platformVersion });
+        const searchObj = args.appiumCaps.udid ? { token: args.appiumCaps.udid } : { name: args.appiumCaps.deviceName, apiLevel: args.appiumCaps.platformVersion };
+        let searchedDevices = DeviceController.filter(allDevices, searchObj);
         if (!searchedDevices || searchedDevices.length === 0) {
             console.log(`No such device ${args.appiumCaps.deviceName}!!!\n Check your device name!!!`);
             console.log("Available devices:\n", allDevices);
