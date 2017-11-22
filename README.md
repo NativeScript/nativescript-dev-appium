@@ -2,40 +2,53 @@
 
 A package to help with writing and executing e2e [Appium](http://appium.io) tests.
 
-## Requirments
+## <a name='requirements'></a>Requirments
 
-`nativescript-dev-appium` plugin works with latest android SDK tools, iOS instruments and appium.
+The `nativescript-dev-appium` plugin requires:
+* latest version of [Appium](https://github.com/appium/appium/releases)
+* latest version of [Xcode](https://developer.apple.com/library/content/releasenotes/DeveloperTools/RN-Xcode/Chapters/Introduction.html)
+* [Android SDK Tools](https://developer.android.com/studio/releases/sdk-tools.html) version greater than 25.3.0
 
-## <a name='usage'></a>Usage
+## <a name='setup'></a>Set Up
 
-Install it with:
+Add the plugin as a `devDependency` to your project:
 
-`$ npm install --save-dev nativescript-dev-appium`
+`$ npm install -D nativescript-dev-appium`
 
-Install Appium locally:
-
-`$ npm install --save-dev appium`
-
-Or install appium globally (to avoid installing it for every app):
+Then install [Appium](https://www.npmjs.com/package/appium) - we recommend a global installation to avoid adding it to every project you would like to test:
 
 `$ npm install -g appium`
 
-After installation, you should have a sample test below the `e2e` directory which you can rename of your choice. However, if you rename the folder you will have to specify it using `--testfolder someFolderName` option.
-        Structure:
+After completion of the installation, if your project has a dependency to *TypeScript*, the plugin should have added an `e2e` folder containing predefined configs and samples.
+
+### Structure
 
         my-app
         ├── app
         ├── e2e
             ├── configs
-            ├── reports
-            ├── resources
-            ├── sample-test.ts
+                ├── appium.capabilities.json
+                ├── mocha.opts
+            ├── sample.e2e-test.ts
             ├── setup.ts
             ├── tsconfig.json
+        ├── ...
         ├── package.json
         ├── tsconfig.json
-        
-To avaid any uncompatibilities between e2e tests and application structure and requirments we recommend e2e folder to be excluded from main tsconfig.json `exclude": [ "e2e" ]`
+
+> Note: To avaid any incompatibilities between the source of `e2e` tests and the source of the application, we recommend to exclude the `e2e` folder from the application's `tsconfig.json` file: `exclude": [ "e2e" ]`
+
+### Files Preview
+
+|File                |Purpose|
+|:-------------------------------:|:-------------------:|
+|`config/appium.capabilities.json`|Contains predefined configurations for test execution.|
+|`config/mocha.opts`              |A default mocha configuration file.                   |
+|`sample.e2e-test.ts`             |Contains a predefined ready-to-execute sample tests of the default [*hello-world*](https://github.com/NativeScript/template-hello-world-ts) template.|
+|`setup.ts`                       |Defines the `before` and `after` test execution hooks responsible to start and stop the [Appium](http://appium.io/) server.|
+|`tsconfig.json`                  |TypeScript compiler configuration file for the `e2e` tests.|
+
+## <a name='usage'></a>Usage
 
 Before running the tests you will have to build your app for the platform on test or both. Navigate to your demo app folder from where you will execute the commands that follow.
 
@@ -63,7 +76,7 @@ $ npm run e2e -- --runType sim.iPhone8.iOS110
 
 Generated tests are standard [Mocha](http://mochajs.org) tests.
 
-## <a name='customCapabilities'></a>Custom Appium capabilities
+## <a name='customCapabilities'></a>Custom Appium Capabilities
 
 When installed, the plugin creates `e2e` folder containing sample test file and configuration folder `config` where your custom capabilities reside. 
 The existence of such capabilities is a runner's requirement which comes from [Appium](https://github.com/appium/appium/blob/master/docs/en/writing-running-appium/caps.md). Additional locations where the runner will search for the config file are:
@@ -137,9 +150,9 @@ As you can see, the `app` property can be left an empty string which will force 
 |appPath| Provide location of the app package to be tested. This will overwrite all provided capabilities for app| Possible values are:<br/> - app build package name (in case `--sauceLab` option is set it will prepend `sauce-storage:` in front of the app name so app has to be [uploaded to Sauce Labs](https://wiki.saucelabs.com/display/DOCS/Uploading+Mobile+Applications+to+Sauce+Storage+for+Testing) before execution starts)<br/> - path e.g. `platforms/android/build/outputs/apk/demo.apk`.<br/> Example: --appPath demo-debug.apk|
 |sauceLab| Enable tests execution in [Sauce Labs](https://saucelabs.com/). As a prerequisite you will have to define `SAUCE_USER` and `SAUCE_KEY` as [environment variable](https://wiki.saucelabs.com/display/DOCS/Best+Practice%3A+Use+Environment+Variables+for+Authentication+Credentials)| e.g. --sauceLab|
 |capsLocation| Change the location where `appium.capabilities.json` config file can be. It should be relative to the root directory | e.g. --capsLocation /e2e-tests|
-|--port| Appium server port|
-|--storage| Specify remote image storage |
-|-ignoreDeviceController| Setting this option you will use default appium device controller which is recommended when tests are executed on cloud based solutions |
+|port| Appium server port|
+|storage| Specify remote image storage |
+|ignoreDeviceController| Setting this option you will use default appium device controller which is recommended when tests are executed on cloud based solutions |
 
 Examples:
 
@@ -166,15 +179,12 @@ Use the `--verbose` option to get error details:
 $ npm run appium --runType android25 --verbose
 ```
 
-## Common problems
+## Common Problems
 
 1. Missing installed appium
 2. Missleading appPath or capabilities location. Please make sure that the path to the app or capabilities location is correct.
 
 
-## Missing features
+## Missing Features
 
 1. Faster developer turnaround when working on an app. Find a way to use livesync and kick off Appium tests for the app that's on the device already.
-
-
-## Br
