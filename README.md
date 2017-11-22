@@ -36,7 +36,7 @@ After completion of the installation, if your project has a dependency to *TypeS
         ├── package.json
         ├── tsconfig.json
 
-> Note - To avoid any incompatibilities between the source of `e2e` tests and the source of the application, we recommend to exclude the `e2e` folder from the application's `tsconfig.json` file: `exclude": [ "e2e" ]`
+> Note - To avoid any incompatibilities between the source of `e2e` tests (ES6) and the source of the application (ES5), we recommend to exclude the `e2e` folder from the application's `tsconfig.json` file: `exclude": [ "e2e" ]`.
 
 ### Files Preview
 
