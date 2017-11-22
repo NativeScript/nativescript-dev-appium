@@ -21,7 +21,8 @@ export declare class AppiumDriver {
     private _isAlive;
     private _locators;
     private _logPath;
-    private _storage;
+    private _storageByDeviceName;
+    private _storageByPlatform;
     private constructor();
     readonly imageHelper: ImageHelper;
     defaultWaitTime: number;
