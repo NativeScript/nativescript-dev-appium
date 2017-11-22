@@ -233,12 +233,37 @@ export function isWin() {
     return /^win/.test(process.platform);
 }
 
-export function getStorage(args: INsCapabilities) {
+
+export function getStorageByDeviceName(args: INsCapabilities) {
+    let storage = getStorage(args);
+    const appName = getAppName(args);
+    storage = createStorageFolder(storage, appName);
+    storage = createStorageFolder(storage, args.appiumCaps.deviceName);
+
+    return storage;
+}
+
+export function getStorageByPlatform(args: INsCapabilities) {
     let storage = args.storage;
     if (!storage) {
         storage = createStorageFolder(resolve(args.projectDir, args.testFolder), "resources");
         storage = createStorageFolder(storage, "images");
     }
+
+    const appName = getAppName(args);
+    storage = createStorageFolder(storage, appName);
+    storage = createStorageFolder(storage, args.appiumCaps.platformName.toLowerCase());
+
+    return storage;
+}
+
+function getStorage(args: INsCapabilities) {
+    let storage = args.storage;
+    if (!storage) {
+        storage = createStorageFolder(resolve(args.projectDir, args.testFolder), "resources");
+        storage = createStorageFolder(storage, "images");
+    }
+
     const appName = getAppName(args);
     storage = createStorageFolder(storage, appName);
     storage = createStorageFolder(storage, args.appiumCaps.deviceName);

@@ -12,7 +12,8 @@ import { Direction } from "./direction";
 import { Locator } from "./locators";
 import {
     log,
-    getStorage,
+    getStorageByPlatform,
+    getStorageByDeviceName,
     resolve,
     fileExists,
     getAppPath,
@@ -37,7 +38,8 @@ export class AppiumDriver {
     private _isAlive: boolean = false;
     private _locators: Locator;
     private _logPath: string;
-    private _storage: string;
+    private _storageByDeviceName: string;
+    private _storageByPlatform: string;
 
     private constructor(private _driver: any, private _wd, private _webio: any, private _driverConfig, private _args: INsCapabilities) {
         this._elementHelper = new ElementHelper(this._args);
@@ -271,19 +273,31 @@ export class AppiumDriver {
             imageName = imageName.concat(AppiumDriver.pngFileExt);
         }
 
-        if (!this._storage) {
-            this._storage = getStorage(this._args);
+        if (!this._storageByDeviceName) {
+            this._storageByDeviceName = getStorageByDeviceName(this._args);
         }
 
+        let expectedImage = resolve(this._storageByDeviceName, imageName);
+        if (!fileExists(expectedImage)) {
+            if (!this._storageByPlatform) {
+                this._storageByPlatform = getStorageByPlatform(this._args);
+            }  
+            expectedImage = resolve(this._storageByPlatform, imageName);  
+        }
+        
+        if (!fileExists(expectedImage)) {
+            expectedImage = resolve(this._storageByDeviceName, imageName);
+        }
+    
         if (!this._logPath) {
             this._logPath = getReportPath(this._args);
         }
 
-        let expectedImage = resolve(this._storage, imageName);
+        expectedImage = resolve(this._storageByDeviceName, imageName);
 
         // Firts capture of screen when the expected image is not available
         if (!fileExists(expectedImage)) {
-            await this.takeScreenshot(resolve(this._storage, imageName.replace(".", "_actual.")));
+            await this.takeScreenshot(resolve(this._storageByDeviceName, imageName.replace(".", "_actual.")));
             console.log("Remove the 'actual' suffix to continue using the image as expected one ", expectedImage);
             let eventStartTime = Date.now().valueOf();
             let counter = 1;
