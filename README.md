@@ -36,7 +36,7 @@ After completion of the installation, if your project has a dependency to *TypeS
         ├── package.json
         ├── tsconfig.json
 
-> Note: To avaid any incompatibilities between the source of `e2e` tests and the source of the application, we recommend to exclude the `e2e` folder from the application's `tsconfig.json` file: `exclude": [ "e2e" ]`
+> Note - To avoid any incompatibilities between the source of `e2e` tests and the source of the application, we recommend to exclude the `e2e` folder from the application's `tsconfig.json` file: `exclude": [ "e2e" ]`
 
 ### Files Preview
 
@@ -47,6 +47,10 @@ After completion of the installation, if your project has a dependency to *TypeS
 |`sample.e2e-test.ts`             |Contains a predefined ready-to-execute sample tests of the default [*hello-world*](https://github.com/NativeScript/template-hello-world-ts) template.|
 |`setup.ts`                       |Defines the `before` and `after` test execution hooks responsible to start and stop the [Appium](http://appium.io/) server.|
 |`tsconfig.json`                  |TypeScript compiler configuration file for the `e2e` tests.|
+
+> Note - The folders below are related to the image comparison feature:
+> * `e2e/reports` - this folder is created during test execution and stores the actual images from comparison
+> * `e2e/resources` - this folder aims to store the expected images for comparison
 
 ## <a name='usage'></a>Usage
 
@@ -157,8 +161,7 @@ As you can see, the `app` property can be left an empty string which will force 
 Examples:
 
 ```
-$ npm run e2e --runType android25 --sauceLab --appLocation demo.apk --capsLocation "/e2e-tests/config"
-
+$ npm run e2e -- --runType android25 --sauceLab --appLocation demo.apk --capsLocation "/e2e-tests/config"
 ```
 
 ## Features
@@ -167,7 +170,7 @@ $ npm run e2e --runType android25 --sauceLab --appLocation demo.apk --capsLocati
 2. Find elements findElementByText, findElementsByXPath, findElementByAccessibilityId etc...
 3. Gesture support: swipe, scroll, drag, scrollTo
 4. Action support: tap, click, doubleTap, hold, 
-5. Element characteristics: lcation, exists, size, isDisplayed
+5. Element characteristics: location, exists, size, isDisplayed
 6. Find strategies: waitForExist, waitForExistNot
 7. Direct access to webdriver and webdriverio
 
@@ -176,7 +179,7 @@ $ npm run e2e --runType android25 --sauceLab --appLocation demo.apk --capsLocati
 Use the `--verbose` option to get error details:
 
 ```
-$ npm run appium --runType android25 --verbose
+$ npm run e2e -- --runType android25 --verbose
 ```
 
 ## Common Problems
