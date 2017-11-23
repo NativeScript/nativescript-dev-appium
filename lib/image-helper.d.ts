@@ -19,5 +19,6 @@ export declare class ImageHelper {
         y: any;
     };
     private runDiff(diffOptions, diffImage);
+    compareRectangle(rect: IRectangle, actual: string, expected: string, output: string, valueThreshold?: number, typeThreshold?: any): Promise<boolean>;
     compareImages(actual: string, expected: string, output: string, valueThreshold?: number, typeThreshold?: any): Promise<boolean>;
 }

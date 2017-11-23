@@ -76,6 +76,25 @@ export class ImageHelper {
         });
     }
 
+    public compareRectangle(rect: IRectangle, actual: string, expected: string, output: string, valueThreshold: number = this.threshold(), typeThreshold: any = ImageOptions.pixel) {
+        let diff = new blinkDiff({
+
+            imageAPath: actual,
+            imageBPath: expected,
+            imageOutputPath: output,
+            imageOutputLimit: this.imageOutputLimit(),
+            thresholdType: typeThreshold,
+            threshold: valueThreshold,
+            delta: this.delta(),
+
+            cropImageA: rect,
+            verbose: this._args.verbose,
+        });
+
+        const result = this.runDiff(diff, output);
+        return result;
+    }
+
     public compareImages(actual: string, expected: string, output: string, valueThreshold: number = this.threshold(), typeThreshold: any = ImageOptions.pixel) {
         const rectToCrop = this._cropImageRect || ImageHelper.cropImageDefaultParams(this._args);
         let diff = new blinkDiff({

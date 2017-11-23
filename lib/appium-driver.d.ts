@@ -5,6 +5,7 @@ import { UIElement } from "./ui-element";
 import { Direction } from "./direction";
 import { Locator } from "./locators";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
+import { IRectangle } from "./interfaces/rectangle";
 import { Point } from "./point";
 import { ImageHelper } from "./image-helper";
 export declare class AppiumDriver {
@@ -121,6 +122,8 @@ export declare class AppiumDriver {
     swipe(y: number, x: number, yOffset: number, inertia?: number, xOffset?: number): Promise<void>;
     source(): Promise<any>;
     sessionId(): Promise<any>;
+    compareElement(element: UIElement, imageName: string): Promise<boolean>;
+    compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds?: number, tollerance?: number): Promise<boolean>;
     compareScreen(imageName: string, timeOutSeconds?: number, tollerance?: number): Promise<boolean>;
     takeScreenshot(fileName: string): Promise<string>;
     logScreenshot(fileName: string): Promise<string>;

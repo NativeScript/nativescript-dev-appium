@@ -22,6 +22,7 @@ import {
     scroll
 } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
+import { IRectangle } from "./interfaces/rectangle";
 import { Point } from "./point";
 import { ImageHelper } from "./image-helper";
 import { ImageOptions } from "./image-options"
@@ -268,6 +269,77 @@ export class AppiumDriver {
         return await this.driver.getSessionId();
     }
 
+    public async compareElement(element: UIElement, imageName: string, ) {
+        return this.compareRectangle(await element.getRectangle(), imageName);
+    }
+
+    public async compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds: number = 3, tollerance: number = 0.01) {
+        if (!imageName.endsWith(AppiumDriver.pngFileExt)) {
+            imageName = imageName.concat(AppiumDriver.pngFileExt);
+        }
+
+        if (!this._storageByDeviceName) {
+            this._storageByDeviceName = getStorageByDeviceName(this._args);
+        }
+
+        let expectedImage = resolve(this._storageByDeviceName, imageName);
+        if (!fileExists(expectedImage)) {
+            if (!this._storageByPlatform) {
+                this._storageByPlatform = getStorageByPlatform(this._args);
+            }
+            expectedImage = resolve(this._storageByPlatform, imageName);
+        }
+
+        if (!fileExists(expectedImage)) {
+            expectedImage = resolve(this._storageByDeviceName, imageName);
+        }
+
+        if (!this._logPath) {
+            this._logPath = getReportPath(this._args);
+        }
+
+        expectedImage = resolve(this._storageByDeviceName, imageName);
+
+        // Firts capture of screen when the expected image is not available
+        if (!fileExists(expectedImage)) {
+            await this.takeScreenshot(resolve(this._storageByDeviceName, imageName.replace(".", "_actual.")));
+            console.log("Remove the 'actual' suffix to continue using the image as expected one ", expectedImage);
+            let eventStartTime = Date.now().valueOf();
+            let counter = 1;
+            timeOutSeconds *= 1000;
+
+            while ((Date.now().valueOf() - eventStartTime) <= timeOutSeconds) {
+                let actualImage = await this.takeScreenshot(resolve(this._logPath, imageName.replace(".", "_actual" + "_" + counter + ".")));
+                counter++;
+            }
+
+            // return false;
+        }
+
+        let actualImage = await this.takeScreenshot(resolve(this._logPath, imageName.replace(".", "_actual.")));
+        let diffImage = actualImage.replace("actual", "diff");
+        let result = await this._imageHelper.compareRectangle(rect, actualImage, expectedImage, diffImage, tollerance);
+        if (!result) {
+            let eventStartTime = Date.now().valueOf();
+            let counter = 1;
+            timeOutSeconds *= 1000;
+            while ((Date.now().valueOf() - eventStartTime) <= timeOutSeconds && !result) {
+                let actualImage = await this.takeScreenshot(resolve(this._logPath, imageName.replace(".", "_actual" + "_" + counter + ".")));
+                result = await this._imageHelper.compareRectangle(rect, actualImage, expectedImage, diffImage, tollerance);
+                counter++;
+            }
+        } else {
+            if (fileExists(diffImage)) {
+                unlinkSync(diffImage);
+            }
+            if (fileExists(actualImage)) {
+                unlinkSync(actualImage);
+            }
+        }
+
+        return result;
+    }
+
     public async compareScreen(imageName: string, timeOutSeconds: number = 3, tollerance: number = 0.01) {
         if (!imageName.endsWith(AppiumDriver.pngFileExt)) {
             imageName = imageName.concat(AppiumDriver.pngFileExt);
@@ -281,14 +353,14 @@ export class AppiumDriver {
         if (!fileExists(expectedImage)) {
             if (!this._storageByPlatform) {
                 this._storageByPlatform = getStorageByPlatform(this._args);
-            }  
-            expectedImage = resolve(this._storageByPlatform, imageName);  
+            }
+            expectedImage = resolve(this._storageByPlatform, imageName);
         }
-        
+
         if (!fileExists(expectedImage)) {
             expectedImage = resolve(this._storageByDeviceName, imageName);
         }
-    
+
         if (!this._logPath) {
             this._logPath = getReportPath(this._args);
         }
