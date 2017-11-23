@@ -233,7 +233,6 @@ export function isWin() {
     return /^win/.test(process.platform);
 }
 
-
 export function getStorageByDeviceName(args: INsCapabilities) {
     let storage = getStorage(args);
     const appName = getAppName(args);
@@ -263,10 +262,6 @@ function getStorage(args: INsCapabilities) {
         storage = createStorageFolder(resolve(args.projectDir, args.testFolder), "resources");
         storage = createStorageFolder(storage, "images");
     }
-
-    const appName = getAppName(args);
-    storage = createStorageFolder(storage, appName);
-    storage = createStorageFolder(storage, args.appiumCaps.deviceName);
 
     return storage;
 }

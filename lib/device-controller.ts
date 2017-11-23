@@ -21,7 +21,7 @@ export class DeviceManger {
             return device;
         }
 
-        const allDevices = (await DeviceController.getDivices({ platform: args.appiumCaps.platformName }));
+        const allDevices = (await DeviceController.getDevices({ platform: args.appiumCaps.platformName }));
         if (!allDevices || allDevices === null || allDevices.length === 0) {
             console.log("We couldn't find any devices. We will try to proceed to appium! Maybe avd manager is missing")
             console.log("Available devices:\n", allDevices);
