@@ -410,6 +410,7 @@ export class AppiumDriver {
 
         log("Creating driver!", args.verbose);
 
+        args.appiumCaps['udid'] = args.appiumCaps['udid'] || args.device.token;
         const _webio = webdriverio.remote({
             baseUrl: driverConfig.host,
             port: driverConfig.port,

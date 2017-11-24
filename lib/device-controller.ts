@@ -1,6 +1,7 @@
 import { waitForOutput, resolve, log, isWin, shutdown, executeCommand } from "./utils";
 import * as child_process from "child_process";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
+import { ServcieContext } from "./servcies/service";
 
 import {
     IDevice,
@@ -16,6 +17,20 @@ export class DeviceManger {
     private static _emulators: Map<string, IDevice> = new Map();
 
     public static async startDevice(args: INsCapabilities): Promise<IDevice> {
+        process.env['USE_DEVICE_CONTROLLER_SERVER'] = true;
+        if (process.env['USE_DEVICE_CONTROLLER_SERVER']) {
+            const context = new ServcieContext();
+            const d = await context.subscribe(args.appiumCaps.deviceName, args.appiumCaps.platformName.toLowerCase(), args.appiumCaps.platformVersion, "test");
+            if (!d || !(d as IDevice)) {
+                console.error("", d);
+                throw new Error("Missing device: " + d);
+            }
+
+            DeviceManger._emulators.set(args.runType, d);
+            console.log("", d);
+            return d;
+        }
+
         let device: IDevice = DeviceManger.getDefaultDevice(args);
         if (args.isSauceLab || args.ignoreDeviceController) {
             return device;
@@ -70,6 +85,18 @@ export class DeviceManger {
     }
 
     public static async stop(args: INsCapabilities) {
+        if (process.env['USE_DEVICE_CONTROLLER_SERVER']) {
+            const device = DeviceManger._emulators.get(args.runType);
+
+            const context = new ServcieContext();
+            const d = await context.unsubscribe(device.token);
+            if (!d) {
+                console.error("", d);
+                throw new Error("Missing device: " + d);
+            }
+
+            return d;
+        }
         if (DeviceManger._emulators.has(args.runType) && !args.reuseDevice && !args.isSauceLab && !args.ignoreDeviceController) {
             const device = DeviceManger._emulators.get(args.runType);
             await DeviceManger.kill(device);
