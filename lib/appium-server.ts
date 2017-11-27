@@ -1,6 +1,7 @@
 import * as child_process from "child_process";
 import { log, resolve, waitForOutput, shutdown, fileExists, isWin, executeCommand } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
+import { IDeviceManager } from "./interfaces/device-manager";
 import { DeviceManger } from "./device-controller";
 
 export class AppiumServer {
@@ -9,6 +10,7 @@ export class AppiumServer {
     private _port: number;
     private _runType: string;
     private _hasStarted: boolean;
+    private _deviceManager: IDeviceManager;
 
     constructor(private _args: INsCapabilities) {
         this._runType = this._args.runType;
@@ -44,8 +46,9 @@ export class AppiumServer {
         this._hasStarted = hasStarted;
     }
 
-    public async start() {
-        const device = await DeviceManger.startDevice(this._args);
+    public async start(deviceManager: IDeviceManager = new DeviceManger()) {
+        this._deviceManager = deviceManager;
+        const device = await this._deviceManager.startDevice(this._args);
         log("Starting server...", this._args.verbose);
         this._args.device = device;
         const logLevel = this._args.verbose === true ? "debug" : "info";
@@ -60,7 +63,7 @@ export class AppiumServer {
     }
 
     public async stop() {
-        await DeviceManger.stop(this._args);
+        await this._deviceManager.stopDevice(this._args);
         return new Promise((resolve, reject) => {
             this._server.on("close", (code, signal) => {
                 log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);

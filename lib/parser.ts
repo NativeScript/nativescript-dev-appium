@@ -17,7 +17,13 @@ const config = (() => {
         .option("storage", { describe: "Storage for images folder.", type: "string" })
         .option("testReports", { describe: "Test reporting folder", type: "string" })
         .option("reuseDevice", { describe: "Reusing device if available.", type: "boolean", defualt: false })
-        .option("ignoreDeviceController", {alias:"i-ns-device-controller", describe: "Use default appium options for running emulatos/ simulators.", type: "boolean", defualt: false })
+        .option("ignoreDeviceController", { alias: "i-ns-device-controller", describe: "Use default appium options for running emulatos/ simulators.", type: "boolean", defualt: false })
+        .option("useDeviceControllerServer", {
+            alias: "use-ns-device-controller-server",
+            describe: "Use server to boot, kill, subscribe or unsubscribe for devices. Also this flag could be specified in as an evn variable",
+            type: "boolean",
+            defualt: false
+        })
         .help()
         .argv;
 
@@ -47,6 +53,7 @@ const config = (() => {
         testReports: options.testReports || process.env.npm_config_TEST_REPORTS || process.env.TEST_REPORTS,
         reuseDevice: options.reuseDevice || process.env.npm_config_REUSE_DEVICE || process.env.REUSE_DEVICE,
         ignoreDeviceController: options.ignoreDeviceController,
+        useDeviceControllerServer: options.useDeviceControllerServer || process.env['USE_DEVICE_CONTROLLER_SERVER']
     };
 
     return config;
@@ -67,5 +74,6 @@ export const {
     storage,
     testReports,
     reuseDevice,
-    ignoreDeviceController
+    ignoreDeviceController,
+    useDeviceControllerServer
 } = config;

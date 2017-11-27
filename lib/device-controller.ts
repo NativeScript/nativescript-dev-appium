@@ -1,7 +1,8 @@
 import { waitForOutput, resolve, log, isWin, shutdown, executeCommand } from "./utils";
 import * as child_process from "child_process";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
-import { ServcieContext } from "./servcies/service";
+import { IDeviceManager } from "./interfaces/device-manager";
+import { ServiceContext } from "./service/service-context";
 
 import {
     IDevice,
@@ -13,14 +14,25 @@ import {
 } from "mobile-devices-controller";
 
 
-export class DeviceManger {
+export class DeviceManger implements IDeviceManager {
     private static _emulators: Map<string, IDevice> = new Map();
 
-    public static async startDevice(args: INsCapabilities): Promise<IDevice> {
-        process.env['USE_DEVICE_CONTROLLER_SERVER'] = true;
-        if (process.env['USE_DEVICE_CONTROLLER_SERVER']) {
-            const context = new ServcieContext();
-            const d = await context.subscribe(args.appiumCaps.deviceName, args.appiumCaps.platformName.toLowerCase(), args.appiumCaps.platformVersion, "test");
+    constructor(private _serveiceContext: ServiceContext = new ServiceContext()) {
+    }
+
+    public async startDevice(args: INsCapabilities): Promise<IDevice> {
+
+        let device: IDevice = DeviceManger.getDefaultDevice(args);
+        // When isSauceLab specified we simply do nothing;
+        if (args.isSauceLab || args.ignoreDeviceController) {
+            DeviceManger._emulators.set(args.runType, device);
+
+            return device;
+        }
+
+        // Using serve to manage deivces.
+        if (args.useDeviceControllerServer) {
+            const d = await this._serveiceContext.subscribe(args.appiumCaps.deviceName, args.appiumCaps.platformName.toLowerCase(), args.appiumCaps.platformVersion, "test");
             if (!d || !(d as IDevice)) {
                 console.error("", d);
                 throw new Error("Missing device: " + d);
@@ -30,12 +42,7 @@ export class DeviceManger {
             console.log("", d);
             return d;
         }
-
-        let device: IDevice = DeviceManger.getDefaultDevice(args);
-        if (args.isSauceLab || args.ignoreDeviceController) {
-            return device;
-        }
-
+        
         const allDevices = (await DeviceController.getDevices({ platform: args.appiumCaps.platformName }));
         if (!allDevices || allDevices === null || allDevices.length === 0) {
             console.log("We couldn't find any devices. We will try to proceed to appium! Maybe avd manager is missing")
@@ -84,20 +91,18 @@ export class DeviceManger {
         return device;
     }
 
-    public static async stop(args: INsCapabilities) {
-        if (process.env['USE_DEVICE_CONTROLLER_SERVER']) {
+    public async stopDevice(args: INsCapabilities) {
+        if (args.useDeviceControllerServer) {
             const device = DeviceManger._emulators.get(args.runType);
 
-            const context = new ServcieContext();
-            const d = await context.unsubscribe(device.token);
+            const d = await this._serveiceContext.unsubscribe(device.token);
             if (!d) {
                 console.error("", d);
                 throw new Error("Missing device: " + d);
             }
-
-            return d;
         }
-        if (DeviceManger._emulators.has(args.runType) && !args.reuseDevice && !args.isSauceLab && !args.ignoreDeviceController) {
+
+        if (DeviceManger._emulators.has(args.runType) && !args.reuseDevice || !args.isSauceLab || !args.ignoreDeviceController) {
             const device = DeviceManger._emulators.get(args.runType);
             await DeviceManger.kill(device);
         }
@@ -107,25 +112,7 @@ export class DeviceManger {
         await DeviceController.kill(device);
     }
 
-
     private static getDefaultDevice(args) {
         return new Device(args.appiumCaps.deviceName, args.appiumCaps.platformVersion, undefined, args.appiumCaps.platformName, undefined, undefined);
     }
-
-    private static device(runType) {
-        return DeviceManger._emulators.get(runType);
-    }
-
-    // private static getDevicesByStatus(devices: Array<IDevice>, status) {
-    //     let device: IDevice;
-    //     const shutdownDeivces = devices.filter(dev => {
-    //         return dev.status === status;
-    //     });
-
-    //     if (shutdownDeivces && shutdownDeivces !== null && shutdownDeivces.length > 0) {
-    //         device = shutdownDeivces[0];
-    //     }
-
-    //     return device;
-    // }
 }

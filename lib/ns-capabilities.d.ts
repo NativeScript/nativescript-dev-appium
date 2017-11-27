@@ -21,6 +21,7 @@ export declare class NsCapabilities implements INsCapabilities {
     private _emulatorOptions;
     private _device;
     private _ignoreDeviceController;
+    private _useDeviceControllerServer;
     private exceptions;
     constructor();
     readonly projectDir: any;
@@ -41,6 +42,7 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly isSauceLab: any;
     appPath: string;
     readonly ignoreDeviceController: boolean;
+    readonly useDeviceControllerServer: boolean;
     device: IDevice;
     readonly emulatorOptions: string;
     private isAndroidPlatform();

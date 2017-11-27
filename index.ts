@@ -3,6 +3,8 @@ import { AppiumServer } from "./lib/appium-server";
 import { AppiumDriver } from "./lib/appium-driver";
 import { ElementHelper } from "./lib/element-helper";
 import { NsCapabilities } from "./lib/ns-capabilities";
+import { IDeviceManager } from "./lib/interfaces/device-manager";
+
 import { shutdown } from "./lib/utils";
 
 export { AppiumDriver } from "./lib/appium-driver";
@@ -14,12 +16,13 @@ export { Locator } from "./lib/locators";
 export { Direction } from "./lib/direction";
 export { DeviceManger } from "./lib/device-controller";
 export { IRectangle } from "./lib/interfaces/rectangle";
+export { IDeviceManager } from "./lib/interfaces/device-manager";
 
 const nsCapabilities = new NsCapabilities();
 const appiumServer = new AppiumServer(nsCapabilities);
 
 let appiumDriver = null;
-export async function startServer(port?: number) {
+export async function startServer(port?: number, deviceManager?: IDeviceManager) {
     appiumServer.port = port || nsCapabilities.port;
     let retry = false;
     if (!appiumServer.port) {
@@ -27,14 +30,14 @@ export async function startServer(port?: number) {
         retry = true;
     }
 
-    let hasStarted = await appiumServer.start();
+    let hasStarted = await appiumServer.start(deviceManager);
     let retryCount = 0;
     while (retry && !hasStarted && retryCount < 10) {
         let tempPort = appiumServer.port + 10;
         tempPort = (await portastic.find({ min: tempPort, max: 9180 }))[0];
         console.log("Trying to use port: ", tempPort);
         appiumServer.port = tempPort;
-        hasStarted = await appiumServer.start();
+        hasStarted = await appiumServer.start(deviceManager);
         retryCount++;
     }
 
