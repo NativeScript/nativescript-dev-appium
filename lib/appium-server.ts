@@ -48,9 +48,11 @@ export class AppiumServer {
 
     public async start(deviceManager: IDeviceManager = new DeviceManger()) {
         this._deviceManager = deviceManager;
-        const device = await this._deviceManager.startDevice(this._args);
+        if (!this._args.device) {
+            const device = await this._deviceManager.startDevice(this._args);
+            this._args.device = device;
+        }
         log("Starting server...", this._args.verbose);
-        this._args.device = device;
         const logLevel = this._args.verbose === true ? "debug" : "info";
         this._server = child_process.spawn(this._appium, ["-p", this.port.toString(), "--log-level", logLevel], {
             shell: true,
