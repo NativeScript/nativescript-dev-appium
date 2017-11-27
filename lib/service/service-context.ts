@@ -9,7 +9,7 @@ export class ServiceContext {
     }
 
     public async subscribe(deviceName, platformName, platformVersion, info) {
-        return await this.getJSON(`${this._deviceController}/subscribe?name=${decodeURIComponent(deviceName)}&platform=${decodeURIComponent(platformName)}&apiLevel=${decodeURIComponent(platformVersion)}&info=${decodeURIComponent(info)}`);
+        return await this.getJSON(`${this._deviceController}/subscribe?name=${encodeURIComponent(deviceName)}&platform=${encodeURIComponent(platformName)}&apiLevel=${encodeURIComponent(platformVersion)}&info=${encodeURIComponent(info)}`);
     }
 
     public async unsubscribe(token) {
