@@ -11,6 +11,7 @@ import { UIElement } from "./ui-element";
 import { Direction } from "./direction";
 import { Locator } from "./locators";
 import {
+    addExt,
     log,
     getStorageByPlatform,
     getStorageByDeviceName,
@@ -19,7 +20,7 @@ import {
     getAppPath,
     getReportPath,
     calculateOffset,
-    scroll
+    scroll,
 } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IRectangle } from "./interfaces/rectangle";
@@ -270,141 +271,81 @@ export class AppiumDriver {
     }
 
     public async compareElement(element: UIElement, imageName: string, ) {
-        return this.compareRectangle(await element.getRectangle(), imageName);
+        return this.compareRectangles(await element.getRectangle(), imageName);
     }
 
-    public async compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds: number = 3, tollerance: number = 0.01) {
-        if (!imageName.endsWith(AppiumDriver.pngFileExt)) {
-            imageName = imageName.concat(AppiumDriver.pngFileExt);
-        }
-
-        if (!this._storageByDeviceName) {
-            this._storageByDeviceName = getStorageByDeviceName(this._args);
-        }
-
-        let expectedImage = resolve(this._storageByDeviceName, imageName);
-        if (!fileExists(expectedImage)) {
-            if (!this._storageByPlatform) {
-                this._storageByPlatform = getStorageByPlatform(this._args);
-            }
-            expectedImage = resolve(this._storageByPlatform, imageName);
-        }
-
-        if (!fileExists(expectedImage)) {
-            expectedImage = resolve(this._storageByDeviceName, imageName);
-        }
-
-        if (!this._logPath) {
-            this._logPath = getReportPath(this._args);
-        }
-
-        expectedImage = resolve(this._storageByDeviceName, imageName);
-
-        // Firts capture of screen when the expected image is not available
-        if (!fileExists(expectedImage)) {
-            await this.takeScreenshot(resolve(this._storageByDeviceName, imageName.replace(".", "_actual.")));
-            console.log("Remove the 'actual' suffix to continue using the image as expected one ", expectedImage);
-            let eventStartTime = Date.now().valueOf();
-            let counter = 1;
-            timeOutSeconds *= 1000;
-
-            while ((Date.now().valueOf() - eventStartTime) <= timeOutSeconds) {
-                let actualImage = await this.takeScreenshot(resolve(this._logPath, imageName.replace(".", "_actual" + "_" + counter + ".")));
-                counter++;
-            }
-
-            // return false;
-        }
-
-        let actualImage = await this.takeScreenshot(resolve(this._logPath, imageName.replace(".", "_actual.")));
-        let diffImage = actualImage.replace("actual", "diff");
-        let result = await this._imageHelper.compareRectangle(rect, actualImage, expectedImage, diffImage, tollerance);
-        if (!result) {
-            let eventStartTime = Date.now().valueOf();
-            let counter = 1;
-            timeOutSeconds *= 1000;
-            while ((Date.now().valueOf() - eventStartTime) <= timeOutSeconds && !result) {
-                let actualImage = await this.takeScreenshot(resolve(this._logPath, imageName.replace(".", "_actual" + "_" + counter + ".")));
-                result = await this._imageHelper.compareRectangle(rect, actualImage, expectedImage, diffImage, tollerance);
-                counter++;
-            }
-        } else {
-            if (fileExists(diffImage)) {
-                unlinkSync(diffImage);
-            }
-            if (fileExists(actualImage)) {
-                unlinkSync(actualImage);
-            }
-        }
-
-        return result;
+    public async compareRectangles(rect: IRectangle, imageName: string, timeOutSeconds: number = 3, tollerance: number = 0.01) {
+        return this.compare(imageName, timeOutSeconds, tollerance, rect);
     }
 
     public async compareScreen(imageName: string, timeOutSeconds: number = 3, tollerance: number = 0.01) {
-        if (!imageName.endsWith(AppiumDriver.pngFileExt)) {
-            imageName = imageName.concat(AppiumDriver.pngFileExt);
-        }
+        return this.compare(imageName, timeOutSeconds, tollerance);
+    }
 
-        if (!this._storageByDeviceName) {
-            this._storageByDeviceName = getStorageByDeviceName(this._args);
-        }
-
-        let expectedImage = resolve(this._storageByDeviceName, imageName);
-        if (!fileExists(expectedImage)) {
-            if (!this._storageByPlatform) {
-                this._storageByPlatform = getStorageByPlatform(this._args);
-            }
-            expectedImage = resolve(this._storageByPlatform, imageName);
-        }
-
-        if (!fileExists(expectedImage)) {
-            expectedImage = resolve(this._storageByDeviceName, imageName);
-        }
+    public async compare(imageName: string, timeOutSeconds: number = 3, tollerance: number = 0.01, rect?: IRectangle) {
 
         if (!this._logPath) {
             this._logPath = getReportPath(this._args);
         }
 
-        expectedImage = resolve(this._storageByDeviceName, imageName);
+        imageName = addExt(imageName, AppiumDriver.pngFileExt);
 
-        // Firts capture of screen when the expected image is not available
-        if (!fileExists(expectedImage)) {
-            await this.takeScreenshot(resolve(this._storageByDeviceName, imageName.replace(".", "_actual.")));
-            console.log("Remove the 'actual' suffix to continue using the image as expected one ", expectedImage);
-            let eventStartTime = Date.now().valueOf();
-            let counter = 1;
-            timeOutSeconds *= 1000;
+        const pathExpectedImage = this.getExpectedImagePath(imageName);
 
-            while ((Date.now().valueOf() - eventStartTime) <= timeOutSeconds) {
-                let actualImage = await this.takeScreenshot(resolve(this._logPath, imageName.replace(".", "_actual" + "_" + counter + ".")));
-                counter++;
+        // First time capture
+        if (!fileExists(pathExpectedImage)) {
+            const pathActualImage = resolve(this._storageByDeviceName, imageName.replace(".", "_actual."));
+            await this.takeScreenshot(pathActualImage);
+
+            if (rect) {
+                await this._imageHelper.clipRectangleImage(rect, pathActualImage);
             }
 
+            console.log("Remove the 'actual' suffix to continue using the image as expected one ", pathExpectedImage);
             return false;
         }
 
-        let actualImage = await this.takeScreenshot(resolve(this._logPath, imageName.replace(".", "_actual.")));
-        let diffImage = actualImage.replace("actual", "diff");
-        let result = await this._imageHelper.compareImages(actualImage, expectedImage, diffImage, tollerance);
+        // Compare
+        let pathActualImage = await this.takeScreenshot(resolve(this._logPath, imageName.replace(".", "_actual.")));
+        const pathDiffImage = pathActualImage.replace("actual", "diff");
+
+        await this.prepareImageToCompare(pathActualImage, rect);
+        let result = await this._imageHelper.compareImages(pathActualImage, pathExpectedImage, pathDiffImage, tollerance);
+
+        // Iterate
         if (!result) {
-            let eventStartTime = Date.now().valueOf();
+            const eventStartTime = Date.now().valueOf();
             let counter = 1;
             timeOutSeconds *= 1000;
             while ((Date.now().valueOf() - eventStartTime) <= timeOutSeconds && !result) {
-                let actualImage = await this.takeScreenshot(resolve(this._logPath, imageName.replace(".", "_actual" + "_" + counter + ".")));
-                result = await this._imageHelper.compareImages(actualImage, expectedImage, diffImage, tollerance);
+                const pathActualImageConter = resolve(this._logPath, imageName.replace(".", "_actual_" + counter + "."));
+                pathActualImage = await this.takeScreenshot(pathActualImageConter);
+
+                await this.prepareImageToCompare(pathActualImage, rect);
+                result = await this._imageHelper.compareImages(pathActualImage, pathExpectedImage, pathDiffImage, tollerance);
                 counter++;
             }
         } else {
-            if (fileExists(diffImage)) {
-                unlinkSync(diffImage);
+            if (fileExists(pathDiffImage)) {
+                unlinkSync(pathDiffImage);
             }
-            if (fileExists(actualImage)) {
-                unlinkSync(actualImage);
+            if (fileExists(pathActualImage)) {
+                unlinkSync(pathActualImage);
             }
         }
 
+        this._imageHelper.imageCropRect = undefined;
         return result;
+    }
+
+    public async prepareImageToCompare(filePath: string, rect: IRectangle) {
+        if (rect) {
+            await this._imageHelper.clipRectangleImage(rect, filePath);
+            const rectToCrop = { x: 0, y: 0, width: undefined, height: undefined };
+            this._imageHelper.imageCropRect = rectToCrop;
+        } else {
+            this._imageHelper.imageCropRect = ImageHelper.cropImageDefault(this._args);
+        }
     }
 
     public takeScreenshot(fileName: string) {
@@ -529,4 +470,26 @@ export class AppiumDriver {
             log(" > " + meth.magenta + path + " " + (data || "").grey, verbose);
         });
     };
+
+    private getExpectedImagePath(imageName: string) {
+
+        if (!this._storageByDeviceName) {
+            this._storageByDeviceName = getStorageByDeviceName(this._args);
+        }
+
+        let pathExpectedImage = resolve(this._storageByDeviceName, imageName);
+
+        if (!fileExists(pathExpectedImage)) {
+            if (!this._storageByPlatform) {
+                this._storageByPlatform = getStorageByPlatform(this._args);
+            }
+            pathExpectedImage = resolve(this._storageByPlatform, imageName);
+        }
+
+        if (!fileExists(pathExpectedImage)) {
+            pathExpectedImage = resolve(this._storageByDeviceName, imageName);
+        }
+
+        return pathExpectedImage;
+    }
 }
