@@ -271,18 +271,18 @@ export class AppiumDriver {
     }
 
     public async compareElement(element: UIElement, imageName: string, ) {
-        return this.compareRectangles(await element.getRectangle(), imageName);
+        return await this.compareRectangles(await element.getRectangle(), imageName);
     }
 
     public async compareRectangles(rect: IRectangle, imageName: string, timeOutSeconds: number = 3, tollerance: number = 0.01) {
-        return this.compare(imageName, timeOutSeconds, tollerance, rect);
+        return await this.compare(imageName, timeOutSeconds, tollerance, rect);
     }
 
     public async compareScreen(imageName: string, timeOutSeconds: number = 3, tollerance: number = 0.01) {
-        return this.compare(imageName, timeOutSeconds, tollerance);
+        return await this.compare(imageName, timeOutSeconds, tollerance);
     }
 
-    public async compare(imageName: string, timeOutSeconds: number = 3, tollerance: number = 0.01, rect?: IRectangle) {
+    private async compare(imageName: string, timeOutSeconds: number = 3, tollerance: number = 0.01, rect?: IRectangle) {
 
         if (!this._logPath) {
             this._logPath = getReportPath(this._args);

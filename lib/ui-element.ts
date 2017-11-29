@@ -42,7 +42,6 @@ export class UIElement {
     public async size() {
         const size = await (await this.element()).getSize();
         const point = new Point(size.height, size.width);
-
         return point;
     }
 

@@ -125,7 +125,7 @@ export declare class AppiumDriver {
     compareElement(element: UIElement, imageName: string): Promise<boolean>;
     compareRectangles(rect: IRectangle, imageName: string, timeOutSeconds?: number, tollerance?: number): Promise<boolean>;
     compareScreen(imageName: string, timeOutSeconds?: number, tollerance?: number): Promise<boolean>;
-    compare(imageName: string, timeOutSeconds?: number, tollerance?: number, rect?: IRectangle): Promise<boolean>;
+    private compare(imageName, timeOutSeconds?, tollerance?, rect?);
     prepareImageToCompare(filePath: string, rect: IRectangle): Promise<void>;
     takeScreenshot(fileName: string): Promise<string>;
     logScreenshot(fileName: string): Promise<string>;
