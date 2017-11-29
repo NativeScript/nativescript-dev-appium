@@ -1,7 +1,9 @@
-import * as blinkDiff from "blink-diff";
+import * as BlinkDiff from "blink-diff";
+import * as PngJsImage from "pngjs-image";
 import { ImageOptions } from "./image-options";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IRectangle } from "./interfaces/rectangle";
+import { Point } from "./point";
 
 export class ImageHelper {
 
@@ -11,11 +13,11 @@ export class ImageHelper {
     constructor(private _args: INsCapabilities) {
     }
 
-    get cropImageRect() {
+    get imageCropRect(): IRectangle {
         return this._cropImageRect;
     }
 
-    set cropImageRec(rect: IRectangle) {
+    set imageCropRect(rect: IRectangle) {
         this._cropImageRect = rect;
     }
 
@@ -43,15 +45,15 @@ export class ImageHelper {
         return 20;
     }
 
+    public static cropImageDefault(_args: INsCapabilities) {
+        return { x: 0, y: ImageHelper.getOffsetPixels(_args), width: undefined, height: undefined };
+    }
+
     private static getOffsetPixels(args: INsCapabilities) {
         return args.device.config ? args.device.config.offsetPixels : 0
     }
 
-    public static cropImageDefaultParams(_args: INsCapabilities) {
-        return { x: 0, y: ImageHelper.getOffsetPixels(_args) };
-    }
-
-    private runDiff(diffOptions: blinkDiff, diffImage: string) {
+    private runDiff(diffOptions: BlinkDiff, diffImage: string) {
         return new Promise<boolean>((resolve, reject) => {
             diffOptions.run(function (error, result) {
                 if (error) {
@@ -77,8 +79,7 @@ export class ImageHelper {
     }
 
     public compareImages(actual: string, expected: string, output: string, valueThreshold: number = this.threshold(), typeThreshold: any = ImageOptions.pixel) {
-        const rectToCrop = this._cropImageRect || ImageHelper.cropImageDefaultParams(this._args);
-        let diff = new blinkDiff({
+        const diff = new BlinkDiff({
 
             imageAPath: actual,
             imageBPath: expected,
@@ -88,8 +89,8 @@ export class ImageHelper {
             threshold: valueThreshold,
             delta: this.delta(),
 
-            cropImageA: rectToCrop,
-            cropImageB: rectToCrop,
+            cropImageA: this._cropImageRect,
+            cropImageB: this._cropImageRect,
             blockOut: this._blockOutAreas,
             verbose: this._args.verbose,
         });
@@ -97,5 +98,31 @@ export class ImageHelper {
         const result = this.runDiff(diff, output);
         this._blockOutAreas = undefined;
         return result;
+    }
+
+    public async clipRectangleImage(rect: IRectangle, path: string) {
+        let imageToClip: PngJsImage;
+        imageToClip = await this.readImage(path);
+        imageToClip.clip(rect.x, rect.y, rect.width, rect.height);
+        return new Promise((resolve, reject) => {
+            imageToClip.writeImage(path, (err) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve();
+            });
+
+        })
+    }
+
+    public readImage(path: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            PngJsImage.readImage(path, (err, image) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(image);
+            });
+        })
     }
 }

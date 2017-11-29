@@ -6,18 +6,21 @@ export declare class ImageHelper {
     private _cropImageRect;
     private _blockOutAreas;
     constructor(_args: INsCapabilities);
-    readonly cropImageRect: IRectangle;
-    cropImageRec: IRectangle;
+    imageCropRect: IRectangle;
     blockOutAreas: IRectangle[];
     imageOutputLimit(): ImageOptions;
     thresholdType(): ImageOptions;
     threshold(): number;
     delta(): number;
-    private static getOffsetPixels(args);
-    static cropImageDefaultParams(_args: INsCapabilities): {
+    static cropImageDefault(_args: INsCapabilities): {
         x: number;
         y: any;
+        width: any;
+        height: any;
     };
+    private static getOffsetPixels(args);
     private runDiff(diffOptions, diffImage);
     compareImages(actual: string, expected: string, output: string, valueThreshold?: number, typeThreshold?: any): Promise<boolean>;
+    clipRectangleImage(rect: IRectangle, path: string): Promise<{}>;
+    readImage(path: string): Promise<any>;
 }

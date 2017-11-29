@@ -386,3 +386,5 @@ function createStorageFolder(storage, direcotry) {
 
     return storage;
 }
+
+export const addExt = (fileName: string, ext: string) => { return fileName.endsWith(ext) ? fileName : fileName.concat(ext); }

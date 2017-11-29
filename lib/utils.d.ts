@@ -33,3 +33,4 @@ export declare function calculateOffset(direction: any, y: number, yOffset: numb
  * @param xOffset
  */
 export declare function scroll(wd: any, driver: any, direction: Direction, isIOS: boolean, y: number, x: number, yOffset: number, xOffset: number, verbose: any): Promise<void>;
+export declare const addExt: (fileName: string, ext: string) => string;

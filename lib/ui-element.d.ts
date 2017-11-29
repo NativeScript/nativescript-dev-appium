@@ -18,7 +18,7 @@ export declare class UIElement {
      */
     tap(): Promise<any>;
     /**
-     * double tap
+     * Double tap on element
      */
     doubleTap(): Promise<any>;
     /**
@@ -29,6 +29,9 @@ export declare class UIElement {
      * Get size of element
      */
     size(): Promise<Point>;
+    /**
+     * Get text of element
+     */
     text(): Promise<any>;
     /**
      * Get web driver element
@@ -52,7 +55,20 @@ export declare class UIElement {
      * @param wait
      */
     waitForExist(wait?: number): Promise<any>;
+    /**
+     * Get attribute of element
+     * @param attr
+     */
     getAttribute(attr: any): Promise<any>;
+    /**
+     * Get rectangle of element
+     */
+    getRectangle(): Promise<{
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    }>;
     /**
      * Scroll with offset from elemnt with minimum inertia
      * @param direction

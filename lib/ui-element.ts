@@ -1,10 +1,10 @@
 import { Point } from "./point";
 import { Direction } from "./direction";
+import { IRectangle } from "./interfaces/rectangle";
 import { calculateOffset } from "./utils";
 
 export class UIElement {
-    constructor(private _element: any, private _driver: any, private _wd: any, private _webio: any, private _searchMethod: string, private _searchParams: string, private _index?: number) {
-    }
+    constructor(private _element: any, private _driver: any, private _wd: any, private _webio: any, private _searchMethod: string, private _searchParams: string, private _index?: number) { }
 
     /**
      * Click on element
@@ -21,7 +21,7 @@ export class UIElement {
     }
 
     /**
-     * double tap
+     * Double tap on element
      */
     public async doubleTap() {
         return await this._driver.execute('mobile: doubleTap', { element: (await this.element()).value.ELEMENT });
@@ -42,10 +42,12 @@ export class UIElement {
     public async size() {
         const size = await (await this.element()).getSize();
         const point = new Point(size.height, size.width);
-
         return point;
     }
 
+    /**
+     * Get text of element
+     */
     public async text() {
         return await (await this.element()).text();
     }
@@ -89,8 +91,22 @@ export class UIElement {
         return this._webio.waitForExist(this._searchParams, wait, false);
     }
 
+    /**
+     * Get attribute of element
+     * @param attr
+     */
     public async getAttribute(attr) {
         return await (await this.element()).getAttribute(attr);
+    }
+
+    /**
+     * Get rectangle of element
+     */
+    public async getRectangle() {
+        const location = await this.location();
+        const size = await this.size();
+        const rect = { x: location.x, y: location.y, width: size.y, height: size.x };
+        return rect;
     }
 
     /**
@@ -112,7 +128,7 @@ export class UIElement {
 
         if (direction === Direction.down) {
             y = (location.y + size.y) - 15;
-            
+
             if (!this._webio.isIOS) {
                 if (yOffset === 0) {
                     yOffset = location.y + size.y - 15;
@@ -197,7 +213,7 @@ export class UIElement {
     public async hold() {
         let action = new this._wd.TouchAction(this._driver);
         action
-            .longPress({el: await this.element()})
+            .longPress({ el: await this.element() })
             .release();
         await action.perform();
         await this._driver.sleep(150);
