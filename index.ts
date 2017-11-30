@@ -81,3 +81,14 @@ export async function createDriver() {
 
     return appiumDriver;
 }
+
+const killProcesses = async (code) => {
+    if (appiumServer) {
+        console.log(code)
+        return await stopServer();
+    }
+}
+process.on("exit", async (code) => await killProcesses(code));
+process.on("close", async (code) => await killProcesses(code));
+process.on("SIGINT", async (code) => await killProcesses(code));
+process.on("error", async (code) => await killProcesses(code));
