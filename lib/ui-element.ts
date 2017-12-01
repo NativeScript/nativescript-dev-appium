@@ -115,16 +115,22 @@ export class UIElement {
         const location = await this.location();
         const size = await this.size();
         const rect = { x: location.x, y: location.y, width: size.y, height: size.x };
+        return rect;
+    }
 
+    /**
+     * Get rectangle of element in actual dimensions
+     */
+    public async getActualRectangle() {
+        const actRect = await this.getRectangle();
         if (this._args.isIOS) {
             const density = this._args.device.config.density;
-            rect.x *= density;
-            rect.y *= density;
-            rect.width *= density;
-            rect.height *= density;
+            actRect.x *= density;
+            actRect.y *= density;
+            actRect.width *= density;
+            actRect.height *= density;
         }
-
-        return rect;
+        return actRect;
     }
 
     /**

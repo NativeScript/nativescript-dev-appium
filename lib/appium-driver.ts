@@ -271,7 +271,7 @@ export class AppiumDriver {
     }
 
     public async compareElement(element: UIElement, imageName: string, ) {
-        return await this.compareRectangle(await element.getRectangle(), imageName);
+        return await this.compareRectangle(await element.getActualRectangle(), imageName);
     }
 
     public async compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds: number = 3, tollerance: number = 0.01) {

@@ -72,6 +72,15 @@ export declare class UIElement {
         height: number;
     }>;
     /**
+     * Get rectangle of element in actual dimensions
+     */
+    getActualRectangle(): Promise<{
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    }>;
+    /**
      * Scroll with offset from elemnt with minimum inertia
      * @param direction
      * @param yOffset
