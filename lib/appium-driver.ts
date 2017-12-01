@@ -122,7 +122,7 @@ export class AppiumDriver {
      */
     public async findElementByXPath(xPath: string, waitForElement: number = this.defaultWaitTime) {
         const searchM = "waitForElementByXPath";
-        return await new UIElement(await this._driver.waitForElementByXPath(xPath, waitForElement), this._driver, this._wd, this._webio, searchM, xPath);
+        return await new UIElement(await this._driver.waitForElementByXPath(xPath, waitForElement), this._driver, this._wd, this._webio, this._args, searchM, xPath);
     }
 
     /**
@@ -163,7 +163,7 @@ export class AppiumDriver {
      * @param waitForElement 
      */
     public async findElementByClassName(className: string, waitForElement: number = this.defaultWaitTime) {
-        return new UIElement(await this._driver.waitForElementByClassName(className, waitForElement), this._driver, this._wd, this._webio, "waitForElementByClassName", className);
+        return new UIElement(await this._driver.waitForElementByClassName(className, waitForElement), this._driver, this._wd, this._webio, this._args, "waitForElementByClassName", className);
     }
 
     /**
@@ -182,7 +182,7 @@ export class AppiumDriver {
      * @param waitForElement 
      */
     public async findElementByAccessibilityId(id, waitForElement: number = this.defaultWaitTime) {
-        return new UIElement(await this._driver.waitForElementByAccessibilityId(id, waitForElement), this._driver, this._wd, this._webio, "waitForElementByAccessibilityId", id);
+        return new UIElement(await this._driver.waitForElementByAccessibilityId(id, waitForElement), this._driver, this._wd, this._webio, this._args, "waitForElementByAccessibilityId", id);
     }
 
     /**
@@ -271,10 +271,10 @@ export class AppiumDriver {
     }
 
     public async compareElement(element: UIElement, imageName: string, ) {
-        return await this.compareRectangles(await element.getRectangle(), imageName);
+        return await this.compareRectangle(await element.getActualRectangle(), imageName);
     }
 
-    public async compareRectangles(rect: IRectangle, imageName: string, timeOutSeconds: number = 3, tollerance: number = 0.01) {
+    public async compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds: number = 3, tollerance: number = 0.01) {
         return await this.compare(imageName, timeOutSeconds, tollerance, rect);
     }
 
@@ -452,7 +452,7 @@ export class AppiumDriver {
             return arrayOfUIElements;
         }
         array.forEach(async element => {
-            arrayOfUIElements.push(new UIElement(await element, this._driver, this._wd, this._webio, searchM, args, i));
+            arrayOfUIElements.push(new UIElement(await element, this._driver, this._wd, this._webio, this._args, searchM, args, i));
             i++;
         });
 

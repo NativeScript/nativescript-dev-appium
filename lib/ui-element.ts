@@ -1,10 +1,19 @@
 import { Point } from "./point";
 import { Direction } from "./direction";
+import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IRectangle } from "./interfaces/rectangle";
 import { calculateOffset } from "./utils";
 
 export class UIElement {
-    constructor(private _element: any, private _driver: any, private _wd: any, private _webio: any, private _searchMethod: string, private _searchParams: string, private _index?: number) { }
+    constructor(private _element: any,
+        private _driver: any,
+        private _wd: any,
+        private _webio: any,
+        private _args: INsCapabilities,
+        private _searchMethod: string,
+        private _searchParams: string,
+        private _index?: number
+    ) { }
 
     /**
      * Click on element
@@ -107,6 +116,21 @@ export class UIElement {
         const size = await this.size();
         const rect = { x: location.x, y: location.y, width: size.y, height: size.x };
         return rect;
+    }
+
+    /**
+     * Get rectangle of element in actual dimensions
+     */
+    public async getActualRectangle() {
+        const actRect = await this.getRectangle();
+        if (this._args.isIOS) {
+            const density = this._args.device.config.density;
+            actRect.x *= density;
+            actRect.y *= density;
+            actRect.width *= density;
+            actRect.height *= density;
+        }
+        return actRect;
     }
 
     /**

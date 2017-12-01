@@ -123,7 +123,7 @@ export declare class AppiumDriver {
     source(): Promise<any>;
     sessionId(): Promise<any>;
     compareElement(element: UIElement, imageName: string): Promise<boolean>;
-    compareRectangles(rect: IRectangle, imageName: string, timeOutSeconds?: number, tollerance?: number): Promise<boolean>;
+    compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds?: number, tollerance?: number): Promise<boolean>;
     compareScreen(imageName: string, timeOutSeconds?: number, tollerance?: number): Promise<boolean>;
     private compare(imageName, timeOutSeconds?, tollerance?, rect?);
     prepareImageToCompare(filePath: string, rect: IRectangle): Promise<void>;

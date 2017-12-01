@@ -1,14 +1,16 @@
 import { Point } from "./point";
 import { Direction } from "./direction";
+import { INsCapabilities } from "./interfaces/ns-capabilities";
 export declare class UIElement {
     private _element;
     private _driver;
     private _wd;
     private _webio;
+    private _args;
     private _searchMethod;
     private _searchParams;
     private _index;
-    constructor(_element: any, _driver: any, _wd: any, _webio: any, _searchMethod: string, _searchParams: string, _index?: number);
+    constructor(_element: any, _driver: any, _wd: any, _webio: any, _args: INsCapabilities, _searchMethod: string, _searchParams: string, _index?: number);
     /**
      * Click on element
      */
@@ -64,6 +66,15 @@ export declare class UIElement {
      * Get rectangle of element
      */
     getRectangle(): Promise<{
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    }>;
+    /**
+     * Get rectangle of element in actual dimensions
+     */
+    getActualRectangle(): Promise<{
         x: number;
         y: number;
         width: number;
