@@ -40,7 +40,7 @@ export class DeviceManger implements IDeviceManager {
 
         // Using serve to manage deivces.
         if (args.useDeviceControllerServer) {
-            const d = await this._serveiceContext.subscribe(args.appiumCaps.deviceName, args.appiumCaps.platformName.toLowerCase(), args.appiumCaps.platformVersion, "test");
+            const d = await this._serveiceContext.subscribe(args.appiumCaps.deviceName, args.appiumCaps.platformName.toLowerCase(), args.appiumCaps.platformVersion, args.appiumCaps.app);
             if (!d || !(d as IDevice)) {
                 console.error("", d);
                 throw new Error("Missing device: " + d);
@@ -51,7 +51,7 @@ export class DeviceManger implements IDeviceManager {
 
             return d;
         }
-        
+
         const allDevices = (await DeviceController.getDevices({ platform: args.appiumCaps.platformName }));
         if (!allDevices || allDevices === null || allDevices.length === 0) {
             console.log("We couldn't find any devices. We will try to proceed to appium! Maybe avd manager is missing")
@@ -133,7 +133,8 @@ export class DeviceManger implements IDeviceManager {
 
             // It looks we need it for XCTest (iOS 10+ automation)
             if (args.appiumCaps.platformVersion >= 10) {
-                const port = await findFreePort(8100);
+                const port = await findFreePort(10, 8100);
+                console.log(" args.appiumCaps['wdaLocalPort']", port)
                 args.appiumCaps["wdaLocalPort"] = port;
             }
         }

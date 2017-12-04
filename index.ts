@@ -84,7 +84,6 @@ export async function createDriver() {
 
 const killProcesses = async (code) => {
     if (appiumServer) {
-        console.log(code)
         return await stopServer();
     }
 }
