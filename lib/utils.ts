@@ -388,3 +388,31 @@ function createStorageFolder(storage, direcotry) {
 }
 
 export const addExt = (fileName: string, ext: string) => { return fileName.endsWith(ext) ? fileName : fileName.concat(ext); }
+
+export const isPortAvailable = (port) => {
+    const net = require('net');
+    return new Promise(resolve => {
+        if (isNaN(port) || port != parseInt(port) || port < 0 || port > 65536) {
+            // const err = 'Ivalid input. Port must be an Integer number betwen 0 and 65536';
+            // console.error(err);
+            resolve(false);
+        }
+        port = parseInt(port);
+        const tester = net.createServer()
+            .once('error', err => {
+                //console.error("Error: ", err);
+                resolve(false);
+            })
+            .once('listening', () => tester.once('close', () => resolve(true)).close())
+            .listen(port);
+    });
+};
+
+export const findFreePort = async (retries = 10, port = 8000) => {
+    while (!(await isPortAvailable(port)) && retries > 0) {
+        port += 10;
+        retries--;
+    }
+
+    return port;
+}

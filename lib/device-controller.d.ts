@@ -10,4 +10,5 @@ export declare class DeviceManger implements IDeviceManager {
     stopDevice(args: INsCapabilities): Promise<void>;
     static kill(device: IDevice): Promise<void>;
     private static getDefaultDevice(args);
+    private static applyAdditionalSettings(args);
 }

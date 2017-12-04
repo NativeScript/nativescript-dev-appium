@@ -1,4 +1,12 @@
-import { waitForOutput, resolve, log, isWin, shutdown, executeCommand } from "./utils";
+import {
+    waitForOutput,
+    resolve,
+    log,
+    isWin,
+    shutdown,
+    executeCommand,
+    findFreePort
+} from "./utils";
 import * as child_process from "child_process";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
@@ -39,7 +47,8 @@ export class DeviceManger implements IDeviceManager {
             }
 
             DeviceManger._emulators.set(args.runType, d);
-            console.log("", d);
+            await this.applyAdditionalSettings(args);
+
             return d;
         }
         
@@ -114,5 +123,19 @@ export class DeviceManger implements IDeviceManager {
 
     private static getDefaultDevice(args) {
         return new Device(args.appiumCaps.deviceName, args.appiumCaps.platformVersion, undefined, args.appiumCaps.platformName, undefined, undefined);
+    }
+
+    private async applyAdditionalSettings(args) {
+        if (args.appiumCaps.platformName.toLowerCase() === Platform.IOS) {
+            args.appiumCaps["useNewWDA"] = false;
+            args.appiumCaps["wdaStartupRetries"] = 5;
+            args.appiumCaps["shouldUseSingletonTestManager"] = false;
+
+            // It looks we need it for XCTest (iOS 10+ automation)
+            if (args.appiumCaps.platformVersion >= 10) {
+                const port = await findFreePort(8100);
+                args.appiumCaps["wdaLocalPort"] = port;
+            }
+        }
     }
 }

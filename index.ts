@@ -1,11 +1,10 @@
-import * as portastic from "portastic";
 import { AppiumServer } from "./lib/appium-server";
 import { AppiumDriver } from "./lib/appium-driver";
 import { ElementHelper } from "./lib/element-helper";
 import { NsCapabilities } from "./lib/ns-capabilities";
 import { IDeviceManager } from "./lib/interfaces/device-manager";
 
-import { shutdown } from "./lib/utils";
+import { shutdown, findFreePort } from "./lib/utils";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { ElementHelper } from "./lib/element-helper";
@@ -26,7 +25,7 @@ export async function startServer(port?: number, deviceManager?: IDeviceManager)
     appiumServer.port = port || nsCapabilities.port;
     let retry = false;
     if (!appiumServer.port) {
-        appiumServer.port = (await portastic.find({ min: 8600, max: 9080 }))[0];
+        appiumServer.port = (await findFreePort());
         retry = true;
     }
 
@@ -34,7 +33,7 @@ export async function startServer(port?: number, deviceManager?: IDeviceManager)
     let retryCount = 0;
     while (retry && !hasStarted && retryCount < 10) {
         let tempPort = appiumServer.port + 10;
-        tempPort = (await portastic.find({ min: tempPort, max: 9180 }))[0];
+        tempPort = (await findFreePort());
         console.log("Trying to use port: ", tempPort);
         appiumServer.port = tempPort;
         hasStarted = await appiumServer.start(deviceManager);
