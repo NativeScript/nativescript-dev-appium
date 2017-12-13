@@ -4,8 +4,18 @@ import * as http from "http";
 export class ServiceContext {
     private readonly _apiVersion = "/api/v1/";
     private readonly _deviceController = `${this._apiVersion}/devices`
+    private readonly _utilsController = `${this._apiVersion}/utils`
+    private static serviceContext: ServiceContext;
 
-    constructor(private _baseUrl = "localhost", private _port = 8000) {
+    constructor(private _port, private _baseUrl) {
+    }
+
+    public static createServer(port, host = "localhost") {
+        if (!ServiceContext.serviceContext) {
+            ServiceContext.serviceContext = new ServiceContext(port, host);
+        }
+
+        return ServiceContext.serviceContext;
     }
 
     public async subscribe(deviceName, platformName, platformVersion, info) {
@@ -14,6 +24,14 @@ export class ServiceContext {
 
     public async unsubscribe(token) {
         return await this.getJSON(`${this._deviceController}/unsubscribe?token=${token}`);
+    }
+
+    public async releasePort(port) {
+        return await this.getJSON(`${this._utilsController}/release-port?port=${port}`);
+    }
+
+    public async getFreePort(retriesCount = 30, from = 8300): Promise<string> {
+        return await this.getJSON(`${this._utilsController}/free-port?retriesCount=${retriesCount}&from=${from}`) + "";
     }
 
     public getJSON(query) {

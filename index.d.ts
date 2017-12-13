@@ -1,5 +1,6 @@
 import { IDeviceManager } from "./lib/interfaces/device-manager";
 export { AppiumDriver } from "./lib/appium-driver";
+export { AppiumServer } from "./lib/appium-server";
 export { ElementHelper } from "./lib/element-helper";
 export { UIElement } from "./lib/ui-element";
 export { Point } from "./lib/point";

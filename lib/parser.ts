@@ -24,6 +24,7 @@ const config = (() => {
             type: "boolean",
             defualt: false
         })
+        .option("deviceControllerServerPort", { describe: "Reusing device if available.", type: "boolean", defualt: false })
         .help()
         .argv;
 
@@ -53,7 +54,8 @@ const config = (() => {
         testReports: options.testReports || process.env.npm_config_TEST_REPORTS || process.env.TEST_REPORTS,
         reuseDevice: options.reuseDevice || process.env.npm_config_REUSE_DEVICE || process.env.REUSE_DEVICE,
         ignoreDeviceController: options.ignoreDeviceController,
-        useDeviceControllerServer: options.useDeviceControllerServer || process.env['USE_DEVICE_CONTROLLER_SERVER']
+        useDeviceControllerServer: options.useDeviceControllerServer || process.env['USE_DEVICE_CONTROLLER_SERVER'],
+        deviceControllerServerPort: options.deviceControllerServerPort || process.env['DEVICE_CONTROLLER_SERVER_PORT'] || 8700
     };
 
     return config;
@@ -75,5 +77,6 @@ export const {
     testReports,
     reuseDevice,
     ignoreDeviceController,
-    useDeviceControllerServer
+    useDeviceControllerServer,
+    deviceControllerServerPort
 } = config;

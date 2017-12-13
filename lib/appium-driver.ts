@@ -10,6 +10,8 @@ import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
 import { Direction } from "./direction";
 import { Locator } from "./locators";
+import { Platform } from "mobile-devices-controller";
+import { ServiceContext } from "./service/service-context";
 import {
     addExt,
     log,
@@ -21,6 +23,7 @@ import {
     getReportPath,
     calculateOffset,
     scroll,
+    findFreePort
 } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IRectangle } from "./interfaces/rectangle";
@@ -411,6 +414,7 @@ export class AppiumDriver {
         log("Creating driver!", args.verbose);
 
         args.appiumCaps['udid'] = args.appiumCaps['udid'] || args.device.token;
+        await AppiumDriver.applyAdditionalSettings(args);
         const _webio = webdriverio.remote({
             baseUrl: driverConfig.host,
             port: driverConfig.port,
@@ -420,8 +424,39 @@ export class AppiumDriver {
 
         const driver = await wd.promiseChainRemote(driverConfig);
         AppiumDriver.configureLogging(driver, args.verbose);
-        await driver.init(args.appiumCaps);
+        let hasStarted = false;
+        let retries = 10;
+        while (retries > 0 && !hasStarted) {
+            try {
+                const test = await driver.init(args.appiumCaps);
+                hasStarted = true;
+            } catch (error) {
+                if (error && error.message && error.message.includes("WebDriverAgent")) {
+                    let freePort = await findFreePort(10, args.appiumCaps.port, args);
+                    console.log(" args.appiumCaps['wdaLocalPort']", freePort)
+                    args.appiumCaps["wdaLocalPort"] = freePort;
+                }
+                console.log(error);
+            }
+            retries--;
+        }
+
         return new AppiumDriver(driver, wd, _webio, driverConfig, args);
+    }
+
+    private static async applyAdditionalSettings(args) {
+        if (args.appiumCaps.platformName.toLowerCase() === Platform.IOS) {
+            args.appiumCaps["useNewWDA"] = false;
+            args.appiumCaps["wdaStartupRetries"] = 5;
+            args.appiumCaps["shouldUseSingletonTestManager"] = false;
+
+            // It looks we need it for XCTest (iOS 10+ automation)
+            if (args.appiumCaps.platformVersion >= 10) {
+                let freePort = await findFreePort(10, (parseInt(args.appiumCaps["wdaLocalPort"])) || 8400, args);
+                console.log(" args.appiumCaps['wdaLocalPort']", freePort)
+                args.appiumCaps["wdaLocalPort"] = freePort;
+            }
+        }
     }
 
     public async resetApp() {

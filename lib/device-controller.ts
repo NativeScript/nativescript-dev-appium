@@ -25,11 +25,13 @@ import {
 export class DeviceManger implements IDeviceManager {
     private static _emulators: Map<string, IDevice> = new Map();
 
-    constructor(private _serveiceContext: ServiceContext = new ServiceContext()) {
+    constructor(port, private _serveiceContext: ServiceContext = undefined) {
+        if (!this._serveiceContext) {
+            this._serveiceContext = ServiceContext.createServer(port);
+        }
     }
 
     public async startDevice(args: INsCapabilities): Promise<IDevice> {
-
         let device: IDevice = DeviceManger.getDefaultDevice(args);
         // When isSauceLab specified we simply do nothing;
         if (args.isSauceLab || args.ignoreDeviceController) {
@@ -47,7 +49,6 @@ export class DeviceManger implements IDeviceManager {
             }
 
             DeviceManger._emulators.set(args.runType, d);
-            await this.applyAdditionalSettings(args);
 
             return d;
         }
@@ -109,6 +110,15 @@ export class DeviceManger implements IDeviceManager {
                 console.error("", d);
                 throw new Error("Missing device: " + d);
             }
+
+            try {
+                await this._serveiceContext.releasePort(args.port);
+                if (args.appiumCaps.wdaLocalPort) {
+                    await this._serveiceContext.releasePort(args.appiumCaps.wdaLocalPort);
+                }
+            } catch (error) {
+                console.log(error);
+            }
         }
 
         if (DeviceManger._emulators.has(args.runType) && !args.reuseDevice && !args.isSauceLab && !args.ignoreDeviceController && args.useDeviceControllerServer) {
@@ -123,20 +133,5 @@ export class DeviceManger implements IDeviceManager {
 
     private static getDefaultDevice(args) {
         return new Device(args.appiumCaps.deviceName, args.appiumCaps.platformVersion, undefined, args.appiumCaps.platformName, undefined, undefined);
-    }
-
-    private async applyAdditionalSettings(args) {
-        if (args.appiumCaps.platformName.toLowerCase() === Platform.IOS) {
-            args.appiumCaps["useNewWDA"] = false;
-            args.appiumCaps["wdaStartupRetries"] = 5;
-            args.appiumCaps["shouldUseSingletonTestManager"] = false;
-
-            // It looks we need it for XCTest (iOS 10+ automation)
-            if (args.appiumCaps.platformVersion >= 10) {
-                const port = await findFreePort(10, 8100);
-                console.log(" args.appiumCaps['wdaLocalPort']", port)
-                args.appiumCaps["wdaLocalPort"] = port;
-            }
-        }
     }
 }

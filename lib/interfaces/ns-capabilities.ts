@@ -22,4 +22,5 @@ export interface INsCapabilities {
     device: IDevice;
     ignoreDeviceController: boolean;
     useDeviceControllerServer:boolean;
+    deviceControllerServerPort:string;
 }

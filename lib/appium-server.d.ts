@@ -15,7 +15,7 @@ export declare class AppiumServer {
     runType: string;
     readonly server: child_process.ChildProcess;
     hasStarted: boolean;
-    start(deviceManager?: IDeviceManager): Promise<boolean>;
+    start(port: any, deviceManager?: IDeviceManager): Promise<boolean>;
     stop(): Promise<{}>;
     private resolveAppiumDependency();
 }

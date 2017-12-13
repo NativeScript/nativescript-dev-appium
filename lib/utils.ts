@@ -6,6 +6,7 @@ import * as glob from "glob";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { Point } from "./point";
 import { Direction } from "./direction";
+import { ServiceContext } from "./service/service-context";
 
 export function resolve(mainPath, ...args) {
     if (!path.isAbsolute(mainPath)) {
@@ -408,11 +409,16 @@ export const isPortAvailable = (port) => {
     });
 };
 
-export const findFreePort = async (retries = 10, port = 8000) => {
-    while (!(await isPortAvailable(port)) && retries > 0) {
-        port += 10;
-        retries--;
-    }
+export const findFreePort = async (retries: number = 10, port: number = 3000, args: INsCapabilities) => {
+    let p: number = port;
 
-    return port;
+    if (args.useDeviceControllerServer) {
+        p = parseInt(await ServiceContext.createServer(args.deviceControllerServerPort).getFreePort(100, port));
+    } else {
+        while (!(await isPortAvailable(p)) && retries > 0) {
+            p += 10;
+            retries--;
+        }
+    }
+    return p;
 }
