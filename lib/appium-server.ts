@@ -1,7 +1,18 @@
 import * as child_process from "child_process";
-import { log, resolve, waitForOutput, shutdown, fileExists, isWin, executeCommand } from "./utils";
+import {
+    log,
+    resolve,
+    waitForOutput,
+    shutdown,
+    fileExists,
+    isWin,
+    executeCommand,
+    findFreePort
+} from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
+import { IDeviceManager } from "./interfaces/device-manager";
 import { DeviceManger } from "./device-controller";
+import { ServiceContext } from "../lib/service/service-context";
 
 export class AppiumServer {
     private _server: child_process.ChildProcess;
@@ -9,6 +20,7 @@ export class AppiumServer {
     private _port: number;
     private _runType: string;
     private _hasStarted: boolean;
+    private _deviceManager: IDeviceManager;
 
     constructor(private _args: INsCapabilities) {
         this._runType = this._args.runType;
@@ -44,23 +56,38 @@ export class AppiumServer {
         this._hasStarted = hasStarted;
     }
 
-    public async start() {
-        const device = await DeviceManger.startDevice(this._args);
+    public async start(port, deviceManager: IDeviceManager = new DeviceManger(port)) {
+        this._deviceManager = deviceManager;
+        if (!this._args.device) {
+            const device = await this._deviceManager.startDevice(this._args);
+            this._args.device = device;
+        }
         log("Starting server...", this._args.verbose);
-        this._args.device = device;
         const logLevel = this._args.verbose === true ? "debug" : "info";
-        this._server = child_process.spawn(this._appium, ["-p", this.port.toString(), "--log-level", logLevel], {
-            shell: true,
-            detached: false
-        });
+        this.port = port || this._args.port;
+        let retry = false;
 
-        const response: boolean = await waitForOutput(this._server, /listener started/, /Error: listen/, 60000, this._args.verbose);
+        let response: boolean = false;
+        let retries = 11;
+        while (retries > 0 && !response) {
+            retries--;
+            this.port = (await findFreePort(100, this.port, this._args));
+
+            this._server = child_process.spawn(this._appium, ["-p", this.port.toString(), "--log-level", logLevel], {
+                shell: true,
+                detached: false
+            });
+            response = await waitForOutput(this._server, /listener started/, /Error: listen/, 60000, this._args.verbose);
+            if (!response) {
+                this.port += 10;
+            }
+        }
 
         return response;
     }
 
     public async stop() {
-        await DeviceManger.stop(this._args);
+        await this._deviceManager.stopDevice(this._args);
         return new Promise((resolve, reject) => {
             this._server.on("close", (code, signal) => {
                 log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);

@@ -1,11 +1,12 @@
-import * as portastic from "portastic";
 import { AppiumServer } from "./lib/appium-server";
 import { AppiumDriver } from "./lib/appium-driver";
 import { ElementHelper } from "./lib/element-helper";
 import { NsCapabilities } from "./lib/ns-capabilities";
-import { shutdown } from "./lib/utils";
+import { IDeviceManager } from "./lib/interfaces/device-manager";
+import { shutdown, findFreePort } from "./lib/utils";
 
 export { AppiumDriver } from "./lib/appium-driver";
+export { AppiumServer } from "./lib/appium-server";
 export { ElementHelper } from "./lib/element-helper";
 export { UIElement } from "./lib/ui-element";
 export { Point } from "./lib/point";
@@ -14,52 +15,27 @@ export { Locator } from "./lib/locators";
 export { Direction } from "./lib/direction";
 export { DeviceManger } from "./lib/device-controller";
 export { IRectangle } from "./lib/interfaces/rectangle";
+export { IDeviceManager } from "./lib/interfaces/device-manager";
 
 const nsCapabilities = new NsCapabilities();
 const appiumServer = new AppiumServer(nsCapabilities);
 
 let appiumDriver = null;
-export async function startServer(port?: number) {
-    appiumServer.port = port || nsCapabilities.port;
-    let retry = false;
-    if (!appiumServer.port) {
-        appiumServer.port = (await portastic.find({ min: 8600, max: 9080 }))[0];
-        retry = true;
-    }
-
-    let hasStarted = await appiumServer.start();
-    let retryCount = 0;
-    while (retry && !hasStarted && retryCount < 10) {
-        let tempPort = appiumServer.port + 10;
-        tempPort = (await portastic.find({ min: tempPort, max: 9180 }))[0];
-        console.log("Trying to use port: ", tempPort);
-        appiumServer.port = tempPort;
-        hasStarted = await appiumServer.start();
-        retryCount++;
-    }
-
-    if (!hasStarted) {
-        throw new Error("Appium driver failed to start!!! Run with --verbose option for more info!");
-    }
-
-    appiumServer.hasStarted = hasStarted;
-
-    process.on("uncaughtException", () => shutdown(appiumServer.server, nsCapabilities.verbose));
-    process.on("exit", () => shutdown(appiumServer.server, nsCapabilities.verbose));
-    process.on("SIGINT", () => shutdown(appiumServer.server, nsCapabilities.verbose));
+export async function startServer(port?: number, deviceManager?: IDeviceManager) {
+    await appiumServer.start(port || 8300, deviceManager);
 };
 
 export async function stopServer() {
     if (appiumDriver !== null && appiumDriver.isAlive) {
         await appiumDriver.quit();
     }
-    if (appiumServer !== null && appiumServer.hasStarted) {
+    if (appiumServer !== null && appiumServer.server && !appiumServer.server.killed) {
         await appiumServer.stop();
     }
 };
 
 export async function createDriver() {
-    if (!appiumServer.hasStarted) {
+    if (!appiumServer.server) {
         throw new Error("Server is not available!");
     }
     if (!nsCapabilities.appiumCapsLocation) {
@@ -79,3 +55,15 @@ export async function createDriver() {
 
     return appiumDriver;
 }
+
+const killProcesses = async (code) => {
+    if (appiumServer) {
+        return await stopServer();
+    }
+}
+
+process.on("exit", async (code) => await killProcesses(code));
+process.on("close", async (code) => await killProcesses(code));
+process.on("SIGINT", async (code) => await killProcesses(code));
+process.on("error", async (code) => await killProcesses(code));
+process.on("uncaughtException", () => async (code) => await killProcesses(code));

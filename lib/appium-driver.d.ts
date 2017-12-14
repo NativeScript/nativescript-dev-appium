@@ -131,6 +131,7 @@ export declare class AppiumDriver {
     logScreenshot(fileName: string): Promise<string>;
     logPageSource(fileName: string): Promise<void>;
     static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
+    private static applyAdditionalSettings(args);
     resetApp(): Promise<void>;
     init(): Promise<void>;
     quit(): Promise<void>;

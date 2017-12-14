@@ -6,6 +6,7 @@ import * as glob from "glob";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { Point } from "./point";
 import { Direction } from "./direction";
+import { ServiceContext } from "./service/service-context";
 
 export function resolve(mainPath, ...args) {
     if (!path.isAbsolute(mainPath)) {
@@ -388,3 +389,36 @@ function createStorageFolder(storage, direcotry) {
 }
 
 export const addExt = (fileName: string, ext: string) => { return fileName.endsWith(ext) ? fileName : fileName.concat(ext); }
+
+export const isPortAvailable = (port) => {
+    const net = require('net');
+    return new Promise(resolve => {
+        if (isNaN(port) || port != parseInt(port) || port < 0 || port > 65536) {
+            // const err = 'Ivalid input. Port must be an Integer number betwen 0 and 65536';
+            // console.error(err);
+            resolve(false);
+        }
+        port = parseInt(port);
+        const tester = net.createServer()
+            .once('error', err => {
+                //console.error("Error: ", err);
+                resolve(false);
+            })
+            .once('listening', () => tester.once('close', () => resolve(true)).close())
+            .listen(port);
+    });
+};
+
+export const findFreePort = async (retries: number = 10, port: number = 3000, args: INsCapabilities) => {
+    let p: number = port;
+
+    if (args.useDeviceControllerServer) {
+        p = parseInt(await ServiceContext.createServer(args.deviceControllerServerPort).getFreePort(100, port));
+    } else {
+        while (!(await isPortAvailable(p)) && retries > 0) {
+            p += 10;
+            retries--;
+        }
+    }
+    return p;
+}

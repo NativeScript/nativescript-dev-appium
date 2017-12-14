@@ -1,4 +1,6 @@
+import { IDeviceManager } from "./lib/interfaces/device-manager";
 export { AppiumDriver } from "./lib/appium-driver";
+export { AppiumServer } from "./lib/appium-server";
 export { ElementHelper } from "./lib/element-helper";
 export { UIElement } from "./lib/ui-element";
 export { Point } from "./lib/point";
@@ -7,6 +9,7 @@ export { Locator } from "./lib/locators";
 export { Direction } from "./lib/direction";
 export { DeviceManger } from "./lib/device-controller";
 export { IRectangle } from "./lib/interfaces/rectangle";
-export declare function startServer(port?: number): Promise<void>;
+export { IDeviceManager } from "./lib/interfaces/device-manager";
+export declare function startServer(port?: number, deviceManager?: IDeviceManager): Promise<void>;
 export declare function stopServer(): Promise<void>;
 export declare function createDriver(): Promise<any>;
