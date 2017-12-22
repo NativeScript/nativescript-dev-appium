@@ -44,7 +44,7 @@ export declare class NsCapabilities implements INsCapabilities {
     appPath: string;
     readonly ignoreDeviceController: boolean;
     readonly useDeviceControllerServer: boolean;
-    readonly deviceControllerServerPort: string;
+    readonly deviceControllerServerPort: number;
     device: IDevice;
     readonly emulatorOptions: string;
     private isAndroidPlatform();

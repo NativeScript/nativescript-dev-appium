@@ -55,7 +55,7 @@ const config = (() => {
         reuseDevice: options.reuseDevice || process.env.npm_config_REUSE_DEVICE || process.env.REUSE_DEVICE,
         ignoreDeviceController: options.ignoreDeviceController,
         useDeviceControllerServer: options.useDeviceControllerServer || process.env['USE_DEVICE_CONTROLLER_SERVER'],
-        deviceControllerServerPort: options.deviceControllerServerPort || process.env['DEVICE_CONTROLLER_SERVER_PORT'] || 8700
+        deviceControllerServerPort: parseInt(options.deviceControllerServerPort) || parseInt(process.env['DEVICE_CONTROLLER_SERVER_PORT']) || 8700
     };
 
     return config;

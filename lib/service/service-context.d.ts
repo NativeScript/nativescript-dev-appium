@@ -6,7 +6,7 @@ export declare class ServiceContext {
     private readonly _utilsController;
     private static serviceContext;
     constructor(_port: any, _baseUrl: any);
-    static createServer(port: any, host?: string): ServiceContext;
+    static createServer(port?: number, host?: string): ServiceContext;
     subscribe(deviceName: any, platformName: any, platformVersion: any, info: any): Promise<{}>;
     unsubscribe(token: any): Promise<{}>;
     releasePort(port: any): Promise<{}>;

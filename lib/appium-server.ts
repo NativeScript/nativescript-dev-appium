@@ -56,7 +56,7 @@ export class AppiumServer {
         this._hasStarted = hasStarted;
     }
 
-    public async start(port, deviceManager: IDeviceManager = new DeviceManger(port)) {
+    public async start(port, deviceManager: IDeviceManager = new DeviceManger(this._args.deviceControllerServerPort)) {
         this._deviceManager = deviceManager;
         if (!this._args.device) {
             const device = await this._deviceManager.startDevice(this._args);
