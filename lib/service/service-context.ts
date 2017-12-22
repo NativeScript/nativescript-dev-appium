@@ -10,7 +10,7 @@ export class ServiceContext {
     constructor(private _port, private _baseUrl) {
     }
 
-    public static createServer(port, host = "localhost") {
+    public static createServer(port = 8700, host = "localhost") {
         if (!ServiceContext.serviceContext) {
             ServiceContext.serviceContext = new ServiceContext(port, host);
         }

@@ -26,7 +26,7 @@ export class NsCapabilities implements INsCapabilities {
     private _device: IDevice;
     private _ignoreDeviceController: boolean;
     private _useDeviceControllerServer: boolean;
-    private _deviceControllerServerPort: string;
+    private _deviceControllerServerPort: number;
     private exceptions: Array<string> = new Array();
 
     constructor() {
