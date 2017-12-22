@@ -119,9 +119,11 @@ export class DeviceManger implements IDeviceManager {
             } catch (error) {
                 console.log(error);
             }
-        }
-
-        if (DeviceManger._emulators.has(args.runType) && !args.reuseDevice && !args.isSauceLab && !args.ignoreDeviceController && args.useDeviceControllerServer) {
+        } else if (DeviceManger._emulators.has(args.runType)
+            && !args.reuseDevice
+            && !args.isSauceLab
+            && !args.ignoreDeviceController
+            && !args.useDeviceControllerServer) {
             const device = DeviceManger._emulators.get(args.runType);
             await DeviceManger.kill(device);
         }
