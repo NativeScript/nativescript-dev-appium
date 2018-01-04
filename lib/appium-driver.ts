@@ -427,8 +427,9 @@ export class AppiumDriver {
         let hasStarted = false;
         let retries = 10;
         while (retries > 0 && !hasStarted) {
+            let test = '';
             try {
-                const test = await driver.init(args.appiumCaps);
+                test = await driver.init(args.appiumCaps);
                 hasStarted = true;
             } catch (error) {
                 console.log(error);
