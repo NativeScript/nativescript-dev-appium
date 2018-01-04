@@ -33,6 +33,11 @@ export class DeviceManger implements IDeviceManager {
 
     public async startDevice(args: INsCapabilities): Promise<IDevice> {
         let device: IDevice = DeviceManger.getDefaultDevice(args);
+        if (process.env["DEVICE_TOKEN"]) {
+            device.token = process.env["DEVICE_TOKEN"];
+            console.log("Device", device);
+            return device;
+        }
         // When isSauceLab specified we simply do nothing;
         if (args.isSauceLab || args.ignoreDeviceController) {
             DeviceManger._emulators.set(args.runType, device);
@@ -43,12 +48,13 @@ export class DeviceManger implements IDeviceManager {
         // Using serve to manage deivces.
         if (args.useDeviceControllerServer) {
             const d = await this._serveiceContext.subscribe(args.appiumCaps.deviceName, args.appiumCaps.platformName.toLowerCase(), args.appiumCaps.platformVersion, args.appiumCaps.app);
+            delete d['__v'];
+            delete d['_id']
             if (!d || !(d as IDevice)) {
                 console.error("", d);
                 throw new Error("Missing device: " + d);
             }
-
-            DeviceManger._emulators.set(args.runType, d);
+            console.log(`Device:`, d);
 
             return d;
         }
@@ -102,10 +108,11 @@ export class DeviceManger implements IDeviceManager {
     }
 
     public async stopDevice(args: INsCapabilities) {
+        if (process.env["DEVICE_TOKEN"]) {
+            return;
+        }
         if (args.useDeviceControllerServer) {
-            const device = DeviceManger._emulators.get(args.runType);
-
-            const d = await this._serveiceContext.unsubscribe(device.token);
+            const d = await this._serveiceContext.unsubscribe(args.device.token);
             if (!d) {
                 console.error("", d);
                 throw new Error("Missing device: " + d);

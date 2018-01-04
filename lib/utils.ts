@@ -287,25 +287,31 @@ function getAppName(args: INsCapabilities) {
     return appName;
 }
 
-export function getAppPath(platform, runType) {
-    if (platform.includes("android")) {
+export function getAppPath(caps: INsCapabilities) {
+    if (caps.appiumCaps.platformName.toLowerCase().includes("android")) {
         //platforms/android/build/outputs/apk/
         //platforms/android/app/build/outputs/apk
         let apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
         if (!apks || apks.length === 0) {
             apks = glob.sync("platforms/android/app/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
         }
-        return apks[0];
-    } else if (platform.includes("ios")) {
-        if (runType.includes("sim")) {
-            const simulatorApps = glob.sync("platforms/ios/build/emulator/**/*.app");
-            return simulatorApps[0];
-        } else if (runType.includes("device")) {
-            const deviceApps = glob.sync("platforms/ios/build/device/**/*.ipa");
-            return deviceApps[0];
+        if (!apks || apks.length === 0) {
+            apks = glob.sync(`${caps.projectDir}/platforms/android/app/build/outputs/apk/*.apk`).filter(function (file) { return file.indexOf("unaligned") < 0; });
         }
+        return apks[0];
+    } else if (caps.appiumCaps.platformName.toLowerCase().includes("ios")) {
+        let path = "platforms/ios/build/emulator/**/*.app";
+        if (caps.runType.includes("device")) {
+            path = "platforms/ios/build/device/**/*.ipa";
+        }
+
+        let apps = glob.sync("platforms/ios/build/device/**/*.ipa");
+        if (!apps || apps.length === 0) {
+            apps = glob.sync(`${caps.projectDir}/${path}`).filter(function (file) { return file.indexOf("unaligned") < 0; });
+        }
+        return apps[0];
     } else {
-        throw new Error("No 'app' capability provided and incorrect 'runType' convention used: " + runType +
+        throw new Error("No 'app' capability provided and incorrect 'runType' convention used: " + caps.runType +
             ". In order to automatically search and locate app package please use 'android','device','sim' in your 'runType' option. E.g --runType android25, --runType sim.iPhone7.iOS110");
     }
 }

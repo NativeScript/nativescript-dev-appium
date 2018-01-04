@@ -88,7 +88,7 @@ export class NsCapabilities implements INsCapabilities {
         }
 
         if (!this._appiumCaps.app) {
-            this._appiumCaps.app = getAppPath(this._appiumCaps.platformName.toLowerCase(), this._runType.toLowerCase());
+            this._appiumCaps.app = getAppPath(this);
         }
         console.log("Application full path: " + this._appiumCaps.app);
     }

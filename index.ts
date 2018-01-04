@@ -23,6 +23,11 @@ const appiumServer = new AppiumServer(nsCapabilities);
 let appiumDriver = null;
 export async function startServer(port?: number, deviceManager?: IDeviceManager) {
     await appiumServer.start(port || 8300, deviceManager);
+    appiumServer.server.on("exit", async (code) => await killProcesses(code));
+    appiumServer.server.on("close", async (code) => await killProcesses(code));
+    appiumServer.server.on("SIGINT", async (code) => await killProcesses(code));
+    appiumServer.server.on("error", async (code) => await killProcesses(code));
+    appiumServer.server.on("uncaughtException", () => async (code) => await killProcesses(code));
 };
 
 export async function stopServer() {
