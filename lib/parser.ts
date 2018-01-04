@@ -29,8 +29,12 @@ const config = (() => {
         .argv;
 
     let appRootPath = options.path;
-    if (appRootPath.includes("nativescript-dev-appium") || appRootPath.includes("mocha")) {
+    if (appRootPath.includes("nativescript-dev-appium")) {
         appRootPath = require('app-root-path').toString();
+    }
+
+    if (appRootPath.includes("mocha")) {
+        appRootPath = join(appRootPath, "../../..");
     }
 
     const projectDir = appRootPath;

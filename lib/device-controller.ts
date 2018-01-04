@@ -47,7 +47,7 @@ export class DeviceManger implements IDeviceManager {
                 console.error("", d);
                 throw new Error("Missing device: " + d);
             }
-
+            console.log(`Device: ${d}`)
             DeviceManger._emulators.set(args.runType, d);
 
             return d;
