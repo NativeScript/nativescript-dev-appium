@@ -441,7 +441,7 @@ export class AppiumDriver {
                 }
             }
             if (hasStarted) {
-                console.log("Appium driver has started successfully!", test);
+                console.log("Appium driver has started successfully!");
             }
 
             retries--;
