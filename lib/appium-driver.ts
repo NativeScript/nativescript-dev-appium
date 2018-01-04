@@ -431,13 +431,18 @@ export class AppiumDriver {
                 const test = await driver.init(args.appiumCaps);
                 hasStarted = true;
             } catch (error) {
+                console.log(error);
+                console.log("Rety with new wdaLocalPort!");
                 if (error && error.message && error.message.includes("WebDriverAgent")) {
                     let freePort = await findFreePort(10, args.appiumCaps.port, args);
                     console.log(" args.appiumCaps['wdaLocalPort']", freePort)
                     args.appiumCaps["wdaLocalPort"] = freePort;
                 }
-                console.log(error);
             }
+            if (hasStarted) {
+                console.log("Appium driver has started successfully!", test);
+            }
+
             retries--;
         }
 
