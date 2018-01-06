@@ -56,7 +56,7 @@ export class DeviceManger implements IDeviceManager {
             }
             console.log(`Device:`, d);
 
-            return d;
+            return <any>d;
         }
 
         const allDevices = (await DeviceController.getDevices({ platform: args.appiumCaps.platformName }));
@@ -107,7 +107,7 @@ export class DeviceManger implements IDeviceManager {
         return device;
     }
 
-    public async stopDevice(args: INsCapabilities) {
+    public async stopDevice(args: INsCapabilities): Promise<any> {
         if (process.env["DEVICE_TOKEN"]) {
             return;
         }

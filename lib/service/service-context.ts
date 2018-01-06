@@ -43,7 +43,8 @@ export class ServiceContext {
                     path: query,
                     method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Connection': 'keep-alive'
                     }
                 }, (resp) => {
                     let data = '';

@@ -7,7 +7,7 @@ export declare class DeviceManger implements IDeviceManager {
     private static _emulators;
     constructor(port: any, _serveiceContext?: ServiceContext);
     startDevice(args: INsCapabilities): Promise<IDevice>;
-    stopDevice(args: INsCapabilities): Promise<void>;
+    stopDevice(args: INsCapabilities): Promise<any>;
     static kill(device: IDevice): Promise<void>;
     private static getDefaultDevice(args);
 }
