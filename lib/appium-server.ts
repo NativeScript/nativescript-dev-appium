@@ -62,6 +62,9 @@ export class AppiumServer {
             const device = await this._deviceManager.startDevice(this._args);
             this._args.device = device;
         }
+        if (this._args.isIOS) {
+            this._deviceManager.installApp(this._args);
+        }
         log("Starting server...", this._args.verbose);
         const logLevel = this._args.verbose === true ? "debug" : "info";
         this.port = port || this._args.port;
