@@ -8,6 +8,8 @@ export declare class DeviceManger implements IDeviceManager {
     constructor(port: any, _serveiceContext?: ServiceContext);
     startDevice(args: INsCapabilities): Promise<IDevice>;
     stopDevice(args: INsCapabilities): Promise<any>;
+    installApp(args: INsCapabilities): Promise<any>;
+    unInstallApp(args: INsCapabilities): Promise<any>;
     static kill(device: IDevice): Promise<void>;
     private static getDefaultDevice(args);
 }

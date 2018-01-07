@@ -20,6 +20,8 @@ import {
     Status,
     DeviceType
 } from "mobile-devices-controller";
+import { IOSController } from "../../mobile-devices-controller/lib/ios-controller";
+import { AndroidController } from "../../mobile-devices-controller/lib/android-controller";
 
 
 export class DeviceManger implements IDeviceManager {
@@ -133,6 +135,22 @@ export class DeviceManger implements IDeviceManager {
             && !args.useDeviceControllerServer) {
             const device = DeviceManger._emulators.get(args.runType);
             await DeviceManger.kill(device);
+        }
+    }
+
+    public async installApp(args: INsCapabilities): Promise<any> {
+        if (args.isIOS) {
+            IOSController.installApp(args.device, args.appiumCaps.app);
+        } else {
+            AndroidController.installApp(args.device, args.appiumCaps.app)
+        }
+    }
+
+    public async unInstallApp(args: INsCapabilities): Promise<any> {
+        if (args.isIOS) {
+            IOSController.uninstallApp(args.device, args.appiumCaps.app);
+        } else {
+            AndroidController.uninstallApp(args.device, args.appiumCaps.app)
         }
     }
 
