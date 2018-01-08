@@ -16,13 +16,12 @@ import {
     IDevice,
     Device,
     DeviceController,
+    IOSController,
+    AndroidController,
     Platform,
     Status,
     DeviceType
 } from "mobile-devices-controller";
-import { IOSController } from "../../mobile-devices-controller/lib/ios-controller";
-import { AndroidController } from "../../mobile-devices-controller/lib/android-controller";
-
 
 export class DeviceManger implements IDeviceManager {
     private static _emulators: Map<string, IDevice> = new Map();
@@ -141,6 +140,7 @@ export class DeviceManger implements IDeviceManager {
     public async installApp(args: INsCapabilities): Promise<any> {
         if (args.isIOS) {
             IOSController.installApp(args.device, args.appiumCaps.app);
+            console.log(`Application is successfully installed!`)
         } else {
             AndroidController.installApp(args.device, args.appiumCaps.app)
         }
