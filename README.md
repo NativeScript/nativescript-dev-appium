@@ -2,22 +2,44 @@
 
 A package to help with writing and executing e2e [Appium](http://appium.io) tests.
 
-## <a name='requirements'></a>Requirments
+<!-- TOC depthFrom:2 -->
+
+- [Requirеments](#requirеments)
+- [Set Up](#set-up)
+    - [Structure](#structure)
+    - [Files Preview](#files-preview)
+- [Usage](#usage)
+- [Custom Appium Capabilities](#custom-appium-capabilities)
+- [Options](#options)
+- [Features](#features)
+- [Troubleshooting](#troubleshooting)
+- [Common Problems](#common-problems)
+- [Missing Features](#missing-features)
+- [Contribute](#contribute)
+- [Get Help](#get-help)
+
+<!-- /TOC -->
+
+## Requirеments
 
 The `nativescript-dev-appium` plugin requires:
 * latest version of [Appium](https://github.com/appium/appium/releases)
 * latest version of [Xcode](https://developer.apple.com/library/content/releasenotes/DeveloperTools/RN-Xcode/Chapters/Introduction.html)
 * [Android SDK Tools](https://developer.android.com/studio/releases/sdk-tools.html) version greater than 25.3.0
 
-## <a name='setup'></a>Set Up
+## Set Up
 
 Add the plugin as a `devDependency` to your project:
 
-`$ npm install -D nativescript-dev-appium`
+```shell
+$ npm install -D nativescript-dev-appium
+```
 
 Then install [Appium](https://www.npmjs.com/package/appium) - we recommend a global installation to avoid adding it to every project you would like to test:
 
-`$ npm install -g appium`
+```shell
+$ npm install -g appium
+```
 
 After completion of the installation, if your project has a dependency to *TypeScript*, the plugin should have added an `e2e` folder containing predefined configs and samples.
 
@@ -52,7 +74,7 @@ After completion of the installation, if your project has a dependency to *TypeS
 > * `e2e/reports` - this folder is created during test execution and stores the actual images from comparison
 > * `e2e/resources` - this folder aims to store the expected images for comparison
 
-## <a name='usage'></a>Usage
+## Usage
 
 Before running the tests you will have to build your app for the platform on test or both. Navigate to your demo app folder from where you will execute the commands that follow.
 
@@ -80,7 +102,7 @@ $ npm run e2e -- --runType sim.iPhone8.iOS110
 
 Generated tests are standard [Mocha](http://mochajs.org) tests.
 
-## <a name='customCapabilities'></a>Custom Appium Capabilities
+## Custom Appium Capabilities
 
 When installed, the plugin creates `e2e` folder containing sample test file and configuration folder `config` where your custom capabilities reside. 
 The existence of such capabilities is a runner's requirement which comes from [Appium](https://github.com/appium/appium/blob/master/docs/en/writing-running-appium/caps.md). Additional locations where the runner will search for the config file are:
@@ -109,7 +131,7 @@ Thus, the same configuration can be used by both apps without duplication of fil
 
 If you wish to use another location of the capapabilities file instead default ones, you can specify it with `--capsLocation` option. Remember that the path provided has to be relative to the root directory.
 
-Notice that once custom capabilities are provided you will be able to pick any of them using the `--runType` option (e.g. `--runType android25`). Sample content of `appium.capabilities.json` file could be:
+Notice that once custom capabilities are provided you will be able to pick any of them using the `--runType` option (e.g. `--runType android25`). See sample content of `appium.capabilities.json` file below. For more details regarding the Appium Capabilities read [Appium documentation about Desired Capabilities](https://appium.io/docs/en/writing-running-appium/caps/):
 
 ```
 {
@@ -146,7 +168,7 @@ As you can see, the `app` property can be left an empty string which will force 
 
 **It is important to build your app in advance as explained in [Usage](#usage) section, because the runner expects to provide app package to it or such to exists in the search location.**
 
-## <a name='options'></a>Options
+## Options
 
 |Option| Description | Value |
 |---|---|---|
@@ -186,9 +208,17 @@ $ npm run e2e -- --runType android25 --verbose
 ## Common Problems
 
 1. Missing installed appium
-2. Missleading appPath or capabilities location. Please make sure that the path to the app or capabilities location is correct.
+2. Misleading appPath or capabilities location. Please make sure that the path to the app or capabilities location is correct.
 
 
 ## Missing Features
 
 1. Faster developer turnaround when working on an app. Find a way to use livesync and kick off Appium tests for the app that's on the device already.
+
+## Contribute
+We love PRs! Check out the [contributing guidelines](CONTRIBUTING.md). If you want to contribute, but you are not sure where to start - look for [issues labeled `help wanted`](https://github.com/NativeScript/nativescript-dev-appium/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22).
+
+## Get Help 
+Please, use [github issues](https://github.com/NativeScript/nativescript-dev-appium/issues) strictly for [reporting bugs](CONTRIBUTING.md#reporting-bugs) or [requesting features](CONTRIBUTING.md#requesting-features). For general questions and support, check out the [NativeScript community forum](https://discourse.nativescript.org/) or ask our experts in [NativeScript community Slack channel](http://developer.telerik.com/wp-login.php?action=slack-invitation).
+  
+![](https://ga-beacon.appspot.com/UA-111455-24/nativescript/nativescript-dev-appium?pixel) 
