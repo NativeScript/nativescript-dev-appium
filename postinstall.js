@@ -108,7 +108,7 @@ function updatePackageJsonDependencies(packageJson, isTypeScriptProject) {
     if (!packageJson.scripts["e2e"]) {
         if (isTypeScriptProject) {
             packageJson.scripts["e2e"] = "tsc -p e2e && mocha --opts ./e2e/config/mocha.opts";
-            packageJson.scripts["compile-tests"] = "tsc -p e2e --watch";
+            packageJson.scripts["e2e-watch"] = "tsc -p e2e --watch";
         } else {
             packageJson.scripts["e2e"] = "mocha --opts ./e2e/config/mocha.opts";
         }
