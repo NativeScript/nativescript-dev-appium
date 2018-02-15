@@ -265,6 +265,19 @@ export class AppiumDriver {
         await this._driver.sleep(150);
     }
 
+    /**
+    * Click a point by providing coordinates
+    * @param x
+    * @param y 
+    */
+    public async clickPoint(xCoordinate: number, yCoordinate: number) {
+        let action = new this._wd.TouchAction(this._driver);
+        action
+            .tap({ x: xCoordinate, y: yCoordinate });
+        await action.perform();
+        await this._driver.sleep(150);
+    }
+
     public async source() {
         return await this._webio.source();
     }
@@ -532,5 +545,39 @@ export class AppiumDriver {
         }
 
         return pathExpectedImage;
+    }
+
+    /**
+    * Wait specific amount of time before continue execution
+    * @param miliseconds
+    */
+    public async wait(miliseconds: number) {
+        await this._driver.sleep(miliseconds);
+    }
+
+    /**
+    * Search for element by given xPath but does not throw error if can not find it. Instead returns 'undefined'.
+    * @param xPath 
+    * @param waitForElement 
+    */
+    public async findElementByXPathIfExists(xPath: string, waitForElement: number = this.defaultWaitTime) {
+        const element = await this._driver.elementByXPathIfExists(xPath, waitForElement);
+        if (element) {
+            const searchMethod = "elementByXPathIfExists";
+            return await new UIElement(element, this._driver, this._wd, this._webio, this._args, searchMethod, xPath);
+        } else {
+            return undefined;
+        }
+    }
+
+    /**
+    * Search for element by given text but does not throw error if can not find it. Instead returns 'undefined'.
+    * @param text 
+    * @param match 
+    * @param waitForElement 
+    */
+    public async findElementByTextIfExists(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = this.defaultWaitTime) {
+        const shouldMatch = match === SearchOptions.exact ? true : false;
+        return await this.findElementByXPathIfExists(this._elementHelper.getXPathByText(text, shouldMatch), waitForElement);
     }
 }

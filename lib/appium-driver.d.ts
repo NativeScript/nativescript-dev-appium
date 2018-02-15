@@ -24,7 +24,7 @@ export declare class AppiumDriver {
     private _logPath;
     private _storageByDeviceName;
     private _storageByPlatform;
-    private constructor();
+    private constructor(_driver, _wd, _webio, _driverConfig, _args);
     readonly imageHelper: ImageHelper;
     defaultWaitTime: number;
     readonly capabilities: any;
@@ -120,6 +120,12 @@ export declare class AppiumDriver {
      * @param xOffset
      */
     swipe(y: number, x: number, yOffset: number, inertia?: number, xOffset?: number): Promise<void>;
+    /**
+    * Click a point by providing coordinates
+    * @param x
+    * @param y
+    */
+    clickPoint(xCoordinate: number, yCoordinate: number): Promise<void>;
     source(): Promise<any>;
     sessionId(): Promise<any>;
     compareElement(element: UIElement, imageName: string): Promise<boolean>;
@@ -138,4 +144,22 @@ export declare class AppiumDriver {
     private convertArrayToUIElements(array, searchM, args);
     private static configureLogging(driver, verbose);
     private getExpectedImagePath(imageName);
+    /**
+    * Wait specific amount of time before continue execution
+    * @param miliseconds
+    */
+    wait(miliseconds: number): Promise<void>;
+    /**
+    * Search for element by given xPath but does not throw error if can not find it. Instead returns 'undefined'.
+    * @param xPath
+    * @param waitForElement
+    */
+    findElementByXPathIfExists(xPath: string, waitForElement?: number): Promise<any>;
+    /**
+    * Search for element by given text but does not throw error if can not find it. Instead returns 'undefined'.
+    * @param text
+    * @param match
+    * @param waitForElement
+    */
+    findElementByTextIfExists(text: string, match?: SearchOptions, waitForElement?: number): Promise<any>;
 }

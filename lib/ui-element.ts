@@ -243,6 +243,14 @@ export class UIElement {
         await this._driver.sleep(150);
     }
 
+    /**
+     * Send keys to field or other UI component
+     * @param text
+     */
+    public async sendKeys(text: string) {
+        await this._element.sendKeys(text);
+    }
+
     public async log() {
         console.dir(await this.element());
     }

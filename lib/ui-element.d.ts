@@ -105,6 +105,11 @@ export declare class UIElement {
      * Click and hold over an element
      */
     hold(): Promise<void>;
+    /**
+     * Send keys to field or other UI component
+     * @param text
+     */
+    sendKeys(text: string): Promise<void>;
     log(): Promise<void>;
     refetch(): Promise<any>;
 }
