@@ -25,7 +25,7 @@ export declare class AppiumDriver {
     private _logPath;
     private _storageByDeviceName;
     private _storageByPlatform;
-    private constructor(_driver, _wd, _webio, _driverConfig, _args);
+    private constructor();
     readonly imageHelper: ImageHelper;
     defaultWaitTime: number;
     readonly capabilities: any;

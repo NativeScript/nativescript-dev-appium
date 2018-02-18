@@ -4,13 +4,11 @@ import {
     log,
     isWin,
     shutdown,
-    executeCommand,
-    findFreePort
+    executeCommand
 } from "./utils";
 import * as child_process from "child_process";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
-import { ServiceContext } from "./service/service-context";
 
 import {
     IDevice,
@@ -26,10 +24,7 @@ import {
 export class DeviceManger implements IDeviceManager {
     private static _emulators: Map<string, IDevice> = new Map();
 
-    constructor(port, private _serveiceContext: ServiceContext = undefined) {
-        if (!this._serveiceContext) {
-            this._serveiceContext = ServiceContext.createServer(port);
-        }
+    constructor() {
     }
 
     public async startDevice(args: INsCapabilities): Promise<IDevice> {
@@ -44,20 +39,6 @@ export class DeviceManger implements IDeviceManager {
             DeviceManger._emulators.set(args.runType, device);
 
             return device;
-        }
-
-        // Using serve to manage deivces.
-        if (args.useDeviceControllerServer) {
-            const d = await this._serveiceContext.subscribe(args.appiumCaps.deviceName, args.appiumCaps.platformName.toLowerCase(), args.appiumCaps.platformVersion, args.appiumCaps.app);
-            delete d['__v'];
-            delete d['_id']
-            if (!d || !(d as IDevice)) {
-                console.error("", d);
-                throw new Error("Missing device: " + d);
-            }
-            console.log(`Device:`, d);
-
-            return <any>d;
         }
 
         const allDevices = (await DeviceController.getDevices({ platform: args.appiumCaps.platformName }));
@@ -111,27 +92,10 @@ export class DeviceManger implements IDeviceManager {
     public async stopDevice(args: INsCapabilities): Promise<any> {
         if (process.env["DEVICE_TOKEN"]) {
             return;
-        }
-        if (args.useDeviceControllerServer) {
-            const d = await this._serveiceContext.unsubscribe(args.device.token);
-            if (!d) {
-                console.error("", d);
-                throw new Error("Missing device: " + d);
-            }
-
-            try {
-                await this._serveiceContext.releasePort(args.port);
-                if (args.appiumCaps.wdaLocalPort) {
-                    await this._serveiceContext.releasePort(args.appiumCaps.wdaLocalPort);
-                }
-            } catch (error) {
-                console.log(error);
-            }
         } else if (DeviceManger._emulators.has(args.runType)
             && !args.reuseDevice
             && !args.isSauceLab
-            && !args.ignoreDeviceController
-            && !args.useDeviceControllerServer) {
+            && !args.ignoreDeviceController) {
             const device = DeviceManger._emulators.get(args.runType);
             await DeviceManger.kill(device);
         }
