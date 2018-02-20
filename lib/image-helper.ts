@@ -103,7 +103,7 @@ export class ImageHelper {
             valueThreshold = Math.floor(valueThreshold * 100);
         }
 
-        console.log("Using " + valueThreshold + " " + typeThreshold + "s tollerance");
+        console.log("Using " + valueThreshold + " " + typeThreshold + "s tolerance");
         const result = this.runDiff(diff, output);
         this._blockOutAreas = undefined;
         return result;
