@@ -24,7 +24,7 @@ export declare class AppiumDriver {
     private _logPath;
     private _storageByDeviceName;
     private _storageByPlatform;
-    private constructor(_driver, _wd, _webio, _driverConfig, _args);
+    private constructor();
     readonly imageHelper: ImageHelper;
     defaultWaitTime: number;
     readonly capabilities: any;
@@ -138,6 +138,11 @@ export declare class AppiumDriver {
     logPageSource(fileName: string): Promise<void>;
     static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
     private static applyAdditionalSettings(args);
+    /**
+     * Send the currently active app to the background
+     * @param time
+     */
+    backgroundApp(time: number): Promise<void>;
     resetApp(): Promise<void>;
     init(): Promise<void>;
     quit(): Promise<void>;
@@ -154,12 +159,12 @@ export declare class AppiumDriver {
     * @param xPath
     * @param waitForElement
     */
-    findElementByXPathIfExists(xPath: string, waitForElement?: number): Promise<any>;
+    findElementByXPathIfExists(xPath: string, waitForElement?: number): Promise<UIElement>;
     /**
     * Search for element by given text but does not throw error if can not find it. Instead returns 'undefined'.
     * @param text
     * @param match
     * @param waitForElement
     */
-    findElementByTextIfExists(text: string, match?: SearchOptions, waitForElement?: number): Promise<any>;
+    findElementByTextIfExists(text: string, match?: SearchOptions, waitForElement?: number): Promise<UIElement>;
 }

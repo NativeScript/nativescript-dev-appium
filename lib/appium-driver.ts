@@ -477,6 +477,15 @@ export class AppiumDriver {
         }
     }
 
+    /**
+     * Send the currently active app to the background
+     * @param time
+     */
+    public async backgroundApp(time: number) {
+        console.log("Sending the currently active app to the background ...");
+        await this._driver.backgroundApp(time);
+    }
+
     public async resetApp() {
         await this._driver.resetApp();
     }
