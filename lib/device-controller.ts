@@ -159,6 +159,8 @@ export class DeviceManger implements IDeviceManager {
     }
 
     private static getDefaultDevice(args) {
-        return new Device(args.appiumCaps.deviceName, args.appiumCaps.platformVersion, undefined, args.appiumCaps.platformName, undefined, undefined);
+        let device = new Device(args.appiumCaps.deviceName, args.appiumCaps.platformVersion, undefined, args.appiumCaps.platformName, undefined, undefined);
+        device.config = { "density": args.appiumCaps.density, "offsetPixels": args.appiumCaps.offsetPixels };
+        return device;
     }
 }

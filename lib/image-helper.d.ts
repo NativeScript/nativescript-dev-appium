@@ -10,7 +10,7 @@ export declare class ImageHelper {
     blockOutAreas: IRectangle[];
     imageOutputLimit(): ImageOptions;
     thresholdType(): ImageOptions;
-    threshold(): number;
+    threshold(thresholdType: any): 10 | 0.01;
     delta(): number;
     static cropImageDefault(_args: INsCapabilities): {
         x: number;

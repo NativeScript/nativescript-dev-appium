@@ -8,6 +8,7 @@ import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IRectangle } from "./interfaces/rectangle";
 import { Point } from "./point";
 import { ImageHelper } from "./image-helper";
+import { ImageOptions } from "./image-options";
 export declare class AppiumDriver {
     private _driver;
     private _wd;
@@ -128,10 +129,10 @@ export declare class AppiumDriver {
     clickPoint(xCoordinate: number, yCoordinate: number): Promise<void>;
     source(): Promise<any>;
     sessionId(): Promise<any>;
-    compareElement(element: UIElement, imageName: string): Promise<boolean>;
-    compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds?: number, tollerance?: number): Promise<boolean>;
-    compareScreen(imageName: string, timeOutSeconds?: number, tollerance?: number): Promise<boolean>;
-    private compare(imageName, timeOutSeconds?, tollerance?, rect?);
+    compareElement(element: UIElement, imageName: string, tollerance?: number, timeOutSeconds?: number, tolleranceType?: ImageOptions): Promise<boolean>;
+    compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds?: number, tollerance?: number, tolleranceType?: ImageOptions): Promise<boolean>;
+    compareScreen(imageName: string, timeOutSeconds?: number, tollerance?: number, tolleranceType?: ImageOptions): Promise<boolean>;
+    private compare(imageName, timeOutSeconds?, tollerance?, rect?, tolleranceType?);
     prepareImageToCompare(filePath: string, rect: IRectangle): Promise<void>;
     takeScreenshot(fileName: string): Promise<string>;
     logScreenshot(fileName: string): Promise<string>;
