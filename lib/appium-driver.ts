@@ -482,6 +482,7 @@ export class AppiumDriver {
      * @param time
      */
     public async backgroundApp(time: number) {
+        console.log("Sending the currently active app to the background ...");
         await this._driver.backgroundApp(time);
     }
 
