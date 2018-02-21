@@ -12,7 +12,6 @@ import {
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
 import { DeviceManger } from "./device-controller";
-import { ServiceContext } from "../lib/service/service-context";
 
 export class AppiumServer {
     private _server: child_process.ChildProcess;
@@ -56,7 +55,7 @@ export class AppiumServer {
         this._hasStarted = hasStarted;
     }
 
-    public async start(port, deviceManager: IDeviceManager = new DeviceManger(this._args.deviceControllerServerPort)) {
+    public async start(port, deviceManager: IDeviceManager = new DeviceManger()) {
         this._deviceManager = deviceManager;
         if (!this._args.device) {
             const device = await this._deviceManager.startDevice(this._args);
@@ -70,23 +69,28 @@ export class AppiumServer {
         this.port = port || this._args.port;
         let retry = false;
 
-        let response: boolean = false;
+        this.startAppiumServer(logLevel);
+
+        let response = await waitForOutput(this._server, /listener started/, /Error: listen/, 60000, this._args.verbose);
+
         let retries = 11;
         while (retries > 0 && !response) {
             retries--;
+            this.port += 10;
             this.port = (await findFreePort(100, this.port, this._args));
 
-            this._server = child_process.spawn(this._appium, ["-p", this.port.toString(), "--log-level", logLevel], {
-                shell: true,
-                detached: false
-            });
+            this.startAppiumServer(logLevel);
             response = await waitForOutput(this._server, /listener started/, /Error: listen/, 60000, this._args.verbose);
-            if (!response) {
-                this.port += 10;
-            }
         }
 
         return response;
+    }
+
+    private startAppiumServer(logLevel) {
+        this._server = child_process.spawn(this._appium, ["-p", this.port.toString(), "--log-level", logLevel], {
+            shell: true,
+            detached: false
+        });
     }
 
     public async stop() {

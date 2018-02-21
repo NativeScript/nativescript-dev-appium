@@ -25,8 +25,7 @@ export class NsCapabilities implements INsCapabilities {
     private _emulatorOptions: string;
     private _device: IDevice;
     private _ignoreDeviceController: boolean;
-    private _useDeviceControllerServer: boolean;
-    private _deviceControllerServerPort: number;
+    private _wdaLocalPort: number;
     private exceptions: Array<string> = new Array();
 
     constructor() {
@@ -48,8 +47,7 @@ export class NsCapabilities implements INsCapabilities {
         this._isIOS = !this._isAndroid;
         this._isSauceLab = parser.isSauceLab;
         this._ignoreDeviceController = parser.ignoreDeviceController;
-        this._useDeviceControllerServer = parser.useDeviceControllerServer;
-        this._deviceControllerServerPort = parser.deviceControllerServerPort;
+        this._wdaLocalPort = parser.wdaLocalPort;
         this.resolveAppPath();
         this.checkMandatoryCapabiliies();
         this.throwExceptions();
@@ -73,8 +71,7 @@ export class NsCapabilities implements INsCapabilities {
     get isSauceLab() { return this._isSauceLab; }
     get appPath() { return this._appPath; }
     get ignoreDeviceController() { return this._ignoreDeviceController; }
-    get useDeviceControllerServer() { return this._useDeviceControllerServer; }
-    get deviceControllerServerPort() { return this._deviceControllerServerPort; }
+    get wdaLocalPort() { return this._wdaLocalPort; }
     set appPath(appPath: string) { this._appPath = appPath; }
     get device() { return this._device; }
     set device(device: IDevice) { this._device = device; }

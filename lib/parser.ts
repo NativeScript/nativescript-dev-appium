@@ -10,13 +10,14 @@ const config = (() => {
         .option("testFolder", { describe: "e2e test folder name", default: "e2e", type: "string" })
         .option("appiumCapsLocation", { describe: "Capabilities", type: "string" })
         .option("sauceLab", { describe: "SauceLab", default: false, type: "boolean" })
-        .option("port", { alias: "p", describe: "Execution port", type: "string" })
+        .option("port", { alias: "p", describe: "Appium port", type: "string" })
+        .option("wdaLocalPort", { alias: "p", describe: "WDA port", type: "string" })
         .option("verbose", { alias: "v", describe: "Log actions", type: "boolean" })
         .option("path", { describe: "path", default: process.cwd(), type: "string" })
         .option("appPath", { describe: "application path", type: "string" })
         .option("storage", { describe: "Storage for images folder.", type: "string" })
         .option("testReports", { describe: "Test reporting folder", type: "string" })
-        .option("reuseDevice", { describe: "Reusing device if available.", type: "boolean", defualt: false })
+        .option("reuseDevice", { describe: "Reusing device if available.", type: "boolean", defualt: true })
         .option("ignoreDeviceController", { alias: "i-ns-device-controller", describe: "Use default appium options for running emulatos/ simulators.", type: "boolean", defualt: false })
         .option("useDeviceControllerServer", {
             alias: "use-ns-device-controller-server",
@@ -47,7 +48,8 @@ const config = (() => {
         projectBinary: projectBinary,
         pluginRoot: pluginRoot,
         pluginBinary: pluginBinary,
-        port: options.port || process.env.npm_config_port,
+        port: options.port || process.env.npm_config_port || process.env["APPIUM_PORT"],
+        wdaLocalPort: options.wdaLocalPort || process.env["WDA_LOCAL_PORT"],
         testFolder: options.testFolder || process.env.npm_config_testFolder || "e2e",
         runType: options.runType || process.env.npm_config_runType,
         appiumCapsLocation: options.appiumCapsLocation || join(projectDir, options.testFolder, "config", capabilitiesName),
@@ -57,9 +59,7 @@ const config = (() => {
         storage: options.storage || process.env.npm_config_STORAGE || process.env.STORAGE,
         testReports: options.testReports || process.env.npm_config_TEST_REPORTS || process.env.TEST_REPORTS,
         reuseDevice: options.reuseDevice || process.env.npm_config_REUSE_DEVICE || process.env.REUSE_DEVICE,
-        ignoreDeviceController: options.ignoreDeviceController,
-        useDeviceControllerServer: options.useDeviceControllerServer || process.env['USE_DEVICE_CONTROLLER_SERVER'],
-        deviceControllerServerPort: parseInt(options.deviceControllerServerPort) || parseInt(process.env['DEVICE_CONTROLLER_SERVER_PORT']) || 8700
+        ignoreDeviceController: options.ignoreDeviceController
     };
 
     return config;
@@ -81,6 +81,5 @@ export const {
     testReports,
     reuseDevice,
     ignoreDeviceController,
-    useDeviceControllerServer,
-    deviceControllerServerPort
+    wdaLocalPort
 } = config;

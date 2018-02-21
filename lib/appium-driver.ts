@@ -11,7 +11,6 @@ import { UIElement } from "./ui-element";
 import { Direction } from "./direction";
 import { Locator } from "./locators";
 import { Platform } from "mobile-devices-controller";
-import { ServiceContext } from "./service/service-context";
 import {
     addExt,
     log,
@@ -470,9 +469,8 @@ export class AppiumDriver {
 
             // It looks we need it for XCTest (iOS 10+ automation)
             if (args.appiumCaps.platformVersion >= 10) {
-                let freePort = await findFreePort(10, (parseInt(args.appiumCaps["wdaLocalPort"])) || 8400, args);
-                console.log(" args.appiumCaps['wdaLocalPort']", freePort)
-                args.appiumCaps["wdaLocalPort"] = freePort;
+                console.log(`args.appiumCaps['wdaLocalPort']: ${args.wdaPort}`);
+                args.appiumCaps["wdaLocalPort"] = args.wdaPort;
             }
         }
     }
