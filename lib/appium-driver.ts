@@ -286,19 +286,19 @@ export class AppiumDriver {
         return await this.driver.getSessionId();
     }
 
-    public async compareElement(element: UIElement, imageName: string, ) {
-        return await this.compareRectangle(await element.getActualRectangle(), imageName);
+    public async compareElement(element: UIElement, imageName: string, tolerance: number = 0.01, timeOutSeconds: number = 3, toleranceType?: ImageOptions) {
+        return await this.compareRectangle(await element.getActualRectangle(), imageName, timeOutSeconds, tolerance, toleranceType);
     }
 
-    public async compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds: number = 3, tollerance: number = 0.01) {
-        return await this.compare(imageName, timeOutSeconds, tollerance, rect);
+    public async compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds: number = 3, tolerance: number = 0.01, toleranceType?: ImageOptions) {
+        return await this.compare(imageName, timeOutSeconds, tolerance, rect, toleranceType);
     }
 
-    public async compareScreen(imageName: string, timeOutSeconds: number = 3, tollerance: number = 0.01) {
-        return await this.compare(imageName, timeOutSeconds, tollerance);
+    public async compareScreen(imageName: string, timeOutSeconds: number = 3, tolerance: number = 0.01, toleranceType?: ImageOptions) {
+        return await this.compare(imageName, timeOutSeconds, tolerance, undefined, toleranceType);
     }
 
-    private async compare(imageName: string, timeOutSeconds: number = 3, tollerance: number = 0.01, rect?: IRectangle) {
+    private async compare(imageName: string, timeOutSeconds: number = 3, tolerance: number = 0.01, rect?: IRectangle, toleranceType?: ImageOptions) {
 
         if (!this._logPath) {
             this._logPath = getReportPath(this._args);
@@ -326,7 +326,7 @@ export class AppiumDriver {
         const pathDiffImage = pathActualImage.replace("actual", "diff");
 
         await this.prepareImageToCompare(pathActualImage, rect);
-        let result = await this._imageHelper.compareImages(pathActualImage, pathExpectedImage, pathDiffImage, tollerance);
+        let result = await this._imageHelper.compareImages(pathActualImage, pathExpectedImage, pathDiffImage, tolerance, toleranceType);
 
         // Iterate
         if (!result) {
@@ -338,7 +338,7 @@ export class AppiumDriver {
                 pathActualImage = await this.takeScreenshot(pathActualImageConter);
 
                 await this.prepareImageToCompare(pathActualImage, rect);
-                result = await this._imageHelper.compareImages(pathActualImage, pathExpectedImage, pathDiffImage, tollerance);
+                result = await this._imageHelper.compareImages(pathActualImage, pathExpectedImage, pathDiffImage, tolerance, toleranceType);
                 counter++;
             }
         } else {

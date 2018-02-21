@@ -8,6 +8,7 @@ import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IRectangle } from "./interfaces/rectangle";
 import { Point } from "./point";
 import { ImageHelper } from "./image-helper";
+import { ImageOptions } from "./image-options";
 export declare class AppiumDriver {
     private _driver;
     private _wd;
@@ -24,7 +25,7 @@ export declare class AppiumDriver {
     private _logPath;
     private _storageByDeviceName;
     private _storageByPlatform;
-    private constructor();
+    private constructor(_driver, _wd, _webio, _driverConfig, _args);
     readonly imageHelper: ImageHelper;
     defaultWaitTime: number;
     readonly capabilities: any;
@@ -128,10 +129,10 @@ export declare class AppiumDriver {
     clickPoint(xCoordinate: number, yCoordinate: number): Promise<void>;
     source(): Promise<any>;
     sessionId(): Promise<any>;
-    compareElement(element: UIElement, imageName: string): Promise<boolean>;
-    compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds?: number, tollerance?: number): Promise<boolean>;
-    compareScreen(imageName: string, timeOutSeconds?: number, tollerance?: number): Promise<boolean>;
-    private compare(imageName, timeOutSeconds?, tollerance?, rect?);
+    compareElement(element: UIElement, imageName: string, tolerance?: number, timeOutSeconds?: number, toleranceType?: ImageOptions): Promise<boolean>;
+    compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds?: number, tolerance?: number, toleranceType?: ImageOptions): Promise<boolean>;
+    compareScreen(imageName: string, timeOutSeconds?: number, tolerance?: number, toleranceType?: ImageOptions): Promise<boolean>;
+    private compare(imageName, timeOutSeconds?, tolerance?, rect?, toleranceType?);
     prepareImageToCompare(filePath: string, rect: IRectangle): Promise<void>;
     takeScreenshot(fileName: string): Promise<string>;
     logScreenshot(fileName: string): Promise<string>;

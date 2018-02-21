@@ -236,7 +236,7 @@ export function isWin() {
 
 export function getStorageByDeviceName(args: INsCapabilities) {
     let storage = getStorage(args);
-    const appName = getAppName(args);
+    const appName = resolveSauceLabAppName(getAppName(args));
     storage = createStorageFolder(storage, appName);
     storage = createStorageFolder(storage, args.appiumCaps.deviceName);
 
@@ -250,7 +250,7 @@ export function getStorageByPlatform(args: INsCapabilities) {
         storage = createStorageFolder(storage, "images");
     }
 
-    const appName = getAppName(args);
+    const appName = resolveSauceLabAppName(getAppName(args));
     storage = createStorageFolder(storage, appName);
     storage = createStorageFolder(storage, args.appiumCaps.platformName.toLowerCase());
 
@@ -427,4 +427,7 @@ export const findFreePort = async (retries: number = 10, port: number = 3000, ar
         }
     }
     return p;
+}
+function resolveSauceLabAppName(appName: string) {
+    return appName.includes("sauce-storage:") ? appName.replace("sauce-storage:", "") : appName;
 }

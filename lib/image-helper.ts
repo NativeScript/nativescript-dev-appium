@@ -34,11 +34,15 @@ export class ImageHelper {
     }
 
     public thresholdType() {
-        return ImageOptions.pixel;
+        return ImageOptions.percent;
     }
 
-    public threshold() {
-        return 0.1; // 0.1 percent; 500 percent
+    public threshold(thresholdType) {
+        if (thresholdType == ImageOptions.percent) {
+            return 0.01; // 0.01 = 1 percent; 500 percent
+        } else {
+            return 10; // 10 pixels
+        }
     }
 
     public delta() {
@@ -78,7 +82,7 @@ export class ImageHelper {
         });
     }
 
-    public compareImages(actual: string, expected: string, output: string, valueThreshold: number = this.threshold(), typeThreshold: any = ImageOptions.pixel) {
+    public compareImages(actual: string, expected: string, output: string, valueThreshold: number = this.threshold(this.thresholdType()), typeThreshold: any = this.thresholdType()) {
         const diff = new BlinkDiff({
 
             imageAPath: actual,
@@ -95,6 +99,11 @@ export class ImageHelper {
             verbose: this._args.verbose,
         });
 
+        if (typeThreshold == ImageOptions.percent) {
+            valueThreshold = Math.floor(valueThreshold * 100);
+        }
+
+        console.log("Using " + valueThreshold + " " + typeThreshold + "s tolerance");
         const result = this.runDiff(diff, output);
         this._blockOutAreas = undefined;
         return result;
