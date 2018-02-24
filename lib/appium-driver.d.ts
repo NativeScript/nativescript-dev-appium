@@ -41,6 +41,7 @@ export declare class AppiumDriver {
     wd(): any;
     click(args: any): Promise<any>;
     navBack(): Promise<any>;
+    static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
     /**
      *
      * @param xPath
@@ -132,13 +133,22 @@ export declare class AppiumDriver {
     compareElement(element: UIElement, imageName: string, tolerance?: number, timeOutSeconds?: number, toleranceType?: ImageOptions): Promise<boolean>;
     compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds?: number, tolerance?: number, toleranceType?: ImageOptions): Promise<boolean>;
     compareScreen(imageName: string, timeOutSeconds?: number, tolerance?: number, toleranceType?: ImageOptions): Promise<boolean>;
+    /**
+     * @param videoName
+     * @param callback when to stop video recording. In order an element is found. Should return true to exit
+     */
+    recordVideo(videoName: any, callback: () => Promise<any>): Promise<any>;
+    private _recordVideoInfo;
+    /**
+     * @param videoName
+     */
+    startRecordingVideo(videoName: any): Promise<any>;
+    stopRecordingVideo(): Promise<any>;
     private compare(imageName, timeOutSeconds?, tolerance?, rect?, toleranceType?);
     prepareImageToCompare(filePath: string, rect: IRectangle): Promise<void>;
     takeScreenshot(fileName: string): Promise<string>;
     logScreenshot(fileName: string): Promise<string>;
     logPageSource(fileName: string): Promise<void>;
-    static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
-    private static applyAdditionalSettings(args);
     /**
      * Send the currently active app to the background
      * @param time
@@ -147,6 +157,7 @@ export declare class AppiumDriver {
     resetApp(): Promise<void>;
     init(): Promise<void>;
     quit(): Promise<void>;
+    private static applyAdditionalSettings(args);
     private convertArrayToUIElements(array, searchM, args);
     private static configureLogging(driver, verbose);
     private getExpectedImagePath(imageName);
