@@ -4,6 +4,8 @@ import { ElementHelper } from "./lib/element-helper";
 import { NsCapabilities } from "./lib/ns-capabilities";
 import { IDeviceManager } from "./lib/interfaces/device-manager";
 import { shutdown, findFreePort } from "./lib/utils";
+import * as frameComparerHelper from "./lib/frame-comparer";
+import { FrameComparer } from "./lib/frame-comparer";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { AppiumServer } from "./lib/appium-server";
@@ -14,11 +16,13 @@ export { SearchOptions } from "./lib/search-options";
 export { Locator } from "./lib/locators";
 export { Direction } from "./lib/direction";
 export { DeviceManger } from "./lib/device-controller";
+export { FrameComparer } from "./lib/frame-comparer";
 export { IRectangle } from "./lib/interfaces/rectangle";
 export { IDeviceManager } from "./lib/interfaces/device-manager";
 
 const nsCapabilities = new NsCapabilities();
 const appiumServer = new AppiumServer(nsCapabilities);
+let frameComparer: FrameComparer;
 
 let appiumDriver = null;
 
@@ -64,6 +68,19 @@ export async function createDriver() {
     await appiumDriver.setDontKeepActivities(false);
 
     return appiumDriver;
+}
+
+/**
+ * Provide instance of FrameComparer in order to compare frames/ images from video
+ * Please read carefully README.md before using it.
+ * @throws exception in order the dependecies are not installed properly.
+ */ 
+export function loadFrameComparer() {
+    if (!frameComparer) {
+        frameComparer = frameComparerHelper.loadFrameComparer(nsCapabilities);
+    }
+
+    return frameComparer;
 }
 
 const killProcesses = async (code) => {

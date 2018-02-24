@@ -10,7 +10,13 @@ import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
 import { Direction } from "./direction";
 import { Locator } from "./locators";
-
+import {
+    Platform,
+    DeviceController,
+    IDevice,
+    DeviceType,
+    AndroidController
+} from "mobile-devices-controller";
 import {
     addExt,
     log,
@@ -31,7 +37,6 @@ import { Point } from "./point";
 import { ImageHelper } from "./image-helper";
 import { ImageOptions } from "./image-options"
 import { unlinkSync, writeFileSync } from "fs";
-import { AndroidController } from "mobile-devices-controller";
 import * as webdriverio from "webdriverio";
 
 export class AppiumDriver {
@@ -117,6 +122,64 @@ export class AppiumDriver {
 
     public async navBack() {
         return await this._driver.back();
+    }
+
+    public static async createAppiumDriver(port: number, args: INsCapabilities) {
+        let driverConfig: any = {
+            host: "localhost",
+            port: port
+        };
+
+        if (args.isSauceLab) {
+            const sauceUser = process.env.SAUCE_USER;
+            const sauceKey = process.env.SAUCE_KEY;
+
+            if (!sauceKey || !sauceUser) {
+                throw new Error("Sauce Labs Username or Access Key is missing! Check environment variables for SAUCE_USER and SAUCE_KEY !!!");
+            }
+
+            driverConfig = "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub";
+
+            args.appiumCaps.app = "sauce-storage:" + args.appPath;
+            console.log("Using Sauce Labs. The application path is changed to: " + args.appPath);
+        }
+
+        log("Creating driver!", args.verbose);
+
+        args.appiumCaps['udid'] = args.appiumCaps['udid'] || args.device.token;
+        await AppiumDriver.applyAdditionalSettings(args);
+        const _webio = webdriverio.remote({
+            baseUrl: driverConfig.host,
+            port: driverConfig.port,
+            logLevel: 'warn',
+            desiredCapabilities: args.appiumCaps
+        });
+
+        const driver = await wd.promiseChainRemote(driverConfig);
+        AppiumDriver.configureLogging(driver, args.verbose);
+        let hasStarted = false;
+        let retries = 10;
+        while (retries > 0 && !hasStarted) {
+            try {
+                await driver.init(args.appiumCaps);
+                hasStarted = true;
+            } catch (error) {
+                console.log(error);
+                console.log("Rety with new wdaLocalPort!");
+                if (error && error.message && error.message.includes("WebDriverAgent")) {
+                    let freePort = await findFreePort(100, args.appiumCaps.port, args);
+                    console.log("args.appiumCaps['wdaLocalPort']", freePort)
+                    args.appiumCaps["wdaLocalPort"] = freePort;
+                }
+            }
+            if (hasStarted) {
+                console.log("Appium driver has started successfully!");
+            }
+
+            retries--;
+        }
+
+        return new AppiumDriver(driver, wd, _webio, driverConfig, args);
     }
 
     /**
@@ -299,6 +362,42 @@ export class AppiumDriver {
         return await this.compare(imageName, timeOutSeconds, tolerance, undefined, toleranceType);
     }
 
+    /**
+     * @param videoName 
+     * @param callback when to stop video recording. In order an element is found. Should return true to exit
+     */
+    public async recordVideo(videoName, callback: () => Promise<any>): Promise<any> {
+        if (!this._storageByDeviceName) {
+            this._storageByDeviceName = getStorageByDeviceName(this._args);
+        }
+
+        return DeviceController.recordVideo((<IDevice>this._args.device), this._storageByDeviceName, videoName, callback);
+    }
+
+    private _recordVideoInfo;
+    /**
+     * @param videoName 
+     */
+    public async startRecordingVideo(videoName) {
+        if (!this._storageByDeviceName) {
+            this._storageByDeviceName = getStorageByDeviceName(this._args);
+        }
+
+        this._recordVideoInfo = DeviceController.startRecordingVideo((<IDevice>this._args.device), this._storageByDeviceName, videoName);
+
+        return this._recordVideoInfo['pathToVideo'];
+    }
+
+    public stopRecordingVideo(): Promise<any> {
+        if (this._args.device.type === DeviceType.EMULATOR || this._args.device.platform === Platform.ANDROID) {
+            AndroidController.pullFile(this._recordVideoInfo['device'], this._recordVideoInfo['devicePath'], this._recordVideoInfo['pathToVideo']);
+        }
+
+        this._recordVideoInfo['videoRecoringProcess'].kill("SIGINT");
+
+        return Promise.resolve(this._recordVideoInfo['pathToVideo']);
+    }
+
     private async compare(imageName: string, timeOutSeconds: number = 3, tolerance: number = 0.01, rect?: IRectangle, toleranceType?: ImageOptions) {
 
         if (!this._logPath) {
@@ -405,78 +504,6 @@ export class AppiumDriver {
         writeFileSync(path, xml.value, 'utf8');
     }
 
-    public static async createAppiumDriver(port: number, args: INsCapabilities) {
-        let driverConfig: any = {
-            host: "localhost",
-            port: port
-        };
-
-        if (args.isSauceLab) {
-            const sauceUser = process.env.SAUCE_USER;
-            const sauceKey = process.env.SAUCE_KEY;
-
-            if (!sauceKey || !sauceUser) {
-                throw new Error("Sauce Labs Username or Access Key is missing! Check environment variables for SAUCE_USER and SAUCE_KEY !!!");
-            }
-
-            driverConfig = "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub";
-
-            args.appiumCaps.app = "sauce-storage:" + args.appPath;
-            console.log("Using Sauce Labs. The application path is changed to: " + args.appPath);
-        }
-
-        log("Creating driver!", args.verbose);
-
-        args.appiumCaps['udid'] = args.appiumCaps['udid'] || args.device.token;
-        await AppiumDriver.applyAdditionalSettings(args);
-        const _webio = webdriverio.remote({
-            baseUrl: driverConfig.host,
-            port: driverConfig.port,
-            logLevel: 'warn',
-            desiredCapabilities: args.appiumCaps
-        });
-
-        const driver = await wd.promiseChainRemote(driverConfig);
-        AppiumDriver.configureLogging(driver, args.verbose);
-        let hasStarted = false;
-        let retries = 10;
-        while (retries > 0 && !hasStarted) {
-            try {
-                await driver.init(args.appiumCaps);
-                hasStarted = true;
-            } catch (error) {
-                console.log(error);
-                console.log("Rety with new wdaLocalPort!");
-                if (error && error.message && error.message.includes("WebDriverAgent")) {
-                    let freePort = await findFreePort(100, args.appiumCaps.port, args);
-                    console.log("args.appiumCaps['wdaLocalPort']", freePort)
-                    args.appiumCaps["wdaLocalPort"] = freePort;
-                }
-            }
-            if (hasStarted) {
-                console.log("Appium driver has started successfully!");
-            }
-
-            retries--;
-        }
-
-        return new AppiumDriver(driver, wd, _webio, driverConfig, args);
-    }
-
-    private static async applyAdditionalSettings(args) {
-        if (args.isIOS) {
-            args.appiumCaps["useNewWDA"] = false;
-            args.appiumCaps["wdaStartupRetries"] = 5;
-            args.appiumCaps["shouldUseSingletonTestManager"] = false;
-
-            // It looks we need it for XCTest (iOS 10+ automation)
-            if (args.appiumCaps.platformVersion >= 10) {
-                console.log(`args.appiumCaps['wdaLocalPort']: ${args.wdaPort}`);
-                args.appiumCaps["wdaLocalPort"] = args.wdaPort;
-            }
-        }
-    }
-
     /**
      * Send the currently active app to the background
      * @param time
@@ -498,6 +525,9 @@ export class AppiumDriver {
 
     public async quit() {
         console.log("Killing driver");
+        if (this._recordVideoInfo && this._recordVideoInfo['videoRecoringProcess']) {
+            this._recordVideoInfo['videoRecoringProcess'].kill("SIGINT");
+        }
         try {
             await this._driver.quit();
             await this._driver.quit();
@@ -506,6 +536,20 @@ export class AppiumDriver {
         }
         this._isAlive = false;
         console.log("Driver is dead");
+    }
+
+    private static async applyAdditionalSettings(args) {
+        if (args.appiumCaps.platformName.toLowerCase() === Platform.IOS) {
+            args.appiumCaps["useNewWDA"] = false;
+            args.appiumCaps["wdaStartupRetries"] = 5;
+            args.appiumCaps["shouldUseSingletonTestManager"] = false;
+
+            // It looks we need it for XCTest (iOS 10+ automation)
+            if (args.appiumCaps.platformVersion >= 10 && args.wdaPort) {
+                console.log(`args.appiumCaps['wdaLocalPort']: ${args.wdaPort}`);
+                args.appiumCaps["wdaLocalPort"] = args.wdaPort;
+            }
+        }
     }
 
     private async convertArrayToUIElements(array, searchM, args) {
