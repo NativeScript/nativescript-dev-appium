@@ -689,10 +689,10 @@ export class AppiumDriver {
     public async findElementByAccessibilityIdIfExists(id: string, waitForElement: number = this.defaultWaitTime) {
         const element = await this._driver.elementByAccessibilityIdIfExists(id, waitForElement);
         if (element) {
-          const searchMethod = "elementByAccessibilityIdIfExists";
-          return await new UIElement(element, this._driver, this._wd, this._webio, this._args, searchMethod, id);
+            const searchMethod = "elementByAccessibilityIdIfExists";
+            return await new UIElement(element, this._driver, this._wd, this._webio, this._args, searchMethod, id);
         } else {
-          return undefined;
+            return undefined;
         }
     }
 

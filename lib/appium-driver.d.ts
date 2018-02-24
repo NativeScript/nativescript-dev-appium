@@ -42,6 +42,7 @@ export declare class AppiumDriver {
     wd(): any;
     click(args: any): Promise<any>;
     navBack(): Promise<any>;
+    static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
     /**
     * Get the storage where test results from image comparisson is logged It will be reports/app nam/device name
     */
