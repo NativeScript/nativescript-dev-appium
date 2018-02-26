@@ -5,6 +5,7 @@ chai.use(chaiAsPromised);
 export var should = chai.should();
 chaiAsPromised.transferPromiseness = wd.transferPromiseness;
 
+import { ChildProcess } from "child_process";
 import { ElementHelper } from "./element-helper";
 import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
@@ -74,6 +75,10 @@ export class AppiumDriver {
 
     get capabilities() {
         return this._args.appiumCaps;
+    }
+
+    get nsCapabilities(): INsCapabilities {
+        return this._args;
     }
 
     get platformName() {
@@ -180,6 +185,27 @@ export class AppiumDriver {
         }
 
         return new AppiumDriver(driver, wd, _webio, driverConfig, args);
+    }
+
+    /**
+    * @param videoName 
+    */
+    public static recordVideo(videoName, nsCapabilities: INsCapabilities) {
+        const logPath = getReportPath(nsCapabilities);
+
+        const info = DeviceController.startRecordingVideo((<IDevice>nsCapabilities.device), logPath, videoName);
+
+        return info;
+    }
+
+    public static stopRecordingVideo(info, nsCapabilities: INsCapabilities): Promise<any> {
+        if (nsCapabilities.device.type === DeviceType.EMULATOR || nsCapabilities.device.platform === Platform.ANDROID) {
+            AndroidController.pullFile(info['device'], info['devicePath'], info['pathToVideo']);
+        }
+
+        info['videoRecoringProcess'].kill("SIGINT");
+
+        return Promise.resolve(info['pathToVideo']);
     }
 
     /**
@@ -379,11 +405,11 @@ export class AppiumDriver {
      * @param videoName 
      */
     public async startRecordingVideo(videoName) {
-        if (!this._storageByDeviceName) {
-            this._storageByDeviceName = getStorageByDeviceName(this._args);
+        if (!this._logPath) {
+            this._logPath = getReportPath(this._args);
         }
 
-        this._recordVideoInfo = DeviceController.startRecordingVideo((<IDevice>this._args.device), this._storageByDeviceName, videoName);
+        this._recordVideoInfo = DeviceController.startRecordingVideo((<IDevice>this._args.device), this._logPath, videoName);
 
         return this._recordVideoInfo['pathToVideo'];
     }

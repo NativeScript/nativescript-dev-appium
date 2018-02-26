@@ -22,6 +22,7 @@ export class NsCapabilities implements INsCapabilities {
     private _isIOS;
     private _isSauceLab;
     private _appPath: string;
+    private _path: string;
     private _emulatorOptions: string;
     private _device: IDevice;
     private _ignoreDeviceController: boolean;
@@ -48,11 +49,13 @@ export class NsCapabilities implements INsCapabilities {
         this._isSauceLab = parser.isSauceLab;
         this._ignoreDeviceController = parser.ignoreDeviceController;
         this._wdaLocalPort = parser.wdaLocalPort;
+        this._path = parser.path;
         this.resolveAppPath();
         this.checkMandatoryCapabiliies();
         this.throwExceptions();
     }
 
+    get path() { return this._path; }
     get projectDir() { return this._projectDir; }
     get projectBinary() { return this._projectBinary; }
     get pluginRoot() { return this._pluginRoot; }

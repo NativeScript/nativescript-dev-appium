@@ -2,14 +2,15 @@ import { mkdirSync } from "fs";
 import { resolve, getStorageByDeviceName, getReportPath } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDevice } from "mobile-devices-controller";
+import { createFrameComparer } from "frame-comparer";
 
 export function loadFrameComparer(nsCapabilities: INsCapabilities) {
     try {
         const frameComparerPlugin = require("frame-comparer");
         const frameComparer = new frameComparerPlugin.createFrameComparer();
-        const storage = getStorageByDeviceName(nsCapabilities);
+        //const storage = getStorageByDeviceName(nsCapabilities);
         const logPath = getReportPath(nsCapabilities);
-        return new FrameComparer(nsCapabilities, storage, logPath, frameComparer);
+        return new FrameComparer(nsCapabilities, logPath, logPath, frameComparer);
     } catch (error) {
         console.error("In order to use frame comaprer, please run npm i frame-comparer and read carefully README.md");
     }
@@ -26,10 +27,10 @@ export class FrameComparer {
         await this._frameComparer.processVideo(videoFullName, "tempFramesFolder", this._framesGeneralName);
     }
 
-    // async compareFrames(imageFrameCount: number, startRange, endRange) {
-    //     const result = await this._frameComparer.compareImageFromVideo(resolve(this._storage, `${this._framesGeneralName}${imageFrameCount}.png`), startRange, startRange);
-    //     return result;
-    // }
+    async compareFrameRanges(imageFrameCount: number, startRange, endRange, tollerancePixels = 0.1) {
+        const result = await this._frameComparer.compareImageFromVideo(resolve(this._storage, `${this._framesGeneralName}${imageFrameCount}.png`), this._logPath, startRange, startRange, tollerancePixels);
+        return result;
+    }
 
     async compareFrames(imageFrameCount: number, tolleranceRange = 3, tollerancePixels = 0.1) {
         const start = imageFrameCount - tolleranceRange > 0 ? imageFrameCount - tolleranceRange : 0;
