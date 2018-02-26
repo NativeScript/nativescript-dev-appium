@@ -11,7 +11,7 @@ export function loadFrameComparer(nsCapabilities: INsCapabilities) {
         const frameComparer = frComparer.createFrameComparer();
         const storage = getStorageByDeviceName(nsCapabilities);
         const logPath = getReportPath(nsCapabilities);
-        return new FrameComparer(nsCapabilities, storage, logPath, frameComparer);
+        return new FrameComparer(nsCapabilities, logPath, logPath, frameComparer);
     } catch (error) {
         console.error("In order to use frame comaprer, please read carefully https://github.com/SvetoslavTsenov/frame-comparer/blob/master/README.md for dependecies that are required!");
     }
