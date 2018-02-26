@@ -21,4 +21,5 @@ export interface INsCapabilities {
     device: IDevice;
     ignoreDeviceController: boolean;
     wdaLocalPort: number;
+    path: string;
 }

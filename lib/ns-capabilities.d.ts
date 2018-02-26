@@ -18,12 +18,14 @@ export declare class NsCapabilities implements INsCapabilities {
     private _isIOS;
     private _isSauceLab;
     private _appPath;
+    private _path;
     private _emulatorOptions;
     private _device;
     private _ignoreDeviceController;
     private _wdaLocalPort;
     private exceptions;
     constructor();
+    readonly path: string;
     readonly projectDir: any;
     readonly projectBinary: any;
     readonly pluginRoot: any;

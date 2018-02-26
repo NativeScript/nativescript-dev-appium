@@ -1,4 +1,6 @@
+/// <reference types="node" />
 export declare var should: any;
+import { ChildProcess } from "child_process";
 import { ElementHelper } from "./element-helper";
 import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
@@ -29,6 +31,7 @@ export declare class AppiumDriver {
     readonly imageHelper: ImageHelper;
     defaultWaitTime: number;
     readonly capabilities: any;
+    readonly nsCapabilities: INsCapabilities;
     readonly platformName: any;
     readonly platformVersion: any;
     readonly elementHelper: ElementHelper;
@@ -42,6 +45,14 @@ export declare class AppiumDriver {
     click(args: any): Promise<any>;
     navBack(): Promise<any>;
     static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
+    /**
+    * @param videoName
+    */
+    static recordVideo(videoName: any, nsCapabilities: INsCapabilities): {
+        pathToVideo: string;
+        videoRecoringProcess: ChildProcess;
+    };
+    static stopRecordingVideo(info: any, nsCapabilities: INsCapabilities): Promise<any>;
     /**
      *
      * @param xPath
