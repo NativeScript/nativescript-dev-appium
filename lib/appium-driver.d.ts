@@ -153,7 +153,7 @@ export declare class AppiumDriver {
     /**
      * @param videoName
      */
-    startRecordingVideo(videoName: any): Promise<any>;
+    startRecordingVideo(videoName: any): any;
     stopRecordingVideo(): Promise<any>;
     private compare(imageName, timeOutSeconds?, tolerance?, rect?, toleranceType?);
     prepareImageToCompare(filePath: string, rect: IRectangle): Promise<void>;

@@ -404,19 +404,21 @@ export class AppiumDriver {
     /**
      * @param videoName 
      */
-    public async startRecordingVideo(videoName) {
+    public startRecordingVideo(videoName) {
         if (!this._logPath) {
             this._logPath = getReportPath(this._args);
         }
 
-        this._recordVideoInfo = DeviceController.startRecordingVideo((<IDevice>this._args.device), this._logPath, videoName);
-
+        videoName = videoName.replace(/\s/gi, "");
+        console.log("DEVICE: ", this._args.device);
+        this._recordVideoInfo = DeviceController.startRecordingVideo(this._args.device, this._logPath, videoName);
+        this._recordVideoInfo['device'] = (<IDevice>this._args.device);
         return this._recordVideoInfo['pathToVideo'];
     }
 
     public stopRecordingVideo(): Promise<any> {
         if (this._args.device.type === DeviceType.EMULATOR || this._args.device.platform === Platform.ANDROID) {
-            AndroidController.pullFile(this._recordVideoInfo['device'], this._recordVideoInfo['devicePath'], this._recordVideoInfo['pathToVideo']);
+            AndroidController.pullFile(this._recordVideoInfo['device'], this._recordVideoInfo['devicePath'], this._recordVideoInfo['pathToVideo'].endsWith(".mp4") ? this._recordVideoInfo['pathToVideo'] : `${this._recordVideoInfo['pathToVideo']}.mp4`);
         }
 
         this._recordVideoInfo['videoRecoringProcess'].kill("SIGINT");
@@ -572,7 +574,7 @@ export class AppiumDriver {
 
             // It looks we need it for XCTest (iOS 10+ automation)
             if (args.appiumCaps.platformVersion >= 10 && args.wdaPort) {
-                console.log(`args.appiumCaps['wdaLocalPort']: ${args.wdaPort}`);
+                console.log(`args.appiumCaps['wdaLocalPort']: ${ args.wdaPort }`);
                 args.appiumCaps["wdaLocalPort"] = args.wdaPort;
             }
         }

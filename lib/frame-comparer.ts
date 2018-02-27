@@ -7,7 +7,7 @@ import { createFrameComparer } from "frame-comparer";
 export function loadFrameComparer(nsCapabilities: INsCapabilities) {
     try {
         const frameComparerPlugin = require("frame-comparer");
-        const frameComparer = new frameComparerPlugin.createFrameComparer();
+        const frameComparer = createFrameComparer();
         //const storage = getStorageByDeviceName(nsCapabilities);
         const logPath = getReportPath(nsCapabilities);
         return new FrameComparer(nsCapabilities, logPath, logPath, frameComparer);
@@ -24,6 +24,7 @@ export class FrameComparer {
 
     async processVideo(videoFullName, framesGeneralName?: string) {
         this._framesGeneralName = framesGeneralName || this._framesGeneralName;
+        this._framesGeneralName = this._framesGeneralName.replace(/\s/gi, "");
         await this._frameComparer.processVideo(videoFullName, "tempFramesFolder", this._framesGeneralName);
     }
 
