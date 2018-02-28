@@ -21,6 +21,7 @@ const nsCapabilities = new NsCapabilities();
 const appiumServer = new AppiumServer(nsCapabilities);
 
 let appiumDriver = null;
+
 export async function startServer(port?: number, deviceManager?: IDeviceManager) {
     await appiumServer.start(port || 8300, deviceManager);
     appiumServer.server.on("exit", async (code) => await killProcesses(code));
@@ -57,6 +58,10 @@ export async function createDriver() {
     } else if (appiumDriver !== null && !appiumDriver.isAlive) {
         await appiumDriver.init();
     }
+
+    // Make sure to turn off "Don't keep activities"
+    // in case of previous execution failure.
+    await appiumDriver.setDontKeepActivities(false);
 
     return appiumDriver;
 }
