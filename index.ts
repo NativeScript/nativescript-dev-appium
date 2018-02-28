@@ -62,10 +62,6 @@ export async function createDriver() {
     return appiumDriver;
 }
 
-export async function setDontKeepActivities(value: boolean) {
-    appiumServer.setDontKeepActivities(value);
-}
-
 const killProcesses = async (code) => {
     if (appiumServer) {
         return await stopServer();

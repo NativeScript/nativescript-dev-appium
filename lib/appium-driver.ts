@@ -24,12 +24,14 @@ import {
     scroll,
     findFreePort
 } from "./utils";
+
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IRectangle } from "./interfaces/rectangle";
 import { Point } from "./point";
 import { ImageHelper } from "./image-helper";
 import { ImageOptions } from "./image-options"
 import { unlinkSync, writeFileSync } from "fs";
+import { AndroidController } from "mobile-devices-controller";
 import * as webdriverio from "webdriverio";
 
 export class AppiumDriver {
@@ -586,5 +588,13 @@ export class AppiumDriver {
     public async findElementByTextIfExists(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = this.defaultWaitTime) {
         const shouldMatch = match === SearchOptions.exact ? true : false;
         return await this.findElementByXPathIfExists(this._elementHelper.getXPathByText(text, shouldMatch), waitForElement);
+    }
+
+    public async setDontKeepActivities(value: boolean) {
+        if (this._args.isAndroid) {
+            AndroidController.setDontKeepActivities(value, this._args.device);
+        } else {
+            // Do nothing for iOS ...
+        }
     }
 }

@@ -168,4 +168,5 @@ export declare class AppiumDriver {
     * @param waitForElement
     */
     findElementByTextIfExists(text: string, match?: SearchOptions, waitForElement?: number): Promise<UIElement>;
+    setDontKeepActivities(value: boolean): Promise<void>;
 }

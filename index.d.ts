@@ -13,4 +13,3 @@ export { IDeviceManager } from "./lib/interfaces/device-manager";
 export declare function startServer(port?: number, deviceManager?: IDeviceManager): Promise<void>;
 export declare function stopServer(): Promise<void>;
 export declare function createDriver(): Promise<any>;
-export declare function setDontKeepActivities(value: boolean): Promise<void>;

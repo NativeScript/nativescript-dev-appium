@@ -19,5 +19,4 @@ export declare class AppiumServer {
     private startAppiumServer(logLevel);
     stop(): Promise<{}>;
     private resolveAppiumDependency();
-    setDontKeepActivities(value: boolean): Promise<void>;
 }
