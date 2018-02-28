@@ -417,11 +417,11 @@ export class AppiumDriver {
     }
 
     public stopRecordingVideo(): Promise<any> {
+        this._recordVideoInfo['videoRecoringProcess'].kill("SIGINT");
+        
         if (this._args.device.type === DeviceType.EMULATOR || this._args.device.platform === Platform.ANDROID) {
             AndroidController.pullFile(this._recordVideoInfo['device'], this._recordVideoInfo['devicePath'], this._recordVideoInfo['pathToVideo'].endsWith(".mp4") ? this._recordVideoInfo['pathToVideo'] : `${this._recordVideoInfo['pathToVideo']}.mp4`);
-        }
-
-        this._recordVideoInfo['videoRecoringProcess'].kill("SIGINT");
+        }    
 
         return Promise.resolve(this._recordVideoInfo['pathToVideo']);
     }
