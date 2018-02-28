@@ -118,6 +118,14 @@ export class DeviceManger implements IDeviceManager {
         }
     }
 
+    public async setDontKeepActivities(value: boolean, args: INsCapabilities): Promise<any> {
+        if (args.isAndroid) {
+            AndroidController.setDontKeepActivities(value, args.device);
+        } else {
+            // Do nothing for iOS ...
+        }
+    }
+
     public static async kill(device: IDevice) {
         await DeviceController.kill(device);
     }

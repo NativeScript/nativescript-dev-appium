@@ -8,6 +8,7 @@ export declare class DeviceManger implements IDeviceManager {
     stopDevice(args: INsCapabilities): Promise<any>;
     installApp(args: INsCapabilities): Promise<any>;
     unInstallApp(args: INsCapabilities): Promise<any>;
+    setDontKeepActivities(value: boolean, args: INsCapabilities): Promise<any>;
     static kill(device: IDevice): Promise<void>;
     private static getDefaultDevice(args);
 }

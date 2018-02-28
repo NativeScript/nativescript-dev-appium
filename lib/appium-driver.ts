@@ -10,7 +10,7 @@ import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
 import { Direction } from "./direction";
 import { Locator } from "./locators";
-import { Platform } from "mobile-devices-controller";
+
 import {
     addExt,
     log,
@@ -462,7 +462,7 @@ export class AppiumDriver {
     }
 
     private static async applyAdditionalSettings(args) {
-        if (args.appiumCaps.platformName.toLowerCase() === Platform.IOS) {
+        if (args.appiumCaps.platformName.toLowerCase() === args.isIOS) {
             args.appiumCaps["useNewWDA"] = false;
             args.appiumCaps["wdaStartupRetries"] = 5;
             args.appiumCaps["shouldUseSingletonTestManager"] = false;

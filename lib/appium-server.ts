@@ -165,4 +165,8 @@ export class AppiumServer {
 
         this._appium = appium;
     }
+
+    public async setDontKeepActivities(value: boolean) {
+        this._deviceManager.setDontKeepActivities(value, this._args);
+    }
 }

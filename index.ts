@@ -21,6 +21,7 @@ const nsCapabilities = new NsCapabilities();
 const appiumServer = new AppiumServer(nsCapabilities);
 
 let appiumDriver = null;
+
 export async function startServer(port?: number, deviceManager?: IDeviceManager) {
     await appiumServer.start(port || 8300, deviceManager);
     appiumServer.server.on("exit", async (code) => await killProcesses(code));
@@ -59,6 +60,10 @@ export async function createDriver() {
     }
 
     return appiumDriver;
+}
+
+export async function setDontKeepActivities(value: boolean) {
+    appiumServer.setDontKeepActivities(value);
 }
 
 const killProcesses = async (code) => {
