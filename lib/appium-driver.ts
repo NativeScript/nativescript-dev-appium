@@ -464,7 +464,7 @@ export class AppiumDriver {
     }
 
     private static async applyAdditionalSettings(args) {
-        if (args.appiumCaps.platformName.toLowerCase() === args.isIOS) {
+        if (args.isIOS) {
             args.appiumCaps["useNewWDA"] = false;
             args.appiumCaps["wdaStartupRetries"] = 5;
             args.appiumCaps["shouldUseSingletonTestManager"] = false;
