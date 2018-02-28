@@ -59,6 +59,10 @@ export async function createDriver() {
         await appiumDriver.init();
     }
 
+    // Make sure to turn off "Don't keep activities"
+    // in case of previous execution failure.
+    await appiumDriver.setDontKeepActivities(false);
+
     return appiumDriver;
 }
 
