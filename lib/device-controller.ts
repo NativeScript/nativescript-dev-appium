@@ -31,17 +31,19 @@ export class DeviceManger implements IDeviceManager {
         let device: IDevice = DeviceManger.getDefaultDevice(args);
         if (process.env["DEVICE_TOKEN"]) {
             device.token = process.env["DEVICE_TOKEN"];
-            console.log("Device", device);
-            return device;
+            const allDevices = await DeviceController.getDevices({ platform: args.appiumCaps.platformName });
+            const foundDevice = DeviceController.filter(allDevices, { token: device.token })[0];
+            console.log("Device: ", foundDevice);
+            return foundDevice;
         }
+
         // When isSauceLab specified we simply do nothing;
         if (args.isSauceLab || args.ignoreDeviceController) {
             DeviceManger._emulators.set(args.runType, device);
-
             return device;
         }
 
-        const allDevices = (await DeviceController.getDevices({ platform: args.appiumCaps.platformName }));
+        const allDevices = await DeviceController.getDevices({ platform: args.appiumCaps.platformName });
         if (!allDevices || allDevices === null || allDevices.length === 0) {
             console.log("We couldn't find any devices. We will try to proceed to appium! Maybe avd manager is missing")
             console.log("Available devices:\n", allDevices);
