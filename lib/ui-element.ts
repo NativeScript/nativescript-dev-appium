@@ -125,10 +125,14 @@ export class UIElement {
         const actRect = await this.getRectangle();
         if (this._args.isIOS) {
             const density = this._args.device.config.density;
-            actRect.x *= density;
-            actRect.y *= density;
-            actRect.width *= density;
-            actRect.height *= density;
+            if (density) {
+                actRect.x *= density;
+                actRect.y *= density;
+                actRect.width *= density;
+                actRect.height *= density;
+            } else {
+                throw new Error("Device's density is undefined!");
+            }
         }
         return actRect;
     }
