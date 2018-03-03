@@ -6,11 +6,10 @@ import { createFrameComparer } from "frame-comparer";
 
 export function loadFrameComparer(nsCapabilities: INsCapabilities) {
     try {
-        const frameComparerPlugin = require("frame-comparer");
         const frameComparer = createFrameComparer();
-        //const storage = getStorageByDeviceName(nsCapabilities);
+        const storage = getStorageByDeviceName(nsCapabilities);
         const logPath = getReportPath(nsCapabilities);
-        return new FrameComparer(nsCapabilities, logPath, logPath, frameComparer);
+        return new FrameComparer(nsCapabilities, storage, logPath, frameComparer);
     } catch (error) {
         console.error("In order to use frame comaprer, please run npm i frame-comparer and read carefully README.md");
     }
