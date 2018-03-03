@@ -1,4 +1,6 @@
+/// <reference types="node" />
 export declare var should: any;
+import { ChildProcess } from "child_process";
 import { ElementHelper } from "./element-helper";
 import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
@@ -46,7 +48,10 @@ export declare class AppiumDriver {
     /**
     * @param videoName
     */
-    static recordVideo(videoName: any, nsCapabilities: INsCapabilities): any;
+    static recordVideo(videoName: any, nsCapabilities: INsCapabilities): {
+        pathToVideo: string;
+        videoRecoringProcess: ChildProcess;
+    };
     static stopRecordingVideo(info: any, nsCapabilities: INsCapabilities): Promise<any>;
     /**
      *

@@ -36,3 +36,4 @@ export declare function scroll(wd: any, driver: any, direction: Direction, isIOS
 export declare const addExt: (fileName: string, ext: string) => string;
 export declare const isPortAvailable: (port: any) => Promise<{}>;
 export declare const findFreePort: (retries: number, port: number, args: INsCapabilities) => Promise<number>;
+export declare function wait(milisecodns: any): void;

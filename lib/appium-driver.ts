@@ -29,7 +29,8 @@ import {
     getReportPath,
     calculateOffset,
     scroll,
-    findFreePort
+    findFreePort,
+    wait
 } from "./utils";
 
 import { INsCapabilities } from "./interfaces/ns-capabilities";
@@ -419,9 +420,14 @@ export class AppiumDriver {
     public stopRecordingVideo(): Promise<any> {
         this._recordVideoInfo['videoRecoringProcess'].kill("SIGINT");
         
+        wait(this.isIOS ? 100 : 10000);
         if (this._args.device.type === DeviceType.EMULATOR || this._args.device.platform === Platform.ANDROID) {
-            AndroidController.pullFile(this._recordVideoInfo['device'], this._recordVideoInfo['devicePath'], this._recordVideoInfo['pathToVideo'].endsWith(".mp4") ? this._recordVideoInfo['pathToVideo'] : `${this._recordVideoInfo['pathToVideo']}.mp4`);
-        }    
+            AndroidController.pullFile(
+                this._recordVideoInfo['device'],
+                this._recordVideoInfo['devicePath'],
+                this._recordVideoInfo['pathToVideo'].endsWith(".mp4") ? this._recordVideoInfo['pathToVideo'] : `${this._recordVideoInfo['pathToVideo']}.mp4`);
+                wait(20000);        
+            }
 
         return Promise.resolve(this._recordVideoInfo['pathToVideo']);
     }
@@ -573,9 +579,9 @@ export class AppiumDriver {
             args.appiumCaps["shouldUseSingletonTestManager"] = false;
 
             // It looks we need it for XCTest (iOS 10+ automation)
-            if (args.appiumCaps.platformVersion >= 10 && args.wdaPort) {
-                console.log(`args.appiumCaps['wdaLocalPort']: ${ args.wdaPort }`);
-                args.appiumCaps["wdaLocalPort"] = args.wdaPort;
+            if (args.appiumCaps.platformVersion >= 10 && args.wdaLocalPort) {
+                console.log(`args.appiumCaps['wdaLocalPort']: ${args.wdaLocalPort}`);
+                args.appiumCaps["wdaLocalPort"] = args.wdaLocalPort;
             }
         }
     }

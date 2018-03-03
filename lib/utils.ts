@@ -438,6 +438,15 @@ export const findFreePort = async (retries: number = 10, port: number = 3000, ar
 
     return p;
 }
+
+export function wait(milisecodns) {
+    const startTime = Date.now();
+    while (Date.now() - startTime <= milisecodns) {
+    }
+
+    return;
+}
+
 function resolveSauceLabAppName(appName: string) {
     return appName.includes("sauce-storage:") ? appName.replace("sauce-storage:", "") : appName;
 }
