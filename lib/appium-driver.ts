@@ -419,7 +419,6 @@ export class AppiumDriver {
 
     public stopRecordingVideo(): Promise<any> {
         this._recordVideoInfo['videoRecoringProcess'].kill("SIGINT");
-
         wait(this.isIOS ? 100 : 10000);
         if (this._args.device.type === DeviceType.EMULATOR || this._args.device.platform === Platform.ANDROID) {
             AndroidController.pullFile(
