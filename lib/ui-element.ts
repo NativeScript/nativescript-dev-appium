@@ -74,7 +74,7 @@ export class UIElement {
      */
     public async isDisplayed() {
         const el = (await this.element());
-        return (await el) === null ? false : (await this._element.isDisplayed());
+        return (await el) === null ? false : (await el.isDisplayed());
     }
 
     /**

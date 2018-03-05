@@ -21,10 +21,10 @@ export class FrameComparer {
     constructor(private _nsCapabilities: INsCapabilities, private _storage: string, private _logPath: string, private _frameComparer: any) {
     }
 
-    async processVideo(videoFullName, framesGeneralName?: string) {
+    async processVideo(videoFullName, framesGeneralName?: string, videoTempStorage = "tempFramesFolder") {
         this._framesGeneralName = framesGeneralName || this._framesGeneralName;
         this._framesGeneralName = this._framesGeneralName.replace(/\s/gi, "");
-        await this._frameComparer.processVideo(videoFullName, "tempFramesFolder", this._framesGeneralName);
+        await this._frameComparer.processVideo(videoFullName, videoTempStorage, this._framesGeneralName);
     }
 
     async compareFrameRanges(imageFrameCount: number, startRange, endRange, tollerancePixels = 0.1) {

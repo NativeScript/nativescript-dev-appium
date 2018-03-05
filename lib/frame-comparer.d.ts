@@ -7,7 +7,7 @@ export declare class FrameComparer {
     private _frameComparer;
     private _framesGeneralName;
     constructor(_nsCapabilities: INsCapabilities, _storage: string, _logPath: string, _frameComparer: any);
-    processVideo(videoFullName: any, framesGeneralName?: string): Promise<void>;
+    processVideo(videoFullName: any, framesGeneralName?: string, videoTempStorage?: string): Promise<void>;
     compareFrameRanges(imageFrameCount: number, startRange: any, endRange: any, tollerancePixels?: number): Promise<any>;
     compareFrames(imageFrameCount: number, tolleranceRange?: number, tollerancePixels?: number): Promise<any>;
 }
