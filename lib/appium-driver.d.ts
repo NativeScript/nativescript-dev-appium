@@ -1,6 +1,4 @@
-/// <reference types="node" />
 export declare var should: any;
-import { ChildProcess } from "child_process";
 import { ElementHelper } from "./element-helper";
 import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
