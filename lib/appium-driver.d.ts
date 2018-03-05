@@ -1,6 +1,4 @@
-/// <reference types="node" />
 export declare var should: any;
-import { ChildProcess } from "child_process";
 import { ElementHelper } from "./element-helper";
 import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
@@ -45,14 +43,6 @@ export declare class AppiumDriver {
     click(args: any): Promise<any>;
     navBack(): Promise<any>;
     static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
-    /**
-    * @param videoName
-    */
-    static recordVideo(videoName: any, nsCapabilities: INsCapabilities): {
-        pathToVideo: string;
-        videoRecoringProcess: ChildProcess;
-    };
-    static stopRecordingVideo(info: any, nsCapabilities: INsCapabilities): Promise<any>;
     /**
      *
      * @param xPath
@@ -176,7 +166,12 @@ export declare class AppiumDriver {
     * Wait specific amount of time before continue execution
     * @param miliseconds
     */
-    wait(miliseconds: number): Promise<void>;
+    sleep(miliseconds: number): Promise<void>;
+    /**
+  * Wait specific amount of time before continue execution
+  * @param miliseconds
+  */
+    wait(miliseconds: number): void;
     /**
     * Search for element by given xPath but does not throw error if can not find it. Instead returns 'undefined'.
     * @param xPath

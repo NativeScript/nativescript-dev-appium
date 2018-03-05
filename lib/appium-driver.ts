@@ -171,10 +171,10 @@ export class AppiumDriver {
                 hasStarted = true;
             } catch (error) {
                 console.log(error);
-                console.log("Rety with new wdaLocalPort!");
+                console.log("Rety launching appium driver!");
                 if (error && error.message && error.message.includes("WebDriverAgent")) {
                     let freePort = await findFreePort(100, args.appiumCaps.port, args);
-                    console.log("args.appiumCaps['wdaLocalPort']", freePort)
+                    console.log("args.appiumCaps['wdaLocalPort']", freePort);
                     args.appiumCaps["wdaLocalPort"] = freePort;
                 }
             }
@@ -186,27 +186,6 @@ export class AppiumDriver {
         }
 
         return new AppiumDriver(driver, wd, _webio, driverConfig, args);
-    }
-
-    /**
-    * @param videoName 
-    */
-    public static recordVideo(videoName, nsCapabilities: INsCapabilities) {
-        const logPath = getReportPath(nsCapabilities);
-
-        const info = DeviceController.startRecordingVideo((<IDevice>nsCapabilities.device), logPath, videoName);
-
-        return info;
-    }
-
-    public static stopRecordingVideo(info, nsCapabilities: INsCapabilities): Promise<any> {
-        if (nsCapabilities.device.type === DeviceType.EMULATOR || nsCapabilities.device.platform === Platform.ANDROID) {
-            AndroidController.pullFile(info['device'], info['devicePath'], info['pathToVideo']);
-        }
-
-        info['videoRecoringProcess'].kill("SIGINT");
-
-        return Promise.resolve(info['pathToVideo']);
     }
 
     /**
@@ -419,15 +398,15 @@ export class AppiumDriver {
 
     public stopRecordingVideo(): Promise<any> {
         this._recordVideoInfo['videoRecoringProcess'].kill("SIGINT");
-        
+
         wait(this.isIOS ? 100 : 10000);
         if (this._args.device.type === DeviceType.EMULATOR || this._args.device.platform === Platform.ANDROID) {
             AndroidController.pullFile(
                 this._recordVideoInfo['device'],
                 this._recordVideoInfo['devicePath'],
                 this._recordVideoInfo['pathToVideo'].endsWith(".mp4") ? this._recordVideoInfo['pathToVideo'] : `${this._recordVideoInfo['pathToVideo']}.mp4`);
-                wait(20000);        
-            }
+            wait(20000);
+        }
 
         return Promise.resolve(this._recordVideoInfo['pathToVideo']);
     }
@@ -638,9 +617,18 @@ export class AppiumDriver {
     * Wait specific amount of time before continue execution
     * @param miliseconds
     */
-    public async wait(miliseconds: number) {
+    public async sleep(miliseconds: number) {
         await this._driver.sleep(miliseconds);
     }
+
+    /**
+  * Wait specific amount of time before continue execution
+  * @param miliseconds
+  */
+    public wait(miliseconds: number) {
+        wait(miliseconds);
+    }
+
 
     /**
     * Search for element by given xPath but does not throw error if can not find it. Instead returns 'undefined'.
