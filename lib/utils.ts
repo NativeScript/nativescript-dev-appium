@@ -287,32 +287,49 @@ function getAppName(args: INsCapabilities) {
 }
 
 export function getAppPath(caps: INsCapabilities) {
-    if (caps.appiumCaps.platformName.toLowerCase().includes("android")) {
-        //platforms/android/build/outputs/apk/
-        //platforms/android/app/build/outputs/apk
-        let apks = glob.sync("platforms/android/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
-        if (!apks || apks.length === 0) {
-            apks = glob.sync("platforms/android/app/build/outputs/apk/*.apk").filter(function (file) { return file.indexOf("unaligned") < 0; });
-        }
-        if (!apks || apks.length === 0) {
-            apks = glob.sync(`${caps.projectDir}/platforms/android/app/build/outputs/apk/*.apk`).filter(function (file) { return file.indexOf("unaligned") < 0; });
-        }
-        return apks[0];
-    } else if (caps.appiumCaps.platformName.toLowerCase().includes("ios")) {
-        let path = "platforms/ios/build/emulator/**/*.app";
-        if (caps.runType.includes("device")) {
-            path = "platforms/ios/build/device/**/*.ipa";
-        }
-
-        let apps = glob.sync("platforms/ios/build/device/**/*.ipa");
-        if (!apps || apps.length === 0) {
-            apps = glob.sync(`${caps.projectDir}/${path}`).filter(function (file) { return file.indexOf("unaligned") < 0; });
-        }
-        return apps[0];
-    } else {
-        throw new Error("No 'app' capability provided and incorrect 'runType' convention used: " + caps.runType +
-            ". In order to automatically search and locate app package please use 'android','device','sim' in your 'runType' option. E.g --runType android25, --runType sim.iPhone7.iOS110");
+    let basePath = caps.appPath;
+    if (isFile(basePath)) {
+        return basePath;
     }
+
+    // try to resolve app automatically
+    if (!fs.existsSync(basePath)) {
+        if (caps.appiumCaps.platformName.toLowerCase().includes("android")) {
+            const androidPlatformsPath = 'platforms/android';
+            //platforms/android/build/outputs/apk/
+            //platforms/android/app/build/outputs/apk
+            //platforms/android/app/build/outputs/apk
+            //   /release
+            //   /debug
+
+            basePath = `${androidPlatformsPath}/app/build/outputs/apk/**/*.apk`;
+            if (!fs.existsSync(`${androidPlatformsPath}/app/build/outputs/apk`)) {
+                basePath = `${androidPlatformsPath}/build/outputs/apk/**/*.apk`;
+            }
+        } else if (caps.appiumCaps.platformName.toLowerCase().includes("ios")) {
+            const iosPlatformsPath = 'platforms/ios';
+            basePath = `${iosPlatformsPath}/build/emulator/**/*.app`;
+            if (caps.runType.includes("device")) {
+                basePath = `${iosPlatformsPath}/build/device/**/*.ipa`;
+            }
+
+        } else {
+            throw new Error("No 'app' capability provided and incorrect 'runType' convention used: " + caps.runType +
+                ". In order to automatically search and locate app package please use 'android','device','sim' in your 'runType' option. E.g --runType android25, --runType sim.iPhone7.iOS110");
+        }
+    }
+
+    let apps = glob.sync(basePath);
+
+    if (!apps || apps.length === 0) {
+        apps = glob.sync(`${caps.projectDir}`)
+            .filter(function (file) {
+                return file.endsWith(".ipa") || file.endsWith(".app") || file.endsWith(".apk")
+            });
+    }
+
+    console.log(`Available apks:`, apps);
+    return apps[0];
 }
 
 export function calculateOffset(direction, y: number, yOffset: number, x: number, xOffset: number, isIOS: boolean, verbose) {

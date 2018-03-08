@@ -80,13 +80,7 @@ export class NsCapabilities implements INsCapabilities {
     private isAndroidPlatform() { return this._appiumCaps.platformName.toLowerCase().includes("android"); }
 
     private resolveAppPath() {
-        if (this._appPath) {
-            this._appiumCaps.app = this._appPath;
-        }
-
-        if (!this._appiumCaps.app) {
-            this._appiumCaps.app = getAppPath(this);
-        }
+        this._appiumCaps.app = getAppPath(this);
         console.log("Application full path: " + this._appiumCaps.app);
     }
 
