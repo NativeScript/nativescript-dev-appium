@@ -28,10 +28,11 @@ export class DeviceManger implements IDeviceManager {
     }
 
     public async startDevice(args: INsCapabilities): Promise<IDevice> {
+        args.appiumCaps.platformName = args.appiumCaps.platformName.toLowerCase();
         let device: IDevice = DeviceManger.getDefaultDevice(args);
         if (process.env["DEVICE_TOKEN"]) {
             device.token = process.env["DEVICE_TOKEN"];
-            const allDevices = await DeviceController.getDevices({ platform: args.appiumCaps.platformName });
+            const allDevices = await DeviceController.getDevices({ platform: device.platform });
             const foundDevice = DeviceController.filter(allDevices, { token: device.token.replace("emulator-", "") })[0];
             console.log("Device: ", foundDevice);
             return foundDevice;
