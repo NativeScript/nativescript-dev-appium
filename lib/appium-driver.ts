@@ -485,6 +485,10 @@ export class AppiumDriver {
         return new Promise<string>((resolve, reject) => {
             this._driver.takeScreenshot().then(
                 function (image, err) {
+                    if (err) {
+                        console.error(err);
+                        reject(err);
+                    }
                     writeFileSync(fileName, image, 'base64');
                     resolve(fileName);
                 }

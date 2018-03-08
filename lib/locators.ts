@@ -26,7 +26,7 @@ export class Locator {
         return this.getElementByName("image");
     }
 
-    get allELementsList() {
+    get locators() {
         return this._elementsList;
     }
 
