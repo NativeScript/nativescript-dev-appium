@@ -6,7 +6,7 @@ export declare class Locator {
     readonly button: string;
     readonly listView: string;
     readonly image: string;
-    readonly allELementsList: Map<string, string>;
+    readonly locators: Map<string, string>;
     getElementByName(name: any): string;
     private loadAndroidElements();
     private loadIOSElements();
