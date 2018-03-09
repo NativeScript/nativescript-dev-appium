@@ -25,6 +25,7 @@ A package to help with writing and executing e2e [Appium](http://appium.io) test
 The `nativescript-dev-appium` plugin requires:
 * latest version of [Appium](https://github.com/appium/appium/releases)
     * for correct functioning of the [XCUITest](https://github.com/appium/appium/blob/master/docs/en/drivers/ios-xcuitest.md) driver for iOS, additional libraries are required (see the [Setup](#setup) section)
+    * for correct functioning of the [mobile-devices-controller](https://github.com/NativeScript/mobile-devices-controller) for Android emulators, `telnet` is required (see the [Setup](#setup) section)
 * latest version of [Xcode](https://developer.apple.com/library/content/releasenotes/DeveloperTools/RN-Xcode/Chapters/Introduction.html)
 * [Android SDK Tools](https://developer.android.com/studio/releases/sdk-tools.html) version greater than 25.3.0
 
@@ -62,6 +63,14 @@ $ npm install -g ios-deploy
 ```
 
 > For detailed information on external dependencies, please, refer to the [XCUITest](https://github.com/appium/appium-xcuitest-driver/blob/master/README.md#external-dependencies) repository.
+
+For correct functioning of the [mobile-devices-controller](https://github.com/NativeScript/mobile-devices-controller) for Android emulators, `telnet` is required to be available on your system.
+
+As the `telnet` was removed from *macOS High Sierra*, it could be installed as follows:
+
+```shell
+$ brew install telnet
+```
 
 ### Structure
 
