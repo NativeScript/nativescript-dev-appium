@@ -258,7 +258,7 @@ export function getStorageByPlatform(args: INsCapabilities) {
 
 function getStorage(args: INsCapabilities) {
     let storage = args.storage;
-    if (!storage) {
+    if (!storage || storage === 'undefined' || storage === null || storage === 'null') {
         storage = createStorageFolder(resolve(args.projectDir, args.testFolder), "resources");
         storage = createStorageFolder(storage, "images");
     }
