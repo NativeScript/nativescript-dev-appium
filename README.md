@@ -9,6 +9,7 @@ A package to help with writing and executing e2e [Appium](http://appium.io) test
     - [Structure](#structure)
     - [Files Preview](#files-preview)
 - [Usage](#usage)
+- [Videos](#videos)
 - [Custom Appium Capabilities](#custom-appium-capabilities)
 - [Options](#options)
 - [Features](#features)
@@ -117,7 +118,7 @@ or
 $ tns build ios
 ```
 
-The command that will run the tests should specify the targeted platform using the `runType` option as shown below. This way a capabilities will be selected from the [capabilities](#custom-appium-capabilities) configuration file.
+The command that will run the tests should specify the targeted capabilities configuration using the `runType` option as shown below. This way a capabilities will be selected from the [capabilities](#custom-appium-capabilities) configuration file.
 
 ```
 $ npm run e2e -- --runType android25
@@ -130,6 +131,15 @@ $ npm run e2e -- --runType sim.iPhone8.iOS110
 ```
 
 Generated tests are standard [Mocha](http://mochajs.org) tests.
+
+## Videos
+
+[Introduction to Mobile UI Test Automation](https://www.youtube.com/watch?v=LjgIM4pvhsQ
+) @ [NativeScript Developer Day 2017](http://developerday.nativescript.org/)
+
+[NativeScript testing with Appium](https://www.youtube.com/watch?v=Ns7boY6XNC0) @ [NativeScript Developer Day Europe 2017](https://www.nativescript.org/events/developer-day-europe-2017)
+
+[NativeScript Air 6 - UI Testing {N} apps with DevAppium](https://www.youtube.com/watch?v=Sn4hBaxOt88)
 
 ## Custom Appium Capabilities
 
