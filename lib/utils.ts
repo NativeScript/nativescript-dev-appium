@@ -242,13 +242,10 @@ export function getStorageByDeviceName(args: INsCapabilities) {
     return storage;
 }
 
-export function getStorageByPlatform(args: INsCapabilities) {
-    let storage = args.storage;
-    if (!storage) {
-        storage = createStorageFolder(resolve(args.projectDir, args.testFolder), "resources");
-        storage = createStorageFolder(storage, "images");
-    }
+const checkSorageIsUndefined = (storage) => { return !storage || storage === 'undefined' || storage === null || storage === 'null'; }
 
+export function getStorageByPlatform(args: INsCapabilities) {
+    let storage = getStorage(args);
     const appName = resolveSauceLabAppName(getAppName(args));
     storage = createStorageFolder(storage, appName);
     storage = createStorageFolder(storage, args.appiumCaps.platformName.toLowerCase());
