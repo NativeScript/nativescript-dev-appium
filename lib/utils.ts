@@ -242,8 +242,6 @@ export function getStorageByDeviceName(args: INsCapabilities) {
     return storage;
 }
 
-const checkSorageIsUndefined = (storage) => { return !storage || storage === 'undefined' || storage === null || storage === 'null'; }
-
 export function getStorageByPlatform(args: INsCapabilities) {
     let storage = getStorage(args);
     const appName = resolveSauceLabAppName(getAppName(args));
@@ -253,9 +251,11 @@ export function getStorageByPlatform(args: INsCapabilities) {
     return storage;
 }
 
+const checkSorageIsUndefined = (storage) => { return !storage || storage === 'undefined' || storage === null || storage === 'null'; }
+
 function getStorage(args: INsCapabilities) {
     let storage = args.storage;
-    if (!storage || storage === 'undefined' || storage === null || storage === 'null') {
+    if (checkSorageIsUndefined(storage)) {
         storage = createStorageFolder(resolve(args.projectDir, args.testFolder), "resources");
         storage = createStorageFolder(storage, "images");
     }
