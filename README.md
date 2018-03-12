@@ -4,16 +4,17 @@ A package to help with writing and executing e2e [Appium](http://appium.io) test
 
 <!-- TOC depthFrom:2 -->
 
+- [Features](#features)
 - [Requirеments](#requirеments)
 - [Setup](#setup)
     - [Structure](#structure)
     - [Files Preview](#files-preview)
 - [Usage](#usage)
+- [Blogs](#blogs)
 - [Demos](#demos)
 - [Videos](#videos)
 - [Custom Appium Capabilities](#custom-appium-capabilities)
 - [Options](#options)
-- [Features](#features)
 - [Troubleshooting](#troubleshooting)
 - [Common Problems](#common-problems)
 - [Missing Features](#missing-features)
@@ -21,6 +22,21 @@ A package to help with writing and executing e2e [Appium](http://appium.io) test
 - [Get Help](#get-help)
 
 <!-- /TOC -->
+
+## Features
+
+1. Cross-platform [locators](https://github.com/NativeScript/nativescript-dev-appium/blob/master/lib/locators.ts)
+1. Find strategies: *findElementByText*, *findElementByClassName*, *findElementByAccessibilityId*, *findElementByXPath*
+1. Actions: *tap*, *click*, *doubleTap*, *hold*
+1. Gestures: *scroll*, *scrollTo*, *swipe*, *drag*
+1. Cross-platform element abstraction with *exists*, *waitForExist*, *waitForNotExist*, *location*, *isDisplayed*, *size*, *text* properties
+1. Ability to turn on/off “Don’t keep activities” setting in the Developer options for Android
+1. Direct access to driver
+1. Typings
+1. Async/Await
+1. Open source cloud builds integration, i. e. [Sauce Labs](https://saucelabs.com/)
+1. Image comparison of: screen, rectangle; block out areas to ignore
+1. [WIP] Ability to verify animations/transitions through video/images; please refer to [frame-comparer](https://github.com/SvetoslavTsenov/frame-comparer)
 
 ## Requirеments
 
@@ -132,6 +148,10 @@ $ npm run e2e -- --runType sim.iPhone8.iOS110
 ```
 
 Generated tests are standard [Mocha](http://mochajs.org) tests.
+
+## Blogs
+
+2018, March 6th: [Start Testing Your NativeScript Apps Properly](https://www.nativescript.org/blog/start-testing-your-nativescript-apps-properly)
 
 ## Demos
 
@@ -248,16 +268,6 @@ Examples:
 ```
 $ npm run e2e -- --runType android25 --sauceLab --appLocation demo.apk --capsLocation "/e2e-tests/config"
 ```
-
-## Features
-
-1. Compare images. Block out areas to ignore in comparison.
-2. Find elements findElementByText, findElementsByXPath, findElementByAccessibilityId etc...
-3. Gesture support: swipe, scroll, drag, scrollTo
-4. Action support: tap, click, doubleTap, hold, 
-5. Element characteristics: location, exists, size, isDisplayed
-6. Find strategies: waitForExist, waitForExistNot
-7. Direct access to webdriver and webdriverio
 
 ## Troubleshooting
 
