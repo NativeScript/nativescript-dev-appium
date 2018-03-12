@@ -58,14 +58,18 @@ function copy(src, dest) {
 }
 
 function getDevDependencies() {
-    const requiredDevDependencies = [
-        { name: "chai", version: "~4.1.1" },
-        { name: "chai-as-promised", version: "~7.1.1" },
-        { name: "mocha", version: "~3.5.0" },
-        { name: "mocha-junit-reporter", version: "^1.13.0" }, 
-        { name: "mocha-multi", version: "^0.11.0" },
-    ];
+    // These are nativescript-dev-appium plugin's dependencies.
+    // There is NO need to explicitly install them to the project.
+    // const requiredDevDependencies = [
+    //     { name: "chai", version: "~4.1.1" },
+    //     { name: "chai-as-promised", version: "~7.1.1" },
+    //     { name: "mocha", version: "~3.5.0" },
+    //     { name: "mocha-junit-reporter", version: "^1.13.0" },
+    //     { name: "mocha-multi", version: "^0.11.0" },
+    // ];
 
+    // These are nativescript-dev-appium plugin's devDependencies.
+    // There is need to explicitly install them to the project.
     const typeScriptDevDependencies = [
         //{ name: "tslib", version: "^1.7.1" },
         { name: "@types/chai", version: "^4.0.2" },
@@ -73,12 +77,14 @@ function getDevDependencies() {
         { name: "@types/node", version: "^7.0.5" },
     ];
 
-    return isTypeScriptProject ?
-        [
-            ...requiredDevDependencies,
-            ...typeScriptDevDependencies,
-        ] :
-        requiredDevDependencies;
+    // return isTypeScriptProject ?
+    //     [
+    //         ...requiredDevDependencies,
+    //         ...typeScriptDevDependencies,
+    //     ] :
+    //     requiredDevDependencies;
+
+    return typeScriptDevDependencies;
 }
 
 function configureDevDependencies(packageJson) {
@@ -114,7 +120,7 @@ function updatePackageJsonDependencies(packageJson, isTypeScriptProject) {
         }
     }
 
-    // configureDevDependencies(packageJson);
+    configureDevDependencies(packageJson);
     writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 }
 
