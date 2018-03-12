@@ -4,14 +4,17 @@ A package to help with writing and executing e2e [Appium](http://appium.io) test
 
 <!-- TOC depthFrom:2 -->
 
+- [Features](#features)
 - [Requirеments](#requirеments)
 - [Setup](#setup)
     - [Structure](#structure)
     - [Files Preview](#files-preview)
 - [Usage](#usage)
+- [Blogs](#blogs)
+- [Demos](#demos)
+- [Videos](#videos)
 - [Custom Appium Capabilities](#custom-appium-capabilities)
 - [Options](#options)
-- [Features](#features)
 - [Troubleshooting](#troubleshooting)
 - [Common Problems](#common-problems)
 - [Missing Features](#missing-features)
@@ -20,11 +23,27 @@ A package to help with writing and executing e2e [Appium](http://appium.io) test
 
 <!-- /TOC -->
 
+## Features
+
+1. Cross-platform [locators](https://github.com/NativeScript/nativescript-dev-appium/blob/master/lib/locators.ts)
+1. Find strategies: *findElementByText*, *findElementByClassName*, *findElementByAccessibilityId*, *findElementByXPath*
+1. Actions: *tap*, *click*, *doubleTap*, *hold*
+1. Gestures: *scroll*, *scrollTo*, *swipe*, *drag*
+1. Cross-platform element abstraction with *exists*, *waitForExist*, *waitForNotExist*, *location*, *isDisplayed*, *size*, *text* properties
+1. Ability to turn on/off “Don’t keep activities” setting in the Developer options for Android
+1. Direct access to driver
+1. Typings
+1. Async/Await
+1. Open source cloud builds integration, i. e. [Sauce Labs](https://saucelabs.com/)
+1. Image comparison of: screen, rectangle; block out areas to ignore
+1. [WIP] Ability to verify animations/transitions through video/images; please refer to [frame-comparer](https://github.com/SvetoslavTsenov/frame-comparer)
+
 ## Requirеments
 
 The `nativescript-dev-appium` plugin requires:
 * latest version of [Appium](https://github.com/appium/appium/releases)
     * for correct functioning of the [XCUITest](https://github.com/appium/appium/blob/master/docs/en/drivers/ios-xcuitest.md) driver for iOS, additional libraries are required (see the [Setup](#setup) section)
+    * for correct functioning of the [mobile-devices-controller](https://github.com/NativeScript/mobile-devices-controller) for Android emulators, `telnet` is required (see the [Setup](#setup) section)
 * latest version of [Xcode](https://developer.apple.com/library/content/releasenotes/DeveloperTools/RN-Xcode/Chapters/Introduction.html)
 * [Android SDK Tools](https://developer.android.com/studio/releases/sdk-tools.html) version greater than 25.3.0
 
@@ -62,6 +81,14 @@ $ npm install -g ios-deploy
 ```
 
 > For detailed information on external dependencies, please, refer to the [XCUITest](https://github.com/appium/appium-xcuitest-driver/blob/master/README.md#external-dependencies) repository.
+
+For correct functioning of the [mobile-devices-controller](https://github.com/NativeScript/mobile-devices-controller) for Android emulators, `telnet` is required to be available on your system.
+
+As the `telnet` was removed from *macOS High Sierra*, it could be installed as follows:
+
+```shell
+$ brew install telnet
+```
 
 ### Structure
 
@@ -108,7 +135,7 @@ or
 $ tns build ios
 ```
 
-The command that will run the tests should specify the targeted platform using the `runType` option as shown below. This way a capabilities will be selected from the [capabilities](#custom-appium-capabilities) configuration file.
+The command that will run the tests should specify the targeted capabilities configuration using the `runType` option as shown below. This way a capabilities will be selected from the [capabilities](#custom-appium-capabilities) configuration file.
 
 ```
 $ npm run e2e -- --runType android25
@@ -121,6 +148,41 @@ $ npm run e2e -- --runType sim.iPhone8.iOS110
 ```
 
 Generated tests are standard [Mocha](http://mochajs.org) tests.
+
+## Blogs
+
+2018, March 6th: [Start Testing Your NativeScript Apps Properly](https://www.nativescript.org/blog/start-testing-your-nativescript-apps-properly)
+
+## Demos
+
+The official demos of the [nativescript-dev-appium](https://github.com/NativeScript/nativescript-dev-appium#nativescript-dev-appium) plugin: [https://github.com/NativeScript/ns-dev-days-appium-plugin](https://github.com/NativeScript/ns-dev-days-appium-plugin).
+
+These tests demonstrate:
+- [template-hello-world-ts/e2e](https://github.com/NativeScript/ns-dev-days-appium-plugin/blob/master/template-hello-world-ts/e2e/) - *nativescript-dev-appium* basics: configurations, find strategies, locators, actions.
+- [template-hello-world-ng/e2e](https://github.com/NativeScript/ns-dev-days-appium-plugin/blob/master/template-hello-world-ng/e2e/) - the page object pattern with *nativescript-dev-appium*.
+
+**Tests on NativeScript Continuous Integration**
+
+[NativeScript/e2e/modal-navigation](https://github.com/NativeScript/NativeScript/tree/master/e2e/modal-navigation) - use "Don't keep activities", run background (minimize/restore) app.
+
+[nativescript-angular/e2e/renderer](https://github.com/NativeScript/nativescript-angular/tree/master/e2e/renderer) - use basics: locators, find strategies, assertions.
+
+[nativescript-angular/e2e/router](https://github.com/NativeScript/nativescript-angular/tree/master/e2e/router) - use basics: locators, find strategies, assertions.
+
+[nativescript-dev-webpack/demo/AngularApp](https://github.com/NativeScript/nativescript-dev-webpack/tree/master/demo/AngularApp) - use data driven approach, compares element's images.
+
+[nativescript-dev-webpack/demo/JavaScriptApp](https://github.com/NativeScript/nativescript-dev-webpack/tree/master/demo/JavaScriptApp) - use data driven approach, compares element's images.
+
+[nativescript-dev-webpack/demo/TypeScriptApp](https://github.com/NativeScript/nativescript-dev-webpack/tree/master/demo/TypeScriptApp) - use data driven approach, compares element's images.
+
+## Videos
+
+2018 March 6th: [NativeScript Air 6 - UI Testing {N} apps with DevAppium](https://www.youtube.com/watch?v=Sn4hBaxOt88)
+
+2017 Sept 27th: [NativeScript testing with Appium](https://www.youtube.com/watch?v=Ns7boY6XNC0) @ [NativeScript Developer Day Europe 2017](https://www.nativescript.org/events/developer-day-europe-2017)
+
+2017 Sept 19th: [Introduction to Mobile UI Test Automation](https://www.youtube.com/watch?v=LjgIM4pvhsQ
+) @ [NativeScript Developer Day 2017](http://developerday.nativescript.org/)
 
 ## Custom Appium Capabilities
 
@@ -206,16 +268,6 @@ Examples:
 ```
 $ npm run e2e -- --runType android25 --sauceLab --appLocation demo.apk --capsLocation "/e2e-tests/config"
 ```
-
-## Features
-
-1. Compare images. Block out areas to ignore in comparison.
-2. Find elements findElementByText, findElementsByXPath, findElementByAccessibilityId etc...
-3. Gesture support: swipe, scroll, drag, scrollTo
-4. Action support: tap, click, doubleTap, hold, 
-5. Element characteristics: location, exists, size, isDisplayed
-6. Find strategies: waitForExist, waitForExistNot
-7. Direct access to webdriver and webdriverio
 
 ## Troubleshooting
 
