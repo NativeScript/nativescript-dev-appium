@@ -11,7 +11,7 @@ export function loadFrameComparer(nsCapabilities: INsCapabilities) {
         const logPath = getReportPath(nsCapabilities);
         return new FrameComparer(nsCapabilities, storage, logPath, frameComparer);
     } catch (error) {
-        console.error("In order to use frame comaprer, please run npm i frame-comparer and read carefully README.md");
+        console.error("In order to use frame comaprer, please read carefully https://github.com/SvetoslavTsenov/frame-comparer/blob/master/README.md for dependecies that are required!");
     }
 }
 
