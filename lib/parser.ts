@@ -17,7 +17,7 @@ const config = (() => {
         .option("appPath", { describe: "application path", type: "string" })
         .option("storage", { describe: "Storage for images folder.", type: "string" })
         .option("testReports", { describe: "Test reporting folder", type: "string" })
-        .option("reuseDevice", { describe: "Reusing device if available.", type: "boolean", defualt: true })
+        .option("reuseDevice", { describe: "Reusing device if available.", type: "boolean", default: true })
         .option("ignoreDeviceController", { alias: "i-ns-device-controller", describe: "Use default appium options for running emulatos/ simulators.", type: "boolean", defualt: false })
         .option("useDeviceControllerServer", {
             alias: "use-ns-device-controller-server",
