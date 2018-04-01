@@ -5,6 +5,7 @@ import { Point } from "./point";
 import { Direction } from "./direction";
 export declare function resolve(mainPath: any, ...args: any[]): any;
 export declare function fileExists(p: any): boolean;
+export declare function isDirectory(fullName: any): boolean;
 export declare function isFile(fullName: any): boolean;
 export declare function copy(src: any, dest: any, verbose: any): any;
 export declare function contains(source: any, check: any): boolean;

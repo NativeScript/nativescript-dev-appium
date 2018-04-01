@@ -17,7 +17,8 @@ const config = (() => {
         .option("appPath", { describe: "application path", type: "string" })
         .option("storage", { describe: "Storage for images folder.", type: "string" })
         .option("testReports", { describe: "Test reporting folder", type: "string" })
-        .option("reuseDevice", { describe: "Reusing device if available.", type: "boolean", defualt: true })
+        .option("reuseDevice", { describe: "Reusing device if available.", type: "boolean", defualt: false })
+        .option("devMode", { alias: "dev-mode", describe: "Will not install app but use the reuse the app installed on device!", type: "boolean", defualt: false })
         .option("ignoreDeviceController", { alias: "i-ns-device-controller", describe: "Use default appium options for running emulatos/ simulators.", type: "boolean", defualt: false })
         .option("useDeviceControllerServer", {
             alias: "use-ns-device-controller-server",
@@ -58,7 +59,8 @@ const config = (() => {
         appPath: options.appPath || process.env.npm_config_appPath,
         storage: options.storage || process.env.npm_config_STORAGE || process.env.STORAGE,
         testReports: options.testReports || process.env.npm_config_TEST_REPORTS || process.env.TEST_REPORTS,
-        reuseDevice: options.reuseDevice || process.env.npm_config_REUSE_DEVICE || process.env.REUSE_DEVICE,
+        reuseDevice: options.devMode ? true : options.reuseDevice || process.env.npm_config_REUSE_DEVICE || process.env.REUSE_DEVICE,
+        devMode: options.devMode || process.env.npm_config_REUSE_APP,
         ignoreDeviceController: options.ignoreDeviceController,
         path: options.path
     };
@@ -81,6 +83,7 @@ export const {
     storage,
     testReports,
     reuseDevice,
+    devMode,
     ignoreDeviceController,
     wdaLocalPort,
     path,

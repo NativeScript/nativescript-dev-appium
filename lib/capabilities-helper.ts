@@ -1,19 +1,15 @@
-import { dirname } from "path";
+import { dirname, join } from "path";
 import { readFileSync } from "fs";
 import * as utils from "./utils";
 import * as parser from "./parser";
+import * as glob from 'glob';
 
 export function resolveCapabilities(capsLocation: string, runType: string, projectDir: string, verbose: boolean = false): {} {
     let caps;
-    let customCapabilitiesConfigs: any;
-    if (utils.fileExists(capsLocation)) {
-        customCapabilitiesConfigs = setCustomCapabilities(capsLocation, verbose);
-    } else {
-        customCapabilitiesConfigs = searchCustomCapabilities(capsLocation, projectDir);
-    }
+    const customCapabilitiesConfigs = searchCapabilities(capsLocation, projectDir, verbose);;
 
     if (customCapabilitiesConfigs) {
-        const customCapabilities = JSON.parse(customCapabilitiesConfigs);
+        const customCapabilities = JSON.parse(customCapabilitiesConfigs + "");
         utils.log(customCapabilities, verbose);
 
         caps = customCapabilities[runType];
@@ -26,38 +22,41 @@ export function resolveCapabilities(capsLocation: string, runType: string, proje
     return caps;
 }
 
-export function searchCustomCapabilities(capabilitiesLocation, projectDir, verbose: boolean = false) {
-    // resolve capabilites if exist
-    if (utils.fileExists(capabilitiesLocation) && utils.isFile(capabilitiesLocation)) {
-        return setCustomCapabilities(capabilitiesLocation, verbose);
+export function searchCapabilities(capabilitiesLocation, projectDir, verbose: boolean = false) {
+    if (utils.isFile(capabilitiesLocation)) {
+        return seCapabilities(capabilitiesLocation);
     }
 
-    // search for default capabilites
-    let customCapabilitiesLocation = utils.searchFiles(projectDir, parser.capabilitiesName, false)[0];
-    if (utils.fileExists(customCapabilitiesLocation)) {
-        return setCustomCapabilities(customCapabilitiesLocation, verbose);
+    console.log(`Search capabilities in ${capabilitiesLocation}`);
+    let customCapabilitiesLocation = sreachCapabilitiesByFolder(capabilitiesLocation);
+
+    if (!customCapabilitiesLocation || customCapabilitiesLocation.length === 0) {
+        console.log(`Search capabilities in ${projectDir}`);
+
+        customCapabilitiesLocation = sreachCapabilitiesByFolder(projectDir)
     }
 
-    // search in parent folder for capabilities
-    const appParentFolder = dirname(projectDir);
-    customCapabilitiesLocation = utils.searchFiles(appParentFolder, parser.capabilitiesName, true)[0];
+    if (!customCapabilitiesLocation || customCapabilitiesLocation.length === 0) {
+        console.log(`Search capabilities in ${dirname(projectDir)}`);
+        customCapabilitiesLocation = sreachCapabilitiesByFolder(dirname(projectDir))
+    }
 
-    if (utils.fileExists(customCapabilitiesLocation)) {
-        return setCustomCapabilities(customCapabilitiesLocation, verbose);
-    } else {
-        // search for capabilities recursive 
-        let cap = utils.searchFiles(appParentFolder, parser.capabilitiesName, verbose)[0];
-        if (cap) {
-            setCustomCapabilities(cap, verbose);
-        }
+    if (customCapabilitiesLocation && customCapabilitiesLocation.length > 0 && utils.fileExists(customCapabilitiesLocation)) {
+        return seCapabilities(customCapabilitiesLocation[0]);
     }
 
     throw Error("No capabilities found!!!");
 }
 
-function setCustomCapabilities(appiumCapabilitiesLocation, verbose: boolean = false) {
+const sreachCapabilitiesByFolder = (location) => {
+    const capabiliteFiles = glob.sync(join(location, "/**/", parser.capabilitiesName));
+    console.log('Found files:', capabiliteFiles);
+    return capabiliteFiles[0];
+}
+
+const seCapabilities = appiumCapabilitiesLocation => {
     const file = readFileSync(appiumCapabilitiesLocation);
     process.env.APPIUM_CAPABILITIES = file;
-    utils.log("Custom capabilities found at: " + appiumCapabilitiesLocation, verbose);
+    utils.log("Capabilities found at: " + appiumCapabilitiesLocation, true);
     return file;
 }

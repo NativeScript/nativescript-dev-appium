@@ -13,6 +13,7 @@ export declare class NsCapabilities implements INsCapabilities {
     private _storage;
     private _testReports;
     private _reuseDevice;
+    private _devMode;
     private _runType;
     private _isAndroid;
     private _isIOS;
@@ -38,6 +39,7 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly storage: any;
     readonly testReports: any;
     readonly reuseDevice: any;
+    readonly devMode: any;
     readonly runType: any;
     readonly isAndroid: any;
     readonly isIOS: any;
@@ -48,7 +50,7 @@ export declare class NsCapabilities implements INsCapabilities {
     device: IDevice;
     readonly emulatorOptions: string;
     private isAndroidPlatform();
-    private resolveAppPath();
+    private resolveApplication();
     private checkMandatoryCapabiliies();
     private throwExceptions();
 }

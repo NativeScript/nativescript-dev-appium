@@ -41,7 +41,7 @@ export function fileExists(p) {
     }
 }
 
-function isDirectory(fullName) {
+export function isDirectory(fullName) {
     try {
         if (fileExists(fullName) && fs.statSync(fullName).isDirectory()) {
             return true;
@@ -276,8 +276,8 @@ export function getReportPath(args: INsCapabilities) {
 }
 
 function getAppName(args: INsCapabilities) {
-    const appName = args.appiumCaps.app
-        .substring(args.appiumCaps.app.lastIndexOf("/") + 1, args.appiumCaps.app.lastIndexOf("."))
+    const appName = args.appPath
+        .substring(args.appPath.lastIndexOf("/") + 1, args.appPath.lastIndexOf("."))
         .replace("-release", "").replace("-debug", "");
 
     return appName;
@@ -291,7 +291,7 @@ export function getAppPath(caps: INsCapabilities) {
 
     // try to resolve app automatically
     if (!fs.existsSync(basePath)) {
-        if (caps.appiumCaps.platformName.toLowerCase().includes("android")) {
+        if (caps.isAndroid) {
             const androidPlatformsPath = 'platforms/android';
             //platforms/android/build/outputs/apk/
             //platforms/android/app/build/outputs/apk
@@ -303,16 +303,9 @@ export function getAppPath(caps: INsCapabilities) {
             if (!fs.existsSync(`${androidPlatformsPath}/app/build/outputs/apk`)) {
                 basePath = `${androidPlatformsPath}/build/outputs/apk/**/*.apk`;
             }
-        } else if (caps.appiumCaps.platformName.toLowerCase().includes("ios")) {
-            const iosPlatformsPath = 'platforms/ios';
-            basePath = `${iosPlatformsPath}/build/emulator/**/*.app`;
-            if (caps.runType.includes("device")) {
-                basePath = `${iosPlatformsPath}/build/device/**/*.ipa`;
-            }
-
         } else {
-            throw new Error("No 'app' capability provided and incorrect 'runType' convention used: " + caps.runType +
-                ". In order to automatically search and locate app package please use 'android','device','sim' in your 'runType' option. E.g --runType android25, --runType sim.iPhone7.iOS110");
+            const iosPlatformsPath = 'platforms/ios/build';
+            basePath = caps.runType.includes("device") ? `${iosPlatformsPath}/device/**/*.ipa` : `${iosPlatformsPath}/emulator/**/*.app`;
         }
     }
 
@@ -323,6 +316,12 @@ export function getAppPath(caps: INsCapabilities) {
             .filter(function (file) {
                 return file.endsWith(".ipa") || file.endsWith(".app") || file.endsWith(".apk")
             });
+    }
+
+    if (!apps || apps.length === 0) {
+        console.error(`No 'app' capability provided or the convension for 'runType'${caps.runType} is not as excpeced! 
+                In order to automatically search and locate app package please use 'device' in your 'runType' name. E.g --runType device.iPhone7.iOS110, --runType sim.iPhone7.iOS110 or
+                specify correct app path`);
     }
 
     console.log(`Available apks:`, apps);
