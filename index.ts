@@ -23,7 +23,6 @@ export { IDeviceManager } from "./lib/interfaces/device-manager";
 const nsCapabilities = new NsCapabilities();
 const appiumServer = new AppiumServer(nsCapabilities);
 let frameComparer: FrameComparer;
-
 let appiumDriver = null;
 
 export async function startServer(port?: number, deviceManager?: IDeviceManager) {

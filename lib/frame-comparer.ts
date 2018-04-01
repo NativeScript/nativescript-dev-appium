@@ -2,11 +2,13 @@ import { mkdirSync } from "fs";
 import { resolve, getStorageByDeviceName, getReportPath } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDevice } from "mobile-devices-controller";
-import { createFrameComparer } from "frame-comparer";
+import * as frComparer from "frame-comparer";
+import { IRectangle } from "..";
+import { ImageHelper } from "./image-helper";
 
 export function loadFrameComparer(nsCapabilities: INsCapabilities) {
     try {
-        const frameComparer = createFrameComparer();
+        const frameComparer = frComparer.createFrameComparer();
         const storage = getStorageByDeviceName(nsCapabilities);
         const logPath = getReportPath(nsCapabilities);
         return new FrameComparer(nsCapabilities, storage, logPath, frameComparer);
@@ -17,8 +19,10 @@ export function loadFrameComparer(nsCapabilities: INsCapabilities) {
 
 export class FrameComparer {
     private _framesGeneralName: string = "frame";
+    private _cropImageRect: IRectangle;
 
-    constructor(private _nsCapabilities: INsCapabilities, private _storage: string, private _logPath: string, private _frameComparer: any) {
+    constructor(private _nsCapabilities: INsCapabilities, private _storage: string, private _logPath: string, private _frameComparer: frComparer.FrameComparer) {
+        this._cropImageRect = ImageHelper.cropImageDefault(this._nsCapabilities);
     }
 
     async processVideo(videoFullName, framesGeneralName?: string, videoTempStorage = "tempFramesFolder") {
@@ -27,15 +31,15 @@ export class FrameComparer {
         await this._frameComparer.processVideo(videoFullName, videoTempStorage, this._framesGeneralName);
     }
 
-    async compareFrameRanges(imageFrameCount: number, startRange, endRange, tollerancePixels = 0.1) {
-        const result = await this._frameComparer.compareImageFromVideo(resolve(this._storage, `${this._framesGeneralName}${imageFrameCount}.png`), this._logPath, startRange, startRange, tollerancePixels);
+    async compareFrameRanges(imageFrameCount: number, startRange, endRange, tollerancePixels = 0.1, verbose = false): Promise<boolean> {
+        const result = await this._frameComparer.compareImageFromVideo(resolve(this._storage, `${this._framesGeneralName}${imageFrameCount}.png`), this._logPath, startRange, endRange, tollerancePixels, true, this._cropImageRect, verbose);
         return result;
     }
 
-    async compareFrames(imageFrameCount: number, tolleranceRange = 3, tollerancePixels = 0.1) {
+    async compareFrames(imageFrameCount: number, tolleranceRange = 3, tollerancePixels = 0.1, verbose = false): Promise<boolean> {
         const start = imageFrameCount - tolleranceRange > 0 ? imageFrameCount - tolleranceRange : 0;
         const end = imageFrameCount + tolleranceRange;
-        const result = await this._frameComparer.compareImageFromVideo(resolve(this._storage, `${this._framesGeneralName}${imageFrameCount}.png`), this._logPath, start, end, tollerancePixels);
+        const result = await this.compareFrameRanges(imageFrameCount, start, end, tollerancePixels)
         return result;
     }
 }

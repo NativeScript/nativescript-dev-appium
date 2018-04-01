@@ -18,6 +18,7 @@ export interface INsCapabilities {
     storage: string;
     testReports: string;
     reuseDevice: boolean;
+    devMode: boolean;
     device: IDevice;
     ignoreDeviceController: boolean;
     wdaLocalPort: number;

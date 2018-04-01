@@ -17,6 +17,7 @@ export class NsCapabilities implements INsCapabilities {
     private _storage;
     private _testReports;
     private _reuseDevice;
+    private _devMode;
     private _runType;
     private _isAndroid;
     private _isIOS;
@@ -43,6 +44,7 @@ export class NsCapabilities implements INsCapabilities {
         this._storage = parser.storage;
         this._testReports = parser.testReports;
         this._reuseDevice = parser.reuseDevice;
+        this._devMode = parser.devMode;
         this._runType = parser.runType;
         this._isAndroid = this.isAndroidPlatform();
         this._isIOS = !this._isAndroid;
@@ -50,7 +52,7 @@ export class NsCapabilities implements INsCapabilities {
         this._ignoreDeviceController = parser.ignoreDeviceController;
         this._wdaLocalPort = parser.wdaLocalPort;
         this._path = parser.path;
-        this.resolveAppPath();
+        this.resolveApplication();
         this.checkMandatoryCapabiliies();
         this.throwExceptions();
     }
@@ -68,6 +70,7 @@ export class NsCapabilities implements INsCapabilities {
     get storage() { return this._storage; }
     get testReports() { return this._testReports; }
     get reuseDevice() { return this._reuseDevice; }
+    get devMode() { return this._devMode; }
     get runType() { return this._runType; }
     get isAndroid() { return this._isAndroid; }
     get isIOS() { return this._isIOS; }
@@ -82,8 +85,9 @@ export class NsCapabilities implements INsCapabilities {
 
     private isAndroidPlatform() { return this._appiumCaps.platformName.toLowerCase().includes("android"); }
 
-    private resolveAppPath() {
+    private resolveApplication() {
         this._appiumCaps.app = getAppPath(this);
+        this.appPath = this._appiumCaps.app;
         console.log("Application full path: " + this._appiumCaps.app);
     }
 

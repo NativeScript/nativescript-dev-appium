@@ -1,4 +1,5 @@
 import { INsCapabilities } from "./interfaces/ns-capabilities";
+import * as frComparer from "frame-comparer";
 export declare function loadFrameComparer(nsCapabilities: INsCapabilities): FrameComparer;
 export declare class FrameComparer {
     private _nsCapabilities;
@@ -6,8 +7,9 @@ export declare class FrameComparer {
     private _logPath;
     private _frameComparer;
     private _framesGeneralName;
-    constructor(_nsCapabilities: INsCapabilities, _storage: string, _logPath: string, _frameComparer: any);
+    private _cropImageRect;
+    constructor(_nsCapabilities: INsCapabilities, _storage: string, _logPath: string, _frameComparer: frComparer.FrameComparer);
     processVideo(videoFullName: any, framesGeneralName?: string, videoTempStorage?: string): Promise<void>;
-    compareFrameRanges(imageFrameCount: number, startRange: any, endRange: any, tollerancePixels?: number): Promise<any>;
-    compareFrames(imageFrameCount: number, tolleranceRange?: number, tollerancePixels?: number): Promise<any>;
+    compareFrameRanges(imageFrameCount: number, startRange: any, endRange: any, tollerancePixels?: number, verbose?: boolean): Promise<boolean>;
+    compareFrames(imageFrameCount: number, tolleranceRange?: number, tollerancePixels?: number, verbose?: boolean): Promise<boolean>;
 }
