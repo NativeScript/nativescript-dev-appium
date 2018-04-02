@@ -17,9 +17,9 @@ const config = (() => {
         .option("appPath", { describe: "application path", type: "string" })
         .option("storage", { describe: "Storage for images folder.", type: "string" })
         .option("testReports", { describe: "Test reporting folder", type: "string" })
-        .option("reuseDevice", { describe: "Reusing device if available.", type: "boolean", defualt: false })
-        .option("devMode", { alias: "dev-mode", describe: "Will not install app but use the reuse the app installed on device!", type: "boolean", defualt: false })
-        .option("ignoreDeviceController", { alias: "i-ns-device-controller", describe: "Use default appium options for running emulatos/ simulators.", type: "boolean", defualt: false })
+        .option("reuseDevice", { describe: "Reusing device if available.", type: "boolean", default: false })
+        .option("devMode", { alias: "dev-mode", describe: "Will skipp app instalation and will reuse the one installed on device!", type: "boolean", default: false })
+        .option("ignoreDeviceController", { alias: "i-ns-device-controller", describe: "Use default appium options for running emulatos/ simulators.", type: "boolean", default: false })
         .option("useDeviceControllerServer", {
             alias: "use-ns-device-controller-server",
             describe: "Use server to boot, kill, subscribe or unsubscribe for devices. Also this flag could be specified in as an evn variable",
