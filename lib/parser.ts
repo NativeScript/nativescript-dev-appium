@@ -24,9 +24,9 @@ const config = (() => {
             alias: "use-ns-device-controller-server",
             describe: "Use server to boot, kill, subscribe or unsubscribe for devices. Also this flag could be specified in as an evn variable",
             type: "boolean",
-            defualt: false
+            default: false
         })
-        .option("deviceControllerServerPort", { describe: "Reusing device if available.", type: "boolean", defualt: false })
+        .option("deviceControllerServerPort", { describe: "Reusing device if available.", type: "boolean", default: false })
         .help()
         .argv;
 

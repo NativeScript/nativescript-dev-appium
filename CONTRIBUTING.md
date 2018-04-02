@@ -61,7 +61,7 @@ git checkout -b <my-fix-branch> master
 
 4. The fun part! Make your code changes. Make sure you:
     - Follow the [NativeScript code conventions guide](https://github.com/NativeScript/NativeScript/blob/master/CodingConvention.md).
-    - Follow the [Angular Commit message guidelines](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#heading=h.uyo6cb12dt6w).
+    - Follow the [commit message guidelines](https://github.com/NativeScript/NativeScript/blob/master/CONTRIBUTING.md#-commit-message-guidelines).
 
 5. Before you submit your PR:
     - Rebase your changes to the latest master: `git pull --rebase upstream master`.
