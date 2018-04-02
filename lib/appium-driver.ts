@@ -102,6 +102,10 @@ export class AppiumDriver {
     get driver() {
         return this._driver;
     }
+    
+    get logPath() {
+        return this._logPath;
+    }
 
     public webio() {
         return this._webio;
