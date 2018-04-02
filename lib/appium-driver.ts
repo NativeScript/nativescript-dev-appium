@@ -130,6 +130,27 @@ export class AppiumDriver {
         return await this._driver.back();
     }
 
+    /**
+    * Get the storage where test results from image comparisson is logged It will be reports/app nam/device name
+    */
+    get reportsPath() {
+        return this._logPath;
+    }
+
+    /**
+    * Get the storage where images are captured by platform. It will be resources/app nam/platform name
+    */
+    get storageByPlatform() {
+        return this._storageByPlatform;
+    }
+
+    /**
+     * Get the storage where images are captured. It will be resources/app nam/device name
+     */
+    get storageByDeviceName() {
+        return this._storageByDeviceName;
+    }
+
     public static async createAppiumDriver(port: number, args: INsCapabilities) {
         let driverConfig: any = {
             host: "localhost",
