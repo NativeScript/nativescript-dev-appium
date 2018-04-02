@@ -13,17 +13,20 @@ export declare class NsCapabilities implements INsCapabilities {
     private _storage;
     private _testReports;
     private _reuseDevice;
+    private _devMode;
     private _runType;
     private _isAndroid;
     private _isIOS;
     private _isSauceLab;
     private _appPath;
+    private _path;
     private _emulatorOptions;
     private _device;
     private _ignoreDeviceController;
     private _wdaLocalPort;
     private exceptions;
     constructor();
+    readonly path: string;
     readonly projectDir: any;
     readonly projectBinary: any;
     readonly pluginRoot: any;
@@ -36,6 +39,7 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly storage: any;
     readonly testReports: any;
     readonly reuseDevice: any;
+    readonly devMode: any;
     readonly runType: any;
     readonly isAndroid: any;
     readonly isIOS: any;
@@ -46,7 +50,7 @@ export declare class NsCapabilities implements INsCapabilities {
     device: IDevice;
     readonly emulatorOptions: string;
     private isAndroidPlatform();
-    private resolveAppPath();
+    private resolveApplication();
     private checkMandatoryCapabiliies();
     private throwExceptions();
 }

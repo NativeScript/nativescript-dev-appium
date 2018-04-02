@@ -32,11 +32,12 @@
     "blink-diff": "^1.0.13",
     "chai": "~4.1.1",
     "chai-as-promised": "~7.1.1",
+    "frame-comparer": "^1.0.0",
     "glob": "*",
     "mobile-devices-controller": "^2.0.1",
     "mocha": "~3.5.0",
-    "mocha-multi": "^0.11.0",
     "mocha-junit-reporter": "^1.13.0",
+    "mocha-multi": "^0.11.0",
     "wd": "^1.4.1",
     "webdriverio": "~4.8.0",
     "yargs": "^8.0.2"

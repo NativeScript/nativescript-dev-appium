@@ -7,18 +7,18 @@ import { Point } from "./point";
 
 export class ImageHelper {
 
-    private _cropImageRect: IRectangle;
+    private _imageCropRect: IRectangle;
     private _blockOutAreas: IRectangle[];
 
     constructor(private _args: INsCapabilities) {
     }
 
     get imageCropRect(): IRectangle {
-        return this._cropImageRect;
+        return this._imageCropRect;
     }
 
     set imageCropRect(rect: IRectangle) {
-        this._cropImageRect = rect;
+        this._imageCropRect = rect;
     }
 
     get blockOutAreas() {
@@ -84,7 +84,6 @@ export class ImageHelper {
 
     public compareImages(actual: string, expected: string, output: string, valueThreshold: number = this.threshold(this.thresholdType()), typeThreshold: any = this.thresholdType()) {
         const diff = new BlinkDiff({
-
             imageAPath: actual,
             imageBPath: expected,
             imageOutputPath: output,
@@ -92,9 +91,8 @@ export class ImageHelper {
             thresholdType: typeThreshold,
             threshold: valueThreshold,
             delta: this.delta(),
-
-            cropImageA: this._cropImageRect,
-            cropImageB: this._cropImageRect,
+            cropImageA: this._imageCropRect,
+            cropImageB: this._imageCropRect,
             blockOut: this._blockOutAreas,
             verbose: this._args.verbose,
         });

@@ -5,4 +5,5 @@ export interface IDeviceManager {
     stopDevice(args: INsCapabilities): Promise<IDevice>;
     installApp(args: INsCapabilities): Promise<void>;
     unInstallApp(args: INsCapabilities): Promise<void>;
+    getPackageId(device: any, appPath: any): string;
 }

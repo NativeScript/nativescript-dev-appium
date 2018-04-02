@@ -3,7 +3,7 @@ import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IRectangle } from "./interfaces/rectangle";
 export declare class ImageHelper {
     private _args;
-    private _cropImageRect;
+    private _imageCropRect;
     private _blockOutAreas;
     constructor(_args: INsCapabilities);
     imageCropRect: IRectangle;
