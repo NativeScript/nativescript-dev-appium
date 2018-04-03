@@ -105,7 +105,7 @@ export class NsCapabilities implements INsCapabilities {
         }
 
         if (!this._appiumCaps.platformVersion) {
-            this.exceptions.push("Platform version is missing! Please, check appium capabilities file!");
+            console.warn("Platform version is missing! You'd better to set it in order to use the correct device");
         }
 
         if (!this._appiumCaps.deviceName && !this._appiumCaps.udid) {

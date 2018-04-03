@@ -12,6 +12,7 @@ import {
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
 import { DeviceManger } from "./device-controller";
+import { AndroidController } from "mobile-devices-controller";
 
 export class AppiumServer {
     private _server: child_process.ChildProcess;
@@ -63,7 +64,7 @@ export class AppiumServer {
         }
 
         if (this._args.devMode) {
-            const appPackage = this._args.isAndroid ? "appActivity" : "bundleId";
+            const appPackage = this._args.isAndroid ? "appPackage" : "bundleId";
             const appFullPath = this._args.appiumCaps.app;
 
             if (appFullPath && !this._args.appiumCaps[appPackage]) {
@@ -79,7 +80,15 @@ export class AppiumServer {
             this._args.appiumCaps.app = "";
         }
 
-        if (this._args.isIOS && !this._args.devMode) {
+        if (this._args.isAndroid && (!this._args.appiumCaps['appActivity'] || this._args.appiumCaps['appActivity'].trim() === "")) {
+            if (fileExists(this._args.appPath)) {
+                this._args.appiumCaps['appActivity'] = AndroidController.getLaunchableActivity(this._args.appPath);
+                console.log(`Setting capabilities ${this._args.runType}{ "appActivity" : "${this._args.appiumCaps['appActivity']}" }!`);
+            } else {
+                console.error(`No launchable activity found. You should set it here ${this._args.appiumCapsLocation} in runType: ${this._args.runType}!`);
+            }
+        }
+        if (!this._args.devMode) {
             this._deviceManager.installApp(this._args);
         }
         log("Starting server...", this._args.verbose);
