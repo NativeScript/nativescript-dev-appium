@@ -32,7 +32,7 @@
     "blink-diff": "^1.0.13",
     "chai": "~4.1.1",
     "chai-as-promised": "~7.1.1",
-    "frame-comparer": "^1.0.0",
+    "frame-comparer": "^1.0.3",
     "glob": "*",
     "mobile-devices-controller": "^2.0.1",
     "mocha": "~3.5.0",

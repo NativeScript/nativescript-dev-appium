@@ -130,9 +130,9 @@ export class DeviceManger implements IDeviceManager {
         device.config = { "density": args.appiumCaps.density, "offsetPixels": args.appiumCaps.offsetPixels };
         return device;
     }
-    
-    public getPackageId(device, appPath): string {
-        const appActivity = device.type === (DeviceType.EMULATOR || device.Platform === Platform.ANDROID) ? AndroidController.getPackageId(device, appPath) : IOSController.getIOSPackageId(device, appPath);
+
+    public getPackageId(device: IDevice, appPath: string): string {
+        const appActivity = (device.type === DeviceType.EMULATOR || device.platform === Platform.ANDROID) ? AndroidController.getPackageId(appPath) : IOSController.getIOSPackageId(device.type, appPath);
         return appActivity;
     }
 }

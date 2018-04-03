@@ -31,15 +31,15 @@ export class FrameComparer {
         await this._frameComparer.processVideo(videoFullName, videoTempStorage, this._framesGeneralName);
     }
 
-    async compareFrameRanges(imageFrameCount: number, startRange, endRange, tollerancePixels = 0.1, verbose = false): Promise<boolean> {
-        const result = await this._frameComparer.compareImageFromVideo(resolve(this._storage, `${this._framesGeneralName}${imageFrameCount}.png`), this._logPath, startRange, endRange, tollerancePixels, true, this._cropImageRect, verbose);
+    async compareFrameRanges(imageFrameCount: number, startRange, endRange, logImageComparisonResults: boolean = false, tollerancePixels = 0.1, verbose = false): Promise<boolean> {
+        const result = await this._frameComparer.compareImageFromVideo(resolve(this._storage, `${this._framesGeneralName}${imageFrameCount}.png`), this._logPath, startRange, endRange, tollerancePixels, true, logImageComparisonResults, this._cropImageRect, verbose);
         return result;
     }
 
-    async compareFrames(imageFrameCount: number, tolleranceRange = 3, tollerancePixels = 0.1, verbose = false): Promise<boolean> {
+    async compareFrames(imageFrameCount: number, tolleranceRange = 3, tollerancePixels = 0.1, logImageComparisonResults: boolean = false, verbose = false): Promise<boolean> {
         const start = imageFrameCount - tolleranceRange > 0 ? imageFrameCount - tolleranceRange : 0;
         const end = imageFrameCount + tolleranceRange;
-        const result = await this.compareFrameRanges(imageFrameCount, start, end, tollerancePixels)
+        const result = await this.compareFrameRanges(imageFrameCount, start, end, logImageComparisonResults, tollerancePixels)
         return result;
     }
 }
