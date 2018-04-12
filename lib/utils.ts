@@ -324,7 +324,7 @@ export function getAppPath(caps: INsCapabilities) {
                 specify correct app path`);
     }
 
-    console.log(`Available apks:`, apps);
+    console.log(`Available applications:`, apps);
     return apps[0];
 }
 
