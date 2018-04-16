@@ -251,11 +251,11 @@ export function getStorageByPlatform(args: INsCapabilities) {
     return storage;
 }
 
-const checkSorageIsUndefined = (storage) => { return !storage || storage === 'undefined' || storage === null || storage === 'null'; }
+const checkStorageIsUndefined = (storage) => { return !storage || storage === 'undefined' || storage === null || storage === 'null'; }
 
 function getStorage(args: INsCapabilities) {
     let storage = args.storage;
-    if (checkSorageIsUndefined(storage)) {
+    if (checkStorageIsUndefined(storage)) {
         storage = createStorageFolder(resolve(args.projectDir, args.testFolder), "resources");
         storage = createStorageFolder(storage, "images");
     }

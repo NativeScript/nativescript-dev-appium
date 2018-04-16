@@ -156,8 +156,9 @@ export class AppiumServer {
 
         const groupings = getRegexResultsAsArray(/(\w+)/gi, this._args.appiumCaps[appPackage]);
         this._args.appName = groupings[groupings.length - 1];
+        console.log(`Setting application name as ${this._args.appName}`);
         if (!this._args.devMode) {
-            this._deviceManager.installApp(this._args);
+            await this._deviceManager.uninstallApp(this._args);
         } else {
             this._args.appiumCaps.app = "";
         }
