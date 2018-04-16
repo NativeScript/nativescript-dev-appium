@@ -61,34 +61,6 @@ export class AppiumServer {
         await this.prepareDevice(deviceManager);
         await this.prepareApp();
 
-        if (this._args.devMode) {
-            const appPackage = this._args.isAndroid ? "appPackage" : "bundleId";
-            const appFullPath = this._args.appiumCaps.app;
-
-            if (appFullPath && !this._args.appiumCaps[appPackage]) {
-                console.log(`Trying to resolve automatically ${appPackage}!`);
-                this._args.appiumCaps[appPackage] = this._deviceManager.getPackageId(this._args.device, appFullPath);
-                console.log(`Setting capabilities ${this._args.runType}{ "${appPackage}" : "${this._args.appiumCaps[appPackage]}" }!`);
-            }
-
-            if (!this._args.appiumCaps[appPackage]) {
-                throw new Error(`In order to use reuse app functionality, please set ${appPackage} in ${this._args.appiumCapsLocation} file!`);
-            }
-
-            this._args.appiumCaps.app = "";
-        }
-
-        if (this._args.isAndroid && (!this._args.appiumCaps['appActivity'] || this._args.appiumCaps['appActivity'].trim() === "")) {
-            if (fileExists(this._args.appPath)) {
-                this._args.appiumCaps['appActivity'] = AndroidController.getLaunchableActivity(this._args.appPath);
-                console.log(`Setting capabilities ${this._args.runType}{ "appActivity" : "${this._args.appiumCaps['appActivity']}" }!`);
-            } else {
-                console.error(`No launchable activity found. You should set it here ${this._args.appiumCapsLocation} in runType: ${this._args.runType}!`);
-            }
-        }
-        if (!this._args.devMode) {
-            this._deviceManager.installApp(this._args);
-        }
         log("Starting server...", this._args.verbose);
         const logLevel = this._args.verbose === true ? "debug" : "info";
         this.port = port || this._args.port;
