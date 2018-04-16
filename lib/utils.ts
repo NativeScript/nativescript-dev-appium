@@ -275,8 +275,26 @@ export function getReportPath(args: INsCapabilities) {
     return report;
 }
 
+export const getRegexResultsAsArray = (regex, str) => {
+    let m;
+    const result = [];
+    while ((m = regex.exec(str)) !== null) {
+        if (m.index === regex.lastIndex) {
+            regex.lastIndex++;
+        }
+
+        m.forEach(element => {
+            if (result.indexOf(element) < 0) {
+                result.push(element);
+            }
+        });
+    }
+
+    return result;
+}
+
 function getAppName(args: INsCapabilities) {
-    const appName = args.appPath
+    const appName = args.appName || args.appPath
         .substring(args.appPath.lastIndexOf("/") + 1, args.appPath.lastIndexOf("."))
         .replace("-release", "").replace("-debug", "");
 

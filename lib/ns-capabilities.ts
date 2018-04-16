@@ -22,6 +22,7 @@ export class NsCapabilities implements INsCapabilities {
     private _isAndroid;
     private _isIOS;
     private _isSauceLab;
+    private _appName: string;
     private _appPath: string;
     private _path: string;
     private _emulatorOptions: string;
@@ -76,6 +77,8 @@ export class NsCapabilities implements INsCapabilities {
     get isIOS() { return this._isIOS; }
     get isSauceLab() { return this._isSauceLab; }
     get appPath() { return this._appPath; }
+    get appName() { return this._appName; }
+    set appName(appName: string) { this._appName = appName; }
     get ignoreDeviceController() { return this._ignoreDeviceController; }
     get wdaLocalPort() { return this._wdaLocalPort; }
     set appPath(appPath: string) { this._appPath = appPath; }

@@ -7,7 +7,8 @@ import {
     fileExists,
     isWin,
     executeCommand,
-    findFreePort
+    findFreePort,
+    getRegexResultsAsArray
 } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
@@ -57,11 +58,8 @@ export class AppiumServer {
     }
 
     public async start(port, deviceManager: IDeviceManager = new DeviceManger()) {
-        this._deviceManager = deviceManager;
-        if (!this._args.device) {
-            const device = await this._deviceManager.startDevice(this._args);
-            this._args.device = device;
-        }
+        await this.prepareDevice(deviceManager);
+        await this.prepareApp();
 
         if (this._args.devMode) {
             const appPackage = this._args.isAndroid ? "appPackage" : "bundleId";
@@ -160,6 +158,38 @@ export class AppiumServer {
                 console.log(error);
             }
         });
+    }
+
+    private async prepareDevice(deviceManager: IDeviceManager) {
+        this._deviceManager = deviceManager;
+        if (!this._args.device) {
+            const device = await this._deviceManager.startDevice(this._args);
+            this._args.device = device;
+        }
+    }
+
+    private async prepareApp() {
+        const appPackage = this._args.isAndroid ? "appActivity" : "bundleId";
+        const appFullPath = this._args.appiumCaps.app;
+
+        if (appFullPath && !this._args.appiumCaps[appPackage]) {
+            console.log(`Trying to resolve automatically ${appPackage}!`);
+            this._args.appiumCaps[appPackage] = this._deviceManager.getPackageId(this._args.device, appFullPath);
+            console.log(`Setting capabilities ${this._args.runType}{ "${appPackage}" : "${this._args.appiumCaps[appPackage]}" }!`);
+        }
+
+        if (!this._args.appiumCaps[appPackage]) {
+            throw new Error(`Please, provide ${appPackage} in ${this._args.appiumCapsLocation} file!`);
+        }
+
+        const groupings = getRegexResultsAsArray(/(\w+)/gi, this._args.appiumCaps[appPackage]);
+        this._args.appName = groupings[groupings.length - 1];
+        if (!this._args.devMode) {
+            this._deviceManager.installApp(this._args);
+        } else {
+            this._args.appiumCaps.app = "";
+        }
+
     }
 
     // Resolve appium dependency

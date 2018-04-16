@@ -18,6 +18,7 @@ export declare class NsCapabilities implements INsCapabilities {
     private _isAndroid;
     private _isIOS;
     private _isSauceLab;
+    private _appName;
     private _appPath;
     private _path;
     private _emulatorOptions;
@@ -45,6 +46,7 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly isIOS: any;
     readonly isSauceLab: any;
     appPath: string;
+    appName: string;
     readonly ignoreDeviceController: boolean;
     readonly wdaLocalPort: number;
     device: IDevice;

@@ -62,7 +62,7 @@ const config = (() => {
         reuseDevice: options.devMode ? true : options.reuseDevice || process.env.npm_config_REUSE_DEVICE || process.env.REUSE_DEVICE,
         devMode: options.devMode || process.env.npm_config_REUSE_APP,
         ignoreDeviceController: options.ignoreDeviceController,
-        path: options.path
+        path: options.path,
     };
 
     return config;
