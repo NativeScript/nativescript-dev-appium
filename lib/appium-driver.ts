@@ -210,9 +210,9 @@ export class AppiumDriver {
     }
 
     /**
-     * 
-     * @param xPath 
-     * @param waitForElement 
+     *
+     * @param xPath
+     * @param waitForElement
      */
     public async findElementByXPath(xPath: string, waitForElement: number = this.defaultWaitTime) {
         const searchM = "waitForElementByXPath";
@@ -220,19 +220,19 @@ export class AppiumDriver {
     }
 
     /**
-     * 
+     *
      * @param xPath
-     * @param waitForElement 
+     * @param waitForElement
      */
     public async findElementsByXPath(xPath: string, waitForElement: number = this.defaultWaitTime) {
         return await this.convertArrayToUIElements(await this._driver.waitForElementsByXPath(xPath, waitForElement), "waitForElementsByXPath", xPath);
     }
 
     /**
-     * Search for element by given text. The seacrch is case insensitive for android 
-     * @param text 
-     * @param match 
-     * @param waitForElement 
+     * Search for element by given text. The seacrch is case insensitive for android
+     * @param text
+     * @param match
+     * @param waitForElement
      */
     public async findElementByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = this.defaultWaitTime) {
         const shouldMatch = match === SearchOptions.exact ? true : false;
@@ -241,9 +241,9 @@ export class AppiumDriver {
 
     /**
      * Search for elements by given text. The seacrch is case insensitive for android
-     * @param text 
-     * @param match 
-     * @param waitForElement 
+     * @param text
+     * @param match
+     * @param waitForElement
      */
     public async findElementsByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = this.defaultWaitTime) {
         const shouldMatch = match === SearchOptions.exact ? true : false;
@@ -253,8 +253,8 @@ export class AppiumDriver {
     /**
      * Searches for element by element native class name like button, textView etc which will be translated to android.widgets.Button or XCUIElementTypeButton (iOS 10 and higher) or UIElementButton (iOS 9)
      * Notice this is not the same as css class
-     * @param className 
-     * @param waitForElement 
+     * @param className
+     * @param waitForElement
      */
     public async findElementByClassName(className: string, waitForElement: number = this.defaultWaitTime) {
         return new UIElement(await this._driver.waitForElementByClassName(className, waitForElement), this._driver, this._wd, this._webio, this._args, "waitForElementByClassName", className);
@@ -263,8 +263,8 @@ export class AppiumDriver {
     /**
      * Searches for element by element native class name like button, textView etc which will be translated to android.widgets.Button or XCUIElementTypeButton (iOS 10 and higher) or UIElementButton (iOS 9)
      * Notice this is not the same as css class
-     * @param className 
-     * @param waitForElement 
+     * @param className
+     * @param waitForElement
      */
     public async findElementsByClassName(className: string, waitForElement: number = this.defaultWaitTime) {
         return await this.convertArrayToUIElements(await this._driver.waitForElementsByClassName(className, waitForElement), "waitForElementsByClassName", className);
@@ -272,8 +272,8 @@ export class AppiumDriver {
 
     /**
      * Find element by automationText
-     * @param id 
-     * @param waitForElement 
+     * @param id
+     * @param waitForElement
      */
     public async findElementByAccessibilityId(id, waitForElement: number = this.defaultWaitTime) {
         return new UIElement(await this._driver.waitForElementByAccessibilityId(id, waitForElement), this._driver, this._wd, this._webio, this._args, "waitForElementByAccessibilityId", id);
@@ -281,8 +281,8 @@ export class AppiumDriver {
 
     /**
      * Find elements by automationText
-     * @param id 
-     * @param waitForElement 
+     * @param id
+     * @param waitForElement
      */
     public async findElementsByAccessibilityId(id: string, waitForElement: number = this.defaultWaitTime) {
         return await this.convertArrayToUIElements(await this._driver.waitForElementsByAccessibilityId(id, waitForElement), "waitForElementsByAccessibilityId", id);
@@ -301,13 +301,13 @@ export class AppiumDriver {
     }
 
     /**
-     * 
+     *
      * @param direction
-     * @param element 
-     * @param startPoint 
-     * @param yOffset 
-     * @param xOffset 
-     * @param retryCount 
+     * @param element
+     * @param startPoint
+     * @param yOffset
+     * @param xOffset
+     * @param retryCount
      */
     public async scrollTo(direction: Direction, element: any, startPoint: Point, yOffset: number, xOffset: number = 0, retryCount: number = 7) {
         let el = null;
@@ -333,12 +333,12 @@ export class AppiumDriver {
     }
 
     /**
-     * Swipe from point with offset and inertia according to duatio 
-     * @param y 
-     * @param x 
-     * @param yOffset 
-     * @param inertia 
-     * @param xOffset 
+     * Swipe from point with offset and inertia according to duatio
+     * @param y
+     * @param x
+     * @param yOffset
+     * @param inertia
+     * @param xOffset
      */
     public async swipe(y: number, x: number, yOffset: number, inertia: number = 250, xOffset: number = 0) {
         let direction = 1;
@@ -359,7 +359,7 @@ export class AppiumDriver {
     /**
     * Click a point by providing coordinates
     * @param x
-    * @param y 
+    * @param y
     */
     public async clickPoint(xCoordinate: number, yCoordinate: number) {
         let action = new this._wd.TouchAction(this._driver);
@@ -390,7 +390,7 @@ export class AppiumDriver {
     }
 
     /**
-     * @param videoName 
+     * @param videoName
      * @param callback when to stop video recording. In order an element is found. Should return true to exit
      */
     public async recordVideo(videoName, callback: () => Promise<any>): Promise<any> {
@@ -403,7 +403,7 @@ export class AppiumDriver {
 
     private _recordVideoInfo;
     /**
-     * @param videoName 
+     * @param videoName
      */
     public startRecordingVideo(videoName) {
         if (!this._logPath) {
@@ -657,8 +657,8 @@ export class AppiumDriver {
 
     /**
     * Search for element by given xPath but does not throw error if can not find it. Instead returns 'undefined'.
-    * @param xPath 
-    * @param waitForElement 
+    * @param xPath
+    * @param waitForElement
     */
     public async findElementByXPathIfExists(xPath: string, waitForElement: number = this.defaultWaitTime) {
         const element = await this._driver.elementByXPathIfExists(xPath, waitForElement);
@@ -672,13 +672,28 @@ export class AppiumDriver {
 
     /**
     * Search for element by given text but does not throw error if can not find it. Instead returns 'undefined'.
-    * @param text 
-    * @param match 
-    * @param waitForElement 
+    * @param text
+    * @param match
+    * @param waitForElement
     */
     public async findElementByTextIfExists(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = this.defaultWaitTime) {
         const shouldMatch = match === SearchOptions.exact ? true : false;
         return await this.findElementByXPathIfExists(this._elementHelper.getXPathByText(text, shouldMatch), waitForElement);
+    }
+
+    /**
+    * Search for element by automationText but does not throw error if can not find it. Instead returns 'undefined'.
+    * @param id
+    * @param waitForElement
+    */
+    public async findElementByAccessibilityIdIfExists(id: string, waitForElement: number = this.defaultWaitTime) {
+        const element = await this._driver.elementByAccessibilityIdIfExists(id, waitForElement);
+        if (element) {
+          const searchMethod = "elementByAccessibilityIdIfExists";
+          return await new UIElement(element, this._driver, this._wd, this._webio, this._args, searchMethod, id);
+        } else {
+          return undefined;
+        }
     }
 
     public async setDontKeepActivities(value: boolean) {

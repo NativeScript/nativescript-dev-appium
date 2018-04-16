@@ -197,5 +197,11 @@ export declare class AppiumDriver {
     * @param waitForElement
     */
     findElementByTextIfExists(text: string, match?: SearchOptions, waitForElement?: number): Promise<UIElement>;
+    /**
+    * Search for element by automationText but does not throw error if can not find it. Instead returns 'undefined'.
+    * @param id
+    * @param waitForElement
+    */
+    findElementByAccessibilityIdIfExists(id: string, waitForElement?: number): Promise<UIElement>;
     setDontKeepActivities(value: boolean): Promise<void>;
 }
