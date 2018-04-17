@@ -115,9 +115,9 @@ export class DeviceManger implements IDeviceManager {
 
     public async uninstallApp(args: INsCapabilities): Promise<any> {
         if (args.isIOS) {
-            await IOSController.uninstallApp(args.device, args.appiumCaps.app);
+            await IOSController.uninstallApp(args.device, args.appiumCaps["bundleId"]);
         } else {
-            await Promise.resolve(AndroidController.uninstallApp(args.device, args.appiumCaps.app));
+            await Promise.resolve(AndroidController.uninstallApp(args.device, args.appiumCaps["appPackage"]));
         }
     }
 
