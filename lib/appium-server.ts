@@ -141,7 +141,7 @@ export class AppiumServer {
     }
 
     private async prepareApp() {
-        const appPackage = this._args.isAndroid ? "appActivity" : "bundleId";
+        const appPackage = this._args.isAndroid ? "appPackage" : "bundleId";
         const appFullPath = this._args.appiumCaps.app;
 
         if (appFullPath && !this._args.appiumCaps[appPackage]) {
@@ -150,8 +150,19 @@ export class AppiumServer {
             console.log(`Setting capabilities ${this._args.runType}{ "${appPackage}" : "${this._args.appiumCaps[appPackage]}" }!`);
         }
 
+        const appActivityProp = "appActivity";
+        if (this._args.isAndroid && appFullPath && !this._args.appiumCaps[appActivityProp]) {
+            console.log(`Trying to resolve automatically ${appActivityProp}!`);
+            this._args.appiumCaps[appActivityProp] = AndroidController.getLaunchableActivity(appFullPath);
+            console.log(`Setting capabilities ${this._args.runType}{ "${appActivityProp} : "${this._args.appiumCaps[appActivityProp]}" }!`);
+        }
+
         if (!this._args.appiumCaps[appPackage]) {
             throw new Error(`Please, provide ${appPackage} in ${this._args.appiumCapsLocation} file!`);
+        }
+
+        if (this._args.isAndroid && !this._args.appiumCaps[appActivityProp]) {
+            throw new Error(`Please, provide ${appActivityProp} in ${this._args.appiumCapsLocation} file!`);
         }
 
         const groupings = getRegexResultsAsArray(/(\w+)/gi, this._args.appiumCaps[appPackage]);
