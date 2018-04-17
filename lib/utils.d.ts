@@ -21,6 +21,7 @@ export declare function isWin(): boolean;
 export declare function getStorageByDeviceName(args: INsCapabilities): string;
 export declare function getStorageByPlatform(args: INsCapabilities): string;
 export declare function getReportPath(args: INsCapabilities): string;
+export declare const getRegexResultsAsArray: (regex: any, str: any) => any[];
 export declare function getAppPath(caps: INsCapabilities): any;
 export declare function calculateOffset(direction: any, y: number, yOffset: number, x: number, xOffset: number, isIOS: boolean, verbose: any): {
     point: Point;

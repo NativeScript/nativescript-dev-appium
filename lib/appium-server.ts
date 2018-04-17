@@ -7,7 +7,8 @@ import {
     fileExists,
     isWin,
     executeCommand,
-    findFreePort
+    findFreePort,
+    getRegexResultsAsArray
 } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
@@ -57,40 +58,9 @@ export class AppiumServer {
     }
 
     public async start(port, deviceManager: IDeviceManager = new DeviceManger()) {
-        this._deviceManager = deviceManager;
-        if (!this._args.device) {
-            const device = await this._deviceManager.startDevice(this._args);
-            this._args.device = device;
-        }
+        await this.prepareDevice(deviceManager);
+        await this.prepareApp();
 
-        if (this._args.devMode) {
-            const appPackage = this._args.isAndroid ? "appPackage" : "bundleId";
-            const appFullPath = this._args.appiumCaps.app;
-
-            if (appFullPath && !this._args.appiumCaps[appPackage]) {
-                console.log(`Trying to resolve automatically ${appPackage}!`);
-                this._args.appiumCaps[appPackage] = this._deviceManager.getPackageId(this._args.device, appFullPath);
-                console.log(`Setting capabilities ${this._args.runType}{ "${appPackage}" : "${this._args.appiumCaps[appPackage]}" }!`);
-            }
-
-            if (!this._args.appiumCaps[appPackage]) {
-                throw new Error(`In order to use reuse app functionality, please set ${appPackage} in ${this._args.appiumCapsLocation} file!`);
-            }
-
-            this._args.appiumCaps.app = "";
-        }
-
-        if (this._args.isAndroid && (!this._args.appiumCaps['appActivity'] || this._args.appiumCaps['appActivity'].trim() === "")) {
-            if (fileExists(this._args.appPath)) {
-                this._args.appiumCaps['appActivity'] = AndroidController.getLaunchableActivity(this._args.appPath);
-                console.log(`Setting capabilities ${this._args.runType}{ "appActivity" : "${this._args.appiumCaps['appActivity']}" }!`);
-            } else {
-                console.error(`No launchable activity found. You should set it here ${this._args.appiumCapsLocation} in runType: ${this._args.runType}!`);
-            }
-        }
-        if (!this._args.devMode) {
-            this._deviceManager.installApp(this._args);
-        }
         log("Starting server...", this._args.verbose);
         const logLevel = this._args.verbose === true ? "debug" : "info";
         this.port = port || this._args.port;
@@ -160,6 +130,39 @@ export class AppiumServer {
                 console.log(error);
             }
         });
+    }
+
+    private async prepareDevice(deviceManager: IDeviceManager) {
+        this._deviceManager = deviceManager;
+        if (!this._args.device) {
+            const device = await this._deviceManager.startDevice(this._args);
+            this._args.device = device;
+        }
+    }
+
+    private async prepareApp() {
+        const appPackage = this._args.isAndroid ? "appActivity" : "bundleId";
+        const appFullPath = this._args.appiumCaps.app;
+
+        if (appFullPath && !this._args.appiumCaps[appPackage]) {
+            console.log(`Trying to resolve automatically ${appPackage}!`);
+            this._args.appiumCaps[appPackage] = this._deviceManager.getPackageId(this._args.device, appFullPath);
+            console.log(`Setting capabilities ${this._args.runType}{ "${appPackage}" : "${this._args.appiumCaps[appPackage]}" }!`);
+        }
+
+        if (!this._args.appiumCaps[appPackage]) {
+            throw new Error(`Please, provide ${appPackage} in ${this._args.appiumCapsLocation} file!`);
+        }
+
+        const groupings = getRegexResultsAsArray(/(\w+)/gi, this._args.appiumCaps[appPackage]);
+        this._args.appName = groupings[groupings.length - 1];
+        console.log(`Setting application name as ${this._args.appName}`);
+        if (!this._args.devMode) {
+            await this._deviceManager.uninstallApp(this._args);
+        } else {
+            this._args.appiumCaps.app = "";
+        }
+
     }
 
     // Resolve appium dependency
