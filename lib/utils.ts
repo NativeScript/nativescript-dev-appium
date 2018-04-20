@@ -445,7 +445,7 @@ export const isPortAvailable = (port) => {
     });
 };
 
-export const findFreePort = async (retries: number = 10, port: number = 3000, args: INsCapabilities) => {
+export const findFreePort = async (retries: number = 10, port: number = 3000) => {
     let p: number = port;
 
     while (!(await isPortAvailable(p)) && retries > 0) {

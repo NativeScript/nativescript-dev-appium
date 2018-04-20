@@ -194,7 +194,7 @@ export class AppiumDriver {
                 console.log(error);
                 console.log("Rety launching appium driver!");
                 if (error && error.message && error.message.includes("WebDriverAgent")) {
-                    let freePort = await findFreePort(100, args.appiumCaps.port, args);
+                    const freePort = await findFreePort(100, args.wdaLocalPort);
                     console.log("args.appiumCaps['wdaLocalPort']", freePort);
                     args.appiumCaps["wdaLocalPort"] = freePort;
                 }

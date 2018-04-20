@@ -63,7 +63,7 @@ export class AppiumServer {
 
         log("Starting server...", this._args.verbose);
         const logLevel = this._args.verbose === true ? "debug" : "info";
-        this.port = port || this._args.port;
+        this.port = this._args.port || port;
         let retry = false;
 
         this.startAppiumServer(logLevel);
@@ -74,7 +74,7 @@ export class AppiumServer {
         while (retries > 0 && !response) {
             retries--;
             this.port += 10;
-            this.port = (await findFreePort(100, this.port, this._args));
+            this.port = (await findFreePort(100, this.port));
 
             this.startAppiumServer(logLevel);
             response = await waitForOutput(this._server, /listener started/, /Error: listen/, 60000, true);

@@ -10,8 +10,8 @@ const config = (() => {
         .option("testFolder", { describe: "e2e test folder name", default: "e2e", type: "string" })
         .option("appiumCapsLocation", { describe: "Capabilities", type: "string" })
         .option("sauceLab", { describe: "SauceLab", default: false, type: "boolean" })
-        .option("port", { alias: "p", describe: "Appium port", type: "string" })
-        .option("wdaLocalPort", { alias: "p", describe: "WDA port", type: "string" })
+        .option("port", { alias: "p", describe: "Appium port", default: 8300, type: "number" })
+        .option("wdaLocalPort", { alias: "wda", describe: "WDA port", default: 8410, type: "number" })
         .option("verbose", { alias: "v", describe: "Log actions", type: "boolean" })
         .option("path", { describe: "path", default: process.cwd(), type: "string" })
         .option("appPath", { describe: "application path", type: "string" })
@@ -20,13 +20,6 @@ const config = (() => {
         .option("reuseDevice", { describe: "Reusing device if available.", type: "boolean", default: false })
         .option("devMode", { alias: "dev-mode", describe: "Will skipp app instalation and will reuse the one installed on device!", type: "boolean", default: false })
         .option("ignoreDeviceController", { alias: "i-ns-device-controller", describe: "Use default appium options for running emulatos/ simulators.", type: "boolean", default: false })
-        .option("useDeviceControllerServer", {
-            alias: "use-ns-device-controller-server",
-            describe: "Use server to boot, kill, subscribe or unsubscribe for devices. Also this flag could be specified in as an evn variable",
-            type: "boolean",
-            default: false
-        })
-        .option("deviceControllerServerPort", { describe: "Reusing device if available.", type: "boolean", default: false })
         .help()
         .argv;
 
