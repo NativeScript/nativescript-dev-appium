@@ -4,24 +4,27 @@
 
 ### Bug Fixes
 
-* check if storage is 'undefined' ([#99](https://github.com/NativeScript/nativescript-dev-appium/issues/99)) ([e2ca7cf](https://github.com/NativeScript/nativescript-dev-appium/commit/e2ca7cf))
-* get package and activity ([#109](https://github.com/NativeScript/nativescript-dev-appium/issues/109)) ([7497cd0](https://github.com/NativeScript/nativescript-dev-appium/commit/7497cd0))
-* resolve app path ([#97](https://github.com/NativeScript/nativescript-dev-appium/issues/97)) ([51446b1](https://github.com/NativeScript/nativescript-dev-appium/commit/51446b1))
 * **device-controller:** unintsall app ([#114](https://github.com/NativeScript/nativescript-dev-appium/issues/114)) ([53e615d](https://github.com/NativeScript/nativescript-dev-appium/commit/53e615d))
 * **package.json:** Move TypeScript types dependencies to devDependencies ([#101](https://github.com/NativeScript/nativescript-dev-appium/issues/101)) ([5cc8dd3](https://github.com/NativeScript/nativescript-dev-appium/commit/5cc8dd3))
 * **postinstall:** install [@types](https://github.com/types) to project's devDependencies ([#103](https://github.com/NativeScript/nativescript-dev-appium/issues/103)) ([637d153](https://github.com/NativeScript/nativescript-dev-appium/commit/637d153))
+* resolve application path. Already compatible with nativescript@4.0.0  ([#97](https://github.com/NativeScript/nativescript-dev-appium/issues/97)) ([51446b1](https://github.com/NativeScript/nativescript-dev-appium/commit/51446b1))
 
 
 ### Features
 
-* **test animations and transitions:**  ([#96](https://github.com/NativeScript/nativescript-dev-appium/issues/96)) ([ac00ec048a948f787a9ae6ef077a5fea476dc479](https://github.com/NativeScript/nativescript-dev-appium/commit/ac00ec048a948f787a9ae6ef077a5fea476dc479))
-* **devMode:** skip instalation of application. Very convinietn to use while writing tests
+* **frame-comparer:** test animations and transitions:  ([#96](https://github.com/NativeScript/nativescript-dev-appium/issues/96)) ([ac00ec048a948f787a9ae6ef077a5fea476dc479](https://github.com/NativeScript/nativescript-dev-appium/commit/ac00ec048a948f787a9ae6ef077a5fea476dc479))
 * **android:** add "Don't keep activities" functionality ([#94](https://github.com/NativeScript/nativescript-dev-appium/issues/94)) ([21ecadc](https://github.com/NativeScript/nativescript-dev-appium/commit/21ecadc))
 * **AppiumDriver:** add findElementByAccessibilityIdIfExists ([#110](https://github.com/NativeScript/nativescript-dev-appium/issues/110)) ([38ec681](https://github.com/NativeScript/nativescript-dev-appium/commit/38ec681))
+* resolve automatically application package(android), activity(android) and bundleId(iOS) ([#109](https://github.com/NativeScript/nativescript-dev-appium/issues/109)) ([7497cd0](https://github.com/NativeScript/nativescript-dev-appium/commit/7497cd0))
+* devMode option to skip instalation of application
+* findElementByAccessibilityIdIfExists
+* expose get storages for resources and reports
+
 
 ### BREAKING CHANGES
 
 * Resolve application name using appPackage(android) or bundleId(iOS). 
+
 
 <a name="3.1.0"></a>
 # [3.1.0](https://github.com/NativeScript/nativescript-dev-appium/compare/3.0.0...3.1.0) (2017-11-22)
