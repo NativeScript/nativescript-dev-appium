@@ -15,6 +15,7 @@
 * **frame-comparer:** test animations and transitions:  ([#96](https://github.com/NativeScript/nativescript-dev-appium/issues/96)) ([ac00ec048a948f787a9ae6ef077a5fea476dc479](https://github.com/NativeScript/nativescript-dev-appium/commit/ac00ec048a948f787a9ae6ef077a5fea476dc479))
 * **android:** add "Don't keep activities" functionality ([#94](https://github.com/NativeScript/nativescript-dev-appium/issues/94)) ([21ecadc](https://github.com/NativeScript/nativescript-dev-appium/commit/21ecadc))
 * **AppiumDriver:** add findElementByAccessibilityIdIfExists ([#110](https://github.com/NativeScript/nativescript-dev-appium/issues/110)) ([38ec681](https://github.com/NativeScript/nativescript-dev-appium/commit/38ec681))
+* **AppiumDriver:** tap on point 
 * resolve automatically application package(android), activity(android) and bundleId(iOS) ([#109](https://github.com/NativeScript/nativescript-dev-appium/issues/109)) ([7497cd0](https://github.com/NativeScript/nativescript-dev-appium/commit/7497cd0))
 * devMode option to skip instalation of application
 * findElementByAccessibilityIdIfExists
@@ -23,7 +24,7 @@
 
 ### BREAKING CHANGES
 
-* Resolve application name using appPackage(android) or bundleId(iOS). 
+* Resolve application name using appPackage(android) or bundleId(iOS).
 
 
 <a name="3.1.0"></a>
