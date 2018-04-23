@@ -19,7 +19,7 @@
 * resolve automatically application package(android), activity(android) and bundleId(iOS) ([#109](https://github.com/NativeScript/nativescript-dev-appium/issues/109)) ([7497cd0](https://github.com/NativeScript/nativescript-dev-appium/commit/7497cd0))
 * devMode option to skip instalation of application
 * findElementByAccessibilityIdIfExists
-* expose get storages for resources and reports
+* expose get reportsPath/ storageByDeviceName/ storageByPlatform
 
 
 ### BREAKING CHANGES
