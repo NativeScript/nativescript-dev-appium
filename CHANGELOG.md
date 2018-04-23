@@ -24,7 +24,20 @@
 
 ### BREAKING CHANGES
 
-* Resolve application name using appPackage(android) or bundleId(iOS).
+* Resolve application name using appPackage(android) or bundleId(iOS). This change results in the resources/reports folder. 
+
+Before:
+```
+application name -> app-release.apk/ app-debug.apk/ app.app/ app.ipa 
+Folder structure -> resources(reports)/app/<device name> 
+```
+
+After:
+```
+application name -> app-release.apk/ app-debug.apk/ app.app/ app.ipa and an appPackage name or a bundleId -> org.nativesscript.testapplication 
+Folder structure -> resources(reports)/testapplication/<device name> 
+```
+
 
 
 <a name="3.1.0"></a>
