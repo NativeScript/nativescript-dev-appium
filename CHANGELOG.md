@@ -20,6 +20,7 @@
 * devMode option to skip instalation of application
 * findElementByAccessibilityIdIfExists
 * expose get reportsPath/ storageByDeviceName/ storageByPlatform
+* **android:** resolve automatically application start activity.
 
 
 ### BREAKING CHANGES
