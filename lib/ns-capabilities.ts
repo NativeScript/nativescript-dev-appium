@@ -88,10 +88,12 @@ export class NsCapabilities implements INsCapabilities {
     private isAndroidPlatform() { return this._appiumCaps.platformName.toLowerCase().includes("android"); }
 
     private resolveApplication() {
-        this._appiumCaps.app = this.isSauceLab ? `sauce-storage:${this.appPath}` : getAppPath(this);
         if (this.isSauceLab) {
+            this._appiumCaps.app = `sauce-storage:${this.appPath}`
+            this._ignoreDeviceController = true;
             console.log("Using Sauce Labs. The application path is changed to: " + this.appPath);
         } else {
+            this.appiumCaps.app = getAppPath(this);
             this._appPath = this._appiumCaps.app;
             console.log("Application full path: " + this._appiumCaps.app);
         }

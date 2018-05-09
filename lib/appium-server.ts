@@ -144,36 +144,37 @@ export class AppiumServer {
         const appPackage = this._args.isAndroid ? "appPackage" : "bundleId";
         const appFullPath = this._args.appiumCaps.app;
 
-        if (appFullPath && !this._args.appiumCaps[appPackage]) {
-            console.log(`Trying to resolve automatically ${appPackage}!`);
-            this._args.appiumCaps[appPackage] = this._deviceManager.getPackageId(this._args.device, appFullPath);
-            console.log(`Setting capabilities ${this._args.runType}{ "${appPackage}" : "${this._args.appiumCaps[appPackage]}" }!`);
-        }
+        if (!this._args.ignoreDeviceController) {
+            if (appFullPath && !this._args.appiumCaps[appPackage]) {
+                console.log(`Trying to resolve automatically ${appPackage}!`);
+                this._args.appiumCaps[appPackage] = this._deviceManager.getPackageId(this._args.device, appFullPath);
+                console.log(`Setting capabilities ${this._args.runType}{ "${appPackage}" : "${this._args.appiumCaps[appPackage]}" }!`);
+            }
 
-        const appActivityProp = "appActivity";
-        if (this._args.isAndroid && appFullPath && !this._args.appiumCaps[appActivityProp]) {
-            console.log(`Trying to resolve automatically ${appActivityProp}!`);
-            this._args.appiumCaps[appActivityProp] = AndroidController.getLaunchableActivity(appFullPath);
-            console.log(`Setting capabilities ${this._args.runType}{ "${appActivityProp} : "${this._args.appiumCaps[appActivityProp]}" }!`);
-        }
+            const appActivityProp = "appActivity";
+            if (this._args.isAndroid && appFullPath && !this._args.appiumCaps[appActivityProp]) {
+                console.log(`Trying to resolve automatically ${appActivityProp}!`);
+                this._args.appiumCaps[appActivityProp] = AndroidController.getLaunchableActivity(appFullPath);
+                console.log(`Setting capabilities ${this._args.runType}{ "${appActivityProp} : "${this._args.appiumCaps[appActivityProp]}" }!`);
+            }
 
-        if (!this._args.appiumCaps[appPackage]) {
-            throw new Error(`Please, provide ${appPackage} in ${this._args.appiumCapsLocation} file!`);
-        }
+            if (!this._args.appiumCaps[appPackage]) {
+                throw new Error(`Please, provide ${appPackage} in ${this._args.appiumCapsLocation} file!`);
+            }
 
-        if (this._args.isAndroid && !this._args.appiumCaps[appActivityProp]) {
-            throw new Error(`Please, provide ${appActivityProp} in ${this._args.appiumCapsLocation} file!`);
-        }
+            if (this._args.isAndroid && !this._args.appiumCaps[appActivityProp]) {
+                throw new Error(`Please, provide ${appActivityProp} in ${this._args.appiumCapsLocation} file!`);
+            }
 
-        const groupings = getRegexResultsAsArray(/(\w+)/gi, this._args.appiumCaps[appPackage]);
-        this._args.appName = groupings[groupings.length - 1];
-        console.log(`Setting application name as ${this._args.appName}`);
-        if (!this._args.devMode && !this._args.isSauceLab) {
-            await this._deviceManager.uninstallApp(this._args);
-        } else {
-            this._args.appiumCaps.app = "";
+            const groupings = getRegexResultsAsArray(/(\w+)/gi, this._args.appiumCaps[appPackage]);
+            this._args.appName = groupings[groupings.length - 1];
+            console.log(`Setting application name as ${this._args.appName}`);
+            if (!this._args.devMode && !this._args.ignoreDeviceController) {
+                await this._deviceManager.uninstallApp(this._args);
+            } else {
+                this._args.appiumCaps.app = "";
+            }
         }
-
     }
 
     // Resolve appium dependency
