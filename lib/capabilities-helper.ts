@@ -56,7 +56,7 @@ const sreachCapabilitiesByFolder = (location) => {
 
 const seCapabilities = appiumCapabilitiesLocation => {
     const file = readFileSync(appiumCapabilitiesLocation);
-    process.env.APPIUM_CAPABILITIES = file;
+    process.env.APPIUM_CAPABILITIES = file.toString();
     utils.log("Capabilities found at: " + appiumCapabilitiesLocation, true);
     return file;
 }

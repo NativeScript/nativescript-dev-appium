@@ -166,9 +166,6 @@ export class AppiumDriver {
             }
 
             driverConfig = "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub";
-
-            args.appiumCaps.app = "sauce-storage:" + args.appPath;
-            console.log("Using Sauce Labs. The application path is changed to: " + args.appPath);
         }
 
         log("Creating driver!", args.verbose);
@@ -178,7 +175,6 @@ export class AppiumDriver {
         const _webio = webdriverio.remote({
             baseUrl: driverConfig.host,
             port: driverConfig.port,
-            logLevel: 'warn',
             desiredCapabilities: args.appiumCaps
         });
 
