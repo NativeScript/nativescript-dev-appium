@@ -31,6 +31,7 @@ export class DeviceManger implements IDeviceManager {
         args.appiumCaps.platformName = args.appiumCaps.platformName.toLowerCase();
         let device: IDevice = DeviceManger.getDefaultDevice(args);
         if (process.env["DEVICE_TOKEN"]) {
+            args.ignoreDeviceController = true;
             device.token = process.env["DEVICE_TOKEN"];
             const allDevices = await DeviceController.getDevices({ platform: device.platform });
             const foundDevice = DeviceController.filter(allDevices, { token: device.token.replace("emulator-", "") })[0];
@@ -93,9 +94,7 @@ export class DeviceManger implements IDeviceManager {
     }
 
     public async stopDevice(args: INsCapabilities): Promise<any> {
-        if (process.env["DEVICE_TOKEN"]) {
-            return;
-        } else if (DeviceManger._emulators.has(args.runType)
+        if (DeviceManger._emulators.has(args.runType)
             && !args.reuseDevice
             && !args.isSauceLab
             && !args.ignoreDeviceController) {
