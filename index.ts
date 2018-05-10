@@ -25,16 +25,20 @@ const appiumServer = new AppiumServer(nsCapabilities);
 let frameComparer: FrameComparer;
 let appiumDriver = null;
 
-const signals = ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
-    'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'];
-
-export async function startServer(port?: number, deviceManager?: IDeviceManager) {
-    await appiumServer.start(port || 8300, deviceManager);
+const attachToExitProcessHoockup = (processToExitFrom, processName ) => {
+    const signals = ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
+        'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'];
     signals.forEach(function (sig) {
-        process.once(<any>sig, async function () {
+        processToExitFrom.once(sig, async function () {
             await killProcesses(sig);
+            console.log(`Exited from ${processName}`);
+            processToExitFrom.removeListener(sig, killProcesses);
         });
     });
+}
+export async function startServer(port?: number, deviceManager?: IDeviceManager) {
+    await appiumServer.start(port || 8300, deviceManager);
+    await attachToExitProcessHoockup(appiumServer.server, "appium");
 }
 
 export async function stopServer() {
@@ -94,9 +98,4 @@ const killProcesses = async (code) => {
 
 process.once("exit", async (code) => await killProcesses(code));
 
-// catching signals and do something before exit
-signals.forEach(function (sig) {
-    process.on(<any>sig, async function () {
-        await killProcesses(sig);
-    });
-});
+attachToExitProcessHoockup(process,"main process");
