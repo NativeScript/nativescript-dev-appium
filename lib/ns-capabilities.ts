@@ -81,7 +81,6 @@ export class NsCapabilities implements INsCapabilities {
     set appName(appName: string) { this._appName = appName; }
     get ignoreDeviceController() { return this._ignoreDeviceController; }
     get wdaLocalPort() { return this._wdaLocalPort; }
-    set appPath(appPath: string) { this._appPath = appPath; }
     get device() { return this._device; }
     set device(device: IDevice) { this._device = device; }
     get emulatorOptions() { return (this._emulatorOptions || "-wipe-data -gpu on") }
@@ -89,9 +88,15 @@ export class NsCapabilities implements INsCapabilities {
     private isAndroidPlatform() { return this._appiumCaps.platformName.toLowerCase().includes("android"); }
 
     private resolveApplication() {
-        this._appiumCaps.app = getAppPath(this);
-        this.appPath = this._appiumCaps.app;
-        console.log("Application full path: " + this._appiumCaps.app);
+        if (this.isSauceLab) {
+            this._appiumCaps.app = `sauce-storage:${this.appPath}`
+            this._ignoreDeviceController = true;
+            console.log("Using Sauce Labs. The application path is changed to: " + this.appPath);
+        } else {
+            this.appiumCaps.app = getAppPath(this);
+            this._appPath = this._appiumCaps.app;
+            console.log("Application full path: " + this._appiumCaps.app);
+        }
     }
 
     private checkMandatoryCapabiliies() {
