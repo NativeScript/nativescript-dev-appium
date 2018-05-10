@@ -170,7 +170,7 @@ export class AppiumDriver {
 
         log("Creating driver!", args.verbose);
 
-        args.appiumCaps['udid'] = args.appiumCaps['udid'] || (args.device.type === DeviceType.EMULATOR && !args.device.token.startsWith("emulator")) ?  `emulator-${args.device.token}` : args.device.token;
+        args.appiumCaps['udid'] = args.appiumCaps['udid'] || (args.device.type === DeviceType.EMULATOR && !args.device.token.startsWith("emulator")) ? `emulator-${args.device.token}` : args.device.token;
         await AppiumDriver.applyAdditionalSettings(args);
         const _webio = webdriverio.remote({
             baseUrl: driverConfig.host,
@@ -581,6 +581,10 @@ export class AppiumDriver {
             if (args.appiumCaps.platformVersion >= 10 && args.wdaLocalPort) {
                 console.log(`args.appiumCaps['wdaLocalPort']: ${args.wdaLocalPort}`);
                 args.appiumCaps["wdaLocalPort"] = args.wdaLocalPort;
+            }
+        } else {
+            if (process.env["SYSTEM_PORT"]) {
+                args.appiumCaps['systemPort'] = process.env["SYSTEM_PORT"];
             }
         }
     }

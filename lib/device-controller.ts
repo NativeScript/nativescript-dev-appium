@@ -33,6 +33,7 @@ export class DeviceManger implements IDeviceManager {
         if (process.env["DEVICE_TOKEN"]) {
             args.ignoreDeviceController = true;
             device.token = process.env["DEVICE_TOKEN"];
+            device.name = process.env["DEVICE_NAME"] || device.name;
             const allDevices = await DeviceController.getDevices({ platform: device.platform });
             const foundDevice = DeviceController.filter(allDevices, { token: device.token.replace("emulator-", "") })[0];
             console.log("Device: ", foundDevice);
