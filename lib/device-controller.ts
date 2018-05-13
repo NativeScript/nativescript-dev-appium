@@ -31,7 +31,6 @@ export class DeviceManger implements IDeviceManager {
         args.appiumCaps.platformName = args.appiumCaps.platformName.toLowerCase();
         let device: IDevice = DeviceManger.getDefaultDevice(args);
         if (process.env["DEVICE_TOKEN"]) {
-            args.ignoreDeviceController = true;
             device.token = process.env["DEVICE_TOKEN"];
             device.name = process.env["DEVICE_NAME"] || device.name;
             const allDevices = await DeviceController.getDevices({ platform: device.platform });
@@ -42,6 +41,7 @@ export class DeviceManger implements IDeviceManager {
 
         // When isSauceLab specified we simply do nothing;
         if (args.isSauceLab || args.ignoreDeviceController) {
+            args.ignoreDeviceController = true;            
             DeviceManger._emulators.set(args.runType, device);
             return device;
         }
