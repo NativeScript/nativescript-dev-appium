@@ -80,6 +80,7 @@ export class NsCapabilities implements INsCapabilities {
     get appName() { return this._appName; }
     set appName(appName: string) { this._appName = appName; }
     get ignoreDeviceController() { return this._ignoreDeviceController; }
+    set ignoreDeviceController(ignoreDeviceController: boolean) { this._ignoreDeviceController = ignoreDeviceController; }
     get wdaLocalPort() { return this._wdaLocalPort; }
     get device() { return this._device; }
     set device(device: IDevice) { this._device = device; }
