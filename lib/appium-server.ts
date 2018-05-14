@@ -175,6 +175,11 @@ export class AppiumServer {
                 this._args.appiumCaps.app = "";
             }
         }
+
+        if (this._args.appiumCaps[appPackage]) {
+            const groupings = getRegexResultsAsArray(/(\w+)/gi, this._args.appiumCaps[appPackage]);
+            this._args.appName = groupings[groupings.length - 1];
+        }
     }
 
     // Resolve appium dependency
