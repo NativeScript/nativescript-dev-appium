@@ -225,13 +225,24 @@ export class UIElement {
 
         const endPoint = calculateOffset(direction, y, yOffset, x, xOffset, this._webio.isIOS, false);
 
-        let action = new this._wd.TouchAction(this._driver);
-        action
-            .press({ x: x, y: y })
-            .wait(endPoint.duration)
-            .moveTo({ x: endPoint.point.x, y: endPoint.point.y })
-            .release();
-        await action.perform();
+        if (this._args.isAndroid) {
+            let action = new this._wd.TouchAction(this._driver);
+            action
+                .longPress({ x: x, y: y })
+                .wait(endPoint.duration)
+                .moveTo({ x: yOffset, y: yOffset })
+                .release();
+            await action.perform();
+        } else {
+            await this._wd.execute(`mobile: dragFromToForDuration`, {
+                duration: endPoint.duration,
+                fromX: x,
+                fromY: y,
+                toX: xOffset,
+                toY: yOffset
+            });
+        }
+
         await this._driver.sleep(150);
     }
 
