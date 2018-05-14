@@ -128,6 +128,8 @@ export class DeviceManger implements IDeviceManager {
     private static getDefaultDevice(args) {
         let device = new Device(args.appiumCaps.deviceName, args.appiumCaps.platformVersion, undefined, args.appiumCaps.platformName.toLowerCase(), undefined, undefined);
         device.config = { "density": args.appiumCaps.density, "offsetPixels": args.appiumCaps.offsetPixels };
+        delete args.appiumCaps.density;
+        delete args.appiumCaps.offsetPixels;
         return device;
     }
 

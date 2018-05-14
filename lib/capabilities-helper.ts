@@ -9,13 +9,13 @@ export function resolveCapabilities(capsLocation: string, runType: string, proje
     const customCapabilitiesConfigs = searchCapabilities(capsLocation, projectDir, verbose);;
 
     if (customCapabilitiesConfigs) {
-        const customCapabilities = JSON.parse(customCapabilitiesConfigs + "");
+        const customCapabilities = JSON.parse(customCapabilitiesConfigs.toString());
         utils.log(customCapabilities, verbose);
 
         caps = customCapabilities[runType];
-        if (!caps) {
-        }
-    } else {
+    } 
+    
+    if (!customCapabilitiesConfigs || !caps) {
         throw new Error("No capabilities found!!!");
     }
 
