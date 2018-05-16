@@ -171,7 +171,7 @@ export class AppiumDriver {
         log("Creating driver!", args.verbose);
 
         await AppiumDriver.applyAdditionalSettings(args);
-        const _webio = webdriverio.remote({
+        const webio = webdriverio.remote({
             baseUrl: driverConfig.host,
             port: driverConfig.port,
             desiredCapabilities: args.appiumCaps
@@ -201,7 +201,7 @@ export class AppiumDriver {
             retries--;
         }
 
-        return new AppiumDriver(driver, wd, undefined, driverConfig, args);
+        return new AppiumDriver(driver, wd, webio, driverConfig, args);
     }
 
     /**
