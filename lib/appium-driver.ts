@@ -158,8 +158,8 @@ export class AppiumDriver {
         };
 
         if (args.isSauceLab) {
-            const sauceUser = process.env.SAUCE_USER;
-            const sauceKey = process.env.SAUCE_KEY;
+            const sauceUser = process.env.SAUCE_USER || process.env.npm_config["SAUCE_USER"];
+            const sauceKey = process.env.SAUCE_KEY || process.env.npm_config["SAUCE_KEY"];
 
             if (!sauceKey || !sauceUser) {
                 throw new Error("Sauce Labs Username or Access Key is missing! Check environment variables for SAUCE_USER and SAUCE_KEY !!!");
@@ -170,7 +170,6 @@ export class AppiumDriver {
 
         log("Creating driver!", args.verbose);
 
-        args.appiumCaps['udid'] = args.appiumCaps['udid'] || (args.device.type === DeviceType.EMULATOR && !args.device.token.startsWith("emulator")) ? `emulator-${args.device.token}` : args.device.token;
         await AppiumDriver.applyAdditionalSettings(args);
         const _webio = webdriverio.remote({
             baseUrl: driverConfig.host,
@@ -202,7 +201,7 @@ export class AppiumDriver {
             retries--;
         }
 
-        return new AppiumDriver(driver, wd, _webio, driverConfig, args);
+        return new AppiumDriver(driver, wd, undefined, driverConfig, args);
     }
 
     /**
@@ -572,6 +571,14 @@ export class AppiumDriver {
     }
 
     private static async applyAdditionalSettings(args) {
+        if (args.isSauceLab) return;
+
+
+        args.appiumCaps['udid'] = args.appiumCaps['udid'] || (args.device.type === DeviceType.EMULATOR && !args.device.token.startsWith("emulator")) ? `emulator-${args.device.token}` : args.device.token;
+        if (!args.appiumCaps['udid']) {
+            delete args.appiumCaps['udid'];
+        }
+
         if (args.appiumCaps.platformName.toLowerCase() === Platform.IOS) {
             args.appiumCaps["useNewWDA"] = false;
             args.appiumCaps["wdaStartupRetries"] = 5;

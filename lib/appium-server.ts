@@ -66,7 +66,7 @@ export class AppiumServer {
         this.port = this._args.port || port;
         let retry = false;
 
-        this.startAppiumServer(logLevel);
+        this.startAppiumServer(logLevel, this._args.isSauceLab);
 
         let response = await waitForOutput(this._server, /listener started/, /Error: listen/, 60000, this._args.verbose);
 
@@ -76,15 +76,16 @@ export class AppiumServer {
             this.port += 10;
             this.port = (await findFreePort(100, this.port));
 
-            this.startAppiumServer(logLevel);
+            this.startAppiumServer(logLevel, this._args.isSauceLab);
             response = await waitForOutput(this._server, /listener started/, /Error: listen/, 60000, true);
         }
 
         return response;
     }
 
-    private startAppiumServer(logLevel) {
-        this._server = child_process.spawn(this._appium, ["-p", this.port.toString(), "--log-level", logLevel], {
+    private startAppiumServer(logLevel: string, isSauceLab: boolean) {
+        const startingServerArgs = isSauceLab ? [ "--log-level", logLevel] : ["-p", this.port.toString(), "--log-level", logLevel];
+        this._server = child_process.spawn(this._appium, startingServerArgs, {
             shell: true,
             detached: false
         });
