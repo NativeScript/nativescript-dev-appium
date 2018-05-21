@@ -573,8 +573,11 @@ export class AppiumDriver {
     private static async applyAdditionalSettings(args) {
         if (args.isSauceLab) return;
 
+        args.appiumCaps['udid'] = args.appiumCaps['udid'] || args.device.token;
+        if (args.device.type === DeviceType.EMULATOR && args.device.token) {
+            args.appiumCaps['udid'] = args.device.token.startsWith("emulator") ? args.device.token : `emulator-${args.device.token}`;
+        }
 
-        args.appiumCaps['udid'] = args.appiumCaps['udid'] || (args.device.type === DeviceType.EMULATOR && !args.device.token.startsWith("emulator")) ? `emulator-${args.device.token}` : args.device.token;
         if (!args.appiumCaps['udid']) {
             delete args.appiumCaps['udid'];
         }
