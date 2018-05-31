@@ -120,7 +120,7 @@ export class NsCapabilities implements INsCapabilities {
 
     tryGetAndroidApiLevel() {
         try {
-            return parseInt(this.appiumCaps["platformVersion"]);
+            return parseFloat(this.appiumCaps["platformVersion"]);
         } catch (error) {
         }
     }
