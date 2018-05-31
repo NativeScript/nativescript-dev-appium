@@ -1,5 +1,11 @@
 import { IDevice } from "mobile-devices-controller";
 
+export enum AutomationName {
+    UiAutomator2 = "UiAutomator2",
+    Appium = "Appium",
+    XCUITest = "XCUITest",
+}
+
 export interface INsCapabilities {
     projectDir: string;
     projectBinary: string;
@@ -25,4 +31,5 @@ export interface INsCapabilities {
     ignoreDeviceController: boolean;
     wdaLocalPort: number;
     path: string;
+    automationName: AutomationName;
 }

@@ -1,6 +1,6 @@
 import { Point } from "./point";
 import { Direction } from "./direction";
-import { INsCapabilities } from "./interfaces/ns-capabilities";
+import { INsCapabilities, AutomationName } from "./interfaces/ns-capabilities";
 import { IRectangle } from "./interfaces/rectangle";
 import { calculateOffset } from "./utils";
 
@@ -23,10 +23,28 @@ export class UIElement {
     }
 
     /**
+    * Click a point by providing coordinates
+    * @param x
+    * @param y
+    */
+    public async tapCenter() {
+        let action = new this._wd.TouchAction(this._driver);
+        const rect = await this.getActualRectangle();
+        action
+            .tap({ x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 });
+        await action.perform();
+        await this._driver.sleep(150);
+    }
+
+    /**
      * Tap on element
      */
     public async tap() {
-        return await (await this.element()).tap();
+        if (this._args.automationName == AutomationName.UiAutomator2) {
+            return await this.tapCenter();
+        } else {
+            return await (await this.element()).tap();
+        }
     }
 
     /**
