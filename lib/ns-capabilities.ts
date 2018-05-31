@@ -101,7 +101,7 @@ export class NsCapabilities implements INsCapabilities {
                 case AutomationName.XCUITest.toString():
                     this._automationName = AutomationName.XCUITest; break;
             }
-        }else{
+        } else {
             if (this._isAndroid) {
                 if (this.tryGetAndroidApiLevel() > 24 || (this.appiumCaps["apiLevel"] && this.appiumCaps["apiLevel"].toLowerCase().includes("p"))) {
                     this._automationName = AutomationName.UiAutomator2;
@@ -109,9 +109,13 @@ export class NsCapabilities implements INsCapabilities {
             }
         }
 
-        this.appiumCaps["automationName"] = this._automationName.toString();
-        console.log(`Automation name set to: ${this.appiumCaps["automationName"]}`);
-        console.log(`To change automation name you need to set it in appium capabilities!`);
+        if (this._automationName) {
+            this.appiumCaps["automationName"] = this._automationName.toString();
+            console.log(`Automation name set to: ${this.appiumCaps["automationName"]}`);
+            console.log(`To change automation name, you need to set it in appium capabilities!`);
+        } else {
+            console.log(`Appium will use default automation name`);
+        }
     }
 
     tryGetAndroidApiLevel() {
