@@ -1,5 +1,5 @@
 import * as parser from "./parser"
-import { INsCapabilities } from "./interfaces/ns-capabilities";
+import { INsCapabilities, AutomationName } from "./interfaces/ns-capabilities";
 import { resolveCapabilities } from "./capabilities-helper";
 import { getAppPath, fileExists, logErr } from "./utils";
 import { IDevice } from "mobile-devices-controller";
@@ -26,6 +26,7 @@ export class NsCapabilities implements INsCapabilities {
     private _appPath: string;
     private _path: string;
     private _emulatorOptions: string;
+    private _automationName: AutomationName;
     private _device: IDevice;
     private _ignoreDeviceController: boolean;
     private _wdaLocalPort: number;
@@ -53,6 +54,7 @@ export class NsCapabilities implements INsCapabilities {
         this._ignoreDeviceController = parser.ignoreDeviceController;
         this._wdaLocalPort = parser.wdaLocalPort;
         this._path = parser.path;
+        this.setAutomationName();
         this.resolveApplication();
         this.checkMandatoryCapabiliies();
         this.throwExceptions();
@@ -76,6 +78,7 @@ export class NsCapabilities implements INsCapabilities {
     get isAndroid() { return this._isAndroid; }
     get isIOS() { return this._isIOS; }
     get isSauceLab() { return this._isSauceLab; }
+    get automationName() { return this._automationName; }
     get appPath() { return this._appPath; }
     get appName() { return this._appName; }
     set appName(appName: string) { this._appName = appName; }
@@ -87,6 +90,36 @@ export class NsCapabilities implements INsCapabilities {
     get emulatorOptions() { return (this._emulatorOptions || "-wipe-data -gpu on") }
 
     private isAndroidPlatform() { return this._appiumCaps.platformName.toLowerCase().includes("android"); }
+
+    private setAutomationName() {
+        if (this.appiumCaps["automationName"]) {
+            switch (this.appiumCaps["automationName"]) {
+                case AutomationName.UiAutomator2.toString():
+                    this._automationName = AutomationName.UiAutomator2; break;
+                case AutomationName.Appium.toString():
+                    this._automationName = AutomationName.Appium; break;
+                case AutomationName.XCUITest.toString():
+                    this._automationName = AutomationName.XCUITest; break;
+            }
+        }else{
+            if (this._isAndroid) {
+                if (this.tryGetAndroidApiLevel() > 24 || (this.appiumCaps["apiLevel"] && this.appiumCaps["apiLevel"].toLowerCase().includes("p"))) {
+                    this._automationName = AutomationName.UiAutomator2;
+                }
+            }
+        }
+
+        this.appiumCaps["automationName"] = this._automationName.toString();
+        console.log(`Automation name set to: ${this.appiumCaps["automationName"]}`);
+        console.log(`To change automation name you need to set it in appium capabilities!`);
+    }
+
+    tryGetAndroidApiLevel() {
+        try {
+            return parseInt(this.appiumCaps["platformVersion"]);
+        } catch (error) {
+        }
+    }
 
     private resolveApplication() {
         if (this.isSauceLab) {

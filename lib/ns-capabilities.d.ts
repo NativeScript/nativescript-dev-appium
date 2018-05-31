@@ -1,4 +1,4 @@
-import { INsCapabilities } from "./interfaces/ns-capabilities";
+import { INsCapabilities, AutomationName } from "./interfaces/ns-capabilities";
 import { IDevice } from "mobile-devices-controller";
 export declare class NsCapabilities implements INsCapabilities {
     private _projectDir;
@@ -22,6 +22,7 @@ export declare class NsCapabilities implements INsCapabilities {
     private _appPath;
     private _path;
     private _emulatorOptions;
+    private _automationName;
     private _device;
     private _ignoreDeviceController;
     private _wdaLocalPort;
@@ -45,6 +46,7 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly isAndroid: any;
     readonly isIOS: any;
     readonly isSauceLab: any;
+    readonly automationName: AutomationName;
     readonly appPath: string;
     appName: string;
     ignoreDeviceController: boolean;
@@ -52,6 +54,8 @@ export declare class NsCapabilities implements INsCapabilities {
     device: IDevice;
     readonly emulatorOptions: string;
     private isAndroidPlatform();
+    private setAutomationName();
+    tryGetAndroidApiLevel(): number;
     private resolveApplication();
     private checkMandatoryCapabiliies();
     private throwExceptions();

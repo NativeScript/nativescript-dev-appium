@@ -16,6 +16,12 @@ export declare class UIElement {
      */
     click(): Promise<any>;
     /**
+    * Click a point by providing coordinates
+    * @param x
+    * @param y
+    */
+    tapCenter(): Promise<void>;
+    /**
      * Tap on element
      */
     tap(): Promise<any>;
