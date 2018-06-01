@@ -1,7 +1,7 @@
 import { IDevice } from "mobile-devices-controller";
 
 export enum AutomationName {
-    UiAutomator2 = "UiAutomator2",
+    UiAutomator2 = "UIAutomator2",
     Appium = "Appium",
     XCUITest = "XCUITest",
 }
