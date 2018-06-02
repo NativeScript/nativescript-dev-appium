@@ -72,8 +72,8 @@ function getDevDependencies() {
     // There is need to explicitly install them to the project.
     const typeScriptDevDependencies = [
         //{ name: "tslib", version: "^1.7.1" },
-        { name: "@types/chai", version: "^4.0.2" },
-        { name: "@types/mocha", version: "^2.2.41" },
+        { name: "@types/chai", version: "~4.1.3" },
+        { name: "@types/mocha", version: "~5.2.1" },
         { name: "@types/node", version: "^7.0.5" },
     ];
 
@@ -100,7 +100,7 @@ function configureDevDependencies(packageJson) {
     if (devDependenciesToInstall.length) {
         console.info("Installing new devDependencies ...");
         // Execute `npm install` after everything else
-        setTimeout(function () {
+        setTimeout(function() {
             executeNpmInstall(appRootPath);
         }, 300);
     }

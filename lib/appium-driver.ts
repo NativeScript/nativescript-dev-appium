@@ -740,7 +740,6 @@ export class AppiumDriver {
     public async setDontKeepActivities(value: boolean) {
         if (this._args.isAndroid) {
             const status = value ? 1 : 0;
-            const commandToExecute = `settings put global always_finish_activities ${status}`;
             const output = await this.executeShellCommand({ command: "settings", args: ['put', 'global', 'always_finish_activities', status] });
             //check if set 
             const check = await this.executeShellCommand({ command: "settings", args: ['get', 'global', 'always_finish_activities'] })
