@@ -10,7 +10,7 @@ export declare class ImageHelper {
     blockOutAreas: IRectangle[];
     imageOutputLimit(): ImageOptions;
     thresholdType(): ImageOptions;
-    threshold(thresholdType: any): 10 | 0.01;
+    threshold(thresholdType: any): 0.01 | 10;
     delta(): number;
     static cropImageDefault(_args: INsCapabilities): {
         x: number;
@@ -18,8 +18,8 @@ export declare class ImageHelper {
         width: any;
         height: any;
     };
-    private static getOffsetPixels(args);
-    private runDiff(diffOptions, diffImage);
+    private static getOffsetPixels;
+    private runDiff;
     compareImages(actual: string, expected: string, output: string, valueThreshold?: number, typeThreshold?: any): Promise<boolean>;
     clipRectangleImage(rect: IRectangle, path: string): Promise<{}>;
     readImage(path: string): Promise<any>;

@@ -9,6 +9,6 @@ export declare class DeviceManger implements IDeviceManager {
     installApp(args: INsCapabilities): Promise<any>;
     uninstallApp(args: INsCapabilities): Promise<any>;
     static kill(device: IDevice): Promise<void>;
-    private static getDefaultDevice(args);
+    private static getDefaultDevice;
     getPackageId(device: IDevice, appPath: string): string;
 }

@@ -16,7 +16,8 @@ import {
     DeviceController,
     IDevice,
     DeviceType,
-    AndroidController
+    AndroidController,
+    IOSController
 } from "mobile-devices-controller";
 import {
     addExt,
@@ -179,11 +180,15 @@ export class AppiumDriver {
 
         const driver = await wd.promiseChainRemote(driverConfig);
         AppiumDriver.configureLogging(driver, args.verbose);
+
         let hasStarted = false;
         let retries = 10;
         while (retries > 0 && !hasStarted) {
             try {
-                await driver.init(args.appiumCaps);
+                const sessionIfno = await driver.init(args.appiumCaps);
+                log(sessionIfno, args.verbose);
+                AppiumDriver.applyDeviceAdditionsSettings(args, sessionIfno);
+
                 hasStarted = true;
             } catch (error) {
                 console.log(error);
@@ -202,6 +207,29 @@ export class AppiumDriver {
         }
 
         return new AppiumDriver(driver, wd, webio, driverConfig, args);
+    }
+
+    private static applyDeviceAdditionsSettings(args: INsCapabilities, sessionIfno: any) {
+        if (!args.device.config || !args.device.config.density || !args.device.config.offset) {
+            args.device.config = {};
+            const density: number = sessionIfno[1].deviceScreenDensity / 100;
+            args.device.config['density'] = density;
+
+            if (args.appiumCaps.platformName.toLowerCase() === "android") {
+                args.device.config['offsetPixels'] = AndroidController.calculateScreenOffset(density);
+            } else {
+                IOSController.getDevicesScreenInfo().forEach((v, k, m) => {
+                    if (args.device.name.includes(k)) {
+                        args.device.config = {
+                            density: args.device.config['density'] || v.density,
+                            offsetPixels: v.actionBarHeight
+                        };
+                    }
+                });
+            }
+
+            console.log(`Device setting:`, args.device.config);
+        }
     }
 
     /**
@@ -705,9 +733,18 @@ export class AppiumDriver {
         }
     }
 
+    public async executeShellCommand(commandAndargs: { command: string, "args": Array<any> }) {
+        const output = await this._driver.execute("mobile: shell", commandAndargs);
+        return output;
+    }
     public async setDontKeepActivities(value: boolean) {
         if (this._args.isAndroid) {
-            AndroidController.setDontKeepActivities(value, this._args.device);
+            const status = value ? 1 : 0;
+            const commandToExecute = `settings put global always_finish_activities ${status}`;
+            const output = await this.executeShellCommand({ command: "settings", args: ['put', 'global', 'always_finish_activities', status] });
+            //check if set 
+            const check = await this.executeShellCommand({ command: "settings", args: ['get', 'global', 'always_finish_activities'] })
+            console.info(`always_finish_activities: ${check}`)
         } else {
             // Do nothing for iOS ...
         }
