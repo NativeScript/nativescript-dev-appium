@@ -628,15 +628,15 @@ export class AppiumDriver {
     }
 
     private async convertArrayToUIElements(array, searchM, args) {
-        let i = 0;
         const arrayOfUIElements = new Array<UIElement>();
         if (!array || array === null) {
             return arrayOfUIElements;
         }
-        array.forEach(async element => {
-            arrayOfUIElements.push(new UIElement(await element, this._driver, this._wd, this._webio, this._args, searchM, args, i));
-            i++;
-        });
+
+        for (let index = 0; index < array.length; index++) {
+            const element = array[index];
+            arrayOfUIElements.push(new UIElement(await element, this._driver, this._wd, this._webio, this._args, searchM, args, index));
+        }
 
         return arrayOfUIElements;
     }

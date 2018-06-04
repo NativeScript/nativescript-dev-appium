@@ -9,7 +9,7 @@ export declare class UIElement {
     private _args;
     private _searchMethod;
     private _searchParams;
-    private _index?;
+    private _index;
     constructor(_element: any, _driver: any, _wd: any, _webio: any, _args: INsCapabilities, _searchMethod: string, _searchParams: string, _index?: number);
     /**
      * Click on element

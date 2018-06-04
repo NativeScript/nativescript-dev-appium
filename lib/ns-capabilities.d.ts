@@ -53,10 +53,10 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly wdaLocalPort: number;
     device: IDevice;
     readonly emulatorOptions: string;
-    private isAndroidPlatform;
-    private setAutomationName;
+    private isAndroidPlatform();
+    private setAutomationName();
     tryGetAndroidApiLevel(): number;
-    private resolveApplication;
-    private checkMandatoryCapabiliies;
-    private throwExceptions;
+    private resolveApplication();
+    private checkMandatoryCapabiliies();
+    private throwExceptions();
 }

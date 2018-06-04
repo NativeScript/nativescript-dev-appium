@@ -8,7 +8,7 @@ export declare class Locator {
     readonly image: string;
     readonly locators: Map<string, string>;
     getElementByName(name: any): string;
-    private loadAndroidElements;
-    private loadIOSElements;
-    private createIosElement;
+    private loadAndroidElements();
+    private loadIOSElements();
+    private createIosElement(element);
 }
