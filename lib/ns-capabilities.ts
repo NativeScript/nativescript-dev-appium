@@ -93,12 +93,12 @@ export class NsCapabilities implements INsCapabilities {
 
     private setAutomationName() {
         if (this.appiumCaps["automationName"]) {
-            switch (this.appiumCaps["automationName"]) {
-                case AutomationName.UiAutomator2.toString():
+            switch (this.appiumCaps["automationName"].toLowerCase()) {
+                case AutomationName.UiAutomator2.toString().toLowerCase():
                     this._automationName = AutomationName.UiAutomator2; break;
-                case AutomationName.Appium.toString():
+                case AutomationName.Appium.toString().toLowerCase():
                     this._automationName = AutomationName.Appium; break;
-                case AutomationName.XCUITest.toString():
+                case AutomationName.XCUITest.toString().toLowerCase():
                     this._automationName = AutomationName.XCUITest; break;
             }
         } else {

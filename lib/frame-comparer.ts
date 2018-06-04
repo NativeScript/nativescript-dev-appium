@@ -1,7 +1,6 @@
 import { mkdirSync } from "fs";
 import { resolve, getStorageByDeviceName, getReportPath } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
-import { IDevice } from "mobile-devices-controller";
 import * as frComparer from "frame-comparer";
 import { IRectangle } from "..";
 import { ImageHelper } from "./image-helper";
