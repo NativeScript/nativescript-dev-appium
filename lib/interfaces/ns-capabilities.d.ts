@@ -2,7 +2,7 @@ import { IDevice } from "mobile-devices-controller";
 export declare enum AutomationName {
     UiAutomator2 = "UIAutomator2",
     Appium = "Appium",
-    XCUITest = "XCUITest",
+    XCUITest = "XCUITest"
 }
 export interface INsCapabilities {
     projectDir: string;

@@ -17,10 +17,12 @@
         "appium",
         "test"
     ],
-    "maintainers": [{
-        "name": "SvetoslavTsenov",
-        "email": "tsenov@progress.com"
-    }],
+    "maintainers": [
+        {
+            "name": "SvetoslavTsenov",
+            "email": "tsenov@progress.com"
+        }
+    ],
     "dependencies": {
         "app-root-path": "~2.0.1",
         "blink-diff": "~1.0.13",

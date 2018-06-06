@@ -1,4 +1,4 @@
 export declare const enum SearchOptions {
     exact = 0,
-    contains = 1,
+    contains = 1
 }

@@ -16,9 +16,9 @@ export declare class AppiumServer {
     readonly server: child_process.ChildProcess;
     hasStarted: boolean;
     start(port: any, deviceManager?: IDeviceManager): Promise<boolean>;
-    private startAppiumServer(logLevel, isSauceLab);
+    private startAppiumServer;
     stop(): Promise<{}>;
-    private prepareDevice(deviceManager);
-    private prepareApp();
-    private resolveAppiumDependency();
+    private prepareDevice;
+    private prepareApp;
+    private resolveAppiumDependency;
 }

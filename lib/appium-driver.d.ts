@@ -55,7 +55,7 @@ export declare class AppiumDriver {
      */
     readonly storageByDeviceName: string;
     static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
-    private static applyDeviceAdditionsSettings(args, sessionIfno);
+    private static applyDeviceAdditionsSettings;
     /**
      *
      * @param xPath
@@ -158,7 +158,7 @@ export declare class AppiumDriver {
      */
     startRecordingVideo(videoName: any): any;
     stopRecordingVideo(): Promise<any>;
-    private compare(imageName, timeOutSeconds?, tolerance?, rect?, toleranceType?);
+    private compare;
     prepareImageToCompare(filePath: string, rect: IRectangle): Promise<void>;
     takeScreenshot(fileName: string): Promise<string>;
     logScreenshot(fileName: string): Promise<string>;
@@ -171,10 +171,10 @@ export declare class AppiumDriver {
     resetApp(): Promise<void>;
     init(): Promise<void>;
     quit(): Promise<void>;
-    private static applyAdditionalSettings(args);
-    private convertArrayToUIElements(array, searchM, args);
-    private static configureLogging(driver, verbose);
-    private getExpectedImagePath(imageName);
+    private static applyAdditionalSettings;
+    private convertArrayToUIElements;
+    private static configureLogging;
+    private getExpectedImagePath;
     /**
     * Wait specific amount of time before continue execution
     * @param miliseconds
@@ -204,7 +204,7 @@ export declare class AppiumDriver {
     * @param waitForElement
     */
     findElementByAccessibilityIdIfExists(id: string, waitForElement?: number): Promise<UIElement>;
-    executeShellCommand(commandAndargs: {
+    static executeShellCommand(driver: any, commandAndargs: {
         command: string;
         "args": Array<any>;
     }): Promise<any>;

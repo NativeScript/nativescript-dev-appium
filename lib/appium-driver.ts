@@ -187,7 +187,7 @@ export class AppiumDriver {
             try {
                 const sessionIfno = await driver.init(args.appiumCaps);
                 log(sessionIfno, args.verbose);
-                AppiumDriver.applyDeviceAdditionsSettings(args, sessionIfno);
+                await AppiumDriver.applyDeviceAdditionsSettings(driver, args, sessionIfno);
 
                 hasStarted = true;
             } catch (error) {
@@ -209,10 +209,15 @@ export class AppiumDriver {
         return new AppiumDriver(driver, wd, webio, driverConfig, args);
     }
 
-    private static applyDeviceAdditionsSettings(args: INsCapabilities, sessionIfno: any) {
+    private static async applyDeviceAdditionsSettings(driver, args: INsCapabilities, sessionIfno: any) {
         if (!args.device.config || !args.device.config.density || !args.device.config.offset) {
             args.device.config = {};
-            const density: number = sessionIfno[1].deviceScreenDensity / 100;
+            let density: number = sessionIfno[1].deviceScreenDensity / 100;
+            console.log(`Get density from appium session: ${density}`);
+            if (!density) {
+                density = await AppiumDriver.executeShellCommand(driver, { command: "wm", args: ["density"] });
+                console.log(`Device density recieved from adb shell command ${density}`);
+            }
             args.device.config['density'] = density;
 
             if (args.appiumCaps.platformName.toLowerCase() === "android") {
@@ -733,16 +738,17 @@ export class AppiumDriver {
         }
     }
 
-    public async executeShellCommand(commandAndargs: { command: string, "args": Array<any> }) {
-        const output = await this._driver.execute("mobile: shell", commandAndargs);
+    public static async executeShellCommand(driver, commandAndargs: { command: string, "args": Array<any> }) {
+        const output = await driver.execute("mobile: shell", commandAndargs);
         return output;
     }
+
     public async setDontKeepActivities(value: boolean) {
         if (this._args.isAndroid) {
             const status = value ? 1 : 0;
-            const output = await this.executeShellCommand({ command: "settings", args: ['put', 'global', 'always_finish_activities', status] });
+            const output = await AppiumDriver.executeShellCommand(this._driver, { command: "settings", args: ['put', 'global', 'always_finish_activities', status] });
             //check if set 
-            const check = await this.executeShellCommand({ command: "settings", args: ['get', 'global', 'always_finish_activities'] })
+            const check = await AppiumDriver.executeShellCommand(this._driver, { command: "settings", args: ['get', 'global', 'always_finish_activities'] })
             console.info(`always_finish_activities: ${check}`)
         } else {
             // Do nothing for iOS ...
