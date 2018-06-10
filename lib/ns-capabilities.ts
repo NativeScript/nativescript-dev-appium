@@ -106,7 +106,7 @@ export class NsCapabilities implements INsCapabilities {
             }
         } else {
             if (this._isAndroid) {
-                if (this.tryGetAndroidApiLevel() >= 6 || (this.appiumCaps["apiLevel"] && this.appiumCaps["apiLevel"].toLowerCase().includes("p"))) {
+                if (this.tryGetAndroidApiLevel() > 6 || (this.appiumCaps["apiLevel"] && this.appiumCaps["apiLevel"].toLowerCase().includes("p"))) {
                     this._automationName = AutomationName.UiAutomator2;
                 }
             }
