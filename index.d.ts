@@ -8,7 +8,7 @@ export { Point } from "./lib/point";
 export { SearchOptions } from "./lib/search-options";
 export { Locator } from "./lib/locators";
 export { Direction } from "./lib/direction";
-export { DeviceManger } from "./lib/device-controller";
+export { DeviceManager } from "./lib/device-manager";
 export { FrameComparer } from "./lib/frame-comparer";
 export { IRectangle } from "./lib/interfaces/rectangle";
 export { IDeviceManager } from "./lib/interfaces/device-manager";

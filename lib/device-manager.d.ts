@@ -1,7 +1,7 @@
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
 import { IDevice } from "mobile-devices-controller";
-export declare class DeviceManger implements IDeviceManager {
+export declare class DeviceManager implements IDeviceManager {
     private static _emulators;
     constructor();
     startDevice(args: INsCapabilities): Promise<IDevice>;
@@ -10,12 +10,12 @@ export declare class DeviceManger implements IDeviceManager {
     uninstallApp(args: INsCapabilities): Promise<any>;
     static kill(device: IDevice): Promise<void>;
     private static getDefaultDevice;
-    getPackageId(device: IDevice, appPath: string): string;
-    static setDontKeepActivities(nsArgs: INsCapabilities, driver: any, value: boolean): Promise<void>;
+    static setDontKeepActivities(args: INsCapabilities, driver: any, value: any): Promise<void>;
     static executeShellCommand(driver: any, commandAndargs: {
         command: string;
         "args": Array<any>;
-        includeStderr?: boolean;
     }): Promise<any>;
-    static getDensity(nsArgs: any, driver: any): Promise<void>;
+    static getDensity(args: INsCapabilities, driver: any): Promise<void>;
+    static applyDeviceAdditionsSettings(driver: any, args: INsCapabilities, sessionIfno: any): Promise<void>;
+    getPackageId(device: IDevice, appPath: string): string;
 }

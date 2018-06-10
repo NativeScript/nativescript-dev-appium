@@ -6,6 +6,7 @@ import { IDeviceManager } from "./lib/interfaces/device-manager";
 import { shutdown, findFreePort } from "./lib/utils";
 import * as frameComparerHelper from "./lib/frame-comparer";
 import { FrameComparer } from "./lib/frame-comparer";
+import { DeviceManager } from "./lib/device-manager";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { AppiumServer } from "./lib/appium-server";
@@ -15,7 +16,7 @@ export { Point } from "./lib/point";
 export { SearchOptions } from "./lib/search-options";
 export { Locator } from "./lib/locators";
 export { Direction } from "./lib/direction";
-export { DeviceManger } from "./lib/device-controller";
+export { DeviceManager } from "./lib/device-manager";
 export { FrameComparer } from "./lib/frame-comparer";
 export { IRectangle } from "./lib/interfaces/rectangle";
 export { IDeviceManager } from "./lib/interfaces/device-manager";
@@ -25,7 +26,7 @@ const appiumServer = new AppiumServer(nsCapabilities);
 let frameComparer: FrameComparer;
 let appiumDriver = null;
 
-const attachToExitProcessHoockup = (processToExitFrom, processName ) => {
+const attachToExitProcessHoockup = (processToExitFrom, processName) => {
     const signals = ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
         'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'];
     signals.forEach(function (sig) {
@@ -71,7 +72,7 @@ export async function createDriver() {
 
     // Make sure to turn off "Don't keep activities"
     // in case of previous execution failure.
-    await appiumDriver.setDontKeepActivities(false);
+    await DeviceManager.setDontKeepActivities(nsCapabilities, appiumDriver, false);
 
     return appiumDriver;
 }
@@ -98,4 +99,4 @@ const killProcesses = async (code) => {
 
 process.once("exit", async (code) => await killProcesses(code));
 
-attachToExitProcessHoockup(process,"main process");
+attachToExitProcessHoockup(process, "main process");

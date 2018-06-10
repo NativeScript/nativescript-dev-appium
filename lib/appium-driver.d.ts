@@ -55,7 +55,6 @@ export declare class AppiumDriver {
      */
     readonly storageByDeviceName: string;
     static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
-    private static applyDeviceAdditionsSettings;
     /**
      *
      * @param xPath
@@ -204,9 +203,5 @@ export declare class AppiumDriver {
     * @param waitForElement
     */
     findElementByAccessibilityIdIfExists(id: string, waitForElement?: number): Promise<UIElement>;
-    static executeShellCommand(driver: any, commandAndargs: {
-        command: string;
-        "args": Array<any>;
-    }): Promise<any>;
     setDontKeepActivities(value: boolean): Promise<void>;
 }

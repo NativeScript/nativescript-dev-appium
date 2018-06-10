@@ -21,7 +21,7 @@ import {
     DeviceType
 } from "mobile-devices-controller";
 
-export class DeviceManger implements IDeviceManager {
+export class DeviceManager implements IDeviceManager {
     private static _emulators: Map<string, IDevice> = new Map();
 
     constructor() {
@@ -29,7 +29,7 @@ export class DeviceManger implements IDeviceManager {
 
     public async startDevice(args: INsCapabilities): Promise<IDevice> {
         args.appiumCaps.platformName = args.appiumCaps.platformName.toLowerCase();
-        let device: IDevice = DeviceManger.getDefaultDevice(args);
+        let device: IDevice = DeviceManager.getDefaultDevice(args);
         if (process.env["DEVICE_TOKEN"]) {
             device.token = process.env["DEVICE_TOKEN"];
             device.name = process.env["DEVICE_NAME"] || device.name;
@@ -41,8 +41,8 @@ export class DeviceManger implements IDeviceManager {
 
         // When isSauceLab specified we simply do nothing;
         if (args.isSauceLab || args.ignoreDeviceController) {
-            args.ignoreDeviceController = true;            
-            DeviceManger._emulators.set(args.runType, device);
+            args.ignoreDeviceController = true;
+            DeviceManager._emulators.set(args.runType, device);
             return device;
         }
 
@@ -89,18 +89,18 @@ export class DeviceManger implements IDeviceManager {
             }
         }
 
-        DeviceManger._emulators.set(args.runType, device);
+        DeviceManager._emulators.set(args.runType, device);
 
         return device;
     }
 
     public async stopDevice(args: INsCapabilities): Promise<any> {
-        if (DeviceManger._emulators.has(args.runType)
+        if (DeviceManager._emulators.has(args.runType)
             && !args.reuseDevice
             && !args.isSauceLab
             && !args.ignoreDeviceController) {
-            const device = DeviceManger._emulators.get(args.runType);
-            await DeviceManger.kill(device);
+            const device = DeviceManager._emulators.get(args.runType);
+            await DeviceManager.kill(device);
         }
     }
 
@@ -131,6 +131,76 @@ export class DeviceManger implements IDeviceManager {
         delete args.appiumCaps.density;
         delete args.appiumCaps.offsetPixels;
         return device;
+    }
+
+    public static async setDontKeepActivities(args: INsCapabilities, driver, value) {
+        if (args.isAndroid) {
+            if (!args.ignoreDeviceController) {
+                AndroidController.setDontKeepActivities(<any>args.device, value);
+            } else if (args.relaxedSecurity) {
+                const status = value ? 1 : 0;
+                const output = await DeviceManager.executeShellCommand(driver, { command: "settings", args: ['put', 'global', 'always_finish_activities', status] });
+                //check if set 
+                const check = await DeviceManager.executeShellCommand(driver, { command: "settings", args: ['get', 'global', 'always_finish_activities'] });
+                console.info(`always_finish_activities: ${check}`);
+            }
+        } else {
+            // Do nothing for iOS ...
+        }
+    }
+
+    public static async executeShellCommand(driver, commandAndargs: { command: string, "args": Array<any> }) {
+        if (driver.platform.toLowerCase() === Platform.ANDROID) {
+            const output = await driver.execute("mobile: shell", commandAndargs);
+            return output;
+        }
+        return undefined;
+    }
+
+    public static async getDensity(args: INsCapabilities, driver) {
+        args.device.config = args.device.config || {};
+        if (args.appiumCaps.platformName.toLowerCase() === "android") {
+            if (!args.ignoreDeviceController) {
+                args.device.config.density = await AndroidController.getPhysicalDensity(args.device);
+            }
+
+            if (args.relaxedSecurity) {
+                args.device.config.density = await DeviceManager.executeShellCommand(driver, { command: "wm", args: ["density"] });
+                console.log(`Device density recieved from adb shell command ${args.device.config.density}`);
+            }
+
+            if (args.device.config.density) {
+                args.device.config['offsetPixels'] = AndroidController.calculateScreenOffset(args.device.config.density);
+            }
+        } else {
+            IOSController.getDevicesScreenInfo().forEach((v, k, m) => {
+                if (args.device.name.includes(k)) {
+                    args.device.config = {
+                        density: args.device.config['density'] || v.density,
+                        offsetPixels: v.actionBarHeight
+                    };
+                }
+            });
+        }
+    }
+
+    public static async applyDeviceAdditionsSettings(driver, args: INsCapabilities, sessionIfno: any) {
+        if (!args.device.config || !args.device.config.offsetPixels) {
+            args.device.config = {};
+            let density: number = sessionIfno[1].deviceScreenDensity ? sessionIfno[1].deviceScreenDensity / 100 : undefined;
+
+            if (density) {
+                console.log(`Get density from appium session: ${density}`);
+                args.device.config['density'] = density;
+                args.device.config['offsetPixels'] = AndroidController.calculateScreenOffset(args.device.config.density);                
+            }
+
+            if (!density) {
+                await DeviceManager.getDensity(args, driver);
+            }
+
+            density ? console.log(`Device setting:`, args.device.config) : console.log(`Could not resolve device density. Please provide offset in appium config`);
+        }
     }
 
     public getPackageId(device: IDevice, appPath: string): string {

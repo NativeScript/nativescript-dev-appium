@@ -14,6 +14,7 @@ const config = (() => {
         .option("wdaLocalPort", { alias: "wda", describe: "WDA port", default: 8410, type: "number" })
         .option("verbose", { alias: "v", describe: "Log actions", type: "boolean" })
         .option("path", { describe: "path", default: process.cwd(), type: "string" })
+        .option("relaxedSecurity", { describe: "appium relaxedSecurity", default: false, type: "boolean" })
         .option("appPath", { describe: "application path", type: "string" })
         .option("storage", { describe: "Storage for images folder.", type: "string" })
         .option("testReports", { describe: "Test reporting folder", type: "string" })
@@ -56,6 +57,7 @@ const config = (() => {
         devMode: options.devMode || process.env.npm_config_REUSE_APP,
         ignoreDeviceController: options.ignoreDeviceController,
         path: options.path,
+        relaxedSecurity: options.relaxedSecurity
     };
 
     return config;
@@ -80,4 +82,5 @@ export const {
     ignoreDeviceController,
     wdaLocalPort,
     path,
+    relaxedSecurity
 } = config;

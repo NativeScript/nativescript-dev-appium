@@ -85,7 +85,9 @@ export class AppiumServer {
 
     private startAppiumServer(logLevel: string, isSauceLab: boolean) {
         const startingServerArgs: Array<string> = isSauceLab ? ["--log-level", logLevel] : ["-p", this.port.toString(), "--log-level", logLevel];
-        startingServerArgs.push("--relaxed-security");
+        if(this._args.isAndroid){
+            this._args.relaxedSecurity ? startingServerArgs.push("--relaxed-security") : console.log("'--relaxed-security' is not enabled!\nTo enabled it use '--relaxedSecurity'!");
+        }
         this._server = child_process.spawn(this._appium, startingServerArgs, {
             shell: true,
             detached: false

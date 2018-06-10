@@ -41,6 +41,7 @@ import { ImageHelper } from "./image-helper";
 import { ImageOptions } from "./image-options"
 import { unlinkSync, writeFileSync } from "fs";
 import * as webdriverio from "webdriverio";
+import { DeviceManager } from "../lib/device-manager";
 
 export class AppiumDriver {
     private static pngFileExt = '.png';
@@ -187,7 +188,7 @@ export class AppiumDriver {
             try {
                 const sessionIfno = await driver.init(args.appiumCaps);
                 log(sessionIfno, args.verbose);
-                await AppiumDriver.applyDeviceAdditionsSettings(driver, args, sessionIfno);
+                await DeviceManager.applyDeviceAdditionsSettings(driver, args, sessionIfno);
 
                 hasStarted = true;
             } catch (error) {
@@ -207,34 +208,6 @@ export class AppiumDriver {
         }
 
         return new AppiumDriver(driver, wd, webio, driverConfig, args);
-    }
-
-    private static async applyDeviceAdditionsSettings(driver, args: INsCapabilities, sessionIfno: any) {
-        if (!args.device.config || !args.device.config.density || !args.device.config.offset) {
-            args.device.config = {};
-            let density: number = sessionIfno[1].deviceScreenDensity / 100;
-            console.log(`Get density from appium session: ${density}`);
-            if (!density) {
-                density = await AppiumDriver.executeShellCommand(driver, { command: "wm", args: ["density"] });
-                console.log(`Device density recieved from adb shell command ${density}`);
-            }
-            args.device.config['density'] = density;
-
-            if (args.appiumCaps.platformName.toLowerCase() === "android") {
-                args.device.config['offsetPixels'] = AndroidController.calculateScreenOffset(density);
-            } else {
-                IOSController.getDevicesScreenInfo().forEach((v, k, m) => {
-                    if (args.device.name.includes(k)) {
-                        args.device.config = {
-                            density: args.device.config['density'] || v.density,
-                            offsetPixels: v.actionBarHeight
-                        };
-                    }
-                });
-            }
-
-            console.log(`Device setting:`, args.device.config);
-        }
     }
 
     /**
@@ -738,18 +711,9 @@ export class AppiumDriver {
         }
     }
 
-    public static async executeShellCommand(driver, commandAndargs: { command: string, "args": Array<any> }) {
-        const output = await driver.execute("mobile: shell", commandAndargs);
-        return output;
-    }
-
     public async setDontKeepActivities(value: boolean) {
         if (this._args.isAndroid) {
-            const status = value ? 1 : 0;
-            const output = await AppiumDriver.executeShellCommand(this._driver, { command: "settings", args: ['put', 'global', 'always_finish_activities', status] });
-            //check if set 
-            const check = await AppiumDriver.executeShellCommand(this._driver, { command: "settings", args: ['get', 'global', 'always_finish_activities'] })
-            console.info(`always_finish_activities: ${check}`)
+            const output = await DeviceManager.setDontKeepActivities(this._args, this._driver, value);
         } else {
             // Do nothing for iOS ...
         }
