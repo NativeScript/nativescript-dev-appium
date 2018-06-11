@@ -136,7 +136,7 @@ export class DeviceManager implements IDeviceManager {
     public static async setDontKeepActivities(args: INsCapabilities, driver, value) {
         if (args.isAndroid) {
             if (!args.ignoreDeviceController) {
-                AndroidController.setDontKeepActivities(<any>args.device, value);
+                AndroidController.setDontKeepActivities(value, args.device);
             } else if (args.relaxedSecurity) {
                 const status = value ? 1 : 0;
                 const output = await DeviceManager.executeShellCommand(driver, { command: "settings", args: ['put', 'global', 'always_finish_activities', status] });
@@ -149,7 +149,7 @@ export class DeviceManager implements IDeviceManager {
         }
     }
 
-    public static async executeShellCommand(driver, commandAndargs: { command: string, "args": Array<any> }) {
+    public static async executeShellCommand(driver: IDevice, commandAndargs: { command: string, "args": Array<any> }) {
         if (driver.platform.toLowerCase() === Platform.ANDROID) {
             const output = await driver.execute("mobile: shell", commandAndargs);
             return output;
@@ -192,7 +192,7 @@ export class DeviceManager implements IDeviceManager {
             if (density) {
                 console.log(`Get density from appium session: ${density}`);
                 args.device.config['density'] = density;
-                args.device.config['offsetPixels'] = AndroidController.calculateScreenOffset(args.device.config.density);                
+                args.device.config['offsetPixels'] = AndroidController.calculateScreenOffset(args.device.config.density);
             }
 
             if (!density) {

@@ -11,7 +11,7 @@ export declare class DeviceManager implements IDeviceManager {
     static kill(device: IDevice): Promise<void>;
     private static getDefaultDevice;
     static setDontKeepActivities(args: INsCapabilities, driver: any, value: any): Promise<void>;
-    static executeShellCommand(driver: any, commandAndargs: {
+    static executeShellCommand(driver: IDevice, commandAndargs: {
         command: string;
         "args": Array<any>;
     }): Promise<any>;
