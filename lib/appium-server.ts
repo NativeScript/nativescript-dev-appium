@@ -12,7 +12,7 @@ import {
 } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
-import { DeviceManger } from "./device-controller";
+import { DeviceManager } from "./device-manager";
 import { AndroidController } from "mobile-devices-controller";
 
 export class AppiumServer {
@@ -57,7 +57,7 @@ export class AppiumServer {
         this._hasStarted = hasStarted;
     }
 
-    public async start(port, deviceManager: IDeviceManager = new DeviceManger()) {
+    public async start(port, deviceManager: IDeviceManager = new DeviceManager()) {
         await this.prepareDevice(deviceManager);
         await this.prepareApp();
 
@@ -85,7 +85,9 @@ export class AppiumServer {
 
     private startAppiumServer(logLevel: string, isSauceLab: boolean) {
         const startingServerArgs: Array<string> = isSauceLab ? ["--log-level", logLevel] : ["-p", this.port.toString(), "--log-level", logLevel];
-        startingServerArgs.push("--relaxed-security");
+        if(this._args.isAndroid && this._args.ignoreDeviceController && !this._args.isSauceLab){
+            this._args.relaxedSecurity ? startingServerArgs.push("--relaxed-security") : console.log("'relaxedSecurity' is not enabled!\nTo enabled it use '--relaxedSecurity'!");
+        }
         this._server = child_process.spawn(this._appium, startingServerArgs, {
             shell: true,
             detached: false

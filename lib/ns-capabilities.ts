@@ -30,6 +30,7 @@ export class NsCapabilities implements INsCapabilities {
     private _device: IDevice;
     private _ignoreDeviceController: boolean;
     private _wdaLocalPort: number;
+    private _relaxedSecurity: boolean;
     private exceptions: Array<string> = new Array();
 
     constructor() {
@@ -54,6 +55,7 @@ export class NsCapabilities implements INsCapabilities {
         this._ignoreDeviceController = parser.ignoreDeviceController;
         this._wdaLocalPort = parser.wdaLocalPort;
         this._path = parser.path;
+        this._relaxedSecurity = parser.relaxedSecurity;
         this.setAutomationName();
         this.resolveApplication();
         this.checkMandatoryCapabiliies();
@@ -88,6 +90,7 @@ export class NsCapabilities implements INsCapabilities {
     get device() { return this._device; }
     set device(device: IDevice) { this._device = device; }
     get emulatorOptions() { return (this._emulatorOptions || "-wipe-data -gpu on") }
+    get relaxedSecurity() { return this._relaxedSecurity }
 
     private isAndroidPlatform() { return this._appiumCaps.platformName.toLowerCase().includes("android"); }
 
