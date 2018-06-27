@@ -31,4 +31,5 @@ export interface INsCapabilities {
     path: string;
     automationName: AutomationName;
     relaxedSecurity: boolean;
+    cleanApp: boolean;
 }
