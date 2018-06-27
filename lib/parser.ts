@@ -21,6 +21,7 @@ const config = (() => {
         .option("reuseDevice", { describe: "Reusing device if available.", type: "boolean", default: false })
         .option("devMode", { alias: "dev-mode", describe: "Will skipp app instalation and will reuse the one installed on device!", type: "boolean", default: false })
         .option("ignoreDeviceController", { alias: "i-ns-device-controller", describe: "Use default appium options for running emulatos/ simulators.", type: "boolean", default: false })
+        .option("cleanApp", { alias: "c", describe: "Uninstall app after test are finished", type: "boolean", default: false })
         .help()
         .argv;
 
@@ -55,6 +56,7 @@ const config = (() => {
         testReports: options.testReports || process.env.npm_config_TEST_REPORTS || process.env.TEST_REPORTS,
         reuseDevice: options.devMode ? true : options.reuseDevice || process.env.npm_config_REUSE_DEVICE || process.env.REUSE_DEVICE,
         devMode: options.devMode || process.env.npm_config_REUSE_APP,
+        cleanApp: !options.devMode && options.cleanApp && !options.sauceLab && !options.ignoreDeviceController,
         ignoreDeviceController: options.ignoreDeviceController,
         path: options.path,
         relaxedSecurity: options.relaxedSecurity
@@ -82,5 +84,6 @@ export const {
     ignoreDeviceController,
     wdaLocalPort,
     path,
-    relaxedSecurity
+    relaxedSecurity,
+    cleanApp
 } = config;

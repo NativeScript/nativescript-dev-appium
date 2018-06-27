@@ -32,5 +32,6 @@ export interface INsCapabilities {
     wdaLocalPort: number;
     path: string;
     automationName: AutomationName;
-    relaxedSecurity: boolean
+    relaxedSecurity: boolean,
+    cleanApp: boolean,
 }

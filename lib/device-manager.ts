@@ -6,7 +6,6 @@ import {
     shutdown,
     executeCommand
 } from "./utils";
-import * as child_process from "child_process";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
 
@@ -80,8 +79,8 @@ export class DeviceManager implements IDeviceManager {
                 await DeviceController.startDevice(device);
                 console.log("Started device: ", device);
             } else {
-                console.log("Device is already started", device);
-                if (!args.reuseDevice && device.type !== DeviceType.EMULATOR && device.type !== DeviceType.SIMULATOR) {
+                device.type === DeviceType.DEVICE ? console.log("Device is connected:", device) : console.log("Device is already started", device)
+                if (!args.reuseDevice && device.type !== DeviceType.DEVICE) {
                     console.log("Since is it specified without reusing, the device would be shut down and restart!");
                     DeviceController.kill(device);
                     await DeviceController.startDevice(device);
@@ -91,6 +90,10 @@ export class DeviceManager implements IDeviceManager {
 
         DeviceManager._emulators.set(args.runType, device);
 
+        if (!device || !device.token) {
+            console.error("Check appium capabilites and provide correct device options!");
+            process.exit(1);
+        }
         return device;
     }
 
@@ -149,7 +152,7 @@ export class DeviceManager implements IDeviceManager {
         }
     }
 
-    public static async executeShellCommand(driver: IDevice, commandAndargs: { command: string, "args": Array<any> }) {
+    public static async executeShellCommand(driver, commandAndargs: { command: string, "args": Array<any> }) {
         if (driver.platform.toLowerCase() === Platform.ANDROID) {
             const output = await driver.execute("mobile: shell", commandAndargs);
             return output;

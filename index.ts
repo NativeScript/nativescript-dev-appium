@@ -7,6 +7,7 @@ import { shutdown, findFreePort } from "./lib/utils";
 import * as frameComparerHelper from "./lib/frame-comparer";
 import { FrameComparer } from "./lib/frame-comparer";
 import { DeviceManager } from "./lib/device-manager";
+import { DeviceController } from "mobile-devices-controller";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { AppiumServer } from "./lib/appium-server";
@@ -48,6 +49,10 @@ export async function stopServer() {
     }
     if (appiumServer && appiumServer.server && !appiumServer.server.killed) {
         await appiumServer.stop();
+    }
+
+    if (nsCapabilities.cleanApp) {
+        await DeviceController.uninstallApp(nsCapabilities.device, nsCapabilities.appPath);
     }
 };
 

@@ -31,7 +31,8 @@ import {
     calculateOffset,
     scroll,
     findFreePort,
-    wait
+    wait,
+    copy
 } from "./utils";
 
 import { INsCapabilities } from "./interfaces/ns-capabilities";
@@ -42,6 +43,7 @@ import { ImageOptions } from "./image-options"
 import { unlinkSync, writeFileSync } from "fs";
 import * as webdriverio from "webdriverio";
 import { DeviceManager } from "../lib/device-manager";
+import { extname, basename } from "path";
 
 export class AppiumDriver {
     private static pngFileExt = '.png';
@@ -450,6 +452,9 @@ export class AppiumDriver {
             if (rect) {
                 await this._imageHelper.clipRectangleImage(rect, pathActualImage);
             }
+
+            const pathActualImageToReportsFolder = resolve(this._logPath, basename(pathActualImage));
+            copy(pathActualImage, pathActualImageToReportsFolder, false);
 
             console.log("Remove the 'actual' suffix to continue using the image as expected one ", pathExpectedImage);
             return false;

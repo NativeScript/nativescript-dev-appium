@@ -27,6 +27,7 @@ export declare class NsCapabilities implements INsCapabilities {
     private _ignoreDeviceController;
     private _wdaLocalPort;
     private _relaxedSecurity;
+    private _cleanApp;
     private exceptions;
     constructor();
     readonly path: string;
@@ -55,6 +56,7 @@ export declare class NsCapabilities implements INsCapabilities {
     device: IDevice;
     readonly emulatorOptions: string;
     readonly relaxedSecurity: boolean;
+    readonly cleanApp: boolean;
     private isAndroidPlatform;
     private setAutomationName;
     tryGetAndroidApiLevel(): number;
