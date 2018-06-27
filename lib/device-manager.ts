@@ -6,7 +6,6 @@ import {
     shutdown,
     executeCommand
 } from "./utils";
-import * as child_process from "child_process";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
 
@@ -91,6 +90,10 @@ export class DeviceManager implements IDeviceManager {
 
         DeviceManager._emulators.set(args.runType, device);
 
+        if (!device || !device.token) {
+            console.error("Check appium capabilites and provide correct device options!");
+            process.exit(1);
+        }
         return device;
     }
 
