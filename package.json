@@ -28,7 +28,7 @@
         "blink-diff": "~1.0.13",
         "chai": "~4.1.0",
         "chai-as-promised": "~7.1.0",
-        "frame-comparer": "^1.0.3",
+        "frame-comparer": "^2.0.0",
         "glob": "7.1.0",
         "mobile-devices-controller": "~2.5.0",
         "mocha": "~5.1.0",
