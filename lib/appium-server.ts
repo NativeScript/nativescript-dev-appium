@@ -66,26 +66,32 @@ export class AppiumServer {
         this.port = this._args.port || port;
         let retry = false;
 
-        this.startAppiumServer(logLevel, this._args.isSauceLab);
-
-        let response = await waitForOutput(this._server, /listener started/, /Error: listen/, 60000, this._args.verbose);
-
-        let retries = 11;
-        while (retries > 0 && !response) {
-            retries--;
-            this.port += 10;
-            this.port = (await findFreePort(100, this.port));
+        if (!this._args.attachToDebug) {
 
             this.startAppiumServer(logLevel, this._args.isSauceLab);
-            response = await waitForOutput(this._server, /listener started/, /Error: listen/, 60000, true);
-        }
 
-        return response;
+            let response = await waitForOutput(this._server, /listener started/, /Error: listen/, 60000, this._args.verbose);
+
+            let retries = 11;
+            while (retries > 0 && !response) {
+                retries--;
+                this.port += 10;
+                this.port = (await findFreePort(100, this.port));
+
+                this.startAppiumServer(logLevel, this._args.isSauceLab);
+                response = await waitForOutput(this._server, /listener started/, /Error: listen/, 60000, true);
+            }
+
+            if (this._args.startSession) {
+                console.log(`Server port: ${this.port}!`);
+            }
+            return response;
+        }
     }
 
     private startAppiumServer(logLevel: string, isSauceLab: boolean) {
         const startingServerArgs: Array<string> = isSauceLab ? ["--log-level", logLevel] : ["-p", this.port.toString(), "--log-level", logLevel];
-        if(this._args.isAndroid && this._args.ignoreDeviceController && !this._args.isSauceLab){
+        if (this._args.isAndroid && this._args.ignoreDeviceController && !this._args.isSauceLab) {
             this._args.relaxedSecurity ? startingServerArgs.push("--relaxed-security") : console.log("'relaxedSecurity' is not enabled!\nTo enabled it use '--relaxedSecurity'!");
         }
         this._server = child_process.spawn(this._appium, startingServerArgs, {

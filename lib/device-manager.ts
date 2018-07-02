@@ -190,7 +190,10 @@ export class DeviceManager implements IDeviceManager {
     public static async applyDeviceAdditionsSettings(driver, args: INsCapabilities, sessionIfno: any) {
         if (!args.device.config || !args.device.config.offsetPixels) {
             args.device.config = {};
-            let density: number = sessionIfno[1].deviceScreenDensity ? sessionIfno[1].deviceScreenDensity / 100 : undefined;
+            let density: number;
+            if (sessionIfno && sessionIfno.length >= 1) {
+                density = sessionIfno[1].deviceScreenDensity ? sessionIfno[1].deviceScreenDensity / 100 : undefined;
+            }
 
             if (density) {
                 console.log(`Get density from appium session: ${density}`);

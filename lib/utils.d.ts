@@ -39,3 +39,4 @@ export declare const addExt: (fileName: string, ext: string) => string;
 export declare const isPortAvailable: (port: any) => Promise<{}>;
 export declare const findFreePort: (retries?: number, port?: number) => Promise<number>;
 export declare function wait(milisecodns: any): void;
+export declare function getSessions(port: any, host?: string): Promise<{}>;

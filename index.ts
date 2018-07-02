@@ -3,7 +3,7 @@ import { AppiumDriver } from "./lib/appium-driver";
 import { ElementHelper } from "./lib/element-helper";
 import { NsCapabilities } from "./lib/ns-capabilities";
 import { IDeviceManager } from "./lib/interfaces/device-manager";
-import { shutdown, findFreePort } from "./lib/utils";
+import { shutdown, findFreePort, getSessions } from "./lib/utils";
 import * as frameComparerHelper from "./lib/frame-comparer";
 import { FrameComparer } from "./lib/frame-comparer";
 import { DeviceManager } from "./lib/device-manager";
@@ -30,6 +30,9 @@ let appiumDriver = null;
 const attachToExitProcessHoockup = (processToExitFrom, processName) => {
     const signals = ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
         'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'];
+    if (!processToExitFrom) {
+        return;
+    }
     signals.forEach(function (sig) {
         processToExitFrom.once(sig, async function () {
             await killProcesses(sig);
@@ -38,8 +41,15 @@ const attachToExitProcessHoockup = (processToExitFrom, processName) => {
         });
     });
 }
+
+if (nsCapabilities.startSession) {
+    startServer(nsCapabilities.port).then(s=>{
+        createDriver();
+    });
+}
+
 export async function startServer(port?: number, deviceManager?: IDeviceManager) {
-    await appiumServer.start(port || 8300, deviceManager);
+    await appiumServer.start(port || nsCapabilities.port, deviceManager);
     await attachToExitProcessHoockup(appiumServer.server, "appium");
 }
 
@@ -57,6 +67,10 @@ export async function stopServer() {
 };
 
 export async function createDriver() {
+    if (nsCapabilities.attachToDebug) {
+        appiumDriver = await AppiumDriver.createAppiumDriver(appiumServer.port, nsCapabilities);
+        return appiumDriver;        
+    }
     if (!appiumServer.server) {
         throw new Error("Server is not available!");
     }

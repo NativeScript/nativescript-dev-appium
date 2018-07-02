@@ -12,6 +12,9 @@ export interface INsCapabilities {
     pluginRoot: string;
     pluginBinary: string;
     port: number;
+    attachToDebug: boolean;
+    sessionId: string;
+    startSession: boolean;
     verbose: boolean;
     appiumCapsLocation: string;
     appiumCaps: any;
@@ -34,4 +37,5 @@ export interface INsCapabilities {
     automationName: AutomationName;
     relaxedSecurity: boolean,
     cleanApp: boolean,
+    
 }

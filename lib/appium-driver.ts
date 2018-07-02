@@ -32,7 +32,8 @@ import {
     scroll,
     findFreePort,
     wait,
-    copy
+    copy,
+    getSessions
 } from "./utils";
 
 import { INsCapabilities } from "./interfaces/ns-capabilities";
@@ -188,7 +189,32 @@ export class AppiumDriver {
         let retries = 10;
         while (retries > 0 && !hasStarted) {
             try {
-                const sessionIfno = await driver.init(args.appiumCaps);
+                let sessionIfno;
+
+                try {
+                    if (args.sessionId || args.attachToDebug) {
+                        if (!args.sessionId) {
+                            sessionIfno = await getSessions(args.port) + '';
+                            if (sessionIfno) {
+                                const info = JSON.parse(sessionIfno);
+                                args.sessionId = info.value[0].id;
+                            }
+                            if (!args.sessionId || args.sessionId.includes("undefined")) {
+                                console.error("Please provide session id!");
+                                process.exit(1);
+                            }
+                        }
+                        await driver.attach(args.sessionId);
+                    } else {
+                        sessionIfno = await driver.init(args.appiumCaps);
+                        if (args.startSession) {
+                            console.log(`Session id: ${sessionIfno[0]}`)
+                        }
+                    }
+
+                } catch (error) {
+
+                }
                 log(sessionIfno, args.verbose);
                 await DeviceManager.applyDeviceAdditionsSettings(driver, args, sessionIfno);
 
@@ -572,9 +598,11 @@ export class AppiumDriver {
             this._recordVideoInfo['videoRecoringProcess'].kill("SIGINT");
         }
         try {
-            await this._driver.quit();
-            await this._driver.quit();
-            await this._webio.quit();
+            if (!this._args.attachToDebug) {
+                await this._driver.quit();
+                await this._driver.quit();
+                await this._webio.quit();
+            }
         } catch (error) {
         }
         this._isAlive = false;

@@ -6,6 +6,7 @@ import * as glob from "glob";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { Point } from "./point";
 import { Direction } from "./direction";
+import * as http from "http";
 
 export function resolve(mainPath, ...args) {
     if (!path.isAbsolute(mainPath)) {
@@ -466,4 +467,36 @@ export function wait(milisecodns) {
 
 function resolveSauceLabAppName(appName: string) {
     return appName.includes("sauce-storage:") ? appName.replace("sauce-storage:", "") : appName;
+}
+
+export function getSessions(port, host = `0.0.0.0`) {
+    return new Promise((resolve, reject) => {
+        http.get(`http://localhost:${port}/wd/hub/sessions`, (resp) => {
+            let data = '';
+
+            // A chunk of data has been recieved.
+            resp.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            // The whole response has been received. Print out the result.
+            resp.on('end', () => {
+                let result = undefined;
+                console.log(data);
+
+                try {
+                    //result = JSON.parse(data);
+                    result = data;
+                } catch (error) {
+
+                }
+
+                resolve(result);
+            });
+
+        }).on("error", (err) => {
+            console.log("Error: " + err.message);
+            resolve(undefined);
+        });
+    });
 }
