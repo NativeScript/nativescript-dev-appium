@@ -4,7 +4,10 @@ import {
     log,
     isWin,
     shutdown,
-    executeCommand
+    executeCommand,
+    logError,
+    logInfo,
+    logWarn
 } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
@@ -34,7 +37,7 @@ export class DeviceManager implements IDeviceManager {
             device.name = process.env["DEVICE_NAME"] || device.name;
             const allDevices = await DeviceController.getDevices({ platform: device.platform });
             const foundDevice = DeviceController.filter(allDevices, { token: device.token.replace("emulator-", "") })[0];
-            console.log("Device: ", foundDevice);
+            logInfo("Device: ", foundDevice);
             return foundDevice;
         }
 
@@ -47,15 +50,17 @@ export class DeviceManager implements IDeviceManager {
 
         const allDevices = await DeviceController.getDevices({ platform: args.appiumCaps.platformName });
         if (!allDevices || allDevices === null || allDevices.length === 0) {
-            console.log("We couldn't find any devices. We will try to proceed to appium! Maybe avd manager is missing")
+            logError("We couldn't find any devices. We will try to proceed to appium! Maybe avd manager is missing")
             console.log("Available devices:\n", allDevices);
         }
 
         const searchObj = args.appiumCaps.udid ? { token: args.appiumCaps.udid } : { name: args.appiumCaps.deviceName, apiLevel: args.appiumCaps.platformVersion };
         let searchedDevices = DeviceController.filter(allDevices, searchObj);
         if (!searchedDevices || searchedDevices.length === 0) {
-            console.log(`No such device ${args.appiumCaps.deviceName}!!!\n Check your device name!!!`);
-            console.log("Available devices:\n", allDevices);
+            logError(`No such device ${args.appiumCaps.deviceName}!!!`);
+            logWarn("All properties like platformVersion, deviceName etc should match!");
+            logInfo("Available devices:\t\t\t\t");
+            console.log('', allDevices);
         }
 
         if (searchedDevices && searchedDevices.length > 0) {
@@ -77,9 +82,9 @@ export class DeviceManager implements IDeviceManager {
 
             if (device.status === Status.SHUTDOWN) {
                 await DeviceController.startDevice(device);
-                console.log("Started device: ", device);
+                logInfo("Started device: ", device);
             } else {
-                device.type === DeviceType.DEVICE ? console.log("Device is connected:", device) : console.log("Device is already started", device)
+                device.type === DeviceType.DEVICE ? logInfo("Device is connected:", device) : logInfo("Device is already started", device)
                 if (!args.reuseDevice && device.type !== DeviceType.DEVICE) {
                     console.log("Since is it specified without reusing, the device would be shut down and restart!");
                     DeviceController.kill(device);
@@ -153,7 +158,8 @@ export class DeviceManager implements IDeviceManager {
                 // Do nothing for iOS ...
             }
         } catch (error) {
-            console.error(`Could not set don't keep activities: ${status}!`, error);
+            logError(`Could not set don't keep activities: ${status}!`);
+            logError(error);
         }
     }
 
@@ -210,7 +216,7 @@ export class DeviceManager implements IDeviceManager {
                 args.device.config['offsetPixels'] = AndroidController.calculateScreenOffset(args.device.config.density);
             }
 
-            density ? console.log(`Device setting:`, args.device.config) : console.log(`Could not resolve device density. Please provide offset in appium config`);
+            density ? logInfo(`Device setting:`, args.device.config) : console.log(`Could not resolve device density. Please provide offset in appium config`);
         }
     }
 

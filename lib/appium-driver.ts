@@ -33,7 +33,8 @@ import {
     findFreePort,
     wait,
     copy,
-    getSessions
+    getSessions,
+    logError
 } from "./utils";
 
 import { INsCapabilities } from "./interfaces/ns-capabilities";
@@ -215,16 +216,13 @@ export class AppiumDriver {
                                 args.sessionId = info.value[0].id;
                             }
                             if (!args.sessionId || args.sessionId.includes("undefined")) {
-                                console.error("Please provide session id!");
+                            logError("Please provide session id!");
                                 process.exit(1);
                             }
                         }
                         await driver.attach(args.sessionId);
                     } else {
                         sessionIfno = await driver.init(args.appiumCaps);
-                        if (args.startSession) {
-                            console.log(`Session id: ${sessionIfno[0]}`)
-                        }
                     }
 
                 } catch (error) {
@@ -245,6 +243,8 @@ export class AppiumDriver {
             }
             if (hasStarted) {
                 console.log("Appium driver has started successfully!");
+            }else{
+                logError("Appium driver is NOT started!")
             }
 
             retries--;

@@ -8,7 +8,10 @@ import {
     isWin,
     executeCommand,
     findFreePort,
-    getRegexResultsAsArray
+    getRegexResultsAsArray,
+    logError,
+    logWarn,
+    logInfo
 } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
@@ -82,9 +85,6 @@ export class AppiumServer {
                 response = await waitForOutput(this._server, /listener started/, /Error: listen/, 60000, true);
             }
 
-            if (this._args.startSession) {
-                console.log(`Server port: ${this.port}!`);
-            }
             return response;
         }
     }
@@ -169,11 +169,13 @@ export class AppiumServer {
             }
 
             if (!this._args.appiumCaps[appPackage]) {
-                throw new Error(`Please, provide ${appPackage} in ${this._args.appiumCapsLocation} file!`);
+                logError(`Please, provide ${appPackage} in ${this._args.appiumCapsLocation} file!`);
+                process.exit(1);
             }
 
             if (this._args.isAndroid && !this._args.appiumCaps[appActivityProp]) {
-                throw new Error(`Please, provide ${appActivityProp} in ${this._args.appiumCapsLocation} file!`);
+                logError(`Please, provide ${appActivityProp} in ${this._args.appiumCapsLocation} file!`);
+                process.exit(1);
             }
 
             const groupings = getRegexResultsAsArray(/(\w+)/gi, this._args.appiumCaps[appPackage]);
@@ -204,16 +206,16 @@ export class AppiumServer {
         const projectAppiumBinary = resolve(projectBinary, appium);
 
         if (fileExists(pluginAppiumBinary)) {
-            log("Using plugin-local Appium binary.", this._args.verbose);
+            logInfo("Using plugin-local Appium binary.", this._args.verbose);
             appium = pluginAppiumBinary;
         } else if (fileExists(projectAppiumBinary)) {
-            log("Using project-local Appium binary.", this._args.verbose);
+            logInfo("Using project-local Appium binary.", this._args.verbose);
             appium = projectAppiumBinary;
         } else {
             //const result = executeCommand("npm list -g");
             //if (result.includes("appium")) {
-            log("Using global Appium binary.", true);
-            log('Please, make sure it is installed globally.', true);
+            logWarn("Using global Appium binary.");
+            console.log('Please, make sure it is installed globally.');
             //} else if (result.includes("appium")) {
             //   const msg = "Appium not found. Please install appium before runnig tests!";
             //     log(msg, this._args.verbose);

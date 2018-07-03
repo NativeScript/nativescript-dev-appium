@@ -6,6 +6,7 @@ import * as frameComparerHelper from "./lib/frame-comparer";
 import { FrameComparer } from "./lib/frame-comparer";
 import { DeviceManager } from "./lib/device-manager";
 import { DeviceController } from "mobile-devices-controller";
+import { logInfo, logError } from "./lib/utils";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { AppiumServer } from "./lib/appium-server";
@@ -42,8 +43,23 @@ const attachToExitProcessHoockup = (processToExitFrom, processName) => {
 }
 
 if (nsCapabilities.startSession) {
-    startServer(nsCapabilities.port).then(s=>{
-        createDriver();
+    startServer(nsCapabilities.port).then(s => {
+        createDriver().then((d: AppiumDriver) => {
+            logInfo("Session has started successfully!");
+            d.sessionId().then(session => {
+                logInfo(`Session id: ${session}`);
+                logInfo(`Appium server port: ${appiumServer.port}`);
+            }).catch(error => {
+                logError('Something went wrong startig appium driver! Check appium config file!');
+                logError(error);
+            });
+        }).catch(error => {
+            logError('Something went wrong startig appium driver! Check appium config file!');
+            logError(error);
+        });
+    }).catch(error => {
+        logError('Something went wrong startig appium server! Check appium config file!');
+        logError(error);
     });
 }
 
@@ -68,7 +84,7 @@ export async function stopServer() {
 export async function createDriver() {
     if (nsCapabilities.attachToDebug) {
         appiumDriver = await AppiumDriver.createAppiumDriver(appiumServer.port, nsCapabilities);
-        return appiumDriver;        
+        return appiumDriver;
     }
     if (!appiumServer.server) {
         throw new Error("Server is not available!");

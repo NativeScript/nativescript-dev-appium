@@ -40,3 +40,6 @@ export declare const isPortAvailable: (port: any) => Promise<{}>;
 export declare const findFreePort: (retries?: number, port?: number) => Promise<number>;
 export declare function wait(milisecodns: any): void;
 export declare function getSessions(port: any, host?: string): Promise<{}>;
+export declare function logInfo(info: any, obj?: any): void;
+export declare function logWarn(info: any, obj?: any): void;
+export declare function logError(info: any, obj?: any): void;
