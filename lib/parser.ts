@@ -37,7 +37,13 @@ const config = (() => {
         appRootPath = join(appRootPath, "../../..");
     }
 
+    if (options.startSession) {
+        options.reuseDevice = true;
+    }
+
     if (options.attachToDebug) {
+        options.devMode = true;
+        console.log(`Option attachToDebug is set to true. Option --devMode is set true as well !`)
         if (!options.port) {
             console.error("Provide appium server port started from desktop application!")
             process.exit(1);
