@@ -23,6 +23,11 @@
             "email": "tsenov@progress.com"
         }
     ],
+    "bin": {
+        "nativescript-dev-appium": "./bin/nativescript-dev-appium",
+        "ns-dev-appium": "./bin/nativescript-dev-appium",
+        "ns-appium": "./bin/nativescript-dev-appium"
+    },
     "dependencies": {
         "app-root-path": "~2.0.1",
         "blink-diff": "~1.0.13",
@@ -30,7 +35,7 @@
         "chai-as-promised": "~7.1.0",
         "frame-comparer": "^2.0.0",
         "glob": "7.1.0",
-        "mobile-devices-controller": "~2.5.0",
+        "mobile-devices-controller": "~2.6.0",
         "mocha": "~5.1.0",
         "mocha-junit-reporter": "~1.17.0",
         "mocha-multi": "~1.0.0",
