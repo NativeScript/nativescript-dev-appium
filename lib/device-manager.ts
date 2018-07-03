@@ -4,7 +4,10 @@ import {
     log,
     isWin,
     shutdown,
-    executeCommand
+    executeCommand,
+    logError,
+    logInfo,
+    logWarn
 } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
@@ -34,7 +37,7 @@ export class DeviceManager implements IDeviceManager {
             device.name = process.env["DEVICE_NAME"] || device.name;
             const allDevices = await DeviceController.getDevices({ platform: device.platform });
             const foundDevice = DeviceController.filter(allDevices, { token: device.token.replace("emulator-", "") })[0];
-            console.log("Device: ", foundDevice);
+            logInfo("Device: ", foundDevice);
             return foundDevice;
         }
 
@@ -47,15 +50,22 @@ export class DeviceManager implements IDeviceManager {
 
         const allDevices = await DeviceController.getDevices({ platform: args.appiumCaps.platformName });
         if (!allDevices || allDevices === null || allDevices.length === 0) {
-            console.log("We couldn't find any devices. We will try to proceed to appium! Maybe avd manager is missing")
+            logError("We couldn't find any devices. We will try to proceed to appium! Maybe avd manager is missing")
             console.log("Available devices:\n", allDevices);
+            logWarn(`We couldn't find any devices. We will try to proceed to appium!\n
+                       1. Check if ANDROID_HOME environment variable is set correctly!\n
+                       2. Check if avd manager is available!
+                       3. Check appium capabilites and provide correct device options!`);
+            args.ignoreDeviceController = true;
         }
 
         const searchObj = args.appiumCaps.udid ? { token: args.appiumCaps.udid } : { name: args.appiumCaps.deviceName, apiLevel: args.appiumCaps.platformVersion };
         let searchedDevices = DeviceController.filter(allDevices, searchObj);
         if (!searchedDevices || searchedDevices.length === 0) {
-            console.log(`No such device ${args.appiumCaps.deviceName}!!!\n Check your device name!!!`);
-            console.log("Available devices:\n", allDevices);
+            logError(`No such device ${args.appiumCaps.deviceName}!!!`);
+            logWarn("All properties like platformVersion, deviceName etc should match!");
+            logInfo("Available devices:\t\t\t\t");
+            console.log('', allDevices);
         }
 
         if (searchedDevices && searchedDevices.length > 0) {
@@ -77,9 +87,9 @@ export class DeviceManager implements IDeviceManager {
 
             if (device.status === Status.SHUTDOWN) {
                 await DeviceController.startDevice(device);
-                console.log("Started device: ", device);
+                logInfo("Started device: ", device);
             } else {
-                device.type === DeviceType.DEVICE ? console.log("Device is connected:", device) : console.log("Device is already started", device)
+                device.type === DeviceType.DEVICE ? logInfo("Device is connected:", device) : logInfo("Device is already started", device)
                 if (!args.reuseDevice && device.type !== DeviceType.DEVICE) {
                     console.log("Since is it specified without reusing, the device would be shut down and restart!");
                     DeviceController.kill(device);
@@ -137,27 +147,30 @@ export class DeviceManager implements IDeviceManager {
     }
 
     public static async setDontKeepActivities(args: INsCapabilities, driver, value) {
-        if (args.isAndroid) {
-            if (!args.ignoreDeviceController) {
-                AndroidController.setDontKeepActivities(value, args.device);
-            } else if (args.relaxedSecurity) {
-                const status = value ? 1 : 0;
-                const output = await DeviceManager.executeShellCommand(driver, { command: "settings", args: ['put', 'global', 'always_finish_activities', status] });
-                //check if set 
-                const check = await DeviceManager.executeShellCommand(driver, { command: "settings", args: ['get', 'global', 'always_finish_activities'] });
-                console.info(`always_finish_activities: ${check}`);
+        const status = value ? 1 : 0;
+        try {
+            if (args.isAndroid) {
+                if (!args.ignoreDeviceController) {
+                    AndroidController.setDontKeepActivities(value, args.device);
+                } else if (args.relaxedSecurity) {
+                    const output = await DeviceManager.executeShellCommand(driver, { command: "settings", args: ['put', 'global', 'always_finish_activities', status] });
+                    console.log(`Output from setting always_finish_activities to ${status}: ${output}`);
+                    //check if set 
+                    const check = await DeviceManager.executeShellCommand(driver, { command: "settings", args: ['get', 'global', 'always_finish_activities'] });
+                    console.info(`Check if always_finish_activities is set correctly: ${check}`);
+                }
+            } else {
+                // Do nothing for iOS ...
             }
-        } else {
-            // Do nothing for iOS ...
+        } catch (error) {
+            logError(`Could not set don't keep activities: ${status}!`);
+            logError(error);
         }
     }
 
     public static async executeShellCommand(driver, commandAndargs: { command: string, "args": Array<any> }) {
-        if (driver.platform.toLowerCase() === Platform.ANDROID) {
-            const output = await driver.execute("mobile: shell", commandAndargs);
-            return output;
-        }
-        return undefined;
+        const output = await driver.execute("mobile: shell", commandAndargs);
+        return output;
     }
 
     public static async getDensity(args: INsCapabilities, driver) {
@@ -168,7 +181,8 @@ export class DeviceManager implements IDeviceManager {
             }
 
             if (args.relaxedSecurity) {
-                args.device.config.density = await DeviceManager.executeShellCommand(driver, { command: "wm", args: ["density"] });
+                const d = await DeviceManager.executeShellCommand(driver, { command: "wm", args: ["density"] });
+                args.device.config.density = /\d+/ig.test(d) ? parseInt(/\d+/ig.exec(d)[0]) / 100 : NaN;
                 console.log(`Device density recieved from adb shell command ${args.device.config.density}`);
             }
 
@@ -190,7 +204,10 @@ export class DeviceManager implements IDeviceManager {
     public static async applyDeviceAdditionsSettings(driver, args: INsCapabilities, sessionIfno: any) {
         if (!args.device.config || !args.device.config.offsetPixels) {
             args.device.config = {};
-            let density: number = sessionIfno[1].deviceScreenDensity ? sessionIfno[1].deviceScreenDensity / 100 : undefined;
+            let density: number;
+            if (sessionIfno && sessionIfno.length >= 1) {
+                density = sessionIfno[1].deviceScreenDensity ? sessionIfno[1].deviceScreenDensity / 100 : undefined;
+            }
 
             if (density) {
                 console.log(`Get density from appium session: ${density}`);
@@ -200,9 +217,11 @@ export class DeviceManager implements IDeviceManager {
 
             if (!density) {
                 await DeviceManager.getDensity(args, driver);
+                density = args.device.config.density
+                args.device.config['offsetPixels'] = AndroidController.calculateScreenOffset(args.device.config.density);
             }
 
-            density ? console.log(`Device setting:`, args.device.config) : console.log(`Could not resolve device density. Please provide offset in appium config`);
+            density ? logInfo(`Device setting:`, args.device.config) : console.log(`Could not resolve device density. Please provide offset in appium config`);
         }
     }
 

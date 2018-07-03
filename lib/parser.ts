@@ -10,7 +10,10 @@ const config = (() => {
         .option("testFolder", { describe: "e2e test folder name", default: "e2e", type: "string" })
         .option("appiumCapsLocation", { describe: "Capabilities", type: "string" })
         .option("sauceLab", { describe: "SauceLab", default: false, type: "boolean" })
-        .option("port", { alias: "p", describe: "Appium port", default: 8300, type: "number" })
+        .option("port", { alias: "p", describe: "Appium port", type: "number" })
+        .option("attachToDebug", { alias: "a", describe: "Attach to appium desktop app.", default: false, type: "boolean" })
+        .option("sessionId", { alias: "s", describe: "Session to attach", default: false, type: "string" })
+        .option("startSession", { describe: "Start session.", default: false, type: "boolean" })
         .option("wdaLocalPort", { alias: "wda", describe: "WDA port", default: 8410, type: "number" })
         .option("verbose", { alias: "v", describe: "Log actions", type: "boolean" })
         .option("path", { describe: "path", default: process.cwd(), type: "string" })
@@ -34,6 +37,28 @@ const config = (() => {
         appRootPath = join(appRootPath, "../../..");
     }
 
+    if (options.startSession) {
+        options.reuseDevice = true;
+    }
+
+    if (options.attachToDebug) {
+        options.devMode = true;
+        console.log(`Option attachToDebug is set to true. Option --devMode is set true as well !`)
+        if (!options.port) {
+            console.error("Provide appium server port started from desktop application!")
+            process.exit(1);
+        }
+    }
+
+    if (options.sessionId) {
+        options.attachToDebug = true;
+        options.devMode = true;
+        if (!options.port) {
+            console.error("Provide appium server port started from desktop application!")
+            process.exit(1);
+        }
+    }
+
     const projectDir = appRootPath;
     const projectBinary = resolve(projectDir, "node_modules", ".bin");
     const pluginRoot = resolve(projectDir, "node_modules", "nativescript-dev-appium");
@@ -44,7 +69,7 @@ const config = (() => {
         projectBinary: projectBinary,
         pluginRoot: pluginRoot,
         pluginBinary: pluginBinary,
-        port: process.env["APPIUM_PORT"] || process.env.npm_config_port || options.port,
+        port: process.env["APPIUM_PORT"] || process.env.npm_config_port || options.port || 8300,
         wdaLocalPort: process.env["WDA_LOCAL_PORT"] || options.wdaLocalPort,
         testFolder: options.testFolder || process.env.npm_config_testFolder || "e2e",
         runType: options.runType || process.env.npm_config_runType,
@@ -59,7 +84,10 @@ const config = (() => {
         cleanApp: !options.devMode && options.cleanApp && !options.sauceLab && !options.ignoreDeviceController,
         ignoreDeviceController: options.ignoreDeviceController,
         path: options.path,
-        relaxedSecurity: options.relaxedSecurity
+        relaxedSecurity: options.relaxedSecurity,
+        attachToDebug: options.attachToDebug,
+        sessionId: options.sessionId,
+        startSession: options.startSession
     };
 
     return config;
@@ -85,5 +113,8 @@ export const {
     wdaLocalPort,
     path,
     relaxedSecurity,
-    cleanApp
+    cleanApp,
+    attachToDebug,
+    sessionId,
+    startSession
 } = config;

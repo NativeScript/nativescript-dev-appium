@@ -1,3 +1,38 @@
+<a name="4.0.0"></a>
+# [4.0.0]() (2018-07-02)
+
+### Bug Fixes
+
+* fix sauce lab compatibility (#118) ([48946fd](https://github.com/NativeScript/nativescript-dev-appium/commit/48946fd)), closes [#118](https://github.com/NativeScript/nativescript-dev-appium/issues/118)
+* fix exiting appium server process
+* **android:** setDontKeepActivities should work for all api levels
+
+### Features
+
+* optins "--cleanApp" to uninstall application after finishing tests (#128) ([6447403](https://github.com/NativeScript/nativescript-dev-appium/commit/6447403)), closes [#128](https://github.com/NativeScript/nativescript-dev-appium/issues/128)
+* attach to session option "--attachToDebug"
+* create session "--createSession"
+* option "--sessionId" to provide specific session
+* get device log
+* **android:** provide option "--relaxedSecurity" to enable relaxed security and execute shell commands using appium android driver (#126) ([ce780bf](https://github.com/NativeScript/nativescript-dev-appium/commit/ce780bf)), closes [#126](https://github.com/NativeScript/nativescript-dev-appium/issues/126)
+
++### BREAKING CHANGES
+
+* **android:** change default automation name if not specified in appium config  (#122) ([3ba0a1c](https://github.com/NativeScript/nativescript-dev-appium/commit/3ba0a1c)), closes [#122](https://github.com/NativeScript/nativescript-dev-appium/issues/122).
+
+Before:
+```
+Default automation was 'Appium' for all api levels. 
+```
+After:
+```
+For all api levels higer or equal than api23 (including) default automator name is 'UiAutomator2'
+For all api levels lower than api23 default automator is still 'Appium'
+```
+* rename DeviceController to DeviceManager - In general this should not affect any user except those that are using DeviceManager explicity
+* bump version of mocha to ~5.1.0 which requires flag --exit to be set in mocha config file when the tests are run ot Travis 
+```
+
 <a name="3.3.0"></a>
 # [3.3.0](https://github.com/NativeScript/nativescript-dev-appium/compare/v3.2.0...v3.3.0) (2018-04-21)
 

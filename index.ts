@@ -1,13 +1,12 @@
 import { AppiumServer } from "./lib/appium-server";
 import { AppiumDriver } from "./lib/appium-driver";
-import { ElementHelper } from "./lib/element-helper";
 import { NsCapabilities } from "./lib/ns-capabilities";
 import { IDeviceManager } from "./lib/interfaces/device-manager";
-import { shutdown, findFreePort } from "./lib/utils";
 import * as frameComparerHelper from "./lib/frame-comparer";
 import { FrameComparer } from "./lib/frame-comparer";
 import { DeviceManager } from "./lib/device-manager";
 import { DeviceController } from "mobile-devices-controller";
+import { logInfo, logError } from "./lib/utils";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { AppiumServer } from "./lib/appium-server";
@@ -21,25 +20,51 @@ export { DeviceManager } from "./lib/device-manager";
 export { FrameComparer } from "./lib/frame-comparer";
 export { IRectangle } from "./lib/interfaces/rectangle";
 export { IDeviceManager } from "./lib/interfaces/device-manager";
+export { LogType } from "./lib/log-types";
 
 const nsCapabilities = new NsCapabilities();
 const appiumServer = new AppiumServer(nsCapabilities);
 let frameComparer: FrameComparer;
 let appiumDriver = null;
 
-const attachToExitProcessHoockup = (processToExitFrom, processName) => {
+const attachToExitProcessHoockup = (processToAttach, processName) => {
     const signals = ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
         'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'];
+    if (!processToAttach) {
+        return;
+    }
     signals.forEach(function (sig) {
-        processToExitFrom.once(sig, async function () {
+        processToAttach.once(sig, async function () {
             await killProcesses(sig);
             console.log(`Exited from ${processName}`);
-            processToExitFrom.removeListener(sig, killProcesses);
+            processToAttach.removeListener(sig, killProcesses);
         });
     });
 }
+
+if (nsCapabilities.startSession) {
+    startServer(nsCapabilities.port).then(s => {
+        createDriver().then((d: AppiumDriver) => {
+            logInfo("Session has started successfully!");
+            d.sessionId().then(session => {
+                logInfo(`Session id: ${session}`);
+                logInfo(`Appium server port: ${appiumServer.port}`);
+            }).catch(error => {
+                logError('Something went wrong startig appium driver! Check appium config file!');
+                logError(error);
+            });
+        }).catch(error => {
+            logError('Something went wrong startig appium driver! Check appium config file!');
+            logError(error);
+        });
+    }).catch(error => {
+        logError('Something went wrong startig appium server! Check appium config file!');
+        logError(error);
+    });
+}
+
 export async function startServer(port?: number, deviceManager?: IDeviceManager) {
-    await appiumServer.start(port || 8300, deviceManager);
+    await appiumServer.start(port || nsCapabilities.port, deviceManager);
     await attachToExitProcessHoockup(appiumServer.server, "appium");
 }
 
@@ -57,6 +82,10 @@ export async function stopServer() {
 };
 
 export async function createDriver() {
+    if (nsCapabilities.attachToDebug) {
+        appiumDriver = await AppiumDriver.createAppiumDriver(appiumServer.port, nsCapabilities);
+        return appiumDriver;
+    }
     if (!appiumServer.server) {
         throw new Error("Server is not available!");
     }
@@ -77,7 +106,7 @@ export async function createDriver() {
 
     // Make sure to turn off "Don't keep activities"
     // in case of previous execution failure.
-    await DeviceManager.setDontKeepActivities(nsCapabilities, appiumDriver, false);
+    await DeviceManager.setDontKeepActivities(nsCapabilities, appiumDriver.driver, false);
 
     return appiumDriver;
 }

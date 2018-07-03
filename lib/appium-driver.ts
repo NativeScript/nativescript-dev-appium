@@ -32,7 +32,9 @@ import {
     scroll,
     findFreePort,
     wait,
-    copy
+    copy,
+    getSessions,
+    logError
 } from "./utils";
 
 import { INsCapabilities } from "./interfaces/ns-capabilities";
@@ -44,6 +46,7 @@ import { unlinkSync, writeFileSync } from "fs";
 import * as webdriverio from "webdriverio";
 import { DeviceManager } from "../lib/device-manager";
 import { extname, basename } from "path";
+import { LogType } from "./log-types";
 
 export class AppiumDriver {
     private static pngFileExt = '.png';
@@ -155,6 +158,20 @@ export class AppiumDriver {
         return this._storageByDeviceName;
     }
 
+    public async getlog(logType: LogType) {
+        const logs = await this._driver.log(logType);
+        return logs;
+    }
+
+    // Still not supported in wd
+    // public async getPerformanceDataTypes() {
+    //     return await this._driver.getSupportedPerformanceDataTypes;
+    // }
+
+    // public async getPerformanceData(type, timeout: number = 5) {
+    //     return await this._driver.getPerformanceData(this._args.appiumCaps.appPackage, type, timeout);
+    // }
+
     public static async createAppiumDriver(port: number, args: INsCapabilities) {
         let driverConfig: any = {
             host: "localhost",
@@ -188,7 +205,29 @@ export class AppiumDriver {
         let retries = 10;
         while (retries > 0 && !hasStarted) {
             try {
-                const sessionIfno = await driver.init(args.appiumCaps);
+                let sessionIfno;
+
+                try {
+                    if (args.sessionId || args.attachToDebug) {
+                        if (!args.sessionId) {
+                            sessionIfno = await getSessions(args.port) + '';
+                            if (sessionIfno) {
+                                const info = JSON.parse(sessionIfno);
+                                args.sessionId = info.value[0].id;
+                            }
+                            if (!args.sessionId || args.sessionId.includes("undefined")) {
+                            logError("Please provide session id!");
+                                process.exit(1);
+                            }
+                        }
+                        await driver.attach(args.sessionId);
+                    } else {
+                        sessionIfno = await driver.init(args.appiumCaps);
+                    }
+
+                } catch (error) {
+
+                }
                 log(sessionIfno, args.verbose);
                 await DeviceManager.applyDeviceAdditionsSettings(driver, args, sessionIfno);
 
@@ -204,6 +243,8 @@ export class AppiumDriver {
             }
             if (hasStarted) {
                 console.log("Appium driver has started successfully!");
+            }else{
+                logError("Appium driver is NOT started!")
             }
 
             retries--;
@@ -572,9 +613,11 @@ export class AppiumDriver {
             this._recordVideoInfo['videoRecoringProcess'].kill("SIGINT");
         }
         try {
-            await this._driver.quit();
-            await this._driver.quit();
-            await this._webio.quit();
+            if (!this._args.attachToDebug) {
+                await this._driver.quit();
+                await this._driver.quit();
+                await this._webio.quit();
+            }
         } catch (error) {
         }
         this._isAlive = false;

@@ -32,6 +32,9 @@ export class NsCapabilities implements INsCapabilities {
     private _wdaLocalPort: number;
     private _relaxedSecurity: boolean;
     private _cleanApp: boolean;
+    private _attachToDebug: boolean;
+    private _startSession: boolean;
+    private _sessionId: string;
     private exceptions: Array<string> = new Array();
 
     constructor() {
@@ -58,10 +61,14 @@ export class NsCapabilities implements INsCapabilities {
         this._path = parser.path;
         this._relaxedSecurity = parser.relaxedSecurity;
         this._cleanApp = parser.cleanApp;
+        this._attachToDebug = parser.attachToDebug;
+        this._sessionId = parser.sessionId;
+        this._startSession = parser.startSession;
         this.setAutomationName();
         this.resolveApplication();
         this.checkMandatoryCapabiliies();
         this.throwExceptions();
+        this.shouldSetFullResetOption();
     }
 
     get path() { return this._path; }
@@ -94,88 +101,106 @@ export class NsCapabilities implements INsCapabilities {
     get emulatorOptions() { return (this._emulatorOptions || "-wipe-data -gpu on") }
     get relaxedSecurity() { return this._relaxedSecurity }
     get cleanApp() { return this._cleanApp; }
+    get attachToDebug() { return this._attachToDebug; }
+    get sessionId() { return this._sessionId; }
+    set sessionId(sessionId: string) { this._sessionId = sessionId; }
+    get startSession() { return this._startSession; }
 
     private isAndroidPlatform() { return this._appiumCaps.platformName.toLowerCase().includes("android"); }
 
+    private shouldSetFullResetOption(){
+        if (this._ignoreDeviceController) {
+            this.appiumCaps["fullReset"] = true;
+            this.appiumCaps["noReset"] = false;
+            console.log("Changing appium setting fullReset: true and noReset: false ");
+        }
+
+        if (this._attachToDebug || this._devMode) {
+            this.appiumCaps["fullReset"] = false;
+            this.appiumCaps["noReset"] = true;
+            console.log("Changing appium setting fullReset: false and noReset: true ");
+        }
+    }
+
     private setAutomationName() {
-        if (this.appiumCaps["automationName"]) {
-            switch (this.appiumCaps["automationName"].toLowerCase()) {
-                case AutomationName.UiAutomator2.toString().toLowerCase():
-                    this._automationName = AutomationName.UiAutomator2; break;
-                case AutomationName.Appium.toString().toLowerCase():
-                    this._automationName = AutomationName.Appium; break;
-                case AutomationName.XCUITest.toString().toLowerCase():
-                    this._automationName = AutomationName.XCUITest; break;
-            }
-        } else {
-            if (this._isAndroid) {
-                if (this.tryGetAndroidApiLevel() > 6 || (this.appiumCaps["apiLevel"] && this.appiumCaps["apiLevel"].toLowerCase().includes("p"))) {
-                    this._automationName = AutomationName.UiAutomator2;
-                }
-            }
+    if (this.appiumCaps["automationName"]) {
+        switch (this.appiumCaps["automationName"].toLowerCase()) {
+            case AutomationName.UiAutomator2.toString().toLowerCase():
+                this._automationName = AutomationName.UiAutomator2; break;
+            case AutomationName.Appium.toString().toLowerCase():
+                this._automationName = AutomationName.Appium; break;
+            case AutomationName.XCUITest.toString().toLowerCase():
+                this._automationName = AutomationName.XCUITest; break;
         }
-
-        if (this._automationName) {
-            this.appiumCaps["automationName"] = this._automationName.toString();
-            console.log(`Automation name set to: ${this.appiumCaps["automationName"]}`);
-            console.log(`To change automation name, you need to set it in appium capabilities!`);
-        } else {
-            console.log(`Appium will use default automation name`);
+    } else {
+        if (this._isAndroid) {
+            if (this.tryGetAndroidApiLevel() > 6 || (this.appiumCaps["apiLevel"] && this.appiumCaps["apiLevel"].toLowerCase().includes("p"))) {
+                this._automationName = AutomationName.UiAutomator2;
+            }
         }
     }
 
-    tryGetAndroidApiLevel() {
-        try {
-            if (this.appiumCaps["platformVersion"]) {
-                const apiLevel = this.appiumCaps["platformVersion"].split(".").splice(0, 2).join('.');
-                return parseFloat(apiLevel);
-            }
-        } catch (error) { }
-        return undefined;
+    if (this._automationName) {
+        this.appiumCaps["automationName"] = this._automationName.toString();
+        console.log(`Automation name set to: ${this.appiumCaps["automationName"]}`);
+        console.log(`To change automation name, you need to set it in appium capabilities!`);
+    } else {
+        console.log(`Appium will use default automation name`);
     }
+}
+
+tryGetAndroidApiLevel() {
+    try {
+        if (this.appiumCaps["platformVersion"]) {
+            const apiLevel = this.appiumCaps["platformVersion"].split(".").splice(0, 2).join('.');
+            return parseFloat(apiLevel);
+        }
+    } catch (error) { }
+    return undefined;
+}
 
     private resolveApplication() {
-        if (this.isSauceLab) {
-            this._appiumCaps.app = `sauce-storage:${this.appPath}`
-            this._ignoreDeviceController = true;
-            console.log("Using Sauce Labs. The application path is changed to: " + this.appPath);
-        } else {
-            this.appiumCaps.app = getAppPath(this);
-            this._appPath = this._appiumCaps.app;
-            console.log("Application full path: " + this._appiumCaps.app);
-        }
+    if (this.isSauceLab) {
+        this._appiumCaps.app = `sauce-storage:${this.appPath}`
+        this._ignoreDeviceController = true;
+        console.log("Using Sauce Labs. The application path is changed to: " + this.appPath);
+    } else {
+        this.appiumCaps.app = getAppPath(this);
+        this._appPath = this._appiumCaps.app;
+        console.log("Application full path: " + this._appiumCaps.app);
     }
+}
 
     private checkMandatoryCapabiliies() {
-        if (!this.isSauceLab && !fileExists(this._appiumCaps.app)) {
-            this.exceptions.push("The application folder doesn't exist!");
-        }
-
-        if (!this._runType) {
-            this.exceptions.push("Missing runType! Please select one from appium capabilities file!");
-        }
-
-        if (!this._appiumCaps.platformName) {
-            this.exceptions.push("Platform name is missing! Please, check appium capabilities file!");
-        }
-
-        if (!this._appiumCaps.platformVersion) {
-            console.warn("Platform version is missing! You'd better to set it in order to use the correct device");
-        }
-
-        if (!this._appiumCaps.deviceName && !this._appiumCaps.udid) {
-            this.exceptions.push("The device name or udid are missing! Please, check appium capabilities file!");
-        }
+    if (!this.isSauceLab && !fileExists(this._appiumCaps.app)) {
+        this.exceptions.push("The application folder doesn't exist!");
     }
+
+    if (!this._runType) {
+        this.exceptions.push("Missing runType! Please select one from appium capabilities file!");
+    }
+
+    if (!this._appiumCaps.platformName) {
+        this.exceptions.push("Platform name is missing! Please, check appium capabilities file!");
+    }
+
+    if (!this._appiumCaps.platformVersion) {
+        console.warn("Platform version is missing! You'd better to set it in order to use the correct device");
+    }
+
+    if (!this._appiumCaps.deviceName && !this._appiumCaps.udid) {
+        this.exceptions.push("The device name or udid are missing! Please, check appium capabilities file!");
+    }
+}
 
     private throwExceptions() {
-        this.exceptions.forEach(msg => {
-            logErr(msg, true);
-        });
+    this.exceptions.forEach(msg => {
+        logErr(msg, true);
+    });
 
-        if (this.exceptions.length > 0) {
-            const messagesString = this.exceptions.length > 1 ? "messages" : "message";
-            throw new Error(`See the ${messagesString} above and fullfill the conditions!!!`);
-        }
+    if (this.exceptions.length > 0) {
+        const messagesString = this.exceptions.length > 1 ? "messages" : "message";
+        throw new Error(`See the ${messagesString} above and fullfill the conditions!!!`);
     }
+}
 }
