@@ -27,17 +27,17 @@ const appiumServer = new AppiumServer(nsCapabilities);
 let frameComparer: FrameComparer;
 let appiumDriver = null;
 
-const attachToExitProcessHoockup = (processToExitFrom, processName) => {
+const attachToExitProcessHoockup = (processToAttach, processName) => {
     const signals = ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
         'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'];
-    if (!processToExitFrom) {
+    if (!processToAttach) {
         return;
     }
     signals.forEach(function (sig) {
-        processToExitFrom.once(sig, async function () {
+        processToAttach.once(sig, async function () {
             await killProcesses(sig);
             console.log(`Exited from ${processName}`);
-            processToExitFrom.removeListener(sig, killProcesses);
+            processToAttach.removeListener(sig, killProcesses);
         });
     });
 }
