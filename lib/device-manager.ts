@@ -52,6 +52,11 @@ export class DeviceManager implements IDeviceManager {
         if (!allDevices || allDevices === null || allDevices.length === 0) {
             logError("We couldn't find any devices. We will try to proceed to appium! Maybe avd manager is missing")
             console.log("Available devices:\n", allDevices);
+            logWarn(`We couldn't find any devices. We will try to proceed to appium!\n
+                       1. Check if ANDROID_HOME environment variable is set correctly!\n
+                       2. Check if avd manager is available!
+                       3. Check appium capabilites and provide correct device options!`);
+            args.ignoreDeviceController = true;
         }
 
         const searchObj = args.appiumCaps.udid ? { token: args.appiumCaps.udid } : { name: args.appiumCaps.deviceName, apiLevel: args.appiumCaps.platformVersion };

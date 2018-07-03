@@ -250,7 +250,7 @@ As you can see, the `app` property can be left an empty string which will force 
 
 **It is important to build your app in advance as explained in [Usage](#usage) section, because the runner expects to provide app package to it or such to exists in the search location.**
 
-**For faster testsing when working on an app with livesync you'd better use --devMode option or start a new session with --startSession option and run tests using --attachToSession option and specify appium --port. You can find more info in examples below.**
+**For faster testsing when working on an app with livesync it would be better to use --devMode option or start a new session using --startSession option and run tests using --attachToSession option and specify appium --port.**
 
 ## Options
 
@@ -267,7 +267,7 @@ As you can see, the `app` property can be left an empty string which will force 
 |ignoreDeviceController| Setting this option you will use default appium device controller which is recommended when tests are executed on cloud based solutions |
 |sessionId| In oreder to attach to already started session|Option --port is mendatory in this case. It will automatically set --devMode to true. Provides ability nativescript-dev-appium to be used with [appium desktop client](https://github.com/appium/appium-desktop/releases)|
 |attachToDebug| Same as sessionId but no need to porvide session id.|Option --port is mendatory in this case. It will automatically resolve --sessionId. Provides ability nativescript-dev-appium to be used with [appium desktop client](https://github.com/appium/appium-desktop/releases)|
-|startSession|Start new new appium server and initialize appium driver.|
+|startSession|Start new appium server and initialize appium driver.|
 |cleanApp| Remove application from device on server quit.|
 
 Examples:
