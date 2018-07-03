@@ -12,6 +12,7 @@ export { DeviceManager } from "./lib/device-manager";
 export { FrameComparer } from "./lib/frame-comparer";
 export { IRectangle } from "./lib/interfaces/rectangle";
 export { IDeviceManager } from "./lib/interfaces/device-manager";
+export { LogType } from "./lib/log-types";
 export declare function startServer(port?: number, deviceManager?: IDeviceManager): Promise<void>;
 export declare function stopServer(): Promise<void>;
 export declare function createDriver(): Promise<any>;

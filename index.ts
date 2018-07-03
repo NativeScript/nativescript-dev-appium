@@ -1,9 +1,7 @@
 import { AppiumServer } from "./lib/appium-server";
 import { AppiumDriver } from "./lib/appium-driver";
-import { ElementHelper } from "./lib/element-helper";
 import { NsCapabilities } from "./lib/ns-capabilities";
 import { IDeviceManager } from "./lib/interfaces/device-manager";
-import { shutdown, findFreePort, getSessions } from "./lib/utils";
 import * as frameComparerHelper from "./lib/frame-comparer";
 import { FrameComparer } from "./lib/frame-comparer";
 import { DeviceManager } from "./lib/device-manager";
@@ -21,6 +19,7 @@ export { DeviceManager } from "./lib/device-manager";
 export { FrameComparer } from "./lib/frame-comparer";
 export { IRectangle } from "./lib/interfaces/rectangle";
 export { IDeviceManager } from "./lib/interfaces/device-manager";
+export { LogType } from "./lib/log-types";
 
 const nsCapabilities = new NsCapabilities();
 const appiumServer = new AppiumServer(nsCapabilities);
@@ -91,7 +90,7 @@ export async function createDriver() {
 
     // Make sure to turn off "Don't keep activities"
     // in case of previous execution failure.
-    await DeviceManager.setDontKeepActivities(nsCapabilities, appiumDriver, false);
+    await DeviceManager.setDontKeepActivities(nsCapabilities, appiumDriver.driver, false);
 
     return appiumDriver;
 }

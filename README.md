@@ -211,7 +211,7 @@ my-plugin
 ```
 Thus, the same configuration can be used by both apps without duplication of files.
 
-If you wish to use another location of the capapabilities file instead default ones, you can specify it with `--capsLocation` option. Remember that the path provided has to be relative to the root directory.
+If you wish to use another location of the capapabilities file instead default ones, you can specify it with `--appiumCapsLocation` option. Remember that the path provided has to be relative to the root directory.
 
 Notice that once custom capabilities are provided you will be able to pick any of them using the `--runType` option (e.g. `--runType android25`). See sample content of `appium.capabilities.json` file below. For more details regarding the Appium Capabilities read [Appium documentation about Desired Capabilities](https://appium.io/docs/en/writing-running-appium/caps/):
 
@@ -250,6 +250,8 @@ As you can see, the `app` property can be left an empty string which will force 
 
 **It is important to build your app in advance as explained in [Usage](#usage) section, because the runner expects to provide app package to it or such to exists in the search location.**
 
+**For faster testsing when working on an app with livesync you'd better use --devMode option or start a new session with --startSession option and run tests using --attachToSession option and specify appium --port. You can find more info in examples below.**
+
 ## Options
 
 |Option| Description | Value |
@@ -259,15 +261,48 @@ As you can see, the `app` property can be left an empty string which will force 
 | reuseDevice | Reuse the device specified in the `runType` capabilities. If the emulator/simulator is not running, it will launch, execute tests and remain running. The next execution of `npm run e2e` with the `reuseDevice` option will attach to the already running emulator/simulator, execute tests and keep it running. | e.g. --reuseDevice |
 | devMode | `devMode` capabilities. Skipping application instalation and will automatically reuse device. | e.g. --devMode |
 |sauceLab| Enable tests execution in [Sauce Labs](https://saucelabs.com/). As a prerequisite you will have to define `SAUCE_USER` and `SAUCE_KEY` as [environment variable](https://wiki.saucelabs.com/display/DOCS/Best+Practice%3A+Use+Environment+Variables+for+Authentication+Credentials)| e.g. --sauceLab|
-|capsLocation| Change the location where `appium.capabilities.json` config file can be. It should be relative to the root directory | e.g. --capsLocation /e2e-tests|
+|appiumCapsLocation| Change the location where `appium.capabilities.json` config file can be. It should be relative to the root directory | e.g. --appiumCapsLocation /e2e-tests|
 |port| Appium server port|
 |storage| Specify remote image storage |
 |ignoreDeviceController| Setting this option you will use default appium device controller which is recommended when tests are executed on cloud based solutions |
+|sessionId| In oreder to attach to already started session|Option --port is mendatory in this case. It will automatically set --devMode to true. Provides ability nativescript-dev-appium to be used with [appium desktop client](https://github.com/appium/appium-desktop/releases)|
+|attachToDebug| Same as sessionId but no need to porvide session id.|Option --port is mendatory in this case. It will automatically resolve --sessionId. Provides ability nativescript-dev-appium to be used with [appium desktop client](https://github.com/appium/appium-desktop/releases)|
+|startSession|Start new new appium server and initialize appium driver.|
+|cleanApp| Remove application from device on server quit.|
 
 Examples:
 
+Let say that we have a script in package.json like this 
+
 ```
-$ npm run e2e -- --runType android25 --sauceLab --appLocation demo.apk --capsLocation "/e2e-tests/config"
+ "scripts": {
+    "e2e": "tsc -p e2e && mocha --opts ./config/mocha.opts --recursive e2e --appiumCapsLocation ./config/appium.capabilities.json"
+ }
+
+ ```
+
+Run tests in sauceLab
+```
+$ npm run e2e -- --runType android25 --sauceLab --appPath demo.apk
+```
+
+Run tests locally
+```
+$ npm run e2e -- --runType android25
+```
+
+Starting new session will console log appium server port and session id
+```
+$ node ./node_modules/.bin/ns-appium -- --runType android23 --startSession 
+```
+
+Run tests with already started session. Specify session id and server port. Default value for server port is 8300
+```
+$ npm run e2e -- --runType android23 --sessionId e72daf17-8db6-4500-a0cf-59a66effd6b9 --port 8300 
+```
+or simply use --attachToDebug which will attached to first available session. This is not recommended when more than one session is available.
+```
+$ npm run e2e -- --runType android23 --attachToDebug --port 8300
 ```
 
 ## Troubleshooting
@@ -282,11 +317,7 @@ $ npm run e2e -- --runType android25 --verbose
 
 1. Missing installed appium
 2. Misleading appPath or capabilities location. Please make sure that the path to the app or capabilities location is correct.
-
-
-## Missing Features
-
-1. Faster developer turnaround when working on an app. Find a way to use livesync and kick off Appium tests for the app that's on the device already.
+3. Misleading detials for device specified in appium config
 
 ## Contribute
 We love PRs! Check out the [contributing guidelines](CONTRIBUTING.md). If you want to contribute, but you are not sure where to start - look for [issues labeled `help wanted`](https://github.com/NativeScript/nativescript-dev-appium/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22).

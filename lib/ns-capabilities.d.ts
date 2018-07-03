@@ -64,6 +64,7 @@ export declare class NsCapabilities implements INsCapabilities {
     sessionId: string;
     readonly startSession: boolean;
     private isAndroidPlatform;
+    private shouldSetFullResetOption;
     private setAutomationName;
     tryGetAndroidApiLevel(): number;
     private resolveApplication;
