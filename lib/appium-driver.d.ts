@@ -9,6 +9,7 @@ import { IRectangle } from "./interfaces/rectangle";
 import { Point } from "./point";
 import { ImageHelper } from "./image-helper";
 import { ImageOptions } from "./image-options";
+import { LogType } from "./log-types";
 export declare class AppiumDriver {
     private _driver;
     private _wd;
@@ -54,6 +55,7 @@ export declare class AppiumDriver {
      * Get the storage where images are captured. It will be resources/app nam/device name
      */
     readonly storageByDeviceName: string;
+    getlog(logType: LogType): Promise<any>;
     static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
     /**
      *

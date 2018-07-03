@@ -45,6 +45,7 @@ import { unlinkSync, writeFileSync } from "fs";
 import * as webdriverio from "webdriverio";
 import { DeviceManager } from "../lib/device-manager";
 import { extname, basename } from "path";
+import { LogType } from "./log-types";
 
 export class AppiumDriver {
     private static pngFileExt = '.png';
@@ -155,6 +156,20 @@ export class AppiumDriver {
     get storageByDeviceName() {
         return this._storageByDeviceName;
     }
+
+    public async getlog(logType: LogType) {
+        const logs = await this._driver.log(logType);
+        return logs;
+    }
+
+    // Still not supported in wd
+    // public async getPerformanceDataTypes() {
+    //     return await this._driver.getSupportedPerformanceDataTypes;
+    // }
+
+    // public async getPerformanceData(type, timeout: number = 5) {
+    //     return await this._driver.getPerformanceData(this._args.appiumCaps.appPackage, type, timeout);
+    // }
 
     public static async createAppiumDriver(port: number, args: INsCapabilities) {
         let driverConfig: any = {
