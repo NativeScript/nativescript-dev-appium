@@ -55,7 +55,6 @@ export declare class AppiumDriver {
      * Get the storage where images are captured. It will be resources/app nam/device name
      */
     readonly storageByDeviceName: string;
-    getlog(logType: LogType): Promise<any>;
     static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
     /**
      *
@@ -163,7 +162,14 @@ export declare class AppiumDriver {
     prepareImageToCompare(filePath: string, rect: IRectangle): Promise<void>;
     takeScreenshot(fileName: string): Promise<string>;
     logScreenshot(fileName: string): Promise<string>;
+    getlog(logType: LogType): Promise<any>;
     logPageSource(fileName: string): Promise<void>;
+    logDeviceLog(fileName: any, logType: LogType, filter?: string): Promise<void>;
+    /**
+     * This method will snapshot the screen of device, get page source and log from device
+     * @param logName
+     */
+    logTestArtifacts(logName: string): Promise<void>;
     /**
      * Send the currently active app to the background
      * @param time

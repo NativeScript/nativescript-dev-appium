@@ -293,7 +293,7 @@ $ npm run e2e -- --runType android25
 
 Starting new session will console log appium server port and session id
 ```
-$ node ./node_modules/.bin/ns-appium -- --runType android23 --startSession 
+$ node ./node_modules/.bin/ns-appium --runType android23 --startSession 
 ```
 
 Run tests with already started session. Specify session id and server port. Default value for server port is 8300

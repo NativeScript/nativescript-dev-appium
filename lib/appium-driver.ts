@@ -158,11 +158,6 @@ export class AppiumDriver {
         return this._storageByDeviceName;
     }
 
-    public async getlog(logType: LogType) {
-        const logs = await this._driver.log(logType);
-        return logs;
-    }
-
     // Still not supported in wd
     // public async getPerformanceDataTypes() {
     //     return await this._driver.getSupportedPerformanceDataTypes;
@@ -216,7 +211,7 @@ export class AppiumDriver {
                                 args.sessionId = info.value[0].id;
                             }
                             if (!args.sessionId || args.sessionId.includes("undefined")) {
-                            logError("Please provide session id!");
+                                logError("Please provide session id!");
                                 process.exit(1);
                             }
                         }
@@ -243,7 +238,7 @@ export class AppiumDriver {
             }
             if (hasStarted) {
                 console.log("Appium driver has started successfully!");
-            }else{
+            } else {
                 logError("Appium driver is NOT started!")
             }
 
@@ -564,7 +559,7 @@ export class AppiumDriver {
     }
 
     public async logScreenshot(fileName: string) {
-        if (!this._logPath && !fileExists(fileName)) {
+        if (!this._logPath) {
             this._logPath = getReportPath(this._args);
         }
         if (!fileName.endsWith(AppiumDriver.pngFileExt)) {
@@ -575,8 +570,13 @@ export class AppiumDriver {
         return imgPath;
     }
 
+    public async getlog(logType: LogType) {
+        const logs = await this._driver.log(logType);
+        return logs;
+    }
+
     public async logPageSource(fileName: string) {
-        if (!this._logPath && !fileExists(fileName)) {
+        if (!this._logPath) {
             this._logPath = getReportPath(this._args);
         }
         if (!fileName.endsWith(".xml")) {
@@ -586,6 +586,58 @@ export class AppiumDriver {
         const path = resolve(this._logPath, fileName);
         const xml = await this.source();
         writeFileSync(path, xml.value, 'utf8');
+    }
+
+    public async logDeviceLog(fileName, logType: LogType, filter: string = undefined) {
+        let logs;
+        try {
+            logs = await this.getlog(logType);
+        } catch (error) {
+            logError(`Failed to get log type: ${logType}`);
+        }
+        let deviceLog = ""
+        logs.forEach(log => {
+            const curruntLog = `\n${JSON.stringify(log)}`;
+            if (filter) {
+                if (curruntLog.includes(filter)) {
+                    deviceLog += `\n${JSON.stringify(log)}`;
+                }
+            } else {
+                deviceLog += `\n${JSON.stringify(log)}`;
+            }
+        });
+
+        if (logs.length > 0 && deviceLog) {
+            const ext = extname(fileName);
+            fileName = fileName.replace(ext, "");
+            fileName = fileName.concat('_').concat(logType);
+            fileName = fileName.concat(".log");
+
+            if (!this._logPath) {
+                this._logPath = getReportPath(this._args);
+            }
+
+            const path = resolve(this._logPath, fileName);
+            writeFileSync(path, deviceLog, 'utf8');
+        } else {
+            console.log(`Log type: ${logType} is empty!`);
+        }
+    }
+
+    /**
+     * This method will snapshot the screen of device, get page source and log from device
+     * @param logName 
+     */
+    public async logTestArtifacts(logName: string) {
+        await this.logScreenshot(logName);
+        await this.logPageSource(logName);
+
+        if (this.isAndroid) {
+            await this.logDeviceLog(logName, LogType.logcat);
+        } else {
+            await this.logDeviceLog(logName, LogType.crashlog);
+            await this.logDeviceLog(logName, LogType.syslog, this._args.device.token);
+        }
     }
 
     /**
