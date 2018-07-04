@@ -1,6 +1,6 @@
 import * as yargs from "yargs";
 import { join, dirname } from "path";
-import { resolve } from "./utils";
+import { resolve, logError } from "./utils";
 
 export const capabilitiesName = "appium.capabilities.json";
 
@@ -45,7 +45,7 @@ const config = (() => {
         options.devMode = true;
         console.log(`Option attachToDebug is set to true. Option --devMode is set true as well !`)
         if (!options.port) {
-            console.error("Provide appium server port started from desktop application!")
+            logError("Provide appium server port started from desktop application!")
             process.exit(1);
         }
     }
@@ -54,7 +54,7 @@ const config = (() => {
         options.attachToDebug = true;
         options.devMode = true;
         if (!options.port) {
-            console.error("Provide appium server port started from desktop application!")
+            logError("Provide appium server port started from desktop application!")
             process.exit(1);
         }
     }

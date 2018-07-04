@@ -13,7 +13,8 @@
 * attach to session option "--attachToDebug"
 * create session "--createSession"
 * option "--sessionId" to provide specific session
-* get device log
+* exposed driver.getDeviceLog() which will return device log
+* exposed driver.logDeviceLog(fileName, logtype) which will create such file with postfix `${fileName}_${logtype}.log` in reports folder under appName/deviceName
 * **android:** provide option "--relaxedSecurity" to enable relaxed security and execute shell commands using appium android driver (#126) ([ce780bf](https://github.com/NativeScript/nativescript-dev-appium/commit/ce780bf)), closes [#126](https://github.com/NativeScript/nativescript-dev-appium/issues/126)
 
 +### BREAKING CHANGES

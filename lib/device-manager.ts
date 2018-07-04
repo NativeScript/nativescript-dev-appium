@@ -98,6 +98,10 @@ export class DeviceManager implements IDeviceManager {
             }
         }
 
+        if (device.platform === Platform.ANDROID) {
+            AndroidController.clearLog(device);
+        }
+
         DeviceManager._emulators.set(args.runType, device);
 
         if (!device || !device.token) {
