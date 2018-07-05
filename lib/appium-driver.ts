@@ -636,17 +636,17 @@ export class AppiumDriver {
             await this.logDeviceLog(logName, LogType.logcat);
         } else {
             await this.logDeviceLog(logName, LogType.crashlog);
-            await this.logDeviceLog(logName, LogType.syslog, this._args.device.token);
+            await this.logDeviceLog(logName, LogType.syslog);
         }
     }
 
     /**
      * Send the currently active app to the background
-     * @param time
+     * @param time in minutes
      */
-    public async backgroundApp(time: number) {
+    public async backgroundApp(minutes: number) {
         console.log("Sending the currently active app to the background ...");
-        await this._driver.backgroundApp(time);
+        await this._driver.backgroundApp(minutes);
     }
 
     public async resetApp() {
@@ -669,6 +669,8 @@ export class AppiumDriver {
                 await this._driver.quit();
                 await this._driver.quit();
                 await this._webio.quit();
+            } else {
+                await this._webio.detach();
             }
         } catch (error) {
         }

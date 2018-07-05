@@ -94,6 +94,9 @@ export class AppiumServer {
         if (this._args.isAndroid && this._args.ignoreDeviceController && !this._args.isSauceLab) {
             this._args.relaxedSecurity ? startingServerArgs.push("--relaxed-security") : console.log("'relaxedSecurity' is not enabled!\nTo enabled it use '--relaxedSecurity'!");
         }
+
+        logInfo(`Server args: `, startingServerArgs);
+
         this._server = child_process.spawn(this._appium, startingServerArgs, {
             shell: true,
             detached: false

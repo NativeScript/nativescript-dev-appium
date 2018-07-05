@@ -50,15 +50,15 @@ if (nsCapabilities.startSession) {
                 logInfo(`Session id: ${session}`);
                 logInfo(`Appium server port: ${appiumServer.port}`);
             }).catch(error => {
-                logError('Something went wrong startig appium driver! Check appium config file!');
+                logError('Something went wrong! Appium driver failed to start. Check appium config file.');
                 logError(error);
             });
         }).catch(error => {
-            logError('Something went wrong startig appium driver! Check appium config file!');
+            logError('Something went wrong! Appium driver failed to start. Check appium config file.');
             logError(error);
         });
     }).catch(error => {
-        logError('Something went wrong startig appium server! Check appium config file!');
+        logError('Something went wrong! Appium server failed to start. Check appium config file!');
         logError(error);
     });
 }

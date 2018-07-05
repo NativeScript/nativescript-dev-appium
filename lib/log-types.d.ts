@@ -5,5 +5,6 @@ export declare enum LogType {
     driver = "driver",
     syslog = "syslog",
     crashlog = "crashlog",
-    performance = "performance"
+    performance = "performance",
+    safariConsole = "safariConsole"
 }

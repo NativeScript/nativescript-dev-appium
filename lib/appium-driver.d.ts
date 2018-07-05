@@ -172,9 +172,9 @@ export declare class AppiumDriver {
     logTestArtifacts(logName: string): Promise<void>;
     /**
      * Send the currently active app to the background
-     * @param time
+     * @param time in minutes
      */
-    backgroundApp(time: number): Promise<void>;
+    backgroundApp(minutes: number): Promise<void>;
     resetApp(): Promise<void>;
     init(): Promise<void>;
     quit(): Promise<void>;
