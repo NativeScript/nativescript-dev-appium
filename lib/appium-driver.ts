@@ -221,7 +221,10 @@ export class AppiumDriver {
                     }
 
                 } catch (error) {
-
+                    if (!args.ignoreDeviceController && error && error.message && error.message.includes("Failure [INSTALL_FAILED_INSUFFICIENT_STORAGE]")) {
+                        await DeviceManager.kill(args.device);
+                        await DeviceController.startDevice(args.device);
+                    }
                 }
                 log(sessionIfno, args.verbose);
                 await DeviceManager.applyDeviceAdditionsSettings(driver, args, sessionIfno);
