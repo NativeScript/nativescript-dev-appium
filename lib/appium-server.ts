@@ -22,7 +22,6 @@ export class AppiumServer {
     private _port: number;
     private _runType: string;
     private _hasStarted: boolean;
-    private _deviceManager: IDeviceManager;
 
     constructor(private _args: INsCapabilities) {
         this._runType = this._args.runType;
@@ -106,7 +105,7 @@ export class AppiumServer {
     }
 
     public async stop() {
-        await this._deviceManager.stopDevice(this._args);
+        await this._args.deviceManager.stopDevice(this._args);
         return new Promise((resolve, reject) => {
             this._server.on("close", (code, signal) => {
                 log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);

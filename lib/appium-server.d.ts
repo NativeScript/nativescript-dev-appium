@@ -9,7 +9,6 @@ export declare class AppiumServer {
     private _port;
     private _runType;
     private _hasStarted;
-    private _deviceManager;
     constructor(_args: INsCapabilities);
     port: number;
     runType: string;
