@@ -6,17 +6,15 @@ import {
     shutdown,
     fileExists,
     isWin,
-    executeCommand,
     findFreePort,
-    getRegexResultsAsArray,
-    logError,
     logWarn,
-    logInfo
+    logInfo,
+    prepareApp,
+    prepareDevice
 } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
 import { DeviceManager } from "./device-manager";
-import { AndroidController } from "mobile-devices-controller";
 
 export class AppiumServer {
     private _server: child_process.ChildProcess;
@@ -24,7 +22,6 @@ export class AppiumServer {
     private _port: number;
     private _runType: string;
     private _hasStarted: boolean;
-    private _deviceManager: IDeviceManager;
 
     constructor(private _args: INsCapabilities) {
         this._runType = this._args.runType;
@@ -61,8 +58,12 @@ export class AppiumServer {
     }
 
     public async start(port, deviceManager: IDeviceManager = new DeviceManager()) {
-        await this.prepareDevice(deviceManager);
-        await this.prepareApp();
+        this._args.deviceManager = deviceManager;
+        if (!this._args.attachToDebug && !this._args.sessionId) {
+            await this.prepDevice(deviceManager);
+            await this.prepApp();
+        }
+
 
         log("Starting server...", this._args.verbose);
         const logLevel = this._args.verbose === true ? "debug" : "info";
@@ -104,7 +105,7 @@ export class AppiumServer {
     }
 
     public async stop() {
-        await this._deviceManager.stopDevice(this._args);
+        await this._args.deviceManager.stopDevice(this._args);
         return new Promise((resolve, reject) => {
             this._server.on("close", (code, signal) => {
                 log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
@@ -145,56 +146,12 @@ export class AppiumServer {
         });
     }
 
-    private async prepareDevice(deviceManager: IDeviceManager) {
-        this._deviceManager = deviceManager;
-        if (!this._args.device) {
-            const device = await this._deviceManager.startDevice(this._args);
-            this._args.device = device;
-        }
+    private async prepDevice(deviceManager: IDeviceManager) {
+        this._args = await prepareDevice(this._args, deviceManager);
     }
 
-    private async prepareApp() {
-        const appPackage = this._args.isAndroid ? "appPackage" : "bundleId";
-        const appFullPath = this._args.appiumCaps.app;
-
-        if (!this._args.ignoreDeviceController) {
-            if (appFullPath && !this._args.appiumCaps[appPackage]) {
-                console.log(`Trying to resolve automatically ${appPackage}!`);
-                this._args.appiumCaps[appPackage] = this._deviceManager.getPackageId(this._args.device, appFullPath);
-                console.log(`Setting capabilities ${this._args.runType}{ "${appPackage}" : "${this._args.appiumCaps[appPackage]}" }!`);
-            }
-
-            const appActivityProp = "appActivity";
-            if (this._args.isAndroid && appFullPath && !this._args.appiumCaps[appActivityProp]) {
-                console.log(`Trying to resolve automatically ${appActivityProp}!`);
-                this._args.appiumCaps[appActivityProp] = AndroidController.getLaunchableActivity(appFullPath);
-                console.log(`Setting capabilities ${this._args.runType}{ "${appActivityProp} : "${this._args.appiumCaps[appActivityProp]}" }!`);
-            }
-
-            if (!this._args.appiumCaps[appPackage]) {
-                logError(`Please, provide ${appPackage} in ${this._args.appiumCapsLocation} file!`);
-                process.exit(1);
-            }
-
-            if (this._args.isAndroid && !this._args.appiumCaps[appActivityProp]) {
-                logError(`Please, provide ${appActivityProp} in ${this._args.appiumCapsLocation} file!`);
-                process.exit(1);
-            }
-
-            const groupings = getRegexResultsAsArray(/(\w+)/gi, this._args.appiumCaps[appPackage]);
-            this._args.appName = groupings[groupings.length - 1];
-            console.log(`Setting application name as ${this._args.appName}`);
-            if (!this._args.devMode && !this._args.ignoreDeviceController) {
-                await this._deviceManager.uninstallApp(this._args);
-            } else {
-                this._args.appiumCaps.app = "";
-            }
-        }
-
-        if (this._args.appiumCaps[appPackage]) {
-            const groupings = getRegexResultsAsArray(/(\w+)/gi, this._args.appiumCaps[appPackage]);
-            this._args.appName = groupings[groupings.length - 1];
-        }
+    private async prepApp() {
+        this._args = await prepareApp(this._args);
     }
 
     // Resolve appium dependency
@@ -205,6 +162,10 @@ export class AppiumServer {
         const pluginRoot = this._args.pluginRoot;
 
         let appium = process.platform === "win32" ? "appium.cmd" : "appium";
+        if (!this._args.attachToDebug && !this._args.sessionId) {
+            this._appium = appium;
+            return;
+        }
         const pluginAppiumBinary = resolve(pluginBinary, appium);
         const projectAppiumBinary = resolve(projectBinary, appium);
 

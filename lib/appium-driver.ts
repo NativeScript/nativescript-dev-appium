@@ -26,15 +26,14 @@ import {
     getStorageByDeviceName,
     resolve,
     fileExists,
-    getAppPath,
     getReportPath,
-    calculateOffset,
     scroll,
     findFreePort,
     wait,
     copy,
     getSessions,
-    logError
+    logError,
+    prepareApp
 } from "./utils";
 
 import { INsCapabilities } from "./interfaces/ns-capabilities";
@@ -121,22 +120,6 @@ export class AppiumDriver {
         return this._driver;
     }
 
-    public webio() {
-        return this._webio;
-    }
-
-    public wd() {
-        return this._wd;
-    }
-
-    public async click(args) {
-        return await this._webio.click(args);
-    }
-
-    public async navBack() {
-        return await this._driver.back();
-    }
-
     /**
     * Get the storage where test results from image comparisson is logged It will be reports/app nam/device name
     */
@@ -156,6 +139,30 @@ export class AppiumDriver {
      */
     get storageByDeviceName() {
         return this._storageByDeviceName;
+    }
+
+    /**
+     * Returns instance of wd.TouchAction object
+     */
+    public get touchAction() {
+        return new this._wd.TouchAction(this._driver);
+    }
+
+
+    public webio() {
+        return this._webio;
+    }
+
+    public wd() {
+        return this._wd;
+    }
+
+    public async click(args) {
+        return await this._webio.click(args);
+    }
+
+    public async navBack() {
+        return await this._driver.back();
     }
 
     // Still not supported in wd
@@ -186,7 +193,10 @@ export class AppiumDriver {
 
         log("Creating driver!", args.verbose);
 
-        await AppiumDriver.applyAdditionalSettings(args);
+        if (!args.attachToDebug && !args.sessionId) {
+            await AppiumDriver.applyAdditionalSettings(args);
+        }
+
         const webio = webdriverio.remote({
             baseUrl: driverConfig.host,
             port: driverConfig.port,
@@ -204,17 +214,26 @@ export class AppiumDriver {
 
                 try {
                     if (args.sessionId || args.attachToDebug) {
-                        if (!args.sessionId) {
-                            sessionIfno = await getSessions(args.port) + '';
-                            if (sessionIfno) {
-                                const info = JSON.parse(sessionIfno);
-                                args.sessionId = info.value[0].id;
-                            }
-                            if (!args.sessionId || args.sessionId.includes("undefined")) {
-                                logError("Please provide session id!");
-                                process.exit(1);
+                        const sessionIfnos = JSON.parse(((await getSessions(args.port)) || "{}") + '');
+
+                        sessionIfno = sessionIfnos.value.filter(value => args.sessionId ? args.sessionId === value.id : true)[0];
+                        if (!sessionIfno || !sessionIfno.id) {
+                            logError("No info suitable session found", sessionIfno);
+                            process.exit(1);
+                        }
+
+                        args.sessionId = sessionIfno.id;
+                        args.appiumCaps = sessionIfno.capabilities;
+
+                        prepareApp(args);
+                        if (!args.device) {
+                            if (args.isAndroid) {
+                                args.device = DeviceManager.getDefaultDevice(args, sessionIfno.capabilities.avd, sessionIfno.capabilities.deviceUDID.replace("emulator-", ""), sessionIfno.capabilities.deviceUDID.includes("emulator") ? DeviceType.EMULATOR : DeviceType.ANDROID, sessionIfno.capabilities.desired.platformVersion || sessionIfno.capabilities.platformVersion);
+                            } else {
+                                args.device = DeviceManager.getDefaultDevice(args);
                             }
                         }
+
                         await driver.attach(args.sessionId);
                     } else {
                         sessionIfno = await driver.init(args.appiumCaps);
@@ -807,13 +826,17 @@ export class AppiumDriver {
     * @param waitForElement
     */
     public async findElementByAccessibilityIdIfExists(id: string, waitForElement: number = this.defaultWaitTime) {
-        const element = await this._driver.elementByAccessibilityIdIfExists(id, waitForElement);
+        let element = undefined;
+        try {
+            element = await this._driver.elementByAccessibilityIdIfExists(id, waitForElement);
+        } catch (error) { }
+
         if (element) {
             const searchMethod = "elementByAccessibilityIdIfExists";
             return await new UIElement(element, this._driver, this._wd, this._webio, this._args, searchMethod, id);
-        } else {
-            return undefined;
         }
+
+        return element;
     }
 
     public async setDontKeepActivities(value: boolean) {

@@ -1,4 +1,3 @@
-import { contains } from "./utils";
 import { log } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { Locator } from "./locators";
@@ -13,7 +12,7 @@ export class ElementHelper {
 
     public getXPathElement(name) {
         const tempName = name.toLowerCase().replace(/\-/g, "");
-        this.locators.getElementByName(name);
+        return `//${this.locators.getElementByName(tempName)}`;
     };
 
     public getXPathByText(text, exactMatch) {
@@ -29,6 +28,11 @@ export class ElementHelper {
     }
 
     public findByTextLocator(controlType, value, exactMatch) {
+        const result = this.getXPathByTextAtributes(`//${controlType}`, value, exactMatch);
+        return result;
+    }
+
+    public getXPathByTextAtributes(controlType, textValue, exactMatch) {
         let artbutes = ["label", "value", "hint"];
         if (this._args.isAndroid) {
             artbutes = ["content-desc", "resource-id", "text"];
@@ -37,21 +41,21 @@ export class ElementHelper {
         let searchedString = "";
         if (exactMatch) {
             if (this._args.isAndroid) {
-                artbutes.forEach((atr) => { searchedString += "translate(@" + atr + ",'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='" + value.toLowerCase() + "'" + " or " });
+                artbutes.forEach((atr) => { searchedString += "translate(@" + atr + ",'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='" + textValue.toLowerCase() + "'" + " or " });
             } else {
-                artbutes.forEach((atr) => { searchedString += "@" + atr + "='" + value + "'" + " or " });
+                artbutes.forEach((atr) => { searchedString += "@" + atr + "='" + textValue + "'" + " or " });
             }
         } else {
             if (this._args.isAndroid) {
-                artbutes.forEach((atr) => { searchedString += "contains(translate(@" + atr + ",'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'" + value.toLowerCase() + "')" + " or " });
+                artbutes.forEach((atr) => { searchedString += "contains(translate(@" + atr + ",'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'" + textValue.toLowerCase() + "')" + " or " });
             } else {
-                artbutes.forEach((atr) => { searchedString += "contains(@" + atr + ",'" + value + "')" + " or " });
+                artbutes.forEach((atr) => { searchedString += "contains(@" + atr + ",'" + textValue + "')" + " or " });
             }
         }
 
         searchedString = searchedString.substring(0, searchedString.lastIndexOf(" or "));
-        const result = "//" + controlType + "[" + searchedString + "]";
-        log("Xpath: " + result, false);
+        const result = `${controlType}[${searchedString}]`;
+        log("Xpath: " + result, this._args.verbose);
 
         return result;
     }

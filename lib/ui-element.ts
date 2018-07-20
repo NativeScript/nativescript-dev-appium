@@ -92,7 +92,18 @@ export class UIElement {
      */
     public async isDisplayed() {
         const el = (await this.element());
-        return (await el) === null ? false : (await el.isDisplayed());
+        let isDisplayed = true;
+        if (!el || el === null) {
+            return false;
+        }
+
+        try {
+            isDisplayed = (await el.isDisplayed());
+        } catch (error) {
+            isDisplayed = false;
+        }
+
+        return isDisplayed;
     }
 
     /**
@@ -298,5 +309,12 @@ export class UIElement {
         } catch (error) {
             return null;
         }
+    }
+
+    /**
+     * Easy to use in order to chain and search for nested elemetns
+     */
+    public driver() {
+        return this._element.browser;
     }
 }

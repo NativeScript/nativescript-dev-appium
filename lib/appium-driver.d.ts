@@ -39,10 +39,6 @@ export declare class AppiumDriver {
     readonly isAndroid: boolean;
     readonly isIOS: boolean;
     readonly driver: any;
-    webio(): any;
-    wd(): any;
-    click(args: any): Promise<any>;
-    navBack(): Promise<any>;
     /**
     * Get the storage where test results from image comparisson is logged It will be reports/app nam/device name
     */
@@ -55,6 +51,14 @@ export declare class AppiumDriver {
      * Get the storage where images are captured. It will be resources/app nam/device name
      */
     readonly storageByDeviceName: string;
+    /**
+     * Returns instance of wd.TouchAction object
+     */
+    readonly touchAction: any;
+    webio(): any;
+    wd(): any;
+    click(args: any): Promise<any>;
+    navBack(): Promise<any>;
     static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
     /**
      *
@@ -210,6 +214,6 @@ export declare class AppiumDriver {
     * @param id
     * @param waitForElement
     */
-    findElementByAccessibilityIdIfExists(id: string, waitForElement?: number): Promise<UIElement>;
+    findElementByAccessibilityIdIfExists(id: string, waitForElement?: number): Promise<any>;
     setDontKeepActivities(value: boolean): Promise<void>;
 }

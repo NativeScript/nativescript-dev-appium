@@ -48,7 +48,7 @@ export declare class UIElement {
     /**
      * Shows if element is displayed. Returns true or false. If the element doesn't exist it will return false
      */
-    isDisplayed(): Promise<any>;
+    isDisplayed(): Promise<boolean>;
     /**
      * Returns true or false
      */
@@ -118,4 +118,8 @@ export declare class UIElement {
     sendKeys(text: string): Promise<void>;
     log(): Promise<void>;
     refetch(): Promise<any>;
+    /**
+     * Easy to use in order to chain and search for nested elemetns
+     */
+    driver(): any;
 }

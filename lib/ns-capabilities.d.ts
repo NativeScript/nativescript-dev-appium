@@ -1,5 +1,6 @@
 import { INsCapabilities, AutomationName } from "./interfaces/ns-capabilities";
 import { IDevice } from "mobile-devices-controller";
+import { IDeviceManager } from "./interfaces/device-manager";
 export declare class NsCapabilities implements INsCapabilities {
     private _projectDir;
     private _projectBinary;
@@ -15,8 +16,6 @@ export declare class NsCapabilities implements INsCapabilities {
     private _reuseDevice;
     private _devMode;
     private _runType;
-    private _isAndroid;
-    private _isIOS;
     private _isSauceLab;
     private _appName;
     private _appPath;
@@ -31,7 +30,8 @@ export declare class NsCapabilities implements INsCapabilities {
     private _attachToDebug;
     private _startSession;
     private _sessionId;
-    private exceptions;
+    private _deviceManager;
+    private _exceptions;
     constructor();
     readonly path: string;
     readonly projectDir: any;
@@ -41,7 +41,7 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly port: any;
     readonly verbose: any;
     readonly appiumCapsLocation: any;
-    readonly appiumCaps: any;
+    appiumCaps: any;
     readonly testFolder: any;
     readonly storage: any;
     readonly testReports: any;
@@ -49,7 +49,7 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly devMode: any;
     readonly runType: any;
     readonly isAndroid: any;
-    readonly isIOS: any;
+    readonly isIOS: boolean;
     readonly isSauceLab: any;
     readonly automationName: AutomationName;
     readonly appPath: string;
@@ -63,6 +63,7 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly attachToDebug: boolean;
     sessionId: string;
     readonly startSession: boolean;
+    deviceManager: IDeviceManager;
     private isAndroidPlatform;
     private shouldSetFullResetOption;
     private setAutomationName;

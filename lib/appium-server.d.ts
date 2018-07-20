@@ -9,7 +9,6 @@ export declare class AppiumServer {
     private _port;
     private _runType;
     private _hasStarted;
-    private _deviceManager;
     constructor(_args: INsCapabilities);
     port: number;
     runType: string;
@@ -18,7 +17,7 @@ export declare class AppiumServer {
     start(port: any, deviceManager?: IDeviceManager): Promise<boolean>;
     private startAppiumServer;
     stop(): Promise<{}>;
-    private prepareDevice;
-    private prepareApp;
+    private prepDevice;
+    private prepApp;
     private resolveAppiumDependency;
 }
