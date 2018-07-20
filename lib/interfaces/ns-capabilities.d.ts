@@ -1,4 +1,5 @@
 import { IDevice } from "mobile-devices-controller";
+import { IDeviceManager } from "./device-manager";
 export declare enum AutomationName {
     UiAutomator2 = "UIAutomator2",
     Appium = "Appium",
@@ -35,4 +36,5 @@ export interface INsCapabilities {
     automationName: AutomationName;
     relaxedSecurity: boolean;
     cleanApp: boolean;
+    deviceManager: IDeviceManager;
 }

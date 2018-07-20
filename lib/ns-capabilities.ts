@@ -3,6 +3,7 @@ import { INsCapabilities, AutomationName } from "./interfaces/ns-capabilities";
 import { resolveCapabilities } from "./capabilities-helper";
 import { getAppPath, fileExists, logErr, logInfo, logError } from "./utils";
 import { IDevice } from "mobile-devices-controller";
+import { IDeviceManager } from "./interfaces/device-manager";
 
 export class NsCapabilities implements INsCapabilities {
     private _projectDir;
@@ -33,7 +34,8 @@ export class NsCapabilities implements INsCapabilities {
     private _attachToDebug: boolean;
     private _startSession: boolean;
     private _sessionId: string;
-    private exceptions: Array<string> = new Array();
+    private _deviceManager: IDeviceManager;
+    private _exceptions: Array<string> = new Array();
 
     constructor() {
         this._projectDir = parser.projectDir;
@@ -106,6 +108,8 @@ export class NsCapabilities implements INsCapabilities {
     get sessionId() { return this._sessionId; }
     set sessionId(sessionId: string) { this._sessionId = sessionId; }
     get startSession() { return this._startSession; }
+    get deviceManager() { return this._deviceManager; }
+    set deviceManager(deviceManager: IDeviceManager) { this._deviceManager = deviceManager; }
 
     private isAndroidPlatform() { return this._appiumCaps.platformName.toLowerCase().includes("android"); }
 
@@ -174,15 +178,15 @@ export class NsCapabilities implements INsCapabilities {
 
     private checkMandatoryCapabiliies() {
         if (!this.isSauceLab && !fileExists(this._appiumCaps.app)) {
-            this.exceptions.push("The application folder doesn't exist!");
+            this._exceptions.push("The application folder doesn't exist!");
         }
 
         if (!this._runType) {
-            this.exceptions.push("Missing runType! Please select one from appium capabilities file!");
+            this._exceptions.push("Missing runType! Please select one from appium capabilities file!");
         }
 
         if (!this._appiumCaps.platformName) {
-            this.exceptions.push("Platform name is missing! Please, check appium capabilities file!");
+            this._exceptions.push("Platform name is missing! Please, check appium capabilities file!");
         }
 
         if (!this._appiumCaps.platformVersion) {
@@ -190,17 +194,17 @@ export class NsCapabilities implements INsCapabilities {
         }
 
         if (!this._appiumCaps.deviceName && !this._appiumCaps.udid) {
-            this.exceptions.push("The device name or udid are missing! Please, check appium capabilities file!");
+            this._exceptions.push("The device name or udid are missing! Please, check appium capabilities file!");
         }
     }
 
     private throwExceptions() {
-        this.exceptions.forEach(msg => {
+        this._exceptions.forEach(msg => {
             logError(msg);
         });
 
-        if (this.exceptions.length > 0) {
-           process.exit(1);
+        if (this._exceptions.length > 0) {
+            process.exit(1);
         }
     }
 }

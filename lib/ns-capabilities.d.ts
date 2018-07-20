@@ -1,5 +1,6 @@
 import { INsCapabilities, AutomationName } from "./interfaces/ns-capabilities";
 import { IDevice } from "mobile-devices-controller";
+import { IDeviceManager } from "./interfaces/device-manager";
 export declare class NsCapabilities implements INsCapabilities {
     private _projectDir;
     private _projectBinary;
@@ -29,7 +30,8 @@ export declare class NsCapabilities implements INsCapabilities {
     private _attachToDebug;
     private _startSession;
     private _sessionId;
-    private exceptions;
+    private _deviceManager;
+    private _exceptions;
     constructor();
     readonly path: string;
     readonly projectDir: any;
@@ -61,6 +63,7 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly attachToDebug: boolean;
     sessionId: string;
     readonly startSession: boolean;
+    deviceManager: IDeviceManager;
     private isAndroidPlatform;
     private shouldSetFullResetOption;
     private setAutomationName;

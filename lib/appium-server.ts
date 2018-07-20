@@ -59,6 +59,7 @@ export class AppiumServer {
     }
 
     public async start(port, deviceManager: IDeviceManager = new DeviceManager()) {
+        this._args.deviceManager = deviceManager;
         if (!this._args.attachToDebug && !this._args.sessionId) {
             await this.prepDevice(deviceManager);
             await this.prepApp();
@@ -147,11 +148,11 @@ export class AppiumServer {
     }
 
     private async prepDevice(deviceManager: IDeviceManager) {
-        await prepareDevice(this._args, deviceManager);
+        this._args = await prepareDevice(this._args, deviceManager);
     }
 
     private async prepApp() {
-        await prepareApp(this._args);
+        this._args = await prepareApp(this._args);
     }
 
     // Resolve appium dependency

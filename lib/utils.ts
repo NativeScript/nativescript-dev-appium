@@ -2,12 +2,12 @@ import * as path from "path";
 import * as fs from "fs";
 import * as childProcess from "child_process";
 import * as glob from "glob";
+import * as http from "http";
 
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { AndroidController, IOSController } from "mobile-devices-controller";
 import { Point } from "./point";
 import { Direction } from "./direction";
-import * as http from "http";
 import { IDeviceManager } from "./interfaces/device-manager";
 
 export function resolve(mainPath, ...args) {
@@ -504,12 +504,12 @@ export function getSessions(port, host = `0.0.0.0`) {
 }
 
 export const prepareDevice = async (args: INsCapabilities, deviceManager: IDeviceManager) => {
-    if (!this._args.device) {
+    if (!args.device) {
         const device = await deviceManager.startDevice(args);
         args.device = device;
     }
 
-    return deviceManager;
+    return args;
 }
 
 export const prepareApp = async (args: INsCapabilities) => {
@@ -519,7 +519,7 @@ export const prepareApp = async (args: INsCapabilities) => {
     if (!args.ignoreDeviceController && !args.attachToDebug && !args.sessionId) {
         if (appFullPath && !args.appiumCaps[appPackage]) {
             console.log(`Trying to resolve automatically ${appPackage}!`);
-            args.appiumCaps[appPackage] = this._deviceManager.getPackageId(args.device, appFullPath);
+            args.appiumCaps[appPackage] = args.deviceManager.getPackageId(args.device, appFullPath);
             console.log(`Setting capabilities ${args.runType}{ "${appPackage}" : "${args.appiumCaps[appPackage]}" }!`);
         }
 
@@ -544,7 +544,7 @@ export const prepareApp = async (args: INsCapabilities) => {
         args.appName = groupings[groupings.length - 1];
         console.log(`Setting application name as ${args.appName}`);
         if (!args.devMode && !args.ignoreDeviceController) {
-            await this._deviceManager.uninstallApp(args);
+            await args.deviceManager.uninstallApp(args);
         } else {
             args.appiumCaps.app = "";
         }
@@ -559,6 +559,8 @@ export const prepareApp = async (args: INsCapabilities) => {
         const groupings = getRegexResultsAsArray(/(\w+)/gi, args.appiumCaps[appPackage]);
         args.appName = groupings[groupings.length - 1];
     }
+
+    return args;
 }
 
 export const sessionIds = async (port) => {
