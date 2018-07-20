@@ -15,8 +15,6 @@ export declare class NsCapabilities implements INsCapabilities {
     private _reuseDevice;
     private _devMode;
     private _runType;
-    private _isAndroid;
-    private _isIOS;
     private _isSauceLab;
     private _appName;
     private _appPath;
@@ -41,7 +39,7 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly port: any;
     readonly verbose: any;
     readonly appiumCapsLocation: any;
-    readonly appiumCaps: any;
+    appiumCaps: any;
     readonly testFolder: any;
     readonly storage: any;
     readonly testReports: any;
@@ -49,7 +47,7 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly devMode: any;
     readonly runType: any;
     readonly isAndroid: any;
-    readonly isIOS: any;
+    readonly isIOS: boolean;
     readonly isSauceLab: any;
     readonly automationName: AutomationName;
     readonly appPath: string;

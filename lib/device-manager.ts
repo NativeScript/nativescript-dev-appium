@@ -142,8 +142,8 @@ export class DeviceManager implements IDeviceManager {
         await DeviceController.kill(device);
     }
 
-    private static getDefaultDevice(args) {
-        let device = new Device(args.appiumCaps.deviceName, args.appiumCaps.platformVersion, undefined, args.appiumCaps.platformName.toLowerCase(), undefined, undefined);
+    public static getDefaultDevice(args: INsCapabilities, deviceName?: string, token?: string, type?: DeviceType, platformVersion?: number) {
+        let device = new Device(deviceName || args.appiumCaps.deviceName, platformVersion || args.appiumCaps.platformVersion, type, args.appiumCaps.platformName.toLowerCase(), token, undefined, undefined);
         device.config = { "density": args.appiumCaps.density, "offsetPixels": args.appiumCaps.offsetPixels };
         delete args.appiumCaps.density;
         delete args.appiumCaps.offsetPixels;
@@ -184,7 +184,7 @@ export class DeviceManager implements IDeviceManager {
                 args.device.config.density = await AndroidController.getPhysicalDensity(args.device);
             }
 
-            if (args.relaxedSecurity) {
+            if (args.relaxedSecurity && !args.device.config.density) {
                 const d = await DeviceManager.executeShellCommand(driver, { command: "wm", args: ["density"] });
                 args.device.config.density = /\d+/ig.test(d) ? parseInt(/\d+/ig.exec(d)[0]) / 100 : NaN;
                 console.log(`Device density recieved from adb shell command ${args.device.config.density}`);

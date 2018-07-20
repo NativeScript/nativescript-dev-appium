@@ -4,9 +4,11 @@ import * as childProcess from "child_process";
 import * as glob from "glob";
 
 import { INsCapabilities } from "./interfaces/ns-capabilities";
+import { AndroidController, IOSController } from "mobile-devices-controller";
 import { Point } from "./point";
 import { Direction } from "./direction";
 import * as http from "http";
+import { IDeviceManager } from "./interfaces/device-manager";
 
 export function resolve(mainPath, ...args) {
     if (!path.isAbsolute(mainPath)) {
@@ -499,6 +501,73 @@ export function getSessions(port, host = `0.0.0.0`) {
             resolve(undefined);
         });
     });
+}
+
+export const prepareDevice = async (args: INsCapabilities, deviceManager: IDeviceManager) => {
+    if (!this._args.device) {
+        const device = await deviceManager.startDevice(args);
+        args.device = device;
+    }
+
+    return deviceManager;
+}
+
+export const prepareApp = async (args: INsCapabilities) => {
+    const appPackage = args.isAndroid ? "appPackage" : "bundleId";
+    const appFullPath = args.appiumCaps.app;
+
+    if (!args.ignoreDeviceController && !args.attachToDebug && !args.sessionId) {
+        if (appFullPath && !args.appiumCaps[appPackage]) {
+            console.log(`Trying to resolve automatically ${appPackage}!`);
+            args.appiumCaps[appPackage] = this._deviceManager.getPackageId(args.device, appFullPath);
+            console.log(`Setting capabilities ${args.runType}{ "${appPackage}" : "${args.appiumCaps[appPackage]}" }!`);
+        }
+
+        const appActivityProp = "appActivity";
+        if (args.isAndroid && appFullPath && !args.appiumCaps[appActivityProp]) {
+            console.log(`Trying to resolve automatically ${appActivityProp}!`);
+            args.appiumCaps[appActivityProp] = AndroidController.getLaunchableActivity(appFullPath);
+            console.log(`Setting capabilities ${args.runType}{ "${appActivityProp} : "${args.appiumCaps[appActivityProp]}" }!`);
+        }
+
+        if (!args.appiumCaps[appPackage]) {
+            logError(`Please, provide ${appPackage} in ${args.appiumCapsLocation} file!`);
+            process.exit(1);
+        }
+
+        if (args.isAndroid && !args.appiumCaps[appActivityProp]) {
+            logError(`Please, provide ${appActivityProp} in ${args.appiumCapsLocation} file!`);
+            process.exit(1);
+        }
+
+        const groupings = getRegexResultsAsArray(/(\w+)/gi, args.appiumCaps[appPackage]);
+        args.appName = groupings[groupings.length - 1];
+        console.log(`Setting application name as ${args.appName}`);
+        if (!args.devMode && !args.ignoreDeviceController) {
+            await this._deviceManager.uninstallApp(args);
+        } else {
+            args.appiumCaps.app = "";
+        }
+    }
+
+    if (!args.attachToDebug && !args.sessionId && !args.appiumCaps[appPackage] && args.isIOS && args
+        .appiumCaps.app) {
+        IOSController.getPackageId({ type: undefined, app: args.appiumCaps.app })
+    }
+
+    if (args.appiumCaps[appPackage]) {
+        const groupings = getRegexResultsAsArray(/(\w+)/gi, args.appiumCaps[appPackage]);
+        args.appName = groupings[groupings.length - 1];
+    }
+}
+
+export const sessionIds = async (port) => {
+    const sesssions = JSON.parse(((await getSessions(port)) || "{}") + '');
+    const ids = [];
+    sesssions.value.forEach(value => {
+        ids.push(value.id);
+    });
+    return ids;
 }
 
 export function logInfo(info, obj = undefined) {

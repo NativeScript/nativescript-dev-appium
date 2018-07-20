@@ -250,7 +250,7 @@ As you can see, the `app` property can be left an empty string which will force 
 
 **It is important to build your app in advance as explained in [Usage](#usage) section, because the runner expects to provide app package to it or such to exists in the search location.**
 
-**For faster testsing when working on an app with livesync it would be better to use --devMode option or start a new session using --startSession option and run tests using --attachToSession option and specify appium --port.**
+**For faster testsing when working on an app with livesync it would be better to use --devMode option or start a new session using --startSession option and run tests using --attachToDebug option and specify appium --port. Or simply start session with appium desktop application**
 
 ## Options
 
@@ -293,16 +293,15 @@ $ npm run e2e -- --runType android25
 
 Starting new session will console log appium server port and session id
 ```
-$ node ./node_modules/.bin/ns-appium --runType android23 --startSession 
+$ node ./node_modules/.bin/ns-appium --runType android23 --startSession --port 8300
 ```
-
 Run tests with already started session. Specify session id and server port. Default value for server port is 8300
 ```
-$ npm run e2e -- --runType android23 --sessionId e72daf17-8db6-4500-a0cf-59a66effd6b9 --port 8300 
+$ npm run e2e -- --sessionId e72daf17-8db6-4500-a0cf-59a66effd6b9 --port 8300 
 ```
 or simply use --attachToDebug which will attached to first available session. This is not recommended when more than one session is available.
 ```
-$ npm run e2e -- --runType android23 --attachToDebug --port 8300
+$ npm run e2e -- --attachToDebug --port 8300
 ```
 
 ## Troubleshooting

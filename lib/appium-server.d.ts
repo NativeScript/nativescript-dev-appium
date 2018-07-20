@@ -18,7 +18,7 @@ export declare class AppiumServer {
     start(port: any, deviceManager?: IDeviceManager): Promise<boolean>;
     private startAppiumServer;
     stop(): Promise<{}>;
-    private prepareDevice;
-    private prepareApp;
+    private prepDevice;
+    private prepApp;
     private resolveAppiumDependency;
 }

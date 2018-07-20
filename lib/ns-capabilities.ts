@@ -19,8 +19,6 @@ export class NsCapabilities implements INsCapabilities {
     private _reuseDevice;
     private _devMode;
     private _runType;
-    private _isAndroid;
-    private _isIOS;
     private _isSauceLab;
     private _appName: string;
     private _appPath: string;
@@ -46,29 +44,31 @@ export class NsCapabilities implements INsCapabilities {
         this._port = parser.port;
         this._verbose = parser.verbose;
         this._appiumCapsLocation = parser.appiumCapsLocation;
-        this._appiumCaps = resolveCapabilities(this._appiumCapsLocation, parser.runType, parser.projectDir);
+        this._relaxedSecurity = parser.relaxedSecurity;
+        this._cleanApp = parser.cleanApp;
+        this._attachToDebug = parser.attachToDebug;
+        this._sessionId = parser.sessionId;
+        this._startSession = parser.startSession;
+        if (!this._attachToDebug && !this._sessionId) {
+            this._appiumCaps = resolveCapabilities(this._appiumCapsLocation, parser.runType, parser.projectDir);
+        }
         this._testFolder = parser.testFolder;
         this._storage = parser.storage;
         this._testReports = parser.testReports;
         this._reuseDevice = parser.reuseDevice;
         this._devMode = parser.devMode;
         this._runType = parser.runType;
-        this._isAndroid = this.isAndroidPlatform();
-        this._isIOS = !this._isAndroid;
         this._isSauceLab = parser.isSauceLab;
         this._ignoreDeviceController = parser.ignoreDeviceController;
         this._wdaLocalPort = parser.wdaLocalPort;
         this._path = parser.path;
-        this._relaxedSecurity = parser.relaxedSecurity;
-        this._cleanApp = parser.cleanApp;
-        this._attachToDebug = parser.attachToDebug;
-        this._sessionId = parser.sessionId;
-        this._startSession = parser.startSession;
-        this.setAutomationName();
-        this.resolveApplication();
-        this.checkMandatoryCapabiliies();
-        this.throwExceptions();
-        this.shouldSetFullResetOption();
+        if (!this._attachToDebug && !this._sessionId) {
+            this.setAutomationName();
+            this.resolveApplication();
+            this.checkMandatoryCapabiliies();
+            this.throwExceptions();
+            this.shouldSetFullResetOption();
+        }
     }
 
     get path() { return this._path; }
@@ -80,14 +80,15 @@ export class NsCapabilities implements INsCapabilities {
     get verbose() { return this._verbose; }
     get appiumCapsLocation() { return this._appiumCapsLocation; }
     get appiumCaps() { return this._appiumCaps; }
+    set appiumCaps(appiumCaps) { this._appiumCaps = appiumCaps; }
     get testFolder() { return this._testFolder; }
     get storage() { return this._storage; }
     get testReports() { return this._testReports; }
     get reuseDevice() { return this._reuseDevice; }
     get devMode() { return this._devMode; }
     get runType() { return this._runType; }
-    get isAndroid() { return this._isAndroid; }
-    get isIOS() { return this._isIOS; }
+    get isAndroid() { return this.isAndroidPlatform(); }
+    get isIOS() { return !this.isAndroid; }
     get isSauceLab() { return this._isSauceLab; }
     get automationName() { return this._automationName; }
     get appPath() { return this._appPath; }
@@ -133,7 +134,7 @@ export class NsCapabilities implements INsCapabilities {
                     this._automationName = AutomationName.XCUITest; break;
             }
         } else {
-            if (this._isAndroid) {
+            if (this.isAndroid) {
                 if (this.tryGetAndroidApiLevel() > 6 || (this.appiumCaps["apiLevel"] && this.appiumCaps["apiLevel"].toLowerCase().includes("p"))) {
                     this._automationName = AutomationName.UiAutomator2;
                 }
