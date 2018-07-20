@@ -144,7 +144,7 @@ export class AppiumDriver {
     /**
      * Returns instance of wd.TouchAction object
      */
-    public get TouchAction() {
+    public get touchAction() {
         return new this._wd.TouchAction(this._driver);
     }
 

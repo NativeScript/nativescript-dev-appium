@@ -54,7 +54,7 @@ export declare class AppiumDriver {
     /**
      * Returns instance of wd.TouchAction object
      */
-    readonly TouchAction: any;
+    readonly touchAction: any;
     webio(): any;
     wd(): any;
     click(args: any): Promise<any>;

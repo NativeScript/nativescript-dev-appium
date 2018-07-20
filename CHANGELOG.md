@@ -2,11 +2,12 @@
 # [4.0.1]() (2018-07-20)
 
 ### Features
-* intorduce wd property to UIElement
-* intorduce getXPathByTextAtributes - returns element/s specific type or '//*' that meets all atrbutes for ios ["label", "value", "hint"] and for android ["content-desc", "resource-id", "text"]
+* **UIElement:** intorduce wd property
+* **AppiumDriver:** intorduce touchAction() 
+* **ElementHelper:** intorduce getXPathByTextAtributes() - returns element/s specific type or '//*' that meets all atrbutes for ios ["label", "value", "hint"] and for android ["content-desc", "resource-id", "text"]
 * --attachToDebug option requires only --port option
 * --sessionId options requires only --port oprtion
-###
+
 
 <a name="4.0.0"></a>
 # [4.0.0]() (2018-07-02)
