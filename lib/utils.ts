@@ -550,8 +550,12 @@ export const prepareApp = async (args: INsCapabilities) => {
         }
     }
 
-    if (!args.attachToDebug && !args.sessionId && !args.appiumCaps[appPackage] && args.isIOS && args
-        .appiumCaps.app) {
+    if (!args.ignoreDeviceController 
+        && !args.attachToDebug 
+        && !args.sessionId 
+        && !args.appiumCaps[appPackage] 
+        && args.isIOS 
+        && args.appiumCaps.app) {
         IOSController.getPackageId({ type: undefined, app: args.appiumCaps.app })
     }
 
