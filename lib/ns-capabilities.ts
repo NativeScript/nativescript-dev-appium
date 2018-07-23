@@ -177,8 +177,10 @@ export class NsCapabilities implements INsCapabilities {
     }
 
     private checkMandatoryCapabiliies() {
-        if (!this.isSauceLab && !fileExists(this._appiumCaps.app)) {
-            this._exceptions.push("The application folder doesn't exist!");
+        const appPackage = this.isAndroid ? "appPackage" : "bundleId";
+
+        if (!this.isSauceLab && (!this._appiumCaps[appPackage] && !fileExists(this._appiumCaps.app))) {
+            this._exceptions.push(`The application folder doesn't exists or no ${appPackage} provided!`);
         }
 
         if (!this._runType) {

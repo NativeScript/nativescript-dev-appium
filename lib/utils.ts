@@ -236,11 +236,16 @@ export function isWin() {
     return /^win/.test(process.platform);
 }
 
+const getDeviceName = (args) => {
+    const deviceName = (args.attachToDebug || args.sessionId) ? args.device.name : args.appiumCaps.deviceName;
+    return deviceName;
+}
 export function getStorageByDeviceName(args: INsCapabilities) {
     let storage = getStorage(args);
     const appName = resolveSauceLabAppName(getAppName(args));
     storage = createStorageFolder(storage, appName);
-    storage = createStorageFolder(storage, args.appiumCaps.deviceName);
+
+    storage = createStorageFolder(storage, getDeviceName(args));
 
     return storage;
 }
@@ -273,7 +278,7 @@ export function getReportPath(args: INsCapabilities) {
     }
     const appName = getAppName(args);
     report = createStorageFolder(report, appName);
-    report = createStorageFolder(report, args.appiumCaps.deviceName);
+    report = createStorageFolder(report, getDeviceName(args));
 
     return report;
 }
@@ -550,8 +555,12 @@ export const prepareApp = async (args: INsCapabilities) => {
         }
     }
 
-    if (!args.attachToDebug && !args.sessionId && !args.appiumCaps[appPackage] && args.isIOS && args
-        .appiumCaps.app) {
+    if (!args.ignoreDeviceController
+        && !args.attachToDebug
+        && !args.sessionId
+        && !args.appiumCaps[appPackage]
+        && args.isIOS
+        && args.appiumCaps.app) {
         IOSController.getPackageId({ type: undefined, app: args.appiumCaps.app })
     }
 
