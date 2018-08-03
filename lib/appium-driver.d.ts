@@ -10,6 +10,7 @@ import { Point } from "./point";
 import { ImageHelper } from "./image-helper";
 import { ImageOptions } from "./image-options";
 import { LogType } from "./log-types";
+import { Orientation } from "./orientation";
 export declare class AppiumDriver {
     private _driver;
     private _wd;
@@ -191,6 +192,7 @@ export declare class AppiumDriver {
     * @param miliseconds
     */
     sleep(miliseconds: number): Promise<void>;
+    setOrientation(orientation: Orientation): Promise<void>;
     /**
   * Wait specific amount of time before continue execution
   * @param miliseconds

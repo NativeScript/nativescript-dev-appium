@@ -121,5 +121,5 @@ export declare class UIElement {
     /**
      * Easy to use in order to chain and search for nested elemetns
      */
-    driver(): any;
+    browser(): any;
 }

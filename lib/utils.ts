@@ -561,7 +561,7 @@ export const prepareApp = async (args: INsCapabilities) => {
         && !args.appiumCaps[appPackage]
         && args.isIOS
         && args.appiumCaps.app) {
-        IOSController.getPackageId({ type: undefined, app: args.appiumCaps.app })
+        IOSController.getIOSPackageId(undefined, args.appiumCaps.app)
     }
 
     if (args.appiumCaps[appPackage]) {

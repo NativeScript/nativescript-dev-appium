@@ -314,7 +314,7 @@ export class UIElement {
     /**
      * Easy to use in order to chain and search for nested elemetns
      */
-    public driver() {
+    public browser() {
         return this._element.browser;
     }
 }

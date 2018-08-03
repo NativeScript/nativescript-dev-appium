@@ -1,5 +1,5 @@
-var chai = require("chai");
 import * as wd from "wd";
+var chai = require("chai");
 var chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
 export var should = chai.should();
@@ -46,6 +46,7 @@ import * as webdriverio from "webdriverio";
 import { DeviceManager } from "../lib/device-manager";
 import { extname, basename } from "path";
 import { LogType } from "./log-types";
+import { Orientation } from "./orientation";
 
 export class AppiumDriver {
     private static pngFileExt = '.png';
@@ -228,7 +229,7 @@ export class AppiumDriver {
                         prepareApp(args);
                         if (!args.device) {
                             if (args.isAndroid) {
-                                args.device = DeviceManager.getDefaultDevice(args, sessionIfno.capabilities.avd, sessionIfno.capabilities.deviceUDID.replace("emulator-", ""), sessionIfno.capabilities.deviceUDID.includes("emulator") ? DeviceType.EMULATOR : DeviceType.ANDROID, sessionIfno.capabilities.desired.platformVersion || sessionIfno.capabilities.platformVersion);
+                                args.device = DeviceManager.getDefaultDevice(args, sessionIfno.capabilities.avd, sessionIfno.capabilities.deviceUDID.replace("emulator-", ""), sessionIfno.capabilities.deviceUDID.includes("emulator") ? DeviceType.EMULATOR : DeviceType.SIMULATOR, sessionIfno.capabilities.desired.platformVersion || sessionIfno.capabilities.platformVersion);
                             } else {
                                 args.device = DeviceManager.getDefaultDevice(args);
                             }
@@ -783,6 +784,10 @@ export class AppiumDriver {
     */
     public async sleep(miliseconds: number) {
         await this._driver.sleep(miliseconds);
+    }
+
+    public async setOrientation(orientation: Orientation){
+        await this._driver.setOrientation(orientation);
     }
 
     /**

@@ -4,8 +4,11 @@ export declare class Locator {
     private _elementsList;
     constructor(_args: INsCapabilities);
     readonly button: string;
-    readonly listView: string;
+    readonly label: string;
+    readonly getXPathByTextAtributes: string;
     readonly image: string;
+    readonly activityIndicator: string;
+    readonly listView: string;
     readonly locators: Map<string, string>;
     getElementByName(name: any): string;
     private loadAndroidElements;

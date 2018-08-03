@@ -17,13 +17,24 @@ export class Locator {
         return this.getElementByName("button");
     }
 
-    get listView() {
+    get label(){
+        return this.getElementByName("label");
+    }
+
+    get getXPathByTextAtributes() {
         return this.getElementByName("listview");
     }
 
-
     get image() {
         return this.getElementByName("image");
+    }
+
+    get activityIndicator() {
+        return this.getElementByName("activityindicator");
+    }
+
+    get listView() {
+        return this.getElementByName("listview");
     }
 
     get locators() {

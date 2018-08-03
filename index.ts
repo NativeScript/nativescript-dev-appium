@@ -7,6 +7,7 @@ import { FrameComparer } from "./lib/frame-comparer";
 import { DeviceManager } from "./lib/device-manager";
 import { DeviceController } from "mobile-devices-controller";
 import { logInfo, logError } from "./lib/utils";
+import { SearchOptions } from "./lib/search-options";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { AppiumServer } from "./lib/appium-server";
@@ -82,6 +83,10 @@ export async function stopServer() {
 };
 
 export async function createDriver() {
+    if (appiumDriver && appiumDriver.isAlive) {
+        return appiumDriver;
+    }
+
     if (nsCapabilities.attachToDebug) {
         appiumDriver = await AppiumDriver.createAppiumDriver(appiumServer.port, nsCapabilities);
         return appiumDriver;
@@ -96,9 +101,7 @@ export async function createDriver() {
         throw new Error("--runType is missing! Make sure it is provided correctly! It is used to parse the configuration for appium driver!");
     }
 
-    if (appiumDriver !== null && appiumDriver.isAlive) {
-        return appiumDriver;
-    } else if (appiumDriver === null) {
+    if (appiumDriver === null) {
         appiumDriver = await AppiumDriver.createAppiumDriver(appiumServer.port, nsCapabilities);
     } else if (appiumDriver !== null && !appiumDriver.isAlive) {
         await appiumDriver.init();
