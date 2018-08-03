@@ -1,6 +1,6 @@
 {
     "name": "nativescript-dev-appium",
-    "version": "4.0.2",
+    "version": "4.1.0",
     "description": "A NativeScript plugin to help integrate and run Appium tests",
     "author": "NativeScript",
     "license": "MIT",
@@ -36,11 +36,11 @@
         "chai-as-promised": "~7.1.0",
         "frame-comparer": "^2.0.0",
         "glob": "7.1.0",
-        "mobile-devices-controller": "~2.6.0",
+        "mobile-devices-controller": "~2.7.0",
         "mocha": "~5.1.0",
         "mocha-junit-reporter": "~1.17.0",
         "mocha-multi": "~1.0.0",
-        "wd": "~1.8.0",
+        "wd": "^1.10.3",
         "webdriverio": "~4.12.0",
         "yargs": "~8.0.2"
     },
