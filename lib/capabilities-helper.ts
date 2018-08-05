@@ -34,27 +34,20 @@ export function searchCapabilities(capabilitiesLocation, projectDir, capabilitie
         appiumCapabilitiesFile = capabilitiesLocation;
     }
 
-    logInfo(`Search capabilities in ${capabilitiesLocation}`);
-    appiumCapabilitiesFile = sreachCapabilitiesByFolder(capabilitiesLocation, capabilitiesName);
-
-    const logNotFoundCapsFileMsg = location => {
-        if (!capabilitiesLocation) {
-            logWarn(`No appium capabilities file found in ${location}`);
-        }
+    if (!capabilitiesLocation) {
+        logInfo(`Search capabilities in ${capabilitiesLocation}`);
+        appiumCapabilitiesFile = sreachCapabilitiesByFolder(capabilitiesLocation, capabilitiesName);
     }
-    logNotFoundCapsFileMsg(capabilitiesLocation);
 
     if (!appiumCapabilitiesFile) {
         logInfo(`Search capabilities in ${projectDir}`);
         appiumCapabilitiesFile = sreachCapabilitiesByFolder(projectDir, capabilitiesName)
-        logNotFoundCapsFileMsg(projectDir);
     }
 
     if (!appiumCapabilitiesFile) {
         const parentRoot = dirname(projectDir);
         logInfo(`Search capabilities in ${parentRoot}`);
         appiumCapabilitiesFile = sreachCapabilitiesByFolder(parentRoot, capabilitiesName);
-        logNotFoundCapsFileMsg(parentRoot);
     }
 
     if (appiumCapabilitiesFile && fileExists(appiumCapabilitiesFile)) {
@@ -69,8 +62,13 @@ export function searchCapabilities(capabilitiesLocation, projectDir, capabilitie
 const sreachCapabilitiesByFolder = (location, capabilitiesName) => {
     const capabiliteFiles = glob.sync(join(location, "/**/", capabilitiesName));
     logInfo('Found files:', capabiliteFiles);
-    logInfo('Peek first file:', capabiliteFiles[0]);
-    return capabiliteFiles[0];
+    let capsFile = capabiliteFiles && capabiliteFiles.length > 0 ? capabiliteFiles[0] : undefined;
+    if (capsFile) {
+        logInfo('Peek first file:', capabiliteFiles[0]);
+    } else {
+        logWarn(`No appium capabilities file '${capabilitiesName}' found in '${location}'.`);
+    }
+    return capsFile;
 }
 
 const seCapabilities = appiumCapabilitiesLocation => {
