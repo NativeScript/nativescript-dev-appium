@@ -72,6 +72,7 @@ export class NsCapabilities implements INsCapabilities {
     get pluginRoot() { return this._pluginRoot; }
     get pluginBinary() { return this._pluginBinary; }
     get port() { return this._port; }
+    set port(port) { this._port = port; }
     get verbose() { return this._verbose; }
     get appiumCapsLocation() { return this._appiumCapsLocation; }
     get appiumCaps() { return this._appiumCaps; }

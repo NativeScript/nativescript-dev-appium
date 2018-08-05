@@ -42,7 +42,7 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly projectBinary: string;
     readonly pluginRoot: string;
     readonly pluginBinary: string;
-    readonly port: number;
+    port: number;
     readonly verbose: boolean;
     readonly appiumCapsLocation: string;
     appiumCaps: any;
