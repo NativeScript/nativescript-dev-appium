@@ -312,7 +312,7 @@ function getAppName(args: INsCapabilities) {
 export function getAppPath(caps: INsCapabilities) {
     let basePath = caps.appiumCaps.app || caps.appPath;
     if (fs.existsSync(basePath) && ((basePath.endsWith(".apk") || basePath.endsWith(".app") || basePath.endsWith(".ipa")))) {
-        return basePath;
+        return resolve(basePath);
     }
 
     // try to resolve app automatically
