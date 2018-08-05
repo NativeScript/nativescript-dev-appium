@@ -52,7 +52,7 @@ export class NsCapabilities implements INsCapabilities {
         this._sessionId = parser.sessionId;
         this._startSession = parser.startSession;
         if (!this._attachToDebug && !this._sessionId) {
-            this._appiumCaps = resolveCapabilities(this._appiumCapsLocation, parser.runType, parser.projectDir);
+            this._appiumCaps = resolveCapabilities(this._appiumCapsLocation, parser.runType, parser.projectDir, parser.capabilitiesName);
         }
         this._testFolder = parser.testFolder;
         this._storage = parser.storage;
