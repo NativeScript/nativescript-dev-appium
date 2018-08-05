@@ -1,4 +1,4 @@
-export declare var should: any;
+export declare const should: any;
 import { ElementHelper } from "./element-helper";
 import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";

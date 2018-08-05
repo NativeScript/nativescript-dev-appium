@@ -26,6 +26,7 @@ export class AppiumServer {
     constructor(private _args: INsCapabilities) {
         this._runType = this._args.runType;
         this._hasStarted = false;
+        this._port = _args.port;
         this.resolveAppiumDependency();
     }
 
@@ -58,6 +59,10 @@ export class AppiumServer {
     }
 
     public async start(port, deviceManager: IDeviceManager = new DeviceManager()) {
+        if(!this._args.isValidated){
+            this._args.validateArgs();
+            this._args.port = port;
+        }
         this._args.deviceManager = deviceManager;
         if (!this._args.attachToDebug && !this._args.sessionId) {
             await this.prepDevice(deviceManager);

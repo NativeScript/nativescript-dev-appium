@@ -1,11 +1,11 @@
-var chai = require("chai");
 import * as wd from "wd";
-var chaiAsPromised = require("chai-as-promised");
+import * as webdriverio from "webdriverio";
+const chai = require("chai");
+const chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
-export var should = chai.should();
+export const should = chai.should();
 chaiAsPromised.transferPromiseness = wd.transferPromiseness;
 
-import { ChildProcess } from "child_process";
 import { ElementHelper } from "./element-helper";
 import { SearchOptions } from "./search-options";
 import { UIElement } from "./ui-element";
@@ -16,8 +16,7 @@ import {
     DeviceController,
     IDevice,
     DeviceType,
-    AndroidController,
-    IOSController
+    AndroidController
 } from "mobile-devices-controller";
 import {
     addExt,
@@ -42,7 +41,6 @@ import { Point } from "./point";
 import { ImageHelper } from "./image-helper";
 import { ImageOptions } from "./image-options"
 import { unlinkSync, writeFileSync } from "fs";
-import * as webdriverio from "webdriverio";
 import { DeviceManager } from "../lib/device-manager";
 import { extname, basename } from "path";
 import { LogType } from "./log-types";
@@ -180,6 +178,10 @@ export class AppiumDriver {
             port: port
         };
 
+        if(!args.isValidated){
+            args.validateArgs();
+        }
+
         if (args.isSauceLab) {
             const sauceUser = process.env.SAUCE_USER || process.env.npm_config["SAUCE_USER"];
             const sauceKey = process.env.SAUCE_KEY || process.env.npm_config["SAUCE_KEY"];
@@ -194,6 +196,9 @@ export class AppiumDriver {
         log("Creating driver!", args.verbose);
 
         if (!args.attachToDebug && !args.sessionId) {
+            if (!args.device) {
+                args.device = DeviceManager.getDefaultDevice(args);
+            }
             await AppiumDriver.applyAdditionalSettings(args);
         }
 

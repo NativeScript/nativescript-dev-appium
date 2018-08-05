@@ -1,7 +1,8 @@
 import { Point } from "./point";
 import { Direction } from "./direction";
-import { INsCapabilities, AutomationName } from "./interfaces/ns-capabilities";
+import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IRectangle } from "./interfaces/rectangle";
+import { AutomationName } from "./automation-name";
 import { calculateOffset } from "./utils";
 
 export class UIElement {

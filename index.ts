@@ -6,7 +6,10 @@ import * as frameComparerHelper from "./lib/frame-comparer";
 import { FrameComparer } from "./lib/frame-comparer";
 import { DeviceManager } from "./lib/device-manager";
 import { DeviceController } from "mobile-devices-controller";
-import { logInfo, logError } from "./lib/utils";
+import { logInfo, logError, logWarn } from "./lib/utils";
+import { INsCapabilities } from "./lib/interfaces/ns-capabilities";
+import { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
+import * as parser from "./lib/parser"
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { AppiumServer } from "./lib/appium-server";
@@ -21,8 +24,10 @@ export { FrameComparer } from "./lib/frame-comparer";
 export { IRectangle } from "./lib/interfaces/rectangle";
 export { IDeviceManager } from "./lib/interfaces/device-manager";
 export { LogType } from "./lib/log-types";
+export { INsCapabilities } from "./lib/interfaces/ns-capabilities";
+export { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
 
-const nsCapabilities = new NsCapabilities();
+const nsCapabilities: INsCapabilities = new NsCapabilities({ ...<INsCapabilities>parser });
 const appiumServer = new AppiumServer(nsCapabilities);
 let frameComparer: FrameComparer;
 let appiumDriver = null;
@@ -64,7 +69,7 @@ if (nsCapabilities.startSession) {
 }
 
 export async function startServer(port?: number, deviceManager?: IDeviceManager) {
-    await appiumServer.start(port || nsCapabilities.port, deviceManager);
+    await appiumServer.start(port, deviceManager);
     await attachToExitProcessHoockup(appiumServer.server, "appium");
 }
 
@@ -81,13 +86,18 @@ export async function stopServer() {
     }
 };
 
-export async function createDriver() {
+export async function createDriver(args?: INsCapabilitiesArgs) {
+    if (args) {
+        nsCapabilities.extend(args);
+    }
+    const port = nsCapabilities.port || appiumServer.port;
+
     if (nsCapabilities.attachToDebug) {
-        appiumDriver = await AppiumDriver.createAppiumDriver(appiumServer.port, nsCapabilities);
+        appiumDriver = await AppiumDriver.createAppiumDriver(port, nsCapabilities);
         return appiumDriver;
     }
     if (!appiumServer.server) {
-        throw new Error("Server is not available!");
+        logWarn("Server is not available!");
     }
     if (!nsCapabilities.appiumCapsLocation) {
         throw new Error("Provided path to appium capabilities is not correct!");
@@ -99,7 +109,7 @@ export async function createDriver() {
     if (appiumDriver !== null && appiumDriver.isAlive) {
         return appiumDriver;
     } else if (appiumDriver === null) {
-        appiumDriver = await AppiumDriver.createAppiumDriver(appiumServer.port, nsCapabilities);
+        appiumDriver = await AppiumDriver.createAppiumDriver(port, nsCapabilities);
     } else if (appiumDriver !== null && !appiumDriver.isAlive) {
         await appiumDriver.init();
     }

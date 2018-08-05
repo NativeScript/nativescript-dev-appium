@@ -1,8 +1,7 @@
 import * as yargs from "yargs";
 import { join, dirname } from "path";
 import { resolve, logError } from "./utils";
-
-export const capabilitiesName = "appium.capabilities.json";
+import { ParserArgs } from "./interfaces/parser-args";
 
 const config = (() => {
     const options = yargs
@@ -12,6 +11,7 @@ const config = (() => {
         .option("sauceLab", { describe: "SauceLab", default: false, type: "boolean" })
         .option("port", { alias: "p", describe: "Appium port", type: "number" })
         .option("attachToDebug", { alias: "a", describe: "Attach to appium desktop app.", default: false, type: "boolean" })
+        .option("capabilitiesName", { describe: "Capabilities file name", default: "appium.capabilities.json", type: "string" })
         .option("sessionId", { alias: "s", describe: "Session to attach", default: false, type: "string" })
         .option("startSession", { describe: "Start session.", default: false, type: "boolean" })
         .option("wdaLocalPort", { alias: "wda", describe: "WDA port", default: 8410, type: "number" })
@@ -73,7 +73,7 @@ const config = (() => {
         wdaLocalPort: process.env["WDA_LOCAL_PORT"] || options.wdaLocalPort,
         testFolder: options.testFolder || process.env.npm_config_testFolder || "e2e",
         runType: options.runType || process.env.npm_config_runType,
-        appiumCapsLocation: options.appiumCapsLocation || join(projectDir, options.testFolder, "config", capabilitiesName),
+        appiumCapsLocation: options.appiumCapsLocation || join(projectDir, options.testFolder, "config", options.capabilitiesName),
         isSauceLab: options.sauceLab || process.env.npm_config_sauceLab,
         verbose: options.verbose || process.env.npm_config_loglevel === "verbose",
         appPath: options.appPath || process.env.npm_config_appPath,
