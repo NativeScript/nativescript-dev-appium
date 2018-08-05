@@ -21,7 +21,8 @@ export function resolveCapabilities(capsLocation: string, runType: string, proje
     if (!caps) {
         const msg = `No capabilities of type ${runType} found! Check you appium capabilities file!`;
         logError(msg);
-        logError(`Capabilities: `, capabilitiesConfigFile.toString());
+        logInfo(`Available capabilities: `, capabilitiesConfigFile.toString());
+        console.dir(JSON.parse(capabilitiesConfigFile.toString()));
         throw new Error(msg);
     }
 
