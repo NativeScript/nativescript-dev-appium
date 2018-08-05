@@ -34,7 +34,7 @@ export function searchCapabilities(capabilitiesLocation, projectDir, capabilitie
         appiumCapabilitiesFile = capabilitiesLocation;
     }
 
-    if (!capabilitiesLocation) {
+    if (!appiumCapabilitiesFile) {
         logInfo(`Search capabilities in ${capabilitiesLocation}`);
         appiumCapabilitiesFile = sreachCapabilitiesByFolder(capabilitiesLocation, capabilitiesName);
     }
