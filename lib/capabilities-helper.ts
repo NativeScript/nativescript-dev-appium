@@ -1,13 +1,7 @@
 import * as glob from 'glob';
 import { dirname, join } from "path";
 import { readFileSync, statSync, existsSync } from "fs";
-import {
-    isFile,
-    fileExists,
-    logInfo,
-    logWarn,
-    logError
-} from "./utils";
+import { logInfo, logWarn, logError } from "./utils";
 
 export function resolveCapabilities(capsLocation: string, runType: string, projectDir: string, capabilitiesName: string, verbose: boolean = false): {} {
     let caps;
@@ -21,7 +15,7 @@ export function resolveCapabilities(capsLocation: string, runType: string, proje
     if (!caps) {
         const msg = `No capabilities of type ${runType} found! Check you appium capabilities file!`;
         logError(msg);
-        logInfo(`Available capabilities: `, capabilitiesConfigFile.toString());
+        logInfo(`Available capabilities:`);
         console.dir(JSON.parse(capabilitiesConfigFile.toString()));
         throw new Error(msg);
     }
@@ -53,7 +47,7 @@ export function searchCapabilities(capabilitiesLocation, projectDir, capabilitie
         appiumCapabilitiesFile = sreachCapabilitiesByFolder(parentRoot, capabilitiesName);
     }
 
-    if (appiumCapabilitiesFile && fileExists(appiumCapabilitiesFile)) {
+    if (appiumCapabilitiesFile && existsSync(appiumCapabilitiesFile)) {
         return seCapabilities(appiumCapabilitiesFile);
     } else {
         logError(`We could not locate any file ${capabilitiesName}!`);
