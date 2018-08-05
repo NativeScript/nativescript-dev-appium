@@ -1,62 +1,76 @@
-import { dirname, join } from "path";
-import { readFileSync } from "fs";
-import * as utils from "./utils";
-import * as parser from "./parser";
 import * as glob from 'glob';
+import { dirname, join } from "path";
+import { readFileSync, statSync, existsSync } from "fs";
+import { logInfo, logWarn, logError } from "./utils";
 
-export function resolveCapabilities(capsLocation: string, runType: string, projectDir: string, verbose: boolean = false): {} {
+export function resolveCapabilities(capsLocation: string, runType: string, projectDir: string, capabilitiesName: string, verbose: boolean = false): {} {
     let caps;
-    const customCapabilitiesConfigs = searchCapabilities(capsLocation, projectDir, verbose);;
+    const capabilitiesConfigFile = searchCapabilities(capsLocation, projectDir, capabilitiesName, verbose);;
 
-    if (customCapabilitiesConfigs) {
-        const customCapabilities = JSON.parse(customCapabilitiesConfigs.toString());
-        utils.log(customCapabilities, verbose);
-
-        caps = customCapabilities[runType];
+    if (capabilitiesConfigFile) {
+        const capabilitiesObject = JSON.parse(capabilitiesConfigFile.toString());
+        caps = capabilitiesObject[runType];
     }
 
-    if (!customCapabilitiesConfigs || !caps) {
-        throw new Error("No capabilities found!!!");
+    if (!caps) {
+        const msg = `No capabilities of type ${runType} found! Check you appium capabilities file!`;
+        logError(msg);
+        logInfo(`Available capabilities:`);
+        console.dir(JSON.parse(capabilitiesConfigFile.toString()));
+        throw new Error(msg);
     }
 
     return caps;
 }
 
-export function searchCapabilities(capabilitiesLocation, projectDir, verbose: boolean = false) {
-    if (utils.isFile(capabilitiesLocation)) {
-        return seCapabilities(capabilitiesLocation);
+export function searchCapabilities(capabilitiesLocation, projectDir, capabilitiesName, verbose: boolean = false) {
+    let appiumCapabilitiesFile = undefined;
+    
+    if (existsSync(capabilitiesLocation) && statSync(capabilitiesLocation).isFile()) {
+        appiumCapabilitiesFile = capabilitiesLocation;
+        console.log(appiumCapabilitiesFile);
     }
 
-    console.log(`Search capabilities in ${capabilitiesLocation}`);
-    let customCapabilitiesLocation = sreachCapabilitiesByFolder(capabilitiesLocation);
-
-    if (!customCapabilitiesLocation || customCapabilitiesLocation.length === 0) {
-        console.log(`Search capabilities in ${projectDir}`);
-
-        customCapabilitiesLocation = sreachCapabilitiesByFolder(projectDir)
+    if (!appiumCapabilitiesFile) {
+        logInfo(`Search capabilities in ${capabilitiesLocation}`);
+        appiumCapabilitiesFile = sreachCapabilitiesByFolder(capabilitiesLocation, capabilitiesName);
     }
 
-    if (!customCapabilitiesLocation || customCapabilitiesLocation.length === 0) {
-        console.log(`Search capabilities in ${dirname(projectDir)}`);
-        customCapabilitiesLocation = sreachCapabilitiesByFolder(dirname(projectDir))
+    if (!appiumCapabilitiesFile) {
+        logInfo(`Search capabilities in ${projectDir}`);
+        appiumCapabilitiesFile = sreachCapabilitiesByFolder(projectDir, capabilitiesName)
     }
 
-    if (customCapabilitiesLocation && customCapabilitiesLocation.length > 0 && utils.fileExists(customCapabilitiesLocation)) {
-        return seCapabilities(customCapabilitiesLocation);
+    if (!appiumCapabilitiesFile) {
+        const parentRoot = dirname(projectDir);
+        logInfo(`Search capabilities in ${parentRoot}`);
+        appiumCapabilitiesFile = sreachCapabilitiesByFolder(parentRoot, capabilitiesName);
     }
 
-    throw Error("No capabilities found!!!");
+    if (appiumCapabilitiesFile && existsSync(appiumCapabilitiesFile)) {
+        return seCapabilities(appiumCapabilitiesFile);
+    } else {
+        logError(`We could not locate any file ${capabilitiesName}!`);
+    }
+
+    return appiumCapabilitiesFile;
 }
 
-const sreachCapabilitiesByFolder = (location) => {
-    const capabiliteFiles = glob.sync(join(location, "/**/", parser.capabilitiesName));
-    console.log('Found files:', capabiliteFiles);
-    return capabiliteFiles[0];
+const sreachCapabilitiesByFolder = (location, capabilitiesName) => {
+    const capabiliteFiles = glob.sync(join(location, "/**/", capabilitiesName));
+    logInfo('Found files:', capabiliteFiles);
+    let capsFile = capabiliteFiles && capabiliteFiles.length > 0 ? capabiliteFiles[0] : undefined;
+    if (capsFile) {
+        logInfo('Peek first file:', capabiliteFiles[0]);
+    } else {
+        logWarn(`No appium capabilities file '${capabilitiesName}' found in '${location}'.`);
+    }
+    return capsFile;
 }
 
 const seCapabilities = appiumCapabilitiesLocation => {
     const file = readFileSync(appiumCapabilitiesLocation);
     process.env.APPIUM_CAPABILITIES = file.toString();
-    utils.log("Capabilities found at: " + appiumCapabilitiesLocation, true);
+    logInfo(`Capabilities found at: ${appiumCapabilitiesLocation}`);
     return file;
 }
