@@ -1,7 +1,6 @@
 import * as yargs from "yargs";
-import { join, dirname } from "path";
+import { join } from "path";
 import { resolve, logError } from "./utils";
-import { ParserArgs } from "./interfaces/parser-args";
 
 const config = (() => {
     const options = yargs
