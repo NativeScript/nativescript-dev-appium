@@ -11,17 +11,16 @@ import {
 
 export function resolveCapabilities(capsLocation: string, runType: string, projectDir: string, capabilitiesName: string, verbose: boolean = false): {} {
     let caps;
-    const customCapabilitiesConfigs = searchCapabilities(capsLocation, projectDir, capabilitiesName, verbose);;
+    const capabilitiesConfigObject = searchCapabilities(capsLocation, projectDir, capabilitiesName, verbose);;
 
-    if (customCapabilitiesConfigs) {
-        const customCapabilities = JSON.parse(customCapabilitiesConfigs.toString());
-        caps = customCapabilities[runType];
-        logInfo('', caps);
+    if (capabilitiesConfigObject) {
+        caps = capabilitiesConfigObject[runType];
     }
 
     if (!caps) {
-        const msg = `No capabilities of type ${caps} found! Check you appium capabilities file!`;
+        const msg = `No capabilities of type ${runType} found! Check you appium capabilities file!`;
         logError(msg);
+        logError(`Capabilities: `, capabilitiesConfigObject);
         throw new Error(msg);
     }
 
