@@ -15,8 +15,8 @@ export function resolveCapabilities(capsLocation: string, runType: string, proje
 
     if (customCapabilitiesConfigs) {
         const customCapabilities = JSON.parse(customCapabilitiesConfigs.toString());
-        logInfo(customCapabilities);
         caps = customCapabilities[runType];
+        logInfo('', caps);
     }
 
     if (!caps) {
