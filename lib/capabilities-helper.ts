@@ -13,8 +13,8 @@ export function resolveCapabilities(capsLocation: string, runType: string, proje
         utils.log(customCapabilities, verbose);
 
         caps = customCapabilities[runType];
-    } 
-    
+    }
+
     if (!customCapabilitiesConfigs || !caps) {
         throw new Error("No capabilities found!!!");
     }
@@ -42,7 +42,7 @@ export function searchCapabilities(capabilitiesLocation, projectDir, verbose: bo
     }
 
     if (customCapabilitiesLocation && customCapabilitiesLocation.length > 0 && utils.fileExists(customCapabilitiesLocation)) {
-        return seCapabilities(customCapabilitiesLocation[0]);
+        return seCapabilities(customCapabilitiesLocation);
     }
 
     throw Error("No capabilities found!!!");
