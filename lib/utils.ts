@@ -345,13 +345,15 @@ export function getAppPath(caps: INsCapabilities) {
     }
 
     if (!apps || apps.length === 0) {
-        console.error(`No 'app' capability provided or the convension for 'runType'${caps.runType} is not as excpeced! 
+        logError(`No 'app' capability provided or the convension for 'runType'${caps.runType} is not as excpeced! 
                 In order to automatically search and locate app package please use 'device' in your 'runType' name. E.g --runType device.iPhone7.iOS110, --runType sim.iPhone7.iOS110 or
                 specify correct app path`);
     }
 
-    console.log(`Available applications:`, apps);
-    return apps[0];
+    logInfo(`Available applications:`, apps);
+    logInfo(`Pick first application: `, apps[0]);
+    const appFullPath = apps.length > 0 ? resolve(apps[0]) : undefined;
+    return appFullPath;
 }
 
 export function calculateOffset(direction, y: number, yOffset: number, x: number, xOffset: number, isIOS: boolean, verbose) {

@@ -69,11 +69,9 @@ export class AppiumServer {
             await this.prepApp();
         }
 
-
         log("Starting server...", this._args.verbose);
         const logLevel = this._args.verbose === true ? "debug" : "info";
         this.port = this._args.port || port;
-        let retry = false;
 
         if (!this._args.attachToDebug) {
 

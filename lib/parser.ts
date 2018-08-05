@@ -8,7 +8,7 @@ const config = (() => {
         .option("testFolder", { describe: "e2e test folder name", default: "e2e", type: "string" })
         .option("appiumCapsLocation", { describe: "Capabilities", type: "string" })
         .option("sauceLab", { describe: "SauceLab", default: false, type: "boolean" })
-        .option("port", { alias: "p", describe: "Appium port", type: "number" })
+        .option("port", { alias: "p", describe: "Appium port", type: "number", default: 8300 })
         .option("attachToDebug", { alias: "a", describe: "Attach to appium desktop app.", default: false, type: "boolean" })
         .option("capabilitiesName", { describe: "Capabilities file name", default: "appium.capabilities.json", type: "string" })
         .option("sessionId", { alias: "s", describe: "Session to attach", default: false, type: "string" })

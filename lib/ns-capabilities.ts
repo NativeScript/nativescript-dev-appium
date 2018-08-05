@@ -1,4 +1,5 @@
 import { INsCapabilities } from "./interfaces/ns-capabilities";
+import { INsCapabilitiesArgs } from "./interfaces/ns-capabilities-args";
 import { AutomationName } from "./automation-name";
 import { resolveCapabilities } from "./capabilities-helper";
 import { getAppPath, fileExists, logInfo, logError } from "./utils";
@@ -39,7 +40,7 @@ export class NsCapabilities implements INsCapabilities {
     private _deviceManager: IDeviceManager;
     private _exceptions: Array<string> = new Array();
 
-    constructor(private _parser: INsCapabilities) {
+    constructor(private _parser: INsCapabilitiesArgs) {
         this._projectDir = this._parser.projectDir;
         this._projectBinary = this._parser.projectBinary;
         this._pluginRoot = this._parser.pluginRoot;
@@ -130,9 +131,9 @@ export class NsCapabilities implements INsCapabilities {
             this.throwExceptions();
             this.shouldSetFullResetOption();
             this._isValidated = true;
+        } else {
+            this._isValidated = false;
         }
-
-        this._isValidated = false;
     }
 
     private isAndroidPlatform() { return this._appiumCaps && this._appiumCaps ? this._appiumCaps.platformName.toLowerCase().includes("android") : undefined; }

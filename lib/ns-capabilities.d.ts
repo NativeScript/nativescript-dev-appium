@@ -1,4 +1,5 @@
 import { INsCapabilities } from "./interfaces/ns-capabilities";
+import { INsCapabilitiesArgs } from "./interfaces/ns-capabilities-args";
 import { AutomationName } from "./automation-name";
 import { IDevice } from "mobile-devices-controller";
 import { IDeviceManager } from "./interfaces/device-manager";
@@ -36,7 +37,7 @@ export declare class NsCapabilities implements INsCapabilities {
     private _device;
     private _deviceManager;
     private _exceptions;
-    constructor(_parser: INsCapabilities);
+    constructor(_parser: INsCapabilitiesArgs);
     readonly path: string;
     readonly projectDir: string;
     readonly projectBinary: string;
