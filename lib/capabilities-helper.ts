@@ -29,9 +29,10 @@ export function resolveCapabilities(capsLocation: string, runType: string, proje
 }
 
 export function searchCapabilities(capabilitiesLocation, projectDir, capabilitiesName, verbose: boolean = false) {
-    let appiumCapabilitiesFile;
+    let appiumCapabilitiesFile = undefined;
     if (isFile(capabilitiesLocation)) {
         appiumCapabilitiesFile = capabilitiesLocation;
+        console.log(appiumCapabilitiesFile);
     }
 
     if (!appiumCapabilitiesFile) {
@@ -60,7 +61,7 @@ export function searchCapabilities(capabilitiesLocation, projectDir, capabilitie
 }
 
 const sreachCapabilitiesByFolder = (location, capabilitiesName) => {
-    const capabiliteFiles = glob.sync(join(location, capabilitiesName));
+    const capabiliteFiles = glob.sync(join(location, "/**/", capabilitiesName));
     logInfo('Found files:', capabiliteFiles);
     let capsFile = capabiliteFiles && capabiliteFiles.length > 0 ? capabiliteFiles[0] : undefined;
     if (capsFile) {
