@@ -123,7 +123,7 @@ export class NsCapabilities implements INsCapabilities {
             this._isValidated = true;
         }
         if (!this._attachToDebug && !this._sessionId) {
-            this._appiumCaps = resolveCapabilities(this._appiumCapsLocation, this._parser.runType || this.runType, this.projectDir, this._capabilitiesName);
+            this._appiumCaps = resolveCapabilities(this.appiumCapsLocation, this.runType, this.projectDir, this._capabilitiesName);
 
             this.setAutomationName();
             this.resolveApplication();

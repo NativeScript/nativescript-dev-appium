@@ -1,6 +1,7 @@
 import * as yargs from "yargs";
 import { join } from "path";
 import { resolve, logError } from "./utils";
+import { INsCapabilitiesArgs } from "./interfaces/ns-capabilities-args";
 
 const config = (() => {
     const options = yargs
@@ -115,5 +116,6 @@ export const {
     cleanApp,
     attachToDebug,
     sessionId,
-    startSession
-} = config;
+    startSession,
+    capabilitiesName
+}: INsCapabilitiesArgs = config;
