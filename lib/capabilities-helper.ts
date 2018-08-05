@@ -1,6 +1,6 @@
 import * as glob from 'glob';
 import { dirname, join } from "path";
-import { readFileSync } from "fs";
+import { readFileSync, statSync, existsSync } from "fs";
 import {
     isFile,
     fileExists,
@@ -30,7 +30,9 @@ export function resolveCapabilities(capsLocation: string, runType: string, proje
 
 export function searchCapabilities(capabilitiesLocation, projectDir, capabilitiesName, verbose: boolean = false) {
     let appiumCapabilitiesFile = undefined;
-    if (isFile(capabilitiesLocation)) {
+    logWarn("IS FILE: " + existsSync(capabilitiesLocation));
+    logWarn("IS FILE: " + statSync(capabilitiesLocation).isFile());
+    if (statSync(capabilitiesLocation).isFile()) {
         appiumCapabilitiesFile = capabilitiesLocation;
         console.log(appiumCapabilitiesFile);
     }
