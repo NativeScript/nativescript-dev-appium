@@ -60,7 +60,7 @@ export function searchCapabilities(capabilitiesLocation, projectDir, capabilitie
 }
 
 const sreachCapabilitiesByFolder = (location, capabilitiesName) => {
-    const capabiliteFiles = glob.sync(join(location, "/**/", capabilitiesName));
+    const capabiliteFiles = glob.sync(join(location, capabilitiesName));
     logInfo('Found files:', capabiliteFiles);
     let capsFile = capabiliteFiles && capabiliteFiles.length > 0 ? capabiliteFiles[0] : undefined;
     if (capsFile) {
