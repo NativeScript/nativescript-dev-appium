@@ -30,9 +30,8 @@ export function resolveCapabilities(capsLocation: string, runType: string, proje
 
 export function searchCapabilities(capabilitiesLocation, projectDir, capabilitiesName, verbose: boolean = false) {
     let appiumCapabilitiesFile = undefined;
-    logWarn("IS FILE: " + existsSync(capabilitiesLocation));
-    logWarn("IS FILE: " + statSync(capabilitiesLocation).isFile());
-    if (statSync(capabilitiesLocation).isFile()) {
+    
+    if (existsSync(capabilitiesLocation) && statSync(capabilitiesLocation).isFile()) {
         appiumCapabilitiesFile = capabilitiesLocation;
         console.log(appiumCapabilitiesFile);
     }
