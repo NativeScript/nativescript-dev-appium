@@ -1,7 +1,7 @@
 <a name="4.0.3"></a>
 # [4.0.3]() (2018-08-04)
 ### Bug Fixes
-* fix: get capabilities when pnly a path to a folder is provided
+* fix: get capabilities when a path to a folder is provided
 
 <a name="4.0.2"></a>
 # [4.0.2]() (2018-07-23)
