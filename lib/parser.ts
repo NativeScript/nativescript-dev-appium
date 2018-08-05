@@ -87,7 +87,8 @@ const config = (() => {
         relaxedSecurity: options.relaxedSecurity,
         attachToDebug: options.attachToDebug,
         sessionId: options.sessionId,
-        startSession: options.startSession
+        startSession: options.startSession,
+        capabilitiesName: options.capabilitiesName,
     };
 
     return config;
