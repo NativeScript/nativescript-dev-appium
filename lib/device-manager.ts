@@ -94,7 +94,8 @@ export class DeviceManager implements IDeviceManager {
             } else {
                 device.type === DeviceType.DEVICE ? logInfo("Device is connected:", device) : logInfo("Device is already started", device)
                 if (!args.reuseDevice && device.type !== DeviceType.DEVICE) {
-                    console.log("Since is it specified without reusing, the device would be shut down and restart!");
+                    logInfo("Option --reuseDevice is set to false, the device would be shut down and restart!");
+                    logInfo("Use --reuseDevice to preserve device state!");
                     DeviceController.kill(device);
                     await DeviceController.startDevice(device);
                 }
