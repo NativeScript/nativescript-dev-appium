@@ -1,4 +1,5 @@
 import { INsCapabilities } from "./interfaces/ns-capabilities";
+import { INsCapabilitiesArgs } from "./interfaces/ns-capabilities-args";
 import { AutomationName } from "./automation-name";
 import { resolveCapabilities } from "./capabilities-helper";
 import { getAppPath, fileExists, logInfo, logError } from "./utils";
@@ -39,7 +40,7 @@ export class NsCapabilities implements INsCapabilities {
     private _deviceManager: IDeviceManager;
     private _exceptions: Array<string> = new Array();
 
-    constructor(private _parser: INsCapabilities) {
+    constructor(private _parser: INsCapabilitiesArgs) {
         this._projectDir = this._parser.projectDir;
         this._projectBinary = this._parser.projectBinary;
         this._pluginRoot = this._parser.pluginRoot;
@@ -72,6 +73,7 @@ export class NsCapabilities implements INsCapabilities {
     get pluginRoot() { return this._pluginRoot; }
     get pluginBinary() { return this._pluginBinary; }
     get port() { return this._port; }
+    set port(port) { this._port = port; }
     get verbose() { return this._verbose; }
     get appiumCapsLocation() { return this._appiumCapsLocation; }
     get appiumCaps() { return this._appiumCaps; }
@@ -121,7 +123,7 @@ export class NsCapabilities implements INsCapabilities {
             this._isValidated = true;
         }
         if (!this._attachToDebug && !this._sessionId) {
-            this._appiumCaps = resolveCapabilities(this._appiumCapsLocation, this._parser.runType || this.runType, this.projectDir, this._capabilitiesName);
+            this._appiumCaps = resolveCapabilities(this.appiumCapsLocation, this.runType, this.projectDir, this._capabilitiesName);
 
             this.setAutomationName();
             this.resolveApplication();
@@ -129,9 +131,9 @@ export class NsCapabilities implements INsCapabilities {
             this.throwExceptions();
             this.shouldSetFullResetOption();
             this._isValidated = true;
+        } else {
+            this._isValidated = false;
         }
-
-        this._isValidated = false;
     }
 
     private isAndroidPlatform() { return this._appiumCaps && this._appiumCaps ? this._appiumCaps.platformName.toLowerCase().includes("android") : undefined; }

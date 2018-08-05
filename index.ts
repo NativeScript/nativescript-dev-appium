@@ -27,7 +27,7 @@ export { LogType } from "./lib/log-types";
 export { INsCapabilities } from "./lib/interfaces/ns-capabilities";
 export { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
 
-const nsCapabilities: INsCapabilities = new NsCapabilities({ ...<INsCapabilities>parser });
+const nsCapabilities: INsCapabilities = new NsCapabilities(parser);
 const appiumServer = new AppiumServer(nsCapabilities);
 let frameComparer: FrameComparer;
 let appiumDriver = null;
@@ -69,8 +69,9 @@ if (nsCapabilities.startSession) {
 }
 
 export async function startServer(port?: number, deviceManager?: IDeviceManager) {
-    await appiumServer.start(port, deviceManager);
+    await appiumServer.start(port || nsCapabilities.port, deviceManager);
     await attachToExitProcessHoockup(appiumServer.server, "appium");
+    return appiumServer;
 }
 
 export async function stopServer() {

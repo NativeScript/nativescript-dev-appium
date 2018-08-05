@@ -197,7 +197,8 @@ export class AppiumDriver {
 
         if (!args.attachToDebug && !args.sessionId) {
             if (!args.device) {
-                args.device = DeviceManager.getDefaultDevice(args);
+                args.deviceManager = args.deviceManager || new DeviceManager();
+                args.device = await args.deviceManager.startDevice(args);
             }
             await AppiumDriver.applyAdditionalSettings(args);
         }

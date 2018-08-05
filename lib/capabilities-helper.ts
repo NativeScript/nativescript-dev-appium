@@ -23,7 +23,7 @@ export function resolveCapabilities(capsLocation: string, runType: string, proje
     return caps;
 }
 
-export function searchCapabilities(capabilitiesLocation, projectDir, capabilitiesName, verbose: boolean = false) {
+export function searchCapabilities(capabilitiesLocation: string, projectDir: string, capabilitiesName: string, verbose: boolean = false) {
     let appiumCapabilitiesFile = undefined;
     
     if (existsSync(capabilitiesLocation) && statSync(capabilitiesLocation).isFile()) {
@@ -32,7 +32,7 @@ export function searchCapabilities(capabilitiesLocation, projectDir, capabilitie
     }
 
     if (!appiumCapabilitiesFile) {
-        logInfo(`Search capabilities in ${capabilitiesLocation}`);
+        logInfo(`Search capabilities in ${capabilitiesLocation} for ${capabilitiesName}`);
         appiumCapabilitiesFile = sreachCapabilitiesByFolder(capabilitiesLocation, capabilitiesName);
     }
 
