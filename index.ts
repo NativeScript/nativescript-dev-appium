@@ -69,7 +69,7 @@ if (nsCapabilities.startSession) {
 }
 
 export async function startServer(port?: number, deviceManager?: IDeviceManager) {
-    await appiumServer.start(port, deviceManager);
+    await appiumServer.start(port || nsCapabilities.port, deviceManager);
     await attachToExitProcessHoockup(appiumServer.server, "appium");
 }
 
