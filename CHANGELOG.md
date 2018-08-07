@@ -1,3 +1,8 @@
+<a name="4.0.4"></a>
+# [4.0.4]() (2018-08-07)
+### Bug Fixes
+* fix: skip starting of local appium server when sauceLab option is set to true even if createServer is called
+
 <a name="4.0.3"></a>
 # [4.0.3]() (2018-08-04)
 ### Bug Fixes
