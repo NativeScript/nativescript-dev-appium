@@ -59,7 +59,7 @@ export class AppiumServer {
     }
 
     public async start(port, deviceManager: IDeviceManager = new DeviceManager()) {
-        if(!this._args.isValidated){
+        if (!this._args.isValidated) {
             this._args.validateArgs();
             this._args.port = port;
         }
@@ -68,7 +68,10 @@ export class AppiumServer {
             await this.prepDevice(deviceManager);
             await this.prepApp();
         }
-
+        if (this._args.isSauceLab) {
+            logInfo(`SauceLab option is set to true. Skip to starting of appium server!`)
+            return this;
+        }
         log("Starting server...", this._args.verbose);
         const logLevel = this._args.verbose === true ? "debug" : "info";
         this.port = this._args.port || port;

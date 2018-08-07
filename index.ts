@@ -26,8 +26,8 @@ export { IDeviceManager } from "./lib/interfaces/device-manager";
 export { LogType } from "./lib/log-types";
 export { INsCapabilities } from "./lib/interfaces/ns-capabilities";
 export { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
+export const nsCapabilities: INsCapabilities = new NsCapabilities(parser);
 
-const nsCapabilities: INsCapabilities = new NsCapabilities(parser);
 const appiumServer = new AppiumServer(nsCapabilities);
 let frameComparer: FrameComparer;
 let appiumDriver = null;
@@ -97,8 +97,8 @@ export async function createDriver(args?: INsCapabilitiesArgs) {
         appiumDriver = await AppiumDriver.createAppiumDriver(port, nsCapabilities);
         return appiumDriver;
     }
-    if (!appiumServer.server) {
-        logWarn("Server is not available!");
+    if (!appiumServer.server && !nsCapabilities.isSauceLab) {
+        logInfo("Server is not available! To start appium server programaticlly use startServer()!");
     }
     if (!nsCapabilities.appiumCapsLocation) {
         throw new Error("Provided path to appium capabilities is not correct!");

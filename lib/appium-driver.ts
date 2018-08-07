@@ -32,7 +32,8 @@ import {
     copy,
     getSessions,
     logError,
-    prepareApp
+    prepareApp,
+    logInfo
 } from "./utils";
 
 import { INsCapabilities } from "./interfaces/ns-capabilities";
@@ -246,12 +247,17 @@ export class AppiumDriver {
                     }
 
                 } catch (error) {
+                    args.verbose = true;
                     if (!args.ignoreDeviceController && error && error.message && error.message.includes("Failure [INSTALL_FAILED_INSUFFICIENT_STORAGE]")) {
                         await DeviceManager.kill(args.device);
                         await DeviceController.startDevice(args.device);
                     }
                 }
-                log(sessionIfno, args.verbose);
+                if (args.verbose) {
+                    logInfo("Session info");
+                    console.info(sessionIfno);
+                }
+
                 await DeviceManager.applyDeviceAdditionsSettings(driver, args, sessionIfno);
 
                 hasStarted = true;

@@ -44,7 +44,7 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly pluginRoot: string;
     readonly pluginBinary: string;
     port: number;
-    readonly verbose: boolean;
+    verbose: boolean;
     readonly appiumCapsLocation: string;
     appiumCaps: any;
     readonly testFolder: string;

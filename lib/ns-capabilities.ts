@@ -75,6 +75,7 @@ export class NsCapabilities implements INsCapabilities {
     get port() { return this._port; }
     set port(port) { this._port = port; }
     get verbose() { return this._verbose; }
+    set verbose(verbose: boolean) { this._verbose = verbose; }
     get appiumCapsLocation() { return this._appiumCapsLocation; }
     get appiumCaps() { return this._appiumCaps; }
     set appiumCaps(appiumCaps) { this._appiumCaps = appiumCaps; }
