@@ -69,7 +69,7 @@ export class AppiumServer {
             await this.prepApp();
         }
         if (this._args.isSauceLab) {
-            logInfo(`SauceLab option is set to true. Skip to starting of appium server!`)
+            logInfo(`SauceLab option is set to true. Skip starting of appium server!`)
             return this;
         }
         log("Starting server...", this._args.verbose);
