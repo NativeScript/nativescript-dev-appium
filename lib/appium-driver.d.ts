@@ -50,7 +50,8 @@ export declare class AppiumDriver {
     /**
      * Get the storage where images are captured. It will be resources/app nam/device name
      */
-    readonly storageByDeviceName: string;
+    storageByDeviceName: string;
+    readonly storage: string;
     /**
      * Returns instance of wd.TouchAction object
      */

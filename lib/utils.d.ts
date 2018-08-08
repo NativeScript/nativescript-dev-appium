@@ -21,6 +21,7 @@ export declare function executeCommand(args: any, cwd?: string): string;
 export declare function isWin(): boolean;
 export declare function getStorageByDeviceName(args: INsCapabilities): string;
 export declare function getStorageByPlatform(args: INsCapabilities): string;
+export declare const getStorage: (args: INsCapabilities) => string;
 export declare function getReportPath(args: INsCapabilities): string;
 export declare const getRegexResultsAsArray: (regex: any, str: any) => any[];
 export declare function getAppPath(caps: INsCapabilities): any;

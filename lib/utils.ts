@@ -240,6 +240,7 @@ const getDeviceName = (args) => {
     const deviceName = (args.attachToDebug || args.sessionId) ? args.device.name : args.appiumCaps.deviceName;
     return deviceName;
 }
+
 export function getStorageByDeviceName(args: INsCapabilities) {
     let storage = getStorage(args);
     const appName = resolveSauceLabAppName(getAppName(args));
@@ -261,7 +262,7 @@ export function getStorageByPlatform(args: INsCapabilities) {
 
 const checkStorageIsUndefined = (storage) => { return !storage || storage === 'undefined' || storage === null || storage === 'null'; }
 
-function getStorage(args: INsCapabilities) {
+export const getStorage = (args: INsCapabilities) => {
     let storage = args.storage;
     if (checkStorageIsUndefined(storage)) {
         storage = createStorageFolder(resolve(args.projectDir, args.testFolder), "resources");

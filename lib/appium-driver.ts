@@ -34,7 +34,8 @@ import {
     logError,
     prepareApp,
     logInfo,
-    prepareDevice
+    prepareDevice,
+    getStorage
 } from "./utils";
 
 import { INsCapabilities } from "./interfaces/ns-capabilities";
@@ -139,6 +140,14 @@ export class AppiumDriver {
      */
     get storageByDeviceName() {
         return this._storageByDeviceName;
+    }
+
+    set storageByDeviceName(storageFullPath: string) {
+        this._storageByDeviceName = storageFullPath;
+    }
+
+    get storage() {
+        return getStorage(this._args);
     }
 
     /**
