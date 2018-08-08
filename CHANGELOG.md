@@ -1,4 +1,9 @@
-<a name="4.0.4"></a>
+<a name="4.0.6"></a>
+# [4.0.6]() (2018-08-08)
+### Bug Fixes
+* fix: resolve app name when skip starting server
+
+<a name="4.0.5"></a>
 # [4.0.5]() (2018-08-08)
 ### Bug Fixes
 * fix: export SearchOptions enum

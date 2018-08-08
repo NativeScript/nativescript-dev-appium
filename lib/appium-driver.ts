@@ -33,7 +33,8 @@ import {
     getSessions,
     logError,
     prepareApp,
-    logInfo
+    logInfo,
+    prepareDevice
 } from "./utils";
 
 import { INsCapabilities } from "./interfaces/ns-capabilities";
@@ -179,7 +180,7 @@ export class AppiumDriver {
             port: port
         };
 
-        if(!args.isValidated){
+        if (!args.isValidated) {
             args.validateArgs();
         }
 
@@ -199,7 +200,8 @@ export class AppiumDriver {
         if (!args.attachToDebug && !args.sessionId) {
             if (!args.device) {
                 args.deviceManager = args.deviceManager || new DeviceManager();
-                args.device = await args.deviceManager.startDevice(args);
+                await prepareDevice(args, args.deviceManager);
+                await prepareApp(args);
             }
             await AppiumDriver.applyAdditionalSettings(args);
         }
