@@ -246,7 +246,7 @@ export class AppiumDriver {
                         prepareApp(args);
                         if (!args.device) {
                             if (args.isAndroid) {
-                                args.device = DeviceManager.getDefaultDevice(args, sessionIfno.capabilities.avd, sessionIfno.capabilities.deviceUDID.replace("emulator-", ""), sessionIfno.capabilities.deviceUDID.includes("emulator") ? DeviceType.EMULATOR : DeviceType.ANDROID, sessionIfno.capabilities.desired.platformVersion || sessionIfno.capabilities.platformVersion);
+                                args.device = DeviceManager.getDefaultDevice(args, sessionIfno.capabilities.avd, sessionIfno.capabilities.deviceUDID.replace("emulator-", ""), sessionIfno.capabilities.deviceUDID.includes("emulator") ? DeviceType.EMULATOR : DeviceType.SIMULATOR, sessionIfno.capabilities.desired.platformVersion || sessionIfno.capabilities.platformVersion);
                             } else {
                                 args.device = DeviceManager.getDefaultDevice(args);
                             }
