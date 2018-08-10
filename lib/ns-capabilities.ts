@@ -192,9 +192,18 @@ export class NsCapabilities implements INsCapabilities {
 
     private resolveApplication() {
         if (this.isSauceLab) {
-            this._appiumCaps.app = `sauce-storage:${this.appPath}`
+            if (this.appPath){
+                if (this.appPath.startsWith("http")){
+                    this._appiumCaps.app = this.appPath;
+                } else {
+                    this._appiumCaps.app = `sauce-storage:${this.appPath}`;
+                }
+            } else if (!this._appiumCaps.app){
+                throw new Error("Neither appPath option nor capabilities.app provided!!!");
+            }
+            
             this._ignoreDeviceController = true;
-            console.log("Using Sauce Labs. The application path is changed to: " + this.appPath);
+            console.log("Using Sauce Labs. The application path is changed to: " + this._appiumCaps.app);
         } else {
             this.appiumCaps.app = getAppPath(this);
             this._appPath = this._appiumCaps.app;
