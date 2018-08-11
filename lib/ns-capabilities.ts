@@ -2,7 +2,7 @@ import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { INsCapabilitiesArgs } from "./interfaces/ns-capabilities-args";
 import { AutomationName } from "./automation-name";
 import { resolveCapabilities } from "./capabilities-helper";
-import { getAppPath, fileExists, logInfo, logError } from "./utils";
+import { getAppPath, fileExists, logInfo, logError, logWarn } from "./utils";
 import { IDevice } from "mobile-devices-controller";
 import { IDeviceManager } from "./interfaces/device-manager";
 
@@ -146,13 +146,13 @@ export class NsCapabilities implements INsCapabilities {
         if (this._ignoreDeviceController) {
             this.appiumCaps["fullReset"] = true;
             this.appiumCaps["noReset"] = false;
-            console.log("Changing appium setting fullReset: true and noReset: false ");
+            logInfo("Changing appium setting fullReset: true and noReset: false ");
         }
 
         if (this._attachToDebug || this._devMode) {
             this.appiumCaps["fullReset"] = false;
             this.appiumCaps["noReset"] = true;
-            console.log("Changing appium setting fullReset: false and noReset: true ");
+            logInfo("Changing appium setting fullReset: false and noReset: true ");
         }
     }
 
@@ -194,23 +194,24 @@ export class NsCapabilities implements INsCapabilities {
     }
 
     private resolveApplication() {
-        if (this.isSauceLab) {
-            if (this.appPath){
-                if (this.appPath.startsWith("http")){
-                    this._appiumCaps.app = this.appPath;
-                } else {
-                    this._appiumCaps.app = `sauce-storage:${this.appPath}`;
-                }
-            } else if (!this._appiumCaps.app){
-                throw new Error("Neither appPath option nor capabilities.app provided!!!");
+        if (this._isSauceLab) {
+            if (this._appPath) {
+                this._appiumCaps.app = this._appPath.startsWith("http") ? this._appPath : `sauce-storage:${this._appPath}`;
             }
-            
+
+            if (!this._appiumCaps.app) {
+                const errorMsg = "Neither appPath option nor capabilities.app provided!!!";
+                logError(errorMsg);
+                throw new Error(errorMsg);
+            }
+
             this._ignoreDeviceController = true;
-            console.log("Using Sauce Labs. The application path is changed to: " + this._appiumCaps.app);
+            logInfo(`Using Sauce Labs. The application path is changed to: ${this._appiumCaps.app}`);
         } else {
-            this.appiumCaps.app = getAppPath(this);
+            this._appiumCaps.app = getAppPath(this);
             this._appPath = this._appiumCaps.app;
-            console.log("Application full path: " + this._appiumCaps.app);
+
+            logInfo(`Application full path: ${this._appiumCaps.app}`);
         }
     }
 
@@ -230,7 +231,7 @@ export class NsCapabilities implements INsCapabilities {
         }
 
         if (!this._appiumCaps.platformVersion) {
-            console.warn("Platform version is missing! You'd better to set it in order to use the correct device");
+            logWarn("Platform version is missing! You'd better to set it in order to use the correct device");
         }
 
         if (!this._appiumCaps.deviceName && !this._appiumCaps.udid) {
