@@ -556,6 +556,7 @@ export const prepareApp = async (args: INsCapabilities) => {
         args.appName = groupings[groupings.length - 1];
         console.log(`Setting application name as ${args.appName}`);
         if (!args.devMode && !args.ignoreDeviceController) {
+            logInfo("Check and uninstall application from device.");
             await args.deviceManager.uninstallApp(args);
         } else {
             args.appiumCaps.app = "";
