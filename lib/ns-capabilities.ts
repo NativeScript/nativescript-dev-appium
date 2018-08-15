@@ -205,6 +205,7 @@ export class NsCapabilities implements INsCapabilities {
                 throw new Error(errorMsg);
             }
 
+            this._appPath = this._appiumCaps.app;
             this._ignoreDeviceController = true;
             logInfo(`Using Sauce Labs. The application path is changed to: ${this._appiumCaps.app}`);
         } else {

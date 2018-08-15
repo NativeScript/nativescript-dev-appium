@@ -307,9 +307,8 @@ export const getRegexResultsAsArray = (regex, str) => {
 }
 
 function getAppName(args: INsCapabilities) {
-    const appLocation = args.appPath || args.appiumCaps.app;
-    const appName = args.appName || path.basename(appLocation)
-        .replace(path.extname(appLocation), "")
+    const appName = args.appName || path.basename(args.appPath)
+        .replace(path.extname(args.appPath), "")
         .replace("-release", "").replace("-debug", "");
 
     return appName;
