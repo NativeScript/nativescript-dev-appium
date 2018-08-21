@@ -25,6 +25,7 @@ const config = (() => {
         .option("devMode", { alias: "dev-mode", describe: "Will skipp app instalation and will reuse the one installed on device!", type: "boolean", default: false })
         .option("ignoreDeviceController", { alias: "i-ns-device-controller", describe: "Use default appium options for running emulatos/ simulators.", type: "boolean", default: false })
         .option("cleanApp", { alias: "c", describe: "Uninstall app after test are finished", type: "boolean", default: false })
+        .option("imagesPath", { describe: "comparison images path relative to resources/images", type: "string" })
         .help()
         .argv;
 
@@ -89,6 +90,7 @@ const config = (() => {
         sessionId: options.sessionId,
         startSession: options.startSession,
         capabilitiesName: options.capabilitiesName,
+        imagesPath: options.imagesPath || process.env.npm_config_imagesPath
     };
 
     return config;
@@ -118,5 +120,6 @@ export const {
     attachToDebug,
     sessionId,
     startSession,
-    capabilitiesName
+    capabilitiesName,
+    imagesPath
 }: INsCapabilitiesArgs = config;

@@ -39,6 +39,7 @@ export class NsCapabilities implements INsCapabilities {
     private _device: IDevice;
     private _deviceManager: IDeviceManager;
     private _exceptions: Array<string> = new Array();
+    private _imagesPath: string;
 
     constructor(private _parser: INsCapabilitiesArgs) {
         this._projectDir = this._parser.projectDir;
@@ -65,6 +66,7 @@ export class NsCapabilities implements INsCapabilities {
         this._wdaLocalPort = this._parser.wdaLocalPort;
         this._path = this._parser.path;
         this._capabilitiesName = this._parser.capabilitiesName;
+        this._imagesPath = this._parser.imagesPath;
     }
 
     get path() { return this._path; }
@@ -107,6 +109,7 @@ export class NsCapabilities implements INsCapabilities {
     get deviceManager() { return this._deviceManager; }
     set deviceManager(deviceManager: IDeviceManager) { this._deviceManager = deviceManager; }
     get isValidated() { return this._isValidated; }
+    get imagesPath() { return this._imagesPath; }
     //set isValidated(isValidated: boolean) { this._isValidated = isValidated; }
 
     public extend(args: INsCapabilities) {
