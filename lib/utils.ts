@@ -243,9 +243,13 @@ const getDeviceName = (args) => {
 
 export function getStorageByDeviceName(args: INsCapabilities) {
     let storage = getStorage(args);
+    if(args.imagesPath){
+        const segments = args.imagesPath.split(/[\/\\]+/);
+        storage = path.join(storage, segments.join(path.sep));
+        return storage;
+    }
     const appName = resolveSauceLabAppName(getAppName(args));
     storage = createStorageFolder(storage, appName);
-
     storage = createStorageFolder(storage, getDeviceName(args));
 
     return storage;
@@ -427,8 +431,8 @@ export async function scroll(wd, driver, direction: Direction, isIOS: boolean, y
     await driver.sleep(150);
 }
 
-function createStorageFolder(storage, direcotry) {
-    storage = resolve(storage, direcotry);
+function createStorageFolder(storage, directory) {
+    storage = resolve(storage, directory);
     if (!fileExists(storage)) {
         fs.mkdirSync(storage);
     }

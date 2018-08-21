@@ -35,4 +35,5 @@ export interface INsCapabilitiesArgs {
     device?: IDevice;
     automationName?: AutomationName;
     deviceManager?: IDeviceManager;
+    imagesPath?: string;
 }
