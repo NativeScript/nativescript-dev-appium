@@ -18,8 +18,8 @@ export declare class ImageHelper {
         width: any;
         height: any;
     };
-    private static getOffsetPixels;
-    private runDiff;
+    private static getOffsetPixels(args);
+    private runDiff(diffOptions, diffImage);
     compareImages(actual: string, expected: string, output: string, valueThreshold?: number, typeThreshold?: any): Promise<boolean>;
     clipRectangleImage(rect: IRectangle, path: string): Promise<{}>;
     readImage(path: string): Promise<any>;

@@ -163,7 +163,7 @@ export declare class AppiumDriver {
      */
     startRecordingVideo(videoName: any): any;
     stopRecordingVideo(): Promise<any>;
-    private compare;
+    private compare(imageName, timeOutSeconds?, tolerance?, rect?, toleranceType?);
     prepareImageToCompare(filePath: string, rect: IRectangle): Promise<void>;
     takeScreenshot(fileName: string): Promise<string>;
     logScreenshot(fileName: string): Promise<string>;
@@ -183,10 +183,10 @@ export declare class AppiumDriver {
     resetApp(): Promise<void>;
     init(): Promise<void>;
     quit(): Promise<void>;
-    private static applyAdditionalSettings;
-    private convertArrayToUIElements;
-    private static configureLogging;
-    private getExpectedImagePath;
+    private static applyAdditionalSettings(args);
+    private convertArrayToUIElements(array, searchM, args);
+    private static configureLogging(driver, verbose);
+    private getExpectedImagePath(imageName);
     /**
     * Wait specific amount of time before continue execution
     * @param miliseconds

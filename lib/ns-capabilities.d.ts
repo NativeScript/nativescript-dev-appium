@@ -37,6 +37,7 @@ export declare class NsCapabilities implements INsCapabilities {
     private _device;
     private _deviceManager;
     private _exceptions;
+    private _imagesPath;
     constructor(_parser: INsCapabilitiesArgs);
     readonly path: string;
     readonly projectDir: string;
@@ -70,13 +71,14 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly startSession: boolean;
     deviceManager: IDeviceManager;
     readonly isValidated: boolean;
+    readonly imagesPath: string;
     extend(args: INsCapabilities): this;
     validateArgs(): void;
-    private isAndroidPlatform;
-    private shouldSetFullResetOption;
-    private setAutomationName;
+    private isAndroidPlatform();
+    private shouldSetFullResetOption();
+    private setAutomationName();
     tryGetAndroidApiLevel(): number;
-    private resolveApplication;
-    private checkMandatoryCapabiliies;
-    private throwExceptions;
+    private resolveApplication();
+    private checkMandatoryCapabiliies();
+    private throwExceptions();
 }
