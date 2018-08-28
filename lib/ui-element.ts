@@ -92,6 +92,7 @@ export class UIElement {
      * Shows if element is displayed. Returns true or false. If the element doesn't exist it will return false
      */
     public async isDisplayed() {
+        const displaySize = await this._driver.getWindowSize();
         const el = (await this.element());
         let isDisplayed = true;
         if (!el || el === null) {
@@ -99,8 +100,11 @@ export class UIElement {
         }
 
         try {
-            isDisplayed = (await el.isDisplayed());
+            const elemCoordinates = await this.getRectangle();
+            isDisplayed = (await el.isDisplayed()) && elemCoordinates.x >= 0 && elemCoordinates.x < displaySize.width
+                && elemCoordinates.y >= 0 && elemCoordinates.y < displaySize.height;
         } catch (error) {
+            console.log("ERROR: " + error);
             isDisplayed = false;
         }
 
