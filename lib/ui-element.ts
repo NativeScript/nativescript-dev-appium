@@ -322,4 +322,41 @@ export class UIElement {
     public driver() {
         return this._element.browser;
     }
+
+     /**
+     * Swipe element left/right
+     * @param direction
+     */
+    public async swipe(direction: Direction){
+        const rectangle = await this.getRectangle();
+        const centerX = rectangle.x + rectangle.width / 2;
+        const centerY = rectangle.y + rectangle.height / 2;
+        let swipeX;
+        if(direction == Direction.right){
+            const windowSize = await this._driver.getWindowSize();
+            swipeX = windowSize.width - 10;
+        } else if (direction == Direction.left){
+            swipeX = 10;
+        } else {
+            console.log("Provided direction must be left or right !");
+        }
+    
+        if (this._args.isAndroid) {
+            const action = new this._wd.TouchAction(this._driver);
+            action.press({ x: centerX, y: centerY })
+                .wait(100)
+                .moveTo({ x: swipeX, y: centerY })
+                .release();
+            await action.perform();
+        }
+        else {
+            await this._driver.execute('mobile: dragFromToForDuration', {
+                duration: 2.0,
+                fromX: centerX,
+                fromY: centerY,
+                toX: swipeX,
+                toY: centerY
+            });
+        }
+    }
 }
