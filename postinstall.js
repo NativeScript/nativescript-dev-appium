@@ -57,7 +57,6 @@ const copy = (src, dest) => {
             copy(source, destination);
         });
     } else {
-        console.log(`Copy ${dest} to ${src}`)
         writeFileSync(dest, readFileSync(src));
     }
 }
