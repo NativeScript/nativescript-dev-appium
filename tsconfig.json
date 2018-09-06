@@ -15,7 +15,7 @@
         "baseUrl": "."
     },
     "exclude": [
-        "e2e",
+        "samples",
         "node_modules"
     ]
 }

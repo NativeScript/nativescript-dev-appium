@@ -1,6 +1,6 @@
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
-import { IDevice, DeviceType } from "mobile-devices-controller";
+import { IDevice, Device, DeviceType } from "mobile-devices-controller";
 export declare class DeviceManager implements IDeviceManager {
     private static _emulators;
     constructor();
@@ -9,7 +9,7 @@ export declare class DeviceManager implements IDeviceManager {
     installApp(args: INsCapabilities): Promise<any>;
     uninstallApp(args: INsCapabilities): Promise<any>;
     static kill(device: IDevice): Promise<void>;
-    static getDefaultDevice(args: INsCapabilities, deviceName?: string, token?: string, type?: DeviceType, platformVersion?: number): any;
+    static getDefaultDevice(args: INsCapabilities, deviceName?: string, token?: string, type?: DeviceType, platformVersion?: number): Device;
     static setDontKeepActivities(args: INsCapabilities, driver: any, value: any): Promise<void>;
     static executeShellCommand(driver: any, commandAndargs: {
         command: string;
