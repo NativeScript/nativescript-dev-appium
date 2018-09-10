@@ -1,26 +1,30 @@
 #!/usr/bin/env node
 
-const { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } = require("fs");
+const {
+    existsSync,
+    mkdirSync,
+    readdirSync,
+    readFileSync,
+    statSync,
+    writeFileSync
+} = require("fs");
 const { basename, resolve } = require("path");
-
-const appRootPath = require('app-root-path').toString();
 const childProcess = require("child_process");
+const appRootPath = require('app-root-path').toString();
+
+const sampleTestsFolder = "samples";
 const e2eTests = "e2e";
-const e2eProjectFolderPath = resolve(appRootPath, e2eTests);
-const e2ePluginFolderPath = resolve(appRootPath, "node_modules", "nativescript-dev-appium", "e2e");
+const sampleTestsProjectFolderPath = resolve(appRootPath, e2eTests);
+const sampleTestsPluginFolderPath = resolve(appRootPath, "node_modules", "nativescript-dev-appium", sampleTestsFolder);
 const packageJsonPath = resolve(appRootPath, "package.json");
 const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"));
+
 const isTypeScriptProject =
-    (
-        packageJson.dependencies &&
-        packageJson.dependencies.hasOwnProperty("typescript")
-    ) || (
-        packageJson.devDependencies &&
-        packageJson.devDependencies.hasOwnProperty("typescript")
-    );
+    (packageJson.dependencies && packageJson.dependencies.hasOwnProperty("typescript"))
+    || (packageJson.devDependencies && packageJson.devDependencies.hasOwnProperty("typescript"));
 const isWin = /^win/.test(process.platform);
 
-function executeNpmInstall(cwd) {
+const executeNpmInstall = cwd => {
     let spawnArgs = [];
     let command = "";
     if (isWin) {
@@ -33,7 +37,7 @@ function executeNpmInstall(cwd) {
     childProcess.spawnSync(command, spawnArgs, { cwd, stdio: "inherit" });
 }
 
-function copy(src, dest) {
+const copy = (src, dest) => {
     if (!existsSync(src)) {
         return Error("Source doesn't exist: " + src);
     }
@@ -57,25 +61,24 @@ function copy(src, dest) {
     }
 }
 
-function getDevDependencies() {
+const getDevDependencies = () => {
     // These are nativescript-dev-appium plugin's dependencies.
     // There is NO need to explicitly install them to the project.
     // const requiredDevDependencies = [
     //     { name: "chai", version: "~4.1.1" },
     //     { name: "chai-as-promised", version: "~7.1.1" },
-    //     { name: "mocha", version: "~3.5.0" },
+    //     { name: "mocha", version: "~5.2.0" },
     //     { name: "mocha-junit-reporter", version: "^1.13.0" },
-    //     { name: "mocha-multi", version: "^0.11.0" },
+    //     { name: "mocha-multi", version: "^1.0.1" },
     // ];
 
     // These are nativescript-dev-appium plugin's devDependencies.
     // There is need to explicitly install them to the project.
-    const typeScriptDevDependencies = [
-        //{ name: "tslib", version: "^1.7.1" },
-        { name: "@types/chai", version: "~4.1.3" },
-        { name: "@types/mocha", version: "~5.2.1" },
-        { name: "@types/node", version: "^7.0.5" },
-    ];
+    // const typeScriptDevDependencies = [
+    //     { name: "@types/chai", version: "~4.1.3" },
+    //     { name: "@types/mocha", version: "~5.2.1" },
+    //     { name: "@types/node", version: "^7.0.5" },
+    // ];
 
     // return isTypeScriptProject ?
     //     [
@@ -84,10 +87,15 @@ function getDevDependencies() {
     //     ] :
     //     requiredDevDependencies;
 
-    return typeScriptDevDependencies;
+    return !isTypeScriptProject ? [] :
+        [
+            { name: "@types/chai", version: "~4.1.3" },
+            { name: "@types/mocha", version: "~5.2.1" },
+            { name: "@types/node", version: "^7.0.5" },
+        ];
 }
 
-function configureDevDependencies(packageJson) {
+const configureDevDependencies = packageJson => {
     if (!packageJson.devDependencies) {
         packageJson.devDependencies = {};
     }
@@ -100,13 +108,13 @@ function configureDevDependencies(packageJson) {
     if (devDependenciesToInstall.length) {
         console.info("Installing new devDependencies ...");
         // Execute `npm install` after everything else
-        setTimeout(function() {
+        setTimeout(function () {
             executeNpmInstall(appRootPath);
         }, 300);
     }
 }
 
-function updatePackageJsonDependencies(packageJson, isTypeScriptProject) {
+const updatePackageJsonDependencies = (packageJson, isTypeScriptProject) => {
     if (!packageJson.scripts) {
         packageJson.scripts = {};
     }
@@ -126,14 +134,19 @@ function updatePackageJsonDependencies(packageJson, isTypeScriptProject) {
 
 if (basename(appRootPath) !== "nativescript-dev-appium") {
     updatePackageJsonDependencies(packageJson, isTypeScriptProject);
-    if (!existsSync(e2eProjectFolderPath)) {
-        mkdirSync(e2eProjectFolderPath);
+    if (!existsSync(sampleTestsProjectFolderPath)) {
+        mkdirSync(sampleTestsProjectFolderPath);
         if (isTypeScriptProject) {
-            console.info("TypeScript project - adding sample config and test ...");
-            console.info("Copying " + e2ePluginFolderPath + " to " + e2eProjectFolderPath + " ...");
-            copy(e2ePluginFolderPath, e2eProjectFolderPath);
+            console.info(`TypeScript project - adding sample config and test ...`);
+            const tscSampleTestsPath = resolve(sampleTestsPluginFolderPath, "e2e-tsc")
+            console.info(`Copying ${tscSampleTestsPath} to ${sampleTestsProjectFolderPath} ...`);
+            copy(tscSampleTestsPath, sampleTestsProjectFolderPath);
         } else {
-            console.info("JavaScript project - not adding sample config and test ...");
+            const jsSampleTestsPath = resolve(sampleTestsPluginFolderPath, "e2e-js")
+            console.info("JavaScript project - adding sample config and test ...");
+            console.info(`Copying ${jsSampleTestsPath} to ${sampleTestsProjectFolderPath} ...`);
+            copy(jsSampleTestsPath, sampleTestsProjectFolderPath);
         }
     }
 }
+

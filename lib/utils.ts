@@ -307,9 +307,8 @@ export const getRegexResultsAsArray = (regex, str) => {
 }
 
 function getAppName(args: INsCapabilities) {
-    const appLocation = args.appPath || args.appiumCaps.app;
-    const appName = args.appName || appLocation
-        .substring(appLocation.lastIndexOf("/") + 1, appLocation.lastIndexOf("."))
+    const appName = args.appName || path.basename(args.appPath)
+        .replace(path.extname(args.appPath), "")
         .replace("-release", "").replace("-debug", "");
 
     return appName;
@@ -557,6 +556,7 @@ export const prepareApp = async (args: INsCapabilities) => {
         args.appName = groupings[groupings.length - 1];
         console.log(`Setting application name as ${args.appName}`);
         if (!args.devMode && !args.ignoreDeviceController) {
+            logInfo("Check and uninstall application from device.");
             await args.deviceManager.uninstallApp(args);
         } else {
             args.appiumCaps.app = "";

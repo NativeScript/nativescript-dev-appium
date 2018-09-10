@@ -7,7 +7,9 @@
         "**/.hg": true,
         "**/CVS": true,
         "**/.DS_Store": true,
-        "**/*.js": true,
+        "/lib/**/*.js": true,
+        "/bin/**/*.js": true,
+        "samples/e2e-js/*.js": false,
         "**/*.map": true,
         "**/*.d.ts": true,
         "postinstall.js": false

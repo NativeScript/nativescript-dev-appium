@@ -2,10 +2,10 @@
 /**/*.ts
 /**/*.map
 !/**/*.d.ts
-e2e/reports
-e2e/**/*.js
-!e2e/*.ts
-!e2e/tsconfig.json
+samples/reports
+samples/e2e-tsc/*.js
+!samples/e2e-tsc/*.ts
+!samples/e2e-tsc/tsconfig.json
 publish-next.js
 test-app
 .vscode

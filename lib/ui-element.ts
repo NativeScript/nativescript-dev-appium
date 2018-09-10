@@ -23,11 +23,6 @@ export class UIElement {
         return await (await this.element()).click();
     }
 
-    /**
-    * Click a point by providing coordinates
-    * @param x
-    * @param y
-    */
     public async tapCenter() {
         let action = new this._wd.TouchAction(this._driver);
         const rect = await this.getActualRectangle();
