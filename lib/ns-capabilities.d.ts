@@ -74,11 +74,11 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly imagesPath: string;
     extend(args: INsCapabilities): this;
     validateArgs(): void;
-    private isAndroidPlatform();
-    private shouldSetFullResetOption();
-    private setAutomationName();
+    private isAndroidPlatform;
+    private shouldSetFullResetOption;
+    private setAutomationName;
     tryGetAndroidApiLevel(): number;
-    private resolveApplication();
-    private checkMandatoryCapabiliies();
-    private throwExceptions();
+    private resolveApplication;
+    private checkMandatoryCapabiliies;
+    private throwExceptions;
 }
