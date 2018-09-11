@@ -122,4 +122,9 @@ export declare class UIElement {
      * Easy to use in order to chain and search for nested elemetns
      */
     driver(): any;
+    /**
+    * Swipe element left/right
+    * @param direction
+    */
+    swipe(direction: Direction): Promise<void>;
 }
