@@ -22,7 +22,7 @@ describe("sample scenario", () => {
 
     it("should find an element by text", async () => {
         const btnTap = await driver.findElementByText("TAP", SearchOptions.exact);
-        await btnTap.tap();
+        await btnTap.click();
 
         const message = " taps left";
         const lblMessage = await driver.findElementByText(message, SearchOptions.contains);
@@ -35,7 +35,7 @@ describe("sample scenario", () => {
 
     it("should find an element by type", async () => {
         const btnTap = await driver.findElementByClassName(driver.locators.button);
-        await btnTap.tap();
+        await btnTap.click();
 
         const message = " taps left";
         const lblMessage = await driver.findElementByText(message, SearchOptions.contains);
