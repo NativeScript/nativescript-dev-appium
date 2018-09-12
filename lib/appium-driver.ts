@@ -736,9 +736,9 @@ export class AppiumDriver {
         }
 
         if (args.appiumCaps.platformName.toLowerCase() === Platform.IOS) {
-            args.appiumCaps["useNewWDA"] = false;
+            args.appiumCaps["useNewWDA"] = args.appiumCaps.useNewWDA;
             args.appiumCaps["wdaStartupRetries"] = 5;
-            args.appiumCaps["shouldUseSingletonTestManager"] = false;
+            args.appiumCaps["shouldUseSingletonTestManager"] =  args.appiumCaps.shouldUseSingletonTestManager;
 
             // It looks we need it for XCTest (iOS 10+ automation)
             if (args.appiumCaps.platformVersion >= 10 && args.wdaLocalPort) {
