@@ -104,8 +104,9 @@ export declare class UIElement {
     drag(direction: Direction, yOffset: number, xOffset?: number): Promise<void>;
     /**
      * Click and hold over an element
+     * @param time in miliseconds to increase the default press period.
      */
-    hold(): Promise<void>;
+    hold(time?: number): Promise<void>;
     /**
      * Send keys to field or other UI component
      * @param text
