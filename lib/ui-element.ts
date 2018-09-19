@@ -309,6 +309,7 @@ export class UIElement {
                 return await this._driver[this._searchMethod](this._searchParams, 1000);
             }
         } catch (error) {
+            console.log("Refetch error: " + error);
             return null;
         }
     }

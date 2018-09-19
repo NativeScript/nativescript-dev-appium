@@ -35,7 +35,8 @@ import {
     prepareApp,
     logInfo,
     prepareDevice,
-    getStorage
+    getStorage,
+    encodeImageToBase64
 } from "./utils";
 
 import { INsCapabilities } from "./interfaces/ns-capabilities";
@@ -868,5 +869,33 @@ export class AppiumDriver {
         } else {
             // Do nothing for iOS ...
         }
+    }
+
+    /**
+     *  Experimental feature that is still tricky to use!!!
+     *  Find location on the screen by provided image.
+     * @param image The name of the image without the extension.
+     * @param imageThreshold The degree of match for current search, on the scale between 0 and 1. Default 0.4
+     */
+    public async findElementByImage(image: string, imageThreshold = 0.4) {
+        await this._driver.updateSettings({imageMatchThreshold: imageThreshold});
+        const imageName = addExt(image, AppiumDriver.pngFileExt);
+        const pathExpectedImage = this.getExpectedImagePath(imageName);
+
+        if (!fileExists(pathExpectedImage)) {
+            throw new Error("The provided image does not exist!!!");
+        }
+        const imageAsBase64 = encodeImageToBase64(pathExpectedImage);
+        let searchResult;
+        try {
+            searchResult = await this._driver.elementByImage(imageAsBase64);
+        } catch (error) {
+            throw new Error(error);
+        } finally {
+            // reset setting to default value
+            await this._driver.updateSettings({imageMatchThreshold: 0.4});
+        }
+        
+        return new UIElement(searchResult, this._driver, this._wd, this._webio, this._args, "elementByImage", imageAsBase64);
     }
 }
