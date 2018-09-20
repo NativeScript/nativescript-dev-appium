@@ -277,11 +277,13 @@ export class UIElement {
 
     /**
      * Click and hold over an element
+     * @param time in miliseconds to increase the default press period.
      */
-    public async hold() {
+    public async hold(time?: number) {
         let action = new this._wd.TouchAction(this._driver);
+        let durationTime = time ? time + 1000 : 1000;
         action
-            .longPress({ el: await this.element() })
+            .longPress({ el: await this.element(), duration: durationTime })
             .release();
         await action.perform();
         await this._driver.sleep(150);
@@ -307,6 +309,7 @@ export class UIElement {
                 return await this._driver[this._searchMethod](this._searchParams, 1000);
             }
         } catch (error) {
+            console.log("Refetch error: " + error);
             return null;
         }
     }

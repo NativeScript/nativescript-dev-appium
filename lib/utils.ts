@@ -610,6 +610,12 @@ export function logError(info, obj = undefined) {
     console.log(`${ConsoleColor.BgRed}%s${ConsoleColor.Reset}`, info);
 }
 
+export function encodeImageToBase64(path) {
+    const bitmap = fs.readFileSync(path);
+    // convert binary data to base64 encoded string
+    return new Buffer(bitmap).toString('base64');
+}
+
 enum ConsoleColor {
     Reset = "\x1b[0m",
     Bright = "\x1b[1m",

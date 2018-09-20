@@ -217,4 +217,11 @@ export declare class AppiumDriver {
     */
     findElementByAccessibilityIdIfExists(id: string, waitForElement?: number): Promise<any>;
     setDontKeepActivities(value: boolean): Promise<void>;
+    /**
+     *  Experimental feature that is still tricky to use!!!
+     *  Find location on the screen by provided image.
+     * @param image The name of the image without the extension.
+     * @param imageThreshold The degree of match for current search, on the scale between 0 and 1. Default 0.4
+     */
+    findElementByImage(image: string, imageThreshold?: number): Promise<UIElement>;
 }
