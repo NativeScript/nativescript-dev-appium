@@ -33,7 +33,6 @@ const sampleTestsProjectFolderPath = resolve(appRootPath, e2eTests);
 const sampleTestsPluginFolderPath = resolve(appRootPath, "node_modules", "nativescript-dev-appium", sampleTestsFolder);
 const packageJsonPath = resolve(appRootPath, "package.json");
 const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"));
-const callInstalationScripts = basename(appRootPath) !== "nativescript-dev-appium" && !(packageJson.devDependencies && packageJson.devDependencies["nativescript-dev-appium"]);
 
 // let isTypeScriptProject =
 //     (packageJson.dependencies && packageJson.dependencies.hasOwnProperty("typescript"))
@@ -198,6 +197,12 @@ const success = filepath => {
 const run = async (projectType, testingFrameworkType) => {
     // show script introduction
     init();
+
+    const shouldInstallSamples = ((process.env["PROJECT_TYPE"] && process.env["TESTING_FRAMEWORK"]) || !(packageJson.devDependencies && packageJson.devDependencies["nativescript-dev-appium"]))
+        && basename(appRootPath) !== "nativescript-dev-appium";
+    if (!shouldInstallSamples) {
+        return false;
+    }
 
     // ask questions
     const { PROJECT_TYPE } = process.env["PROJECT_TYPE"] ? { PROJECT_TYPE: process.env["PROJECT_TYPE"] } : await frameworkQuestion();
