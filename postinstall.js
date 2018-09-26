@@ -215,7 +215,7 @@ const run = async () => {
         return;
     }
 
-    const sampleTestsProjectFolderPath = resolve(appRootPath, e2eTests);
+    const sampleTestsProjectFolderPath = resolve(appRootPath, "e2e");
     console.log(`Tests folder: ${sampleTestsProjectFolderPath}`)
     if (!existsSync(sampleTestsProjectFolderPath) && TESTING_FRAMEWORK !== none) {
         mkdirSync(sampleTestsProjectFolderPath);
