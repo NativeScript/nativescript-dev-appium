@@ -713,8 +713,6 @@ export class AppiumDriver {
         try {
             if (!this._args.attachToDebug) {
                 await this._driver.quit();
-                await this._driver.quit();
-                await this._webio.quit();
             } else {
                 await this._webio.detach();
             }
@@ -739,7 +737,7 @@ export class AppiumDriver {
         if (args.appiumCaps.platformName.toLowerCase() === Platform.IOS) {
             args.appiumCaps["useNewWDA"] = args.appiumCaps.useNewWDA;
             args.appiumCaps["wdaStartupRetries"] = 5;
-            args.appiumCaps["shouldUseSingletonTestManager"] =  args.appiumCaps.shouldUseSingletonTestManager;
+            args.appiumCaps["shouldUseSingletonTestManager"] = args.appiumCaps.shouldUseSingletonTestManager;
 
             // It looks we need it for XCTest (iOS 10+ automation)
             if (args.appiumCaps.platformVersion >= 10 && args.wdaLocalPort) {
@@ -878,7 +876,7 @@ export class AppiumDriver {
      * @param imageThreshold The degree of match for current search, on the scale between 0 and 1. Default 0.4
      */
     public async findElementByImage(image: string, imageThreshold = 0.4) {
-        await this._driver.updateSettings({imageMatchThreshold: imageThreshold});
+        await this._driver.updateSettings({ imageMatchThreshold: imageThreshold });
         const imageName = addExt(image, AppiumDriver.pngFileExt);
         const pathExpectedImage = this.getExpectedImagePath(imageName);
 
@@ -893,9 +891,9 @@ export class AppiumDriver {
             throw new Error(error);
         } finally {
             // reset setting to default value
-            await this._driver.updateSettings({imageMatchThreshold: 0.4});
+            await this._driver.updateSettings({ imageMatchThreshold: 0.4 });
         }
-        
+
         return new UIElement(searchResult, this._driver, this._wd, this._webio, this._args, "elementByImage", imageAsBase64);
     }
 }

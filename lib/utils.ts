@@ -35,11 +35,11 @@ export function fileExists(p) {
         return false;
     } catch (e) {
         if (e.code == 'ENOENT') {
-            logErr("File does not exist. " + p, true);
+            logError("File does not exist. " + p, true);
             return false;
         }
 
-        logErr("Exception fs.statSync (" + path + "): " + e, true);
+        logError("Exception fs.statSync (" + path + "): " + e, true);
         throw e;
     }
 }
@@ -63,7 +63,7 @@ export function isFile(fullName) {
             return true;
         }
     } catch (e) {
-        logErr(e.message, true);
+        logError(e.message, true);
         return false;
     }
 
@@ -156,24 +156,6 @@ export function searchFiles(folder, words, recursive: boolean = true, files = ne
     return files;
 }
 
-export function log(message, verbose) {
-    if (verbose) {
-        console.log(message);
-    }
-}
-
-export function loglogOut(line, verbose) {
-    if (verbose) {
-        process.stdout.write(line);
-    }
-}
-
-export function logErr(line, verbose) {
-    if (verbose) {
-        process.stderr.write(line);
-    }
-}
-
 export function shutdown(processToKill: childProcess.ChildProcess, verbose) {
     try {
         if (processToKill && processToKill !== null) {
@@ -187,7 +169,7 @@ export function shutdown(processToKill: childProcess.ChildProcess, verbose) {
             console.log("Shut down!!!");
         }
     } catch (error) {
-        logErr(error, verbose);
+        logError(error, verbose);
     }
 }
 
@@ -243,7 +225,7 @@ const getDeviceName = (args) => {
 
 export function getStorageByDeviceName(args: INsCapabilities) {
     let storage = getStorage(args);
-    if(args.imagesPath){
+    if (args.imagesPath) {
         const segments = args.imagesPath.split(/[\/\\]+/);
         storage = path.join(storage, segments.join(path.sep));
         return storage;
@@ -589,6 +571,12 @@ export const sessionIds = async (port) => {
     return ids;
 }
 
+export function encodeImageToBase64(path) {
+    const bitmap = fs.readFileSync(path);
+    // convert binary data to base64 encoded string
+    return new Buffer(bitmap).toString('base64');
+}
+
 export function logInfo(info, obj = undefined) {
     if (obj) {
         info += " " + JSON.stringify(obj);
@@ -610,10 +598,14 @@ export function logError(info, obj = undefined) {
     console.log(`${ConsoleColor.BgRed}%s${ConsoleColor.Reset}`, info);
 }
 
-export function encodeImageToBase64(path) {
-    const bitmap = fs.readFileSync(path);
-    // convert binary data to base64 encoded string
-    return new Buffer(bitmap).toString('base64');
+export function log(message, verbose) {
+    if (verbose) {
+        console.log(message);
+    }
+}
+
+export const logColorized = (bgColor: ConsoleColor, frontColor: ConsoleColor, info) => {
+    console.log(`${ConsoleColor.BgYellow}${ConsoleColor.FgBlack}%s${ConsoleColor.Reset}`, info);
 }
 
 enum ConsoleColor {
