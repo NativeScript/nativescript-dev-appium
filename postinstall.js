@@ -201,7 +201,7 @@ const run = async (projectType, testingFrameworkType) => {
 
     // ask questions
     const { PROJECT_TYPE } = process.env["PROJECT_TYPE"] ? { PROJECT_TYPE: process.env["PROJECT_TYPE"] } : await frameworkQuestion();
-    const { TESTING_FRAMEWORK } = process.env["TESTING_FRAMEWORK"] ? { TESTING_FRAMEWORK: testingFrameworkType } : await testingFrameworkQuestion();
+    const { TESTING_FRAMEWORK } = process.env["TESTING_FRAMEWORK"] ? { TESTING_FRAMEWORK: process.env["TESTING_FRAMEWORK"] } : await testingFrameworkQuestion();
 
     if (!projectTypes.includes(PROJECT_TYPE)) {
         console.error(`Please provide PROJECT_TYPE of type ${projectTypes}!`);
@@ -256,32 +256,4 @@ const run = async (projectType, testingFrameworkType) => {
 
 if (callInstalationScripts) {
     run();
-}
-
-async function installSamples() {
-    const projectTypes = "typescript | javascript | angular | vue | sharedNg | sharedVue";
-    if (process.argv.indexOf("--projectType") < 0) {
-        console.error(`Please provide --projectType: ${projectTypes}!`);
-        process.exit(1);
-    }
-
-    const testingFrameworks = "mocha | jasmine | none"
-    if (process.argv.indexOf("--testingFramework") < 0) {
-        console.error(`Please provide --testingFramework:${testingFrameworks}!`);
-        process.exit(1);
-    }
-
-    const projectType = process.argv[(process.argv.indexOf("--projectType") + 1)];
-    if (!projectTypes.includes(projectType)) {
-        console.error(`Please provide --projectType: ${projectTypes}!`);
-        process.exit(1);
-    }
-
-    const testingFramework = process.argv[(process.argv.indexOf("--testingFramework") + 1)];
-    if (!testingFrameworks.includes(testingFramework)) {
-        console.error(`Please provide --testingFramework:${testingFrameworks}!`);
-        process.exit(1);
-    }
-    const run = require("./postinstall").run;
-    await run(projectType, testingFramework);
 }
