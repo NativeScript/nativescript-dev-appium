@@ -216,14 +216,14 @@ const run = async () => {
     }
 
     const sampleTestsProjectFolderPath = resolve(appRootPath, "e2e");
-    console.log(`Tests folder: ${sampleTestsProjectFolderPath}`)
+    console.log(`Tests folder: ${sampleTestsProjectFolderPath}`);
+    const sampleTestsFolder = "samples";
+    const sampleTestsPluginFolderPath = resolve(appRootPath, "node_modules", "nativescript-dev-appium", sampleTestsFolder);
     if (!existsSync(sampleTestsProjectFolderPath) && TESTING_FRAMEWORK !== none) {
         mkdirSync(sampleTestsProjectFolderPath);
         let e2eSamplesFolder;
         if (PROJECT_TYPE === tsc && PROJECT_TYPE === ng && PROJECT_TYPE === sharedNg) {
             console.info(`Adding typescript sample config and test ...`);
-            const sampleTestsFolder = "samples";
-            const sampleTestsPluginFolderPath = resolve(appRootPath, "node_modules", "nativescript-dev-appium", sampleTestsFolder);
 
             e2eSamplesFolder = resolve(sampleTestsPluginFolderPath, "e2e-tsc");
             const tsConfigJsonFile = resolve(e2eSamplesFolder, "tsconfig.json");
