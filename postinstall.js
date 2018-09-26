@@ -72,7 +72,7 @@ const getDevDependencies = (frameworkType) => {
 
     tesstingFrameworkDeps.set(jasmine, [
         { name: "jasmine", version: "~3.2.0" },
-        { name: "@types/jasmine", version: "~3.0.0" },
+        { name: "@types/jasmine", version: "~2.8.8" },
         { name: "jasmine-core", version: "~2.99.1" },
         { name: "jasmine-spec-reporter", version: "~4.2.1" },
     ]);
@@ -119,22 +119,22 @@ const updatePackageJsonDependencies = (packageJson, projectType, testingFramewor
     }
 
     const checkDevDepsScript = "node ./node_modules/nativescript-dev-appium/check-dev-deps.js";
-    const mocha = " mocha --opts ./e2e/config/mocha.opts ";
-    const jasmine = " jasmine --config=./e2e/config/jasmine.json ";
+    const mochaCommand = " mocha --opts ./e2e/config/mocha.opts ";
+    const jasmineCommand = " jasmine --config=./e2e/config/jasmine.json ";
     const tscTranspile = " tsc -p e2e ";
-    const runner = testingFrameworkType === none ? undefined : testingFrameworkType === mocha ? mocha : jasmine;
+
+    const runner = (testingFrameworkType === none) ? undefined : (testingFrameworkType === mocha ? mochaCommand : jasmineCommand);
     const executeTestsCommand = projectType !== sharedNg ? "e2e" : "e2e-appium";
+    const watchTestsCommandName = executeTestsCommand + "-watch";// = "tsc -p e2e --watch";"
+    const watchTestsCommand = "tsc -p e2e --watch";
 
     if (!packageJson.scripts[executeTestsCommand] && runner) {
         switch (projectType) {
             case tsc:
             case ng:
-                packageJson.scripts[executeTestsCommand] = checkDevDepsScript + " && " + tscTranspile + " && " + runner;
-                packageJson.scripts[executeTestsCommand + "-watch"] = "tsc -p e2e --watch";
-                break;
             case sharedNg:
                 packageJson.scripts[executeTestsCommand] = checkDevDepsScript + " && " + tscTranspile + " && " + runner;
-                packageJson.scripts[executeTestsCommand + "-appium"] = "tsc -p e2e --watch";
+                packageJson.scripts[watchTestsCommandName] = watchTestsCommand;
                 break;
             case js:
             case vue:
@@ -189,17 +189,17 @@ const testingFrameworkQuestion = () => {
 const success = filepath => {
     console.dir(filepath)
     console.log(
-        chalk.white.bgGreen.bold(`Done! ${filepath} is your defautl testing framework!`)
+        chalk.white.bgGreen.bold(`Done! ${filepath} is your default testing framework!`)
     );
 };
 
-const run = async () => {
+const run = async (projectType, testingFrameworkType) => {
     // show script introduction
     init();
 
     // ask questions
-    const { PROJECT_TYPE } = await frameworkQuestion();
-    const { TESTING_FRAMEWORK } = await testingFrameworkQuestion();
+    const { PROJECT_TYPE } = projectType ? { PROJECT_TYPE : projectType } : await frameworkQuestion();
+    const { TESTING_FRAMEWORK } = testingFrameworkType ? { TESTING_FRAMEWORK: testingFrameworkType } : await testingFrameworkQuestion();
 
     console.log(`e2e folder ${sampleTestsProjectFolderPath}`)
     if (!existsSync(sampleTestsProjectFolderPath)) {
@@ -245,3 +245,5 @@ const run = async () => {
 if (callInstalationScripts) {
     run();
 }
+
+exports.run = run;

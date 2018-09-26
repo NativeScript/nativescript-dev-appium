@@ -135,6 +135,39 @@ export function loadFrameComparer() {
     return frameComparer;
 }
 
+if (process.argv.indexOf("--installSamples") > 0) {
+    installSamples()
+        .then(e => console.log("Samples should be installed!"))
+}
+
+async function installSamples() {
+    const projectTypes = "typescript | javascript | angular | vue | sharedNg | sharedVue";
+    if (process.argv.indexOf("--projectType") < 0) {
+        logError(`Please provide --projectType: ${projectTypes}!`);
+        process.exit(1);
+    }
+
+    const testingFrameworks = "mocha | jasmine | none"
+    if (process.argv.indexOf("--testingFramework") < 0) {
+        logError(`Please provide --testingFramework:${testingFrameworks}!`);
+        process.exit(1);
+    }
+
+    const projectType = process.argv[(process.argv.indexOf("--projectType") + 1)];
+    if (!projectTypes.includes(projectType)) {
+        logError(`Please provide --projectType: ${projectTypes}!`);
+        process.exit(1);
+    }
+
+    const testingFramework = process.argv[(process.argv.indexOf("--testingFramework") + 1)];
+    if (!testingFrameworks.includes(testingFramework)) {
+        logError(`Please provide --testingFramework:${testingFrameworks}!`);
+        process.exit(1);
+    }
+    const run = require("./postinstall").run;
+    await run(projectType, testingFramework);
+}
+
 const killProcesses = async (code) => {
     console.log(`About to exit with code: ${code}`);
     if (appiumServer) {
