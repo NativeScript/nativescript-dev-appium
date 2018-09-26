@@ -26,6 +26,17 @@ export { IDeviceManager } from "./lib/interfaces/device-manager";
 export { LogType } from "./lib/log-types";
 export { INsCapabilities } from "./lib/interfaces/ns-capabilities";
 export { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
+
+if (process.argv.indexOf("--installSamples") > 0) {
+    installSamples()
+        .then(e => {
+            console.log("Samples should be already installed!");
+            process.exit(0);
+        })
+        .catch(process.exit(1))
+    process.exit(0);
+}
+
 export const nsCapabilities: INsCapabilities = new NsCapabilities(parser);
 
 const appiumServer = new AppiumServer(nsCapabilities);
@@ -133,11 +144,6 @@ export function loadFrameComparer() {
     }
 
     return frameComparer;
-}
-
-if (process.argv.indexOf("--installSamples") > 0) {
-    installSamples()
-        .then(e => console.log("Samples should be installed!"))
 }
 
 async function installSamples() {
