@@ -204,12 +204,12 @@ const run = async (projectType, testingFrameworkType) => {
     const { TESTING_FRAMEWORK } = process.env["TESTING_FRAMEWORK"] ? { TESTING_FRAMEWORK: testingFrameworkType } : await testingFrameworkQuestion();
 
     if (!projectTypes.includes(PROJECT_TYPE)) {
-        logError(`Please provide PROJECT_TYPE of type ${projectTypes}!`);
+        console.error(`Please provide PROJECT_TYPE of type ${projectTypes}!`);
         return;
     }
 
     if (!testingFrameworks.includes(TESTING_FRAMEWORK)) {
-        logError(`Please provide testingFramework of type ${testingFrameworks}!`);
+        console.error(`Please provide testingFramework of type ${testingFrameworks}!`);
         return;
     }
 
@@ -261,25 +261,25 @@ if (callInstalationScripts) {
 async function installSamples() {
     const projectTypes = "typescript | javascript | angular | vue | sharedNg | sharedVue";
     if (process.argv.indexOf("--projectType") < 0) {
-        logError(`Please provide --projectType: ${projectTypes}!`);
+        console.error(`Please provide --projectType: ${projectTypes}!`);
         process.exit(1);
     }
 
     const testingFrameworks = "mocha | jasmine | none"
     if (process.argv.indexOf("--testingFramework") < 0) {
-        logError(`Please provide --testingFramework:${testingFrameworks}!`);
+        console.error(`Please provide --testingFramework:${testingFrameworks}!`);
         process.exit(1);
     }
 
     const projectType = process.argv[(process.argv.indexOf("--projectType") + 1)];
     if (!projectTypes.includes(projectType)) {
-        logError(`Please provide --projectType: ${projectTypes}!`);
+        console.error(`Please provide --projectType: ${projectTypes}!`);
         process.exit(1);
     }
 
     const testingFramework = process.argv[(process.argv.indexOf("--testingFramework") + 1)];
     if (!testingFrameworks.includes(testingFramework)) {
-        logError(`Please provide --testingFramework:${testingFrameworks}!`);
+        console.error(`Please provide --testingFramework:${testingFrameworks}!`);
         process.exit(1);
     }
     const run = require("./postinstall").run;
