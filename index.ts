@@ -34,7 +34,6 @@ if (process.argv.indexOf("--installSamples") > 0) {
             process.exit(0);
         })
         .catch(process.exit(1))
-    process.exit(0);
 }
 
 export const nsCapabilities: INsCapabilities = new NsCapabilities(parser);
