@@ -259,6 +259,4 @@ const run = async (projectType, testingFrameworkType) => {
     updatePackageJsonDependencies(packageJson, PROJECT_TYPE, TESTING_FRAMEWORK);
 };
 
-if (callInstalationScripts) {
-    run();
-}
+run();
