@@ -26,16 +26,6 @@ export { IDeviceManager } from "./lib/interfaces/device-manager";
 export { LogType } from "./lib/log-types";
 export { INsCapabilities } from "./lib/interfaces/ns-capabilities";
 export { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
-
-if (process.argv.indexOf("--installSamples") > 0) {
-    installSamples()
-        .then(e => {
-            console.log("Samples should be already installed!");
-            process.exit(0);
-        })
-        .catch(process.exit(1))
-}
-
 export const nsCapabilities: INsCapabilities = new NsCapabilities(parser);
 
 const appiumServer = new AppiumServer(nsCapabilities);
@@ -143,34 +133,6 @@ export function loadFrameComparer() {
     }
 
     return frameComparer;
-}
-
-async function installSamples() {
-    const projectTypes = "typescript | javascript | angular | vue | sharedNg | sharedVue";
-    if (process.argv.indexOf("--projectType") < 0) {
-        logError(`Please provide --projectType: ${projectTypes}!`);
-        process.exit(1);
-    }
-
-    const testingFrameworks = "mocha | jasmine | none"
-    if (process.argv.indexOf("--testingFramework") < 0) {
-        logError(`Please provide --testingFramework:${testingFrameworks}!`);
-        process.exit(1);
-    }
-
-    const projectType = process.argv[(process.argv.indexOf("--projectType") + 1)];
-    if (!projectTypes.includes(projectType)) {
-        logError(`Please provide --projectType: ${projectTypes}!`);
-        process.exit(1);
-    }
-
-    const testingFramework = process.argv[(process.argv.indexOf("--testingFramework") + 1)];
-    if (!testingFrameworks.includes(testingFramework)) {
-        logError(`Please provide --testingFramework:${testingFrameworks}!`);
-        process.exit(1);
-    }
-    const run = require("./postinstall").run;
-    await run(projectType, testingFramework);
 }
 
 const killProcesses = async (code) => {

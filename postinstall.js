@@ -22,6 +22,8 @@ const ng = "angular"
 const vue = "vue"
 const sharedNg = "shared-ng-project"
 const sharedVue = "shared-vue-project"
+const projectTypes = `${tsc} | ${js} | ${ng} | ${vue} | ${sharedNg} | ${sharedVue}`;
+const testingFrameworks = `${mocha} | ${jasmine} | ${none}`;
 
 const { basename, resolve } = require("path");
 const appRootPath = require('app-root-path').toString();
@@ -198,8 +200,18 @@ const run = async (projectType, testingFrameworkType) => {
     init();
 
     // ask questions
-    const { PROJECT_TYPE } = projectType ? { PROJECT_TYPE : projectType } : await frameworkQuestion();
-    const { TESTING_FRAMEWORK } = testingFrameworkType ? { TESTING_FRAMEWORK: testingFrameworkType } : await testingFrameworkQuestion();
+    const { PROJECT_TYPE } = process.env["PROJECT_TYPE"] ? { PROJECT_TYPE: process.env["PROJECT_TYPE"] } : await frameworkQuestion();
+    const { TESTING_FRAMEWORK } = process.env["TESTING_FRAMEWORK"] ? { TESTING_FRAMEWORK: testingFrameworkType } : await testingFrameworkQuestion();
+
+    if (!projectTypes.includes(PROJECT_TYPE)) {
+        logError(`Please provide PROJECT_TYPE of type ${projectTypes}!`);
+        return;
+    }
+
+    if (!testingFrameworks.includes(TESTING_FRAMEWORK)) {
+        logError(`Please provide testingFramework of type ${testingFrameworks}!`);
+        return;
+    }
 
     console.log(`e2e folder ${sampleTestsProjectFolderPath}`)
     if (!existsSync(sampleTestsProjectFolderPath)) {
@@ -246,4 +258,30 @@ if (callInstalationScripts) {
     run();
 }
 
-exports.run = run;
+async function installSamples() {
+    const projectTypes = "typescript | javascript | angular | vue | sharedNg | sharedVue";
+    if (process.argv.indexOf("--projectType") < 0) {
+        logError(`Please provide --projectType: ${projectTypes}!`);
+        process.exit(1);
+    }
+
+    const testingFrameworks = "mocha | jasmine | none"
+    if (process.argv.indexOf("--testingFramework") < 0) {
+        logError(`Please provide --testingFramework:${testingFrameworks}!`);
+        process.exit(1);
+    }
+
+    const projectType = process.argv[(process.argv.indexOf("--projectType") + 1)];
+    if (!projectTypes.includes(projectType)) {
+        logError(`Please provide --projectType: ${projectTypes}!`);
+        process.exit(1);
+    }
+
+    const testingFramework = process.argv[(process.argv.indexOf("--testingFramework") + 1)];
+    if (!testingFrameworks.includes(testingFramework)) {
+        logError(`Please provide --testingFramework:${testingFrameworks}!`);
+        process.exit(1);
+    }
+    const run = require("./postinstall").run;
+    await run(projectType, testingFramework);
+}
