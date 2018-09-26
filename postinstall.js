@@ -9,6 +9,9 @@ const {
     writeFileSync
 } = require("fs");
 
+const { basename, resolve } = require("path");
+const appRootPath = require('app-root-path').toString();
+
 const inquirer = require("inquirer");
 const chalk = require("chalk");
 const figlet = require("figlet");
@@ -25,12 +28,6 @@ const sharedVue = "shared-vue-project"
 const projectTypes = `${tsc} | ${js} | ${ng} | ${vue} | ${sharedNg} | ${sharedVue}`;
 const testingFrameworks = `${mocha} | ${jasmine} | ${none}`;
 
-const { basename, resolve } = require("path");
-const appRootPath = require('app-root-path').toString();
-const sampleTestsFolder = "samples";
-const e2eTests = "e2e";
-const sampleTestsProjectFolderPath = resolve(appRootPath, e2eTests);
-const sampleTestsPluginFolderPath = resolve(appRootPath, "node_modules", "nativescript-dev-appium", sampleTestsFolder);
 const packageJsonPath = resolve(appRootPath, "package.json");
 const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"));
 
@@ -194,7 +191,7 @@ const success = filepath => {
     );
 };
 
-const run = async (projectType, testingFrameworkType) => {
+const run = async () => {
     // show script introduction
     init();
 
@@ -218,12 +215,16 @@ const run = async (projectType, testingFrameworkType) => {
         return;
     }
 
-    console.log(`e2e folder ${sampleTestsProjectFolderPath}`)
-    if (!existsSync(sampleTestsProjectFolderPath)) {
+    const sampleTestsProjectFolderPath = resolve(appRootPath, e2eTests);
+    console.log(`Tests folder: ${sampleTestsProjectFolderPath}`)
+    if (!existsSync(sampleTestsProjectFolderPath) && TESTING_FRAMEWORK !== none) {
         mkdirSync(sampleTestsProjectFolderPath);
         let e2eSamplesFolder;
-        if (PROJECT_TYPE !== js && PROJECT_TYPE !== vue && PROJECT_TYPE !== sharedVue && TESTING_FRAMEWORK !== none) {
+        if (PROJECT_TYPE === tsc && PROJECT_TYPE === ng && PROJECT_TYPE === sharedNg) {
             console.info(`Adding typescript sample config and test ...`);
+            const sampleTestsFolder = "samples";
+            const sampleTestsPluginFolderPath = resolve(appRootPath, "node_modules", "nativescript-dev-appium", sampleTestsFolder);
+
             e2eSamplesFolder = resolve(sampleTestsPluginFolderPath, "e2e-tsc");
             const tsConfigJsonFile = resolve(e2eSamplesFolder, "tsconfig.json");
             const tsConfigJson = JSON.parse(readFileSync(tsConfigJsonFile, "utf8"));
@@ -241,7 +242,7 @@ const run = async (projectType, testingFrameworkType) => {
 
             writeFileSync(tsConfigJsonFile, JSON.stringify(tsConfigJson, null, 2));
             copy(tsConfigJsonFile, resolve(sampleTestsProjectFolderPath, "tsconfig.json"));
-        } else if (PROJECT_TYPE === js && TESTING_FRAMEWORK !== none) {
+        } else {
             console.info("Adding javascript sample config and test ...");
             e2eSamplesFolder = resolve(sampleTestsPluginFolderPath, "e2e-js");
         }
