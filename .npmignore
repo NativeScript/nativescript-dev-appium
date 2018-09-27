@@ -3,8 +3,11 @@
 /**/*.map
 !/**/*.d.ts
 samples/reports
-samples/e2e-tsc/*.js
+!samples/jasmine.json
+!samples/mocha.opts
+!samples/config
 !samples/e2e-tsc/*.ts
+!samples/e2e-js/*.js
 !samples/e2e-tsc/tsconfig.json
 publish-next.js
 test-app
