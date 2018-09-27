@@ -57,6 +57,8 @@ const copy = (src, dest, condition) => {
             copy(source, destination, condition);
         });
     } else {
+        console.log(`condition: ${condition} AND ${basename(src)} AND ${basename(src).includes(condition)}! Copy ${dest.replace(condition, "")} to ${src}`);
+
         if (condition && basename(src).includes(condition)) {
             console.log(`condition: ${condition}!.Copy ${dest.replace(condition, "")} to ${src}`);
             writeFileSync(dest.replace(condition, ""), readFileSync(src));
@@ -97,20 +99,17 @@ const configureDevDependencies = (packageJson, projectType, frameworkType) => {
     if (!packageJson.devDependencies) {
         packageJson.devDependencies = {};
     }
+    const devDependencies = packageJson.devDependencies || {};
 
-    const devDependencies = packageJson.devDependencies;
-    const newDevDependencies = getDevDependencies(projectType, frameworkType);
-    const devDependenciesToInstall = newDevDependencies.filter(({ name }) => !devDependencies[name]);
-
-    devDependenciesToInstall.forEach(({ name, version }) => {
-        devDependencies[name] = version;
-    });
+    getDevDependencies(projectType, frameworkType)
+        .filter(({ name }) => !devDependencies[name])
+        .forEach(({ name, version }) => {
+            devDependencies[name] = version;
+        });
 }
 
 const updatePackageJsonDependencies = (packageJson, projectType, testingFrameworkType) => {
-    if (!packageJson.scripts) {
-        packageJson.scripts = {};
-    }
+    packageJson.scripts = packageJson.scripts || {};
 
     const checkDevDepsScript = "node ./node_modules/nativescript-dev-appium/check-dev-deps.js";
     const mochaCommand = " mocha --opts ./e2e/config/mocha.opts ";
@@ -243,14 +242,12 @@ const run = async () => {
             e2eSamplesFolder = resolve(sampleTestsPluginFolderPath, "e2e-js");
         }
 
-        if (TESTING_FRAMEWORK !== none) {
-            console.info(`Copying ${e2eSamplesFolder} to ${sampleTestsProjectFolderPath} ...`);
-            copy(e2eSamplesFolder, sampleTestsProjectFolderPath, TESTING_FRAMEWORK + ".");
+        console.info(`Copying ${e2eSamplesFolder} to ${sampleTestsProjectFolderPath} ...`);
+        copy(e2eSamplesFolder, sampleTestsProjectFolderPath, TESTING_FRAMEWORK + ".");
 
-            copy(resolve(sampleTestsPluginFolderPath, "config"), resolve(sampleTestsProjectFolderPath, "config"));
-            const settinsFile = TESTING_FRAMEWORK === jasmine ? `${TESTING_FRAMEWORK}.json` : `${TESTING_FRAMEWORK}.opts`;
-            copy(resolve(sampleTestsPluginFolderPath, settinsFile), resolve(sampleTestsProjectFolderPath, "config", settinsFile));
-        }
+        copy(resolve(sampleTestsPluginFolderPath, "config"), resolve(sampleTestsProjectFolderPath, "config"));
+        const settinsFile = TESTING_FRAMEWORK === jasmine ? `${TESTING_FRAMEWORK}.json` : `${TESTING_FRAMEWORK}.opts`;
+        copy(resolve(sampleTestsPluginFolderPath, settinsFile), resolve(sampleTestsProjectFolderPath, "config", settinsFile));
     }
 
     updatePackageJsonDependencies(packageJson, PROJECT_TYPE, TESTING_FRAMEWORK);
