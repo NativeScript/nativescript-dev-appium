@@ -72,9 +72,6 @@ const getDevDependencies = (projectType, frameworkType) => {
         { name: "jasmine", version: "~3.2.0" },
         { name: "jasmine-core", version: "~2.99.1" },
         { name: "jasmine-spec-reporter", version: "~4.2.1" },
-    ]);
-
-    tesstingFrameworkDeps.set(projectType + jasmine, [
         { name: "@types/jasmine", version: "~2.8.8" },
     ]);
 
@@ -82,17 +79,10 @@ const getDevDependencies = (projectType, frameworkType) => {
         { name: "mocha", version: "~5.1.0" },
         { name: "mocha-junit-reporter", version: "~1.17.0" },
         { name: "mocha-multi", version: "~1.0.0" },
+        { name: "@types/mocha", version: "~5.2.1" },
+        { name: "@types/chai", version: "~4.1.3" }
     ]);
 
-    if (projectType === tsc || projectType === ng || projectType === sharedNg) {
-        if (frameworkType === mocha) {
-            tesstingFrameworkDeps.set(mocha, tesstingFrameworkDeps.get(mocha).push({ name: "@types/chai", version: "~4.1.3" }));
-            tesstingFrameworkDeps.set(mocha, tesstingFrameworkDeps.get(mocha).push({ name: "@types/mocha", version: "~5.2.1" }));
-        }
-        if (frameworkType === jasmine) {
-            tesstingFrameworkDeps.set(mocha, tesstingFrameworkDeps.get(mocha).push({ name: "@types/jasmine", version: "~2.8.8" }));
-        }
-    }
 
     tesstingFrameworkDeps.set(js, []);
 
