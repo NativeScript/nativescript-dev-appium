@@ -194,7 +194,7 @@ const run = async () => {
     const hasSetProjectTypeAndTestingFrameworkAsEnvSet = process.env["PROJECT_TYPE"] && process.env["TESTING_FRAMEWORK"];
     const isDevAppiumAlreadyInstalled = packageJson.devDependencies && packageJson.devDependencies["nativescript-dev-appium"];
     const skipPostInstallOnPluginRoot = basename(appRootPath) !== "nativescript-dev-appium"
-    if (!hasSetProjectTypeAndTestingFrameworkAsEnvSet || !isDevAppiumAlreadyInstalled || skipPostInstallOnPluginRoot) {
+    if ((!hasSetProjectTypeAndTestingFrameworkAsEnvSet && !isDevAppiumAlreadyInstalled) || skipPostInstallOnPluginRoot) {
         return false;
     }
 
