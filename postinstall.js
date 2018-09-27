@@ -65,23 +65,34 @@ const copy = (src, dest, condition) => {
     }
 }
 
-const getDevDependencies = (frameworkType) => {
+const getDevDependencies = (projectType, frameworkType) => {
     const tesstingFrameworkDeps = new Map();
 
     tesstingFrameworkDeps.set(jasmine, [
         { name: "jasmine", version: "~3.2.0" },
-        { name: "@types/jasmine", version: "~2.8.8" },
         { name: "jasmine-core", version: "~2.99.1" },
         { name: "jasmine-spec-reporter", version: "~4.2.1" },
+    ]);
+
+    tesstingFrameworkDeps.set(projectType + jasmine, [
+        { name: "@types/jasmine", version: "~2.8.8" },
     ]);
 
     tesstingFrameworkDeps.set(mocha, [
         { name: "mocha", version: "~5.1.0" },
         { name: "mocha-junit-reporter", version: "~1.17.0" },
         { name: "mocha-multi", version: "~1.0.0" },
-        { name: "@types/chai", version: "~4.1.3" },
-        { name: "@types/mocha", version: "~5.2.1" },
     ]);
+
+    if (projectType === typescript || projectType === ng || projectType === sharedNg) {
+        if (frameworkType === mocha) {
+            tesstingFrameworkDeps.get(mocha) = tesstingFrameworkDeps.get(mocha).push({ name: "@types/chai", version: "~4.1.3" });
+            tesstingFrameworkDeps.get(mocha) = tesstingFrameworkDeps.get(mocha).push({ name: "@types/mocha", version: "~5.2.1" });
+        }
+        if (frameworkType === jasmine) {
+            tesstingFrameworkDeps.get(mocha) = tesstingFrameworkDeps.get(mocha).push({ name: "@types/jasmine", version: "~2.8.8" });
+        }
+    }
 
     tesstingFrameworkDeps.set(js, []);
 
@@ -89,13 +100,13 @@ const getDevDependencies = (frameworkType) => {
 
 }
 
-const configureDevDependencies = (packageJson, frameworkType) => {
+const configureDevDependencies = (packageJson, projectType, frameworkType) => {
     if (!packageJson.devDependencies) {
         packageJson.devDependencies = {};
     }
 
     const devDependencies = packageJson.devDependencies;
-    const newDevDependencies = getDevDependencies(frameworkType);
+    const newDevDependencies = getDevDependencies(projectType, frameworkType);
     const devDependenciesToInstall = newDevDependencies.filter(({ name }) => !devDependencies[name]);
 
     const newDevDependenciesToInstall = []
@@ -144,7 +155,7 @@ const updatePackageJsonDependencies = (packageJson, projectType, testingFramewor
         }
     }
 
-    configureDevDependencies(packageJson, testingFrameworkType);
+    configureDevDependencies(packageJson, projectType, testingFrameworkType);
     writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 }
 
