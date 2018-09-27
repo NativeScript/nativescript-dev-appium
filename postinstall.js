@@ -84,7 +84,7 @@ const getDevDependencies = (projectType, frameworkType) => {
         { name: "mocha-multi", version: "~1.0.0" },
     ]);
 
-    if (projectType === typescript || projectType === ng || projectType === sharedNg) {
+    if (projectType === tsc || projectType === ng || projectType === sharedNg) {
         if (frameworkType === mocha) {
             tesstingFrameworkDeps.get(mocha) = tesstingFrameworkDeps.get(mocha).push({ name: "@types/chai", version: "~4.1.3" });
             tesstingFrameworkDeps.get(mocha) = tesstingFrameworkDeps.get(mocha).push({ name: "@types/mocha", version: "~5.2.1" });
