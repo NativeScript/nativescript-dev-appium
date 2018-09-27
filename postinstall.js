@@ -199,9 +199,11 @@ const run = async () => {
         return false;
     }
 
-    // ask questions
-    const { PROJECT_TYPE } = process.env["PROJECT_TYPE"] ? { PROJECT_TYPE: process.env["PROJECT_TYPE"] } : await frameworkQuestion();
-    const { TESTING_FRAMEWORK } = process.env["TESTING_FRAMEWORK"] ? { TESTING_FRAMEWORK: process.env["TESTING_FRAMEWORK"] } : await testingFrameworkQuestion();
+    // use env or ask questions
+    const envProjectType = process.env.npm_config_projectType || process.env["PROJECT_TYPE"];
+    const envTestsingFramework = process.env.npm_config_projectType || process.env["PROJECT_TYPE"];
+    const { PROJECT_TYPE } = envProjectType ? { PROJECT_TYPE: envProjectType } : await frameworkQuestion();
+    const { TESTING_FRAMEWORK } = envTestsingFramework ? { TESTING_FRAMEWORK: envTestsingFramework } : await testingFrameworkQuestion();
 
     if (!projectTypes.includes(PROJECT_TYPE)) {
         console.error(`Please provide PROJECT_TYPE of type ${projectTypes}!`);
