@@ -45,7 +45,8 @@
     "inquirer": "^6.2.0"
   },
   "devDependencies": {
-    "typescript": "^2.8.0"
+    "@types/node": "^8.10.30",
+    "typescript": "^3.0.0"
   },
   "scripts": {
     "postinstall": "node ./postinstall.js",
