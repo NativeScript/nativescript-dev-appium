@@ -58,8 +58,11 @@ const copy = (src, dest, condition) => {
         });
     } else {
         if (condition && basename(src).includes(condition)) {
+            console.log(`condition: ${condition}!.Copy ${dest.replace(condition, "")} to ${src}`);
             writeFileSync(dest.replace(condition, ""), readFileSync(src));
         } else if (!condition) {
+            console.log(`condition: ${condition}!.Copy ${dest} to ${src}`);
+
             writeFileSync(dest, readFileSync(src));
         }
     }
@@ -99,17 +102,9 @@ const configureDevDependencies = (packageJson, projectType, frameworkType) => {
     const newDevDependencies = getDevDependencies(projectType, frameworkType);
     const devDependenciesToInstall = newDevDependencies.filter(({ name }) => !devDependencies[name]);
 
-    const newDevDependenciesToInstall = []
     devDependenciesToInstall.forEach(({ name, version }) => {
-        if (!devDependencies[name]) {
-            devDependencies[name] = version;
-            newDevDependenciesToInstall.push(`${name}@${version}`)
-        } else {
-            console.info(`Skip installing ${name} because already exists!`);
-        }
+        devDependencies[name] = version;
     });
-
-    return newDevDependenciesToInstall;
 }
 
 const updatePackageJsonDependencies = (packageJson, projectType, testingFrameworkType) => {
