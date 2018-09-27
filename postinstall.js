@@ -222,7 +222,7 @@ const run = async () => {
     if (!existsSync(sampleTestsProjectFolderPath) && TESTING_FRAMEWORK !== none) {
         mkdirSync(sampleTestsProjectFolderPath);
         let e2eSamplesFolder;
-        if (PROJECT_TYPE === tsc && PROJECT_TYPE === ng && PROJECT_TYPE === sharedNg) {
+        if (PROJECT_TYPE === tsc || PROJECT_TYPE === ng || PROJECT_TYPE === sharedNg) {
             console.info(`Adding typescript sample config and test ...`);
 
             e2eSamplesFolder = resolve(sampleTestsPluginFolderPath, "e2e-tsc");
