@@ -143,7 +143,7 @@ const updatePackageJsonDependencies = (packageJson, projectType, testingFramewor
     writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 }
 
-const init = () => {
+const printLogo = () => {
     console.log(
         chalk.green(
             figlet.textSync("{ N }-dev-appium", {
@@ -186,13 +186,15 @@ const success = filepath => {
     );
 };
 
-const run = async () => {
-    // show script introduction
-    init();
+const isTscProject = (PROJECT_TYPE) => { return PROJECT_TYPE === tsc || PROJECT_TYPE === ng || PROJECT_TYPE === sharedNg; }
 
-    const shouldInstallSamples = ((process.env["PROJECT_TYPE"] && process.env["TESTING_FRAMEWORK"]) || !(packageJson.devDependencies && packageJson.devDependencies["nativescript-dev-appium"]))
-        && basename(appRootPath) !== "nativescript-dev-appium";
-    if (!shouldInstallSamples) {
+const run = async () => {
+    printLogo();
+
+    const hasSetProjectTypeAndTestingFrameworkAsEnvSet = process.env["PROJECT_TYPE"] && process.env["TESTING_FRAMEWORK"];
+    const isDevAppiumAlreadyInstalled = packageJson.devDependencies && packageJson.devDependencies["nativescript-dev-appium"];
+    const skipPostInstallOnPluginRoot = basename(appRootPath) !== "nativescript-dev-appium"
+    if (!hasSetProjectTypeAndTestingFrameworkAsEnvSet || !isDevAppiumAlreadyInstalled || skipPostInstallOnPluginRoot) {
         return false;
     }
 
@@ -211,16 +213,12 @@ const run = async () => {
     }
 
     const sampleTestsProjectFolderPath = resolve(appRootPath, "e2e");
-    console.log(`Tests folder: ${sampleTestsProjectFolderPath}`);
-    const sampleTestsFolder = "samples";
-    const sampleTestsPluginFolderPath = resolve(appRootPath, "node_modules", "nativescript-dev-appium", sampleTestsFolder);
+    const sampleTestsPluginFolderPath = resolve(appRootPath, "node_modules", "nativescript-dev-appium", "samples");
+
     if (!existsSync(sampleTestsProjectFolderPath) && TESTING_FRAMEWORK !== none) {
         mkdirSync(sampleTestsProjectFolderPath);
-        let e2eSamplesFolder;
-        if (PROJECT_TYPE === tsc || PROJECT_TYPE === ng || PROJECT_TYPE === sharedNg) {
-            console.info(`Adding typescript sample config and test ...`);
-
-            e2eSamplesFolder = resolve(sampleTestsPluginFolderPath, "e2e-tsc");
+        const e2eSamplesFolder = isTscProject(PROJECT_TYPE) ? resolve(sampleTestsPluginFolderPath, "e2e-tsc") : resolve(sampleTestsPluginFolderPath, "e2e-js");
+        if (isTscProject(PROJECT_TYPE)) {
             const tsConfigJsonFile = resolve(e2eSamplesFolder, "tsconfig.json");
             const tsConfigJson = JSON.parse(readFileSync(tsConfigJsonFile, "utf8"));
             switch (TESTING_FRAMEWORK) {
@@ -237,17 +235,14 @@ const run = async () => {
 
             writeFileSync(tsConfigJsonFile, JSON.stringify(tsConfigJson, null, 2));
             copy(tsConfigJsonFile, resolve(sampleTestsProjectFolderPath, "tsconfig.json"));
-        } else {
-            console.info("Adding javascript sample config and test ...");
-            e2eSamplesFolder = resolve(sampleTestsPluginFolderPath, "e2e-js");
         }
 
         console.info(`Copying ${e2eSamplesFolder} to ${sampleTestsProjectFolderPath} ...`);
-        copy(e2eSamplesFolder, sampleTestsProjectFolderPath, TESTING_FRAMEWORK + ".");
+        copy(e2eSamplesFolder, sampleTestsProjectFolderPath, `${TESTING_FRAMEWORK}.`);
 
         copy(resolve(sampleTestsPluginFolderPath, "config"), resolve(sampleTestsProjectFolderPath, "config"));
-        const settinsFile = TESTING_FRAMEWORK === jasmine ? `${TESTING_FRAMEWORK}.json` : `${TESTING_FRAMEWORK}.opts`;
-        copy(resolve(sampleTestsPluginFolderPath, settinsFile), resolve(sampleTestsProjectFolderPath, "config", settinsFile));
+        const settingsFile = TESTING_FRAMEWORK === jasmine ? `${TESTING_FRAMEWORK}.json` : `${TESTING_FRAMEWORK}.opts`;
+        copy(resolve(sampleTestsPluginFolderPath, settingsFile), resolve(sampleTestsProjectFolderPath, "config", settingsFile));
     }
 
     updatePackageJsonDependencies(packageJson, PROJECT_TYPE, TESTING_FRAMEWORK);
