@@ -191,8 +191,11 @@ const isTscProject = (PROJECT_TYPE) => { return PROJECT_TYPE === tsc || PROJECT_
 const run = async () => {
     printLogo();
 
-    const hasSetProjectTypeAndTestingFrameworkAsEnvSet = process.env["PROJECT_TYPE"] && process.env["TESTING_FRAMEWORK"];
+    const envProjectType = process.env.npm_config_projectType || process.env["PROJECT_TYPE"];
+    const envTestsingFramework = process.env.npm_config_testsingFramework || process.env["TESTING_FRAMEWORK"];
+    const hasSetProjectTypeAndTestingFrameworkAsEnvSet = envProjectType && envTestsingFramework;
     const isDevAppiumAlreadyInstalled = packageJson.devDependencies && packageJson.devDependencies["nativescript-dev-appium"];
+
     const skipPostInstallOnPluginRoot = basename(appRootPath) === "nativescript-dev-appium"
     if ((!hasSetProjectTypeAndTestingFrameworkAsEnvSet && isDevAppiumAlreadyInstalled) || skipPostInstallOnPluginRoot) {
         console.log("Skip instalation!!!!")
@@ -200,8 +203,6 @@ const run = async () => {
     }
 
     // use env or ask questions
-    const envProjectType = process.env.npm_config_projectType || process.env["PROJECT_TYPE"];
-    const envTestsingFramework = process.env.npm_config_projectType || process.env["PROJECT_TYPE"];
     const { PROJECT_TYPE } = envProjectType ? { PROJECT_TYPE: envProjectType } : await frameworkQuestion();
     const { TESTING_FRAMEWORK } = envTestsingFramework ? { TESTING_FRAMEWORK: envTestsingFramework } : await testingFrameworkQuestion();
 
