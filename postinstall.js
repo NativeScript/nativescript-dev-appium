@@ -86,11 +86,11 @@ const getDevDependencies = (projectType, frameworkType) => {
 
     if (projectType === tsc || projectType === ng || projectType === sharedNg) {
         if (frameworkType === mocha) {
-            tesstingFrameworkDeps.set(mocha) = tesstingFrameworkDeps.get(mocha).push({ name: "@types/chai", version: "~4.1.3" });
-            tesstingFrameworkDeps.set(mocha) = tesstingFrameworkDeps.get(mocha).push({ name: "@types/mocha", version: "~5.2.1" });
+            tesstingFrameworkDeps.set(mocha, tesstingFrameworkDeps.get(mocha).push({ name: "@types/chai", version: "~4.1.3" }));
+            tesstingFrameworkDeps.set(mocha, tesstingFrameworkDeps.get(mocha).push({ name: "@types/mocha", version: "~5.2.1" }));
         }
         if (frameworkType === jasmine) {
-            tesstingFrameworkDeps.set(mocha) = tesstingFrameworkDeps.get(mocha).push({ name: "@types/jasmine", version: "~2.8.8" });
+            tesstingFrameworkDeps.set(mocha, tesstingFrameworkDeps.get(mocha).push({ name: "@types/jasmine", version: "~2.8.8" }));
         }
     }
 
