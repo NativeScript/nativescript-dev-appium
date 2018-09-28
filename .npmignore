@@ -6,7 +6,7 @@ samples/reports
 !samples/jasmine.json
 !samples/mocha.opts
 !samples/config
-!samples/e2e-tsc/*.ts
+!samples/e2e-ts/*.ts
 !samples/e2e-js/*.js
 !samples/e2e-tsc/tsconfig.json
 publish-next.js

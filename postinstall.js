@@ -31,11 +31,35 @@ const testingFrameworks = `${mocha} | ${jasmine} | ${none}`;
 const packageJsonPath = resolve(appRootPath, "package.json");
 const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"));
 
-// let isTypeScriptProject =
-//     (packageJson.dependencies && packageJson.dependencies.hasOwnProperty("typescript"))
-//     || (packageJson.devDependencies && packageJson.devDependencies.hasOwnProperty("typescript"));
+class Template {
+    constructor(testingFramwork, projectType, storage, fileExt) {
+        this._testingFramwork = testingFramwork;
+        this._projectType = projectType;
+        this._storage = storage;
+        this._fileExt = fileExt;
+    }
 
-const copy = (src, dest, condition) => {
+    get testingFramwork() {
+        return this._testingFramwork;
+    }
+
+    get projectType() {
+        return this._projectType;
+    }
+
+    get storage() {
+        return this._storage;
+    }
+
+    get fileExt() {
+        return this._fileExt;
+    }
+}
+
+const copy = (src, dest) => {
+    console.log(`Destinatin ${dest}`);
+    console.log(`Source ${src}`);
+
     if (!existsSync(src)) {
         return Error("Source doesn't exist: " + src);
     }
@@ -54,23 +78,14 @@ const copy = (src, dest, condition) => {
         entries.forEach(entry => {
             const source = resolve(src, entry);
             const destination = resolve(dest, entry);
-            copy(source, destination, condition);
+            copy(source, destination);
         });
     } else {
-        console.log(`condition: ${condition} AND ${basename(src)} AND ${basename(src).includes(condition)}! Copy ${dest.replace(condition, "")} to ${src}`);
-
-        if (condition && basename(src).includes(condition)) {
-            console.log(`condition: ${condition}!.Copy ${dest.replace(condition, "")} to ${src}`);
-            writeFileSync(dest.replace(condition, ""), readFileSync(src));
-        } else if (!condition) {
-            console.log(`condition: ${condition}!.Copy ${dest} to ${src}`);
-
-            writeFileSync(dest, readFileSync(src));
-        }
+        writeFileSync(dest, readFileSync(src));
     }
 }
 
-const getDevDependencies = (projectType, frameworkType) => {
+const getDevDependencies = (frameworkType) => {
     const tesstingFrameworkDeps = new Map();
 
     tesstingFrameworkDeps.set(jasmine, [
@@ -95,13 +110,13 @@ const getDevDependencies = (projectType, frameworkType) => {
 
 }
 
-const configureDevDependencies = (packageJson, projectType, frameworkType) => {
+const configureDevDependencies = (packageJson, frameworkType) => {
     if (!packageJson.devDependencies) {
         packageJson.devDependencies = {};
     }
     const devDependencies = packageJson.devDependencies || {};
 
-    getDevDependencies(projectType, frameworkType)
+    getDevDependencies(frameworkType)
         .filter(({ name }) => !devDependencies[name])
         .forEach(({ name, version }) => {
             devDependencies[name] = version;
@@ -139,7 +154,7 @@ const updatePackageJsonDependencies = (packageJson, projectType, testingFramewor
         }
     }
 
-    configureDevDependencies(packageJson, projectType, testingFrameworkType);
+    configureDevDependencies(packageJson, testingFrameworkType);
     writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 }
 
@@ -179,17 +194,25 @@ const testingFrameworkQuestion = () => {
     return inquirer.prompt(questions);
 };
 
-const success = filepath => {
-    console.dir(filepath)
-    console.log(
-        chalk.white.bgGreen.bold(`Done! ${filepath} is your default testing framework!`)
-    );
-};
-
 const isTscProject = (PROJECT_TYPE) => { return PROJECT_TYPE === tsc || PROJECT_TYPE === ng || PROJECT_TYPE === sharedNg; }
+
+const getTemplates = (name) => {
+    const templates = new Map();
+
+    templates.set("javascript.jasmine", new Template("jasmine", "javascript", "e2e-js", "js"));
+    templates.set("javascript.mocha", new Template("mocha", "javascript", "e2e-js", "js"));
+    templates.set("vue.mocha", new Template("mocha", "vue", "e2e-js", "js"));
+    templates.set("vue.jasmine", new Template("jasmine", "vue", "e2e-js", "js"));
+    templates.set("typescript.mocha", new Template("mocha", "typescript", "e2e-ts", "ts"));
+    templates.set("typescript.jasmine", new Template("jasmine", "typescript", "e2e-ts", "ts"));
+    templates.set("shared-ng-project.jasmine", new Template("jasmine", "shared-ng-project", "e2e-ts", "ts"));
+
+    return templates.get(name);
+}
 
 const run = async () => {
     printLogo();
+    console.log("", getTemplates())
 
     const envProjectType = process.env.npm_config_projectType || process.env["PROJECT_TYPE"];
     const envTestsingFramework = process.env.npm_config_testsingFramework || process.env["TESTING_FRAMEWORK"];
@@ -217,15 +240,19 @@ const run = async () => {
     }
 
     const sampleTestsProjectFolderPath = resolve(appRootPath, "e2e");
-    const sampleTestsPluginFolderPath = resolve(appRootPath, "node_modules", "nativescript-dev-appium", "samples");
+    const basicSampleTestsPluginFolderPath = resolve(appRootPath, "node_modules", "nativescript-dev-appium", "samples");
 
     if (!existsSync(sampleTestsProjectFolderPath) && TESTING_FRAMEWORK !== none) {
         mkdirSync(sampleTestsProjectFolderPath);
-        const e2eSamplesFolder = isTscProject(PROJECT_TYPE) ? resolve(sampleTestsPluginFolderPath, "e2e-tsc") : resolve(sampleTestsPluginFolderPath, "e2e-js");
-        if (isTscProject(PROJECT_TYPE)) {
+        const template = getTemplates(`${PROJECT_TYPE}.${TESTING_FRAMEWORK}`);
+        console.log("TEMPLATE", template);
+
+        const e2eSamplesFolder = resolve(basicSampleTestsPluginFolderPath, template.storage);
+
+        if (isTscProject(template.projectType)) {
             const tsConfigJsonFile = resolve(e2eSamplesFolder, "tsconfig.json");
             const tsConfigJson = JSON.parse(readFileSync(tsConfigJsonFile, "utf8"));
-            switch (TESTING_FRAMEWORK) {
+            switch (template.testingFramwork) {
                 case jasmine:
                     tsConfigJson.compilerOptions.types.push("jasmine");
                     break;
@@ -241,12 +268,14 @@ const run = async () => {
             copy(tsConfigJsonFile, resolve(sampleTestsProjectFolderPath, "tsconfig.json"));
         }
 
-        console.info(`Copying ${e2eSamplesFolder} to ${sampleTestsProjectFolderPath} ...`);
-        copy(e2eSamplesFolder, sampleTestsProjectFolderPath, `${TESTING_FRAMEWORK}.`);
+        const samplesFilePostfix = "sample.e2e-spec";
 
-        copy(resolve(sampleTestsPluginFolderPath, "config"), resolve(sampleTestsProjectFolderPath, "config"));
-        const settingsFile = TESTING_FRAMEWORK === jasmine ? `${TESTING_FRAMEWORK}.json` : `${TESTING_FRAMEWORK}.opts`;
-        copy(resolve(sampleTestsPluginFolderPath, settingsFile), resolve(sampleTestsProjectFolderPath, "config", settingsFile));
+        copy(resolve(e2eSamplesFolder, `${template.projectType}.${template.testingFramwork}.${samplesFilePostfix}.${template.fileExt}`), resolve(sampleTestsProjectFolderPath, `${samplesFilePostfix}.${template.fileExt}`));
+        copy(resolve(e2eSamplesFolder, `${template.testingFramwork}.setup.${template.fileExt}`), resolve(sampleTestsProjectFolderPath, `setup.${template.fileExt}`));
+
+        copy(resolve(basicSampleTestsPluginFolderPath, "config"), resolve(sampleTestsProjectFolderPath, "config"));
+        const settingsFile = template.testingFramwork === jasmine ? `${template.testingFramwork}.json` : `${template.testingFramwork}.opts`;
+        copy(resolve(basicSampleTestsPluginFolderPath, settingsFile), resolve(sampleTestsProjectFolderPath, "config", settingsFile));
     }
 
     updatePackageJsonDependencies(packageJson, PROJECT_TYPE, TESTING_FRAMEWORK);
