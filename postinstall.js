@@ -57,9 +57,6 @@ class Template {
 }
 
 const copy = (src, dest) => {
-    console.log(`Destinatin ${dest}`);
-    console.log(`Source ${src}`);
-
     if (!existsSync(src)) {
         return Error("Source doesn't exist: " + src);
     }
@@ -245,8 +242,6 @@ const run = async () => {
     if (!existsSync(sampleTestsProjectFolderPath) && TESTING_FRAMEWORK !== none) {
         mkdirSync(sampleTestsProjectFolderPath);
         const template = getTemplates(`${PROJECT_TYPE}.${TESTING_FRAMEWORK}`);
-        console.log("TEMPLATE", template);
-
         const e2eSamplesFolder = resolve(basicSampleTestsPluginFolderPath, template.storage);
 
         if (isTscProject(template.projectType)) {
