@@ -4,7 +4,6 @@ describe("sample scenario", () => {
     let driver: AppiumDriver;
 
     beforeAll(async () => {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 1200000;
         driver = await createDriver();
     });
 

@@ -9,8 +9,9 @@ jasmine.getEnv().addReporter(new SpecReporter({
   }
 }));
 
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 1200000;
+
 beforeAll(async () => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 1200000;
     await startServer();
 });
 
