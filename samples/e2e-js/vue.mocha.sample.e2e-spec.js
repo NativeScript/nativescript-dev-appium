@@ -2,7 +2,6 @@ const nsAppium = require("nativescript-dev-appium");
 const assert = require("chai").assert;
 
 describe("sample scenario", () => {
-    const defaultWaitTime = 5000;
     let driver;
 
     before(async () => {
@@ -22,6 +21,6 @@ describe("sample scenario", () => {
 
     it("should find an element by text", async () => {
         const label = await driver.findElementByText("Welcome", nsAppium.SearchOptions.contains);
-        assert.equal(await label.isDisplayed(), "41" + message);
+        assert.equal(await label.isDisplayed());
     });
 });
