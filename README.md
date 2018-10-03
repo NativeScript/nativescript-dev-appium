@@ -95,7 +95,7 @@ $ brew install telnet
         my-app
         ├── app
         ├── e2e
-            ├── configs
+            ├── config
                 ├── appium.capabilities.json
                 ├── mocha.opts
             ├── sample.e2e-test.ts
