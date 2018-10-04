@@ -42,10 +42,10 @@
     "yargs": "~8.0.2",
     "chalk": "^2.4.1",
     "figlet": "^1.2.0",
-    "inquirer": "^6.2.0",
-    "@types/node": "7.0.70"
+    "inquirer": "^6.2.0"
   },
   "devDependencies": {
+    "@types/node": "10.11.4",
     "typescript": "^3.0.0"
   },
   "scripts": {

@@ -90,6 +90,7 @@ const getDevDependencies = (frameworkType) => {
         { name: "jasmine-core", version: "~2.99.1" },
         { name: "jasmine-spec-reporter", version: "~4.2.1" },
         { name: "@types/jasmine", version: "~2.8.8" },
+        { name: "@types/node", version: "10.11.4" },
     ]);
 
     tesstingFrameworkDeps.set(mocha, [
@@ -97,9 +98,9 @@ const getDevDependencies = (frameworkType) => {
         { name: "mocha-junit-reporter", version: "~1.17.0" },
         { name: "mocha-multi", version: "~1.0.0" },
         { name: "@types/mocha", version: "~5.2.1" },
-        { name: "@types/chai", version: "~4.1.3" }
+        { name: "@types/chai", version: "~4.1.3" },
+        { name: "@types/node", version: "10.11.4" },
     ]);
-
 
     tesstingFrameworkDeps.set(js, []);
 
