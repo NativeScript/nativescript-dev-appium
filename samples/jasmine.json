@@ -1,0 +1,11 @@
+{
+    "spec_dir": "e2e",
+    "spec_files": [
+      "**/*.js"
+    ],
+    "helpers": [
+        "config/**/*.js", "setup.js"
+    ],
+    "stopSpecOnExpectationFailure": false,
+    "random": false
+  }

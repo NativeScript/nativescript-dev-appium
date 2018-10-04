@@ -5,14 +5,11 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "importHelpers": false,
-        "types": [
-            "node",
-            "mocha",
-            "chai"
-        ],
+        "types": [ ],
         "lib": [
             "es2015",
             "dom"
-        ]
+        ],
+        "baseUrl": "."
     }
 }
