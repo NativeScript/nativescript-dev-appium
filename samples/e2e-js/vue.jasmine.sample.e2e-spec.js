@@ -19,6 +19,6 @@ describe("sample scenario", () => {
 
     it("should find Welcome message", async () => {
         const label = await driver.findElementByText("Welcome", "contains");
-        expect(await label.isDisplayed());
+        expect(await label.isDisplayed()).toBeTruthy();
     });
 });

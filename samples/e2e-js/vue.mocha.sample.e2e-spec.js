@@ -21,6 +21,6 @@ describe("sample scenario", () => {
 
     it("should find an element by text", async () => {
         const label = await driver.findElementByText("Welcome", "contains");
-        assert.equal(await label.isDisplayed());
+        assert.isTrue(await label.isDisplayed());
     });
 });
