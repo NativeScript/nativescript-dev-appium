@@ -6,3 +6,10 @@ node_modules
 e2e/reports
 .vscode
 package-lock.json
+samples/reports
+!samples/jasmine.json
+!samples/mocha.opts
+!samples/config
+!samples/e2e-tsc/*.ts
+!samples/e2e-js/*.js
+!samples/e2e-tsc/tsconfig.json

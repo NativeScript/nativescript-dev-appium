@@ -93,7 +93,12 @@ export class AppiumServer {
             }
 
             return response;
+        } else if (!this._args.attachToDebug) {
+            return true;
         }
+
+        return false;
+
     }
 
     private startAppiumServer(logLevel: string, isSauceLab: boolean) {

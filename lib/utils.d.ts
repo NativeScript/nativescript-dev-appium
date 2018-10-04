@@ -11,9 +11,6 @@ export declare function isFile(fullName: any): boolean;
 export declare function copy(src: any, dest: any, verbose: any): any;
 export declare function contains(source: any, check: any): boolean;
 export declare function searchFiles(folder: any, words: any, recursive?: boolean, files?: any[]): Array<string>;
-export declare function log(message: any, verbose: any): void;
-export declare function loglogOut(line: any, verbose: any): void;
-export declare function logErr(line: any, verbose: any): void;
 export declare function shutdown(processToKill: childProcess.ChildProcess, verbose: any): void;
 export declare function killPid(pid: any, verbose: any): void;
 export declare function waitForOutput(process: any, matcher: any, errorMatcher: any, timeout: any, verbose: any): Promise<boolean>;
@@ -45,7 +42,35 @@ export declare function getSessions(port: any, host?: string): Promise<{}>;
 export declare const prepareDevice: (args: INsCapabilities, deviceManager: IDeviceManager) => Promise<INsCapabilities>;
 export declare const prepareApp: (args: INsCapabilities) => Promise<INsCapabilities>;
 export declare const sessionIds: (port: any) => Promise<any[]>;
+export declare function encodeImageToBase64(path: any): string;
 export declare function logInfo(info: any, obj?: any): void;
 export declare function logWarn(info: any, obj?: any): void;
 export declare function logError(info: any, obj?: any): void;
-export declare function encodeImageToBase64(path: any): string;
+export declare function log(message: any, verbose: any): void;
+export declare const logColorized: (bgColor: ConsoleColor, frontColor: ConsoleColor, info: any) => void;
+declare enum ConsoleColor {
+    Reset = "\u001B[0m",
+    Bright = "\u001B[1m",
+    Dim = "\u001B[2m",
+    Underscore = "\u001B[4m",
+    Blink = "\u001B[5m",
+    Reverse = "\u001B[7m",
+    Hidden = "\u001B[8m",
+    FgBlack = "\u001B[30m",
+    FgRed = "\u001B[31m",
+    FgGreen = "\u001B[32m",
+    FgYellow = "\u001B[33m",
+    FgBlue = "\u001B[34m",
+    FgMagenta = "\u001B[35m",
+    FgCyan = "\u001B[36m",
+    FgWhite = "\u001B[37m",
+    BgBlack = "\u001B[40m",
+    BgRed = "\u001B[41m",
+    BgGreen = "\u001B[42m",
+    BgYellow = "\u001B[43m",
+    BgBlue = "\u001B[44m",
+    BgMagenta = "\u001B[45m",
+    BgCyan = "\u001B[46m",
+    BgWhite = "\u001B[47m"
+}
+export {};
