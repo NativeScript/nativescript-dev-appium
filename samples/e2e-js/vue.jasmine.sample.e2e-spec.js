@@ -18,7 +18,7 @@ describe("sample scenario", () => {
     });
 
     it("should find Welcome message", async () => {
-        const label = await driver.findElementByText("Welcome", nsAppium.SearchOptions.contains);
+        const label = await driver.findElementByText("Welcome", "contains");
         expect(await label.isDisplayed());
     });
 });
