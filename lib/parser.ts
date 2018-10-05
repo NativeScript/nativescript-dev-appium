@@ -9,12 +9,12 @@ const config = (() => {
         .option("testFolder", { describe: "e2e test folder name", default: "e2e", type: "string" })
         .option("appiumCapsLocation", { describe: "Capabilities", type: "string" })
         .option("sauceLab", { describe: "SauceLab", default: false, type: "boolean" })
-        .option("port", { alias: "p", describe: "Appium port", type: "number", default: 4723 })
+        .option("port", { alias: "p", describe: "Appium port", type: "number"})
         .option("attachToDebug", { alias: "a", describe: "Attach to appium desktop app.", default: false, type: "boolean" })
         .option("capabilitiesName", { describe: "Capabilities file name", default: "appium.capabilities.json", type: "string" })
         .option("sessionId", { alias: "s", describe: "Session to attach", default: false, type: "string" })
         .option("startSession", { describe: "Start session.", default: false, type: "boolean" })
-        .option("wdaLocalPort", { alias: "wda", describe: "WDA port", default: 8410, type: "number" })
+        .option("wdaLocalPort", { alias: "wda", describe: "WDA port", type: "number" })
         .option("verbose", { alias: "v", describe: "Log actions", type: "boolean" })
         .option("path", { describe: "path", default: process.cwd(), type: "string" })
         .option("relaxedSecurity", { describe: "appium relaxedSecurity", default: false, type: "boolean" })
@@ -70,8 +70,8 @@ const config = (() => {
         projectBinary: projectBinary,
         pluginRoot: pluginRoot,
         pluginBinary: pluginBinary,
-        port: options.port || process.env.npm_config_port || process.env["APPIUM_PORT"] || 8300,
-        wdaLocalPort: options.wdaLocalPort || process.env.npm_config_wdaLocalPort || process.env["WDA_LOCAL_PORT"],
+        port: options.port || process.env.npm_config_port || process.env["APPIUM_PORT"] || 4723 ,
+        wdaLocalPort: options.wdaLocalPort || process.env.npm_config_wdaLocalPort || process.env["WDA_LOCAL_PORT"] || 8410,
         testFolder: options.testFolder || process.env.npm_config_testFolder || "e2e",
         runType: options.runType || process.env.npm_config_runType,
         appiumCapsLocation: options.appiumCapsLocation || process.env.npm_config_appiumCapsLocation || join(projectDir, options.testFolder, "config", options.capabilitiesName),
