@@ -242,7 +242,6 @@ const run = async () => {
 
     if (!existsSync(sampleTestsProjectFolderPath) && TESTING_FRAMEWORK !== none) {
         mkdirSync(sampleTestsProjectFolderPath);
-        const curruntExample
         const template = getTemplates(`${PROJECT_TYPE}.${TESTING_FRAMEWORK}`);
         const e2eSamplesFolder = resolve(basicSampleTestsPluginFolderPath, template.storage);
 
