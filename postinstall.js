@@ -202,7 +202,9 @@ const getTemplates = (name) => {
     templates.set("vue.mocha", new Template("mocha", "vue", "e2e-js", "js"));
     templates.set("vue.jasmine", new Template("jasmine", "vue", "e2e-js", "js"));
     templates.set("typescript.mocha", new Template("mocha", "typescript", "e2e-ts", "ts"));
+    templates.set("angular.mocha", new Template("mocha", "typescript", "e2e-ts", "ts"));
     templates.set("typescript.jasmine", new Template("jasmine", "typescript", "e2e-ts", "ts"));
+    templates.set("angular.jasmine", new Template("jasmine", "typescript", "e2e-ts", "ts"));
     templates.set("shared-ng-project.jasmine", new Template("jasmine", "shared-ng-project", "e2e-ts", "ts"));
 
     return templates.get(name);
@@ -210,8 +212,6 @@ const getTemplates = (name) => {
 
 const run = async () => {
     printLogo();
-    console.log("", getTemplates())
-
     const envProjectType = process.env.npm_config_projectType || process.env["PROJECT_TYPE"];
     const envTestingFramework = process.env.npm_config_testingFramework || process.env["TESTING_FRAMEWORK"];
     const hasSetProjectTypeAndTestingFrameworkAsEnvSet = envProjectType && envTestingFramework;
@@ -242,6 +242,7 @@ const run = async () => {
 
     if (!existsSync(sampleTestsProjectFolderPath) && TESTING_FRAMEWORK !== none) {
         mkdirSync(sampleTestsProjectFolderPath);
+        const curruntExample
         const template = getTemplates(`${PROJECT_TYPE}.${TESTING_FRAMEWORK}`);
         const e2eSamplesFolder = resolve(basicSampleTestsPluginFolderPath, template.storage);
 
