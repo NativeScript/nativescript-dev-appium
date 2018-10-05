@@ -213,8 +213,8 @@ const run = async () => {
     console.log("", getTemplates())
 
     const envProjectType = process.env.npm_config_projectType || process.env["PROJECT_TYPE"];
-    const envTestsingFramework = process.env.npm_config_testsingFramework || process.env["TESTING_FRAMEWORK"];
-    const hasSetProjectTypeAndTestingFrameworkAsEnvSet = envProjectType && envTestsingFramework;
+    const envTestingFramework = process.env.npm_config_testingFramework || process.env["TESTING_FRAMEWORK"];
+    const hasSetProjectTypeAndTestingFrameworkAsEnvSet = envProjectType && envTestingFramework;
     const isDevAppiumAlreadyInstalled = packageJson.devDependencies && packageJson.devDependencies["nativescript-dev-appium"];
 
     const skipPostInstallOnPluginRoot = basename(appRootPath) === "nativescript-dev-appium"
@@ -225,7 +225,7 @@ const run = async () => {
 
     // use env or ask questions
     const { PROJECT_TYPE } = envProjectType ? { PROJECT_TYPE: envProjectType } : await frameworkQuestion();
-    const { TESTING_FRAMEWORK } = envTestsingFramework ? { TESTING_FRAMEWORK: envTestsingFramework } : await testingFrameworkQuestion();
+    const { TESTING_FRAMEWORK } = envTestingFramework ? { TESTING_FRAMEWORK: envTestingFramework } : await testingFrameworkQuestion();
 
     if (!projectTypes.includes(PROJECT_TYPE)) {
         console.error(`Please provide PROJECT_TYPE of type ${projectTypes}!`);
