@@ -57,7 +57,7 @@ export declare class NsCapabilities implements INsCapabilities {
     readonly isAndroid: any;
     readonly isIOS: boolean;
     readonly isSauceLab: boolean;
-    readonly automationName: AutomationName;
+    automationName: AutomationName;
     readonly appPath: string;
     appName: string;
     ignoreDeviceController: boolean;
@@ -72,6 +72,7 @@ export declare class NsCapabilities implements INsCapabilities {
     deviceManager: IDeviceManager;
     readonly isValidated: boolean;
     readonly imagesPath: string;
+    setAutomationNameFromString(automationName: String): void;
     extend(args: INsCapabilities): this;
     validateArgs(): void;
     private isAndroidPlatform;

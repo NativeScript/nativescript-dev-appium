@@ -94,7 +94,9 @@ export async function createDriver(args?: INsCapabilitiesArgs) {
     const port = nsCapabilities.port || appiumServer.port;
 
     if (nsCapabilities.attachToDebug) {
-        appiumDriver = await AppiumDriver.createAppiumDriver(port, nsCapabilities);
+        if (!appiumDriver) {
+            appiumDriver = await AppiumDriver.createAppiumDriver(port, nsCapabilities);
+        }
         return appiumDriver;
     }
     if (!appiumServer.server && !nsCapabilities.isSauceLab) {
