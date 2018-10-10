@@ -48,6 +48,7 @@ import { unlinkSync, writeFileSync } from "fs";
 import { DeviceManager } from "../lib/device-manager";
 import { extname, basename } from "path";
 import { LogType } from "./log-types";
+import { NsCapabilities } from "./ns-capabilities";
 
 export class AppiumDriver {
     private static pngFileExt = '.png';
@@ -243,6 +244,9 @@ export class AppiumDriver {
 
                         args.sessionId = sessionIfno.id;
                         args.appiumCaps = sessionIfno.capabilities;
+                        // remove app to prevent appium installiing it again
+                        args.appiumCaps.app = "";
+                        (<any>args).setAutomationNameFromString(sessionIfno.capabilities.automationName);
 
                         prepareApp(args);
                         if (!args.device) {

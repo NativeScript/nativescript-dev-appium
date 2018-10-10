@@ -91,6 +91,9 @@ export class NsCapabilities implements INsCapabilities {
     get isIOS() { return !this.isAndroid; }
     get isSauceLab() { return this._isSauceLab; }
     get automationName() { return this._automationName; }
+    set automationName(automationName: AutomationName) {
+        this._automationName = automationName;
+    }
     get appPath() { return this._appPath; }
     get appName() { return this._appName; }
     set appName(appName: string) { this._appName = appName; }
@@ -111,6 +114,11 @@ export class NsCapabilities implements INsCapabilities {
     get isValidated() { return this._isValidated; }
     get imagesPath() { return this._imagesPath; }
     //set isValidated(isValidated: boolean) { this._isValidated = isValidated; }
+
+    setAutomationNameFromString(automationName: String) {
+        const key  = Object.keys(AutomationName).filter((v,i,a) => v.toLowerCase() === automationName.toLowerCase());
+        this._automationName = AutomationName[key[0]];
+    }
 
     public extend(args: INsCapabilities) {
         Object.keys(args).forEach(key => {
