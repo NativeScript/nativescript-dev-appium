@@ -14,7 +14,7 @@ const appRootPath = require('app-root-path').toString();
 
 const inquirer = require("inquirer");
 const chalk = require("chalk");
-const figlet = require("figlet");
+// const figlet = require("figlet");
 
 const jasmine = "jasmine";
 const mocha = "mocha";
@@ -156,17 +156,17 @@ const updatePackageJsonDependencies = (packageJson, projectType, testingFramewor
     writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 }
 
-const printLogo = () => {
-    console.log(
-        chalk.green(
-            figlet.textSync("{ N }-dev-appium", {
-                font: "doom",
-                horizontalLayout: "default",
-                verticalLayout: "default"
-            })
-        )
-    );
-};
+// const printLogo = () => {
+//     console.log(
+//         chalk.green(
+//             figlet.textSync("{ N }-dev-appium", {
+//                 font: "doom",
+//                 horizontalLayout: "default",
+//                 verticalLayout: "default"
+//             })
+//         )
+//     );
+// };
 
 const frameworkQuestion = () => {
     const questions = [
@@ -211,7 +211,7 @@ const getTemplates = (name) => {
 }
 
 const run = async () => {
-    printLogo();
+    // printLogo();
     const envProjectType = process.env.npm_config_projectType || process.env["PROJECT_TYPE"];
     const envTestingFramework = process.env.npm_config_testingFramework || process.env["TESTING_FRAMEWORK"];
     const hasSetProjectTypeAndTestingFrameworkAsEnvSet = envProjectType && envTestingFramework;
