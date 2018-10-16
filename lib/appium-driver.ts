@@ -48,7 +48,6 @@ import { unlinkSync, writeFileSync } from "fs";
 import { DeviceManager } from "../lib/device-manager";
 import { extname, basename } from "path";
 import { LogType } from "./log-types";
-import { NsCapabilities } from "./ns-capabilities";
 
 export class AppiumDriver {
     private static pngFileExt = '.png';
@@ -159,7 +158,6 @@ export class AppiumDriver {
         return new this._wd.TouchAction(this._driver);
     }
 
-
     public webio() {
         return this._webio;
     }
@@ -246,7 +244,10 @@ export class AppiumDriver {
                         args.appiumCaps = sessionIfno.capabilities;
                         // remove app to prevent appium installiing it again
                         args.appiumCaps.app = "";
-                        (<any>args).setAutomationNameFromString(sessionIfno.capabilities.automationName);
+
+                        if (sessionIfno.capabilities.automationName) {
+                            (<any>args).setAutomationNameFromString(sessionIfno.capabilities.automationName);
+                        }
 
                         prepareApp(args);
                         if (!args.device) {
@@ -279,7 +280,7 @@ export class AppiumDriver {
                 hasStarted = true;
             } catch (error) {
                 console.log(error);
-                console.log("Rety launching appium driver!");
+                console.log("Retry launching appium driver!");
                 hasStarted = false;
 
                 if (error && error.message && error.message.includes("WebDriverAgent")) {
@@ -327,6 +328,9 @@ export class AppiumDriver {
      */
     public async findElementByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = this.defaultWaitTime) {
         const shouldMatch = match === SearchOptions.exact ? true : false;
+        if (this.isIOS && shouldMatch) {
+            return await this.findElementByAccessibilityId(`${text}`);
+        }
         return await this.findElementByXPath(this._elementHelper.getXPathByText(text, shouldMatch), waitForElement);
     }
 
