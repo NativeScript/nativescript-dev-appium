@@ -68,7 +68,7 @@ export class Locator {
         this._elementsList.set("securetextfield", "android.widget.EditText");
         this._elementsList.set("textfield", "android.widget.EditText");
         this._elementsList.set("timepicker", "android.widget.TimePicker");
-        this._elementsList.set("webview", "android.widget.WebView");
+        this._elementsList.set("webview", "android.webkit.WebView");
     }
 
     private loadIOSElements() {
