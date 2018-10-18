@@ -328,9 +328,6 @@ export class AppiumDriver {
      */
     public async findElementByText(text: string, match: SearchOptions = SearchOptions.exact, waitForElement: number = this.defaultWaitTime) {
         const shouldMatch = match === SearchOptions.exact ? true : false;
-        if (this.isIOS && shouldMatch) {
-            return await this.findElementByAccessibilityId(`${text}`);
-        }
         return await this.findElementByXPath(this._elementHelper.getXPathByText(text, shouldMatch), waitForElement);
     }
 
