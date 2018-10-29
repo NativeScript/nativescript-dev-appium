@@ -332,6 +332,30 @@ export class AppiumDriver {
     }
 
     /**
+     * Search for element by given text. Searches only for exact string
+     * @param text
+     * @param waitForElement
+     */
+    public async findElementByAutomationText(text: string, waitForElement: number = this.defaultWaitTime) {
+        if (this.isIOS) {
+            return await this.findElementByAccessibilityId(`${text}`);
+        }
+        return await this.findElementByXPath(this._elementHelper.getXPathByText(text, true), waitForElement);
+    }
+
+    /**
+     * Search for elements by given text. Searches only for exact string
+     * @param text
+     * @param waitForElement
+     */
+    public async findElementsByAutomationText(text: string, waitForElement: number = this.defaultWaitTime) {
+        if (this.isIOS) {
+            return await this.findElementsByAccessibilityId(`${text}`);
+        }
+        return await this.findElementsByXPath(this._elementHelper.getXPathByText(text, true), waitForElement);
+    }
+
+    /**
      * Search for elements by given text. The seacrch is case insensitive for android
      * @param text
      * @param match
