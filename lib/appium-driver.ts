@@ -344,7 +344,7 @@ export class AppiumDriver {
     }
 
     /**
-     * Search for element by given text. Searches only for exact string
+     * Search for elements by given text. Searches only for exact string
      * @param text
      * @param waitForElement
      */
