@@ -332,27 +332,52 @@ export class AppiumDriver {
     }
 
     /**
-     * Search for element by given text. Searches only for exact string
+     * Search for element by given automationText. Searches only for exact string.
      * @param text
      * @param waitForElement
      */
-    public async findElementByAutomationText(text: string, waitForElement: number = this.defaultWaitTime) {
+    public async findElementByAutomationText(automationText: string, waitForElement: number = this.defaultWaitTime) {
         if (this.isIOS) {
-            return await this.findElementByAccessibilityId(`${text}`);
+            return await this.findElementByAccessibilityId(`${automationText}`);
         }
-        return await this.findElementByXPath(this._elementHelper.getXPathByText(text, true), waitForElement);
+        return await this.findElementByXPath(this._elementHelper.getXPathByText(automationText, true), waitForElement);
     }
 
     /**
-     * Search for elements by given text. Searches only for exact string
+     * Search for element by given automationText and waits until the element is displayed.
+     * @param text
+     * @param waitInMiliseconds till element is displayed
+     */
+    public async waitForElement(automationText: string, waitInMiliseconds: number = 3000): Promise<UIElement> {
+        let element;
+        try {
+            element = await this.findElementByAutomationText(automationText);
+        } catch (error) { }
+        const startTime = Date.now();
+        while ((!element || !(await element.isDisplayed())) && Date.now() - startTime <= waitInMiliseconds) {
+            try {
+                element = await this.findElementByAutomationText(automationText);
+            } catch (error) { }
+        }
+
+        if (!element) {
+            const msg = `Element with automationText: ${automationText} is not dislpayed after ${waitInMiliseconds}`;
+            logError(msg);
+        }
+
+        return element;
+    }
+
+    /**
+     * Search for elements by given automationText. Searches only for exact string. Returns promise with array of elements.
      * @param text
      * @param waitForElement
      */
-    public async findElementsByAutomationText(text: string, waitForElement: number = this.defaultWaitTime) {
+    public async findElementsByAutomationText(automationText: string, waitForElement: number = this.defaultWaitTime): Promise<UIElement[]> {
         if (this.isIOS) {
-            return await this.findElementsByAccessibilityId(`${text}`);
+            return await this.findElementsByAccessibilityId(`${automationText}`);
         }
-        return await this.findElementsByXPath(this._elementHelper.getXPathByText(text, true), waitForElement);
+        return await this.findElementsByXPath(this._elementHelper.getXPathByText(automationText, true), waitForElement);
     }
 
     /**
