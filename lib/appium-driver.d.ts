@@ -81,6 +81,24 @@ export declare class AppiumDriver {
      */
     findElementByText(text: string, match?: SearchOptions, waitForElement?: number): Promise<UIElement>;
     /**
+     * Search for element by given automationText. Searches only for exact string.
+     * @param text
+     * @param waitForElement
+     */
+    findElementByAutomationText(automationText: string, waitForElement?: number): Promise<UIElement>;
+    /**
+     * Search for element by given automationText and waits until the element is displayed.
+     * @param text
+     * @param waitInMiliseconds till element is displayed
+     */
+    waitForElement(automationText: string, waitInMiliseconds?: number): Promise<UIElement>;
+    /**
+     * Search for elements by given automationText. Searches only for exact string. Returns promise with array of elements.
+     * @param text
+     * @param waitForElement
+     */
+    findElementsByAutomationText(automationText: string, waitForElement?: number): Promise<UIElement[]>;
+    /**
      * Search for elements by given text. The seacrch is case insensitive for android
      * @param text
      * @param match

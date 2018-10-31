@@ -17,7 +17,7 @@ describe("sample scenario", () => {
     });
 
     it("should find an element by text", async () => {
-        const btnTap = await driver.findElementByText("TAP", SearchOptions.exact);
+        const btnTap = await driver.findElementByAutomationText("TAP");
         await btnTap.click();
 
         const message = " taps left";
