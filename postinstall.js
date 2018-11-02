@@ -174,7 +174,7 @@ const frameworkQuestion = () => {
             type: "list",
             name: "PROJECT_TYPE",
             message: "What kind of project do you use?",
-            choices: [js, tsc, ng, vue, sharedNg, sharedVue]
+            choices: [js, tsc, ng, vue, sharedNg]
         }
     ];
     return inquirer.prompt(questions);

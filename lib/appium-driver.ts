@@ -338,7 +338,7 @@ export class AppiumDriver {
      */
     public async findElementByAutomationText(automationText: string, waitForElement: number = this.defaultWaitTime) {
         if (this.isIOS) {
-            return await this.findElementByAccessibilityId(`${automationText}`);
+            return await this.findElementByAccessibilityId(`${automationText}`, waitForElement);
         }
         return await this.findElementByXPath(this._elementHelper.getXPathByText(automationText, true), waitForElement);
     }
@@ -351,18 +351,18 @@ export class AppiumDriver {
     public async waitForElement(automationText: string, waitInMiliseconds: number = 3000): Promise<UIElement> {
         let element;
         try {
-            element = await this.findElementByAutomationText(automationText);
+            element = await this.findElementByAutomationText(automationText, 100);
         } catch (error) { }
         const startTime = Date.now();
         while ((!element || !(await element.isDisplayed())) && Date.now() - startTime <= waitInMiliseconds) {
             try {
-                element = await this.findElementByAutomationText(automationText);
+                element = await this.findElementByAutomationText(automationText, 100);
             } catch (error) { }
         }
 
-        if (!element) {
-            const msg = `Element with automationText: ${automationText} is not dislpayed after ${waitInMiliseconds}`;
-            logError(msg);
+        if (!element || !await element.isDisplayed()) {
+            const msg = `Element with automationText: '${automationText}' is not dislpayed after ${waitInMiliseconds} milliseconds.`;
+            logInfo(msg);
         }
 
         return element;
