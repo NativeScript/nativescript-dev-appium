@@ -26,6 +26,7 @@ export { IDeviceManager } from "./lib/interfaces/device-manager";
 export { LogType } from "./lib/log-types";
 export { INsCapabilities } from "./lib/interfaces/ns-capabilities";
 export { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
+export { logInfo, logError, logWarn } from "./lib/utils";
 export const nsCapabilities: INsCapabilities = new NsCapabilities(parser);
 
 const appiumServer = new AppiumServer(nsCapabilities);
