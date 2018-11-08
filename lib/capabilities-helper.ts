@@ -9,7 +9,8 @@ export function resolveCapabilities(capsLocation: string, runType: string, proje
 
     if (capabilitiesConfigFile) {
         const capabilitiesObject = JSON.parse(capabilitiesConfigFile.toString());
-        caps = capabilitiesObject[runType];
+        const runTypeCaseInSensitive = Object.getOwnPropertyNames(capabilitiesObject).filter((v, i, a) => v.toLowerCase() === runType.toLowerCase())[0];
+        caps = capabilitiesObject[runTypeCaseInSensitive];
     }
 
     if (!caps) {
@@ -25,7 +26,7 @@ export function resolveCapabilities(capsLocation: string, runType: string, proje
 
 export function searchCapabilities(capabilitiesLocation: string, projectDir: string, capabilitiesName: string, verbose: boolean = false) {
     let appiumCapabilitiesFile = undefined;
-    
+
     if (existsSync(capabilitiesLocation) && statSync(capabilitiesLocation).isFile()) {
         appiumCapabilitiesFile = capabilitiesLocation;
         console.log(appiumCapabilitiesFile);
