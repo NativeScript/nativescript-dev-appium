@@ -89,7 +89,7 @@ const getDevDependencies = (frameworkType) => {
         { name: "jasmine", version: "~3.2.0" },
         { name: "jasmine-core", version: "~2.99.1" },
         { name: "jasmine-spec-reporter", version: "~4.2.1" },
-        { name: "@types/jasmine", version: "~2.8.8" },
+        { name: "@types/jasmine", version: "~2.8.11" },
         { name: "@types/node", version: "10.11.4" },
     ]);
 
