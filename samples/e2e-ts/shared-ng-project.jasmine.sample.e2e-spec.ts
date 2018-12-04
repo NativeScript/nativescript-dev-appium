@@ -17,24 +17,11 @@ describe("sample scenario", () => {
     });
 
     it("should find an element by text", async () => {
-        const btnTap = await driver.findElementByText("TAP", SearchOptions.exact);
-        await btnTap.click();
-
-        const message = " taps left";
-        const lblMessage = await driver.findElementByText(message, SearchOptions.contains);
-        expect(await lblMessage.text()).toContain("41");
+        const lblMessage = await driver.findElementByText("Welcome", SearchOptions.contains);
+        expect(await lblMessage.isDisplayed());
         // Image verification
-        // const screen = await driver.compareScreen("hello-world-41");
+        // const screen = await driver.compareScreen("welcome_screen");
         // assert.isTrue(screen);
         // expect(screen).toBeTruthy();
-    });
-
-    it("should find an element by type", async () => {
-        const btnTap = await driver.findElementByClassName(driver.locators.button);
-        await btnTap.click();
-
-        const message = " taps left";
-        const lblMessage = await driver.findElementByText(message, SearchOptions.contains);
-        expect(await lblMessage.text()).toContain("40");
     });
 });

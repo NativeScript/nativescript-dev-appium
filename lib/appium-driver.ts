@@ -332,6 +332,55 @@ export class AppiumDriver {
     }
 
     /**
+     * Search for element by given automationText. Searches only for exact string.
+     * @param text
+     * @param waitForElement
+     */
+    public async findElementByAutomationText(automationText: string, waitForElement: number = this.defaultWaitTime) {
+        if (this.isIOS) {
+            return await this.findElementByAccessibilityId(`${automationText}`, waitForElement);
+        }
+        return await this.findElementByXPath(this._elementHelper.getXPathByText(automationText, true), waitForElement);
+    }
+
+    /**
+     * Search for element by given automationText and waits until the element is displayed.
+     * @param text
+     * @param waitInMiliseconds till element is displayed
+     */
+    public async waitForElement(automationText: string, waitInMiliseconds: number = 3000): Promise<UIElement> {
+        let element;
+        try {
+            element = await this.findElementByAutomationText(automationText, 100);
+        } catch (error) { }
+        const startTime = Date.now();
+        while ((!element || !(await element.isDisplayed())) && Date.now() - startTime <= waitInMiliseconds) {
+            try {
+                element = await this.findElementByAutomationText(automationText, 100);
+            } catch (error) { }
+        }
+
+        if (!element || !await element.isDisplayed()) {
+            const msg = `Element with automationText: '${automationText}' is not dislpayed after ${waitInMiliseconds} milliseconds.`;
+            logInfo(msg);
+        }
+
+        return element;
+    }
+
+    /**
+     * Search for elements by given automationText. Searches only for exact string. Returns promise with array of elements.
+     * @param text
+     * @param waitForElement
+     */
+    public async findElementsByAutomationText(automationText: string, waitForElement: number = this.defaultWaitTime): Promise<UIElement[]> {
+        if (this.isIOS) {
+            return await this.findElementsByAccessibilityId(`${automationText}`);
+        }
+        return await this.findElementsByXPath(this._elementHelper.getXPathByText(automationText, true), waitForElement);
+    }
+
+    /**
      * Search for elements by given text. The seacrch is case insensitive for android
      * @param text
      * @param match
