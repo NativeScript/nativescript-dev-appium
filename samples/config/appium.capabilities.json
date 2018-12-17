@@ -89,7 +89,7 @@
     },
     "sim.iPhone7": {
         "platformName": "iOS",
-        "platformVersion": "12.0",
+        "platformVersion": "12.*",
         "deviceName": "iPhone 7",
         "noReset": true,
         "fullReset": false,
@@ -98,7 +98,7 @@
 
     "sim.iPhone8": {
         "platformName": "iOS",
-        "platformVersion": "12",
+        "platformVersion": "12*",
         "deviceName": "iPhone 8",
         "noReset": true,
         "fullReset": false,
@@ -106,7 +106,7 @@
     },
     "sim.iPhoneX": {
         "platformName": "iOS",
-        "platformVersion": "12.0",
+        "platformVersion": "12*",
         "deviceName": "iPhone X",
         "noReset": true,
         "fullReset": false,
@@ -114,7 +114,7 @@
     },
     "sim.iPhoneXS": {
         "platformName": "ios",
-        "platformVersion": "12.0",
+        "platformVersion": "12*",
         "deviceName": "iPhone XS",
         "noReset": true,
         "fullReset": false,

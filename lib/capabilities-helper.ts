@@ -1,9 +1,13 @@
-import * as glob from 'glob';
+import * as glob from "glob";
 import { dirname, join } from "path";
 import { readFileSync, statSync, existsSync } from "fs";
 import { logInfo, logWarn, logError } from "./utils";
 
 export function resolveCapabilities(capsLocation: string, runType: string, projectDir: string, capabilitiesName: string, verbose: boolean = false): {} {
+    if (!runType) {
+        logError(`Option "--runType" is mandatory!!!`);
+        throw new Error(`Missing --runType option ${runType}`);
+    }
     let caps;
     const capabilitiesConfigFile = searchCapabilities(capsLocation, projectDir, capabilitiesName, verbose);;
 
