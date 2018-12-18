@@ -152,7 +152,7 @@ export class NsCapabilities implements INsCapabilities {
 
     private shouldSetFullResetOption() {
         if (!this._ignoreDeviceController) {
-            this._reuseDevice = !!this.appiumCaps["fullReset"] ? true : false;
+            this._reuseDevice = !!this.appiumCaps["fullReset"] ? false : true;
             this.appiumCaps["fullReset"] = false;
             if(!this.reuseDevice){
                 logInfo("'fullReset' option in appium capabilities file is set to 'true' and the device will be killed after session ends! ");
