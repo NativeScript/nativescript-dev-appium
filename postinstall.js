@@ -86,20 +86,20 @@ const getDevDependencies = (frameworkType) => {
     const tesstingFrameworkDeps = new Map();
 
     tesstingFrameworkDeps.set(jasmine, [
-        { name: "jasmine", version: "~3.2.0" },
-        { name: "jasmine-core", version: "~2.99.1" },
-        { name: "jasmine-spec-reporter", version: "~4.2.1" },
-        { name: "@types/jasmine", version: "~2.8.11" },
-        { name: "@types/node", version: "10.11.4" },
+        { name: "jasmine", version: "latest" },
+        { name: "jasmine-core", version: "latest" },
+        { name: "jasmine-spec-reporter", version: "latest" },
+        { name: "@types/jasmine", version: "latest" },
+        { name: "@types/node", version: "latest" },
     ]);
 
     tesstingFrameworkDeps.set(mocha, [
-        { name: "mocha", version: "~5.1.0" },
-        { name: "mocha-junit-reporter", version: "~1.17.0" },
-        { name: "mocha-multi", version: "~1.0.0" },
-        { name: "@types/mocha", version: "~5.2.1" },
-        { name: "@types/chai", version: "~4.1.3" },
-        { name: "@types/node", version: "10.11.4" },
+        { name: "mocha", version: "latest" },
+        { name: "mocha-junit-reporter", version: "latest" },
+        { name: "mocha-multi", version: "latest" },
+        { name: "@types/mocha", version: "latest" },
+        { name: "@types/chai", version: "latest" },
+        { name: "@types/node", version: "latest" },
     ]);
 
     tesstingFrameworkDeps.set(js, []);

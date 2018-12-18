@@ -577,24 +577,27 @@ export function encodeImageToBase64(path) {
     return new Buffer(bitmap).toString('base64');
 }
 
+const convertObjToString = obj => {
+    try {
+        if (obj) {
+            return " " + JSON.stringify(obj);
+        }
+    } catch (err) { }
+
+    return "";
+}
 export function logInfo(info, obj = undefined) {
-    if (obj) {
-        info += " " + JSON.stringify(obj);
-    }
+    info += " " + convertObjToString(obj);
     console.log(`${ConsoleColor.FgCyan}%s${ConsoleColor.Reset}`, info);
 }
 
 export function logWarn(info, obj = undefined) {
-    if (obj) {
-        info += " " + JSON.stringify(obj);
-    }
+    info += " " + convertObjToString(obj);
     console.log(`${ConsoleColor.BgYellow}${ConsoleColor.FgBlack}%s${ConsoleColor.Reset}`, info);
 }
 
 export function logError(info, obj = undefined) {
-    if (obj) {
-        info += " " + JSON.stringify(obj);
-    }
+    info += " " + convertObjToString(obj);
     console.log(`${ConsoleColor.BgRed}%s${ConsoleColor.Reset}`, info);
 }
 
