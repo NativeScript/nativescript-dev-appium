@@ -155,8 +155,8 @@ export class NsCapabilities implements INsCapabilities {
             this._reuseDevice = !!this.appiumCaps["fullReset"] ? false : true;
             this.appiumCaps["fullReset"] = false;
             if(!this.reuseDevice){
-                logInfo("'fullReset' option in appium capabilities file is set to 'true' and the device will be killed after session ends! ");
-                logInfo(" To avoid full reset off device use 'fullReset: false'");
+                logWarn("The started device will be killed after the session!");
+                logInfo("To avoid it, set 'fullReset: false' in appium capabilities.");
             }
         }
 
