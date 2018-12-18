@@ -144,7 +144,8 @@ const config = (() => {
         sessionId: options.sessionId || process.env.npm_sessionId,
         startSession: options.startSession || process.env.npm_startSession,
         capabilitiesName: options.capabilitiesName || process.env.npm_capabilitiesName,
-        imagesPath: options.imagesPath || process.env.npm_config_imagesPath
+        imagesPath: options.imagesPath || process.env.npm_config_imagesPath,
+        startDeviceOptions: options.startDeviceOptions || process.env.npm_config_startDeviceOptions,
     };
 
     return config;
@@ -174,5 +175,6 @@ export const {
     sessionId,
     startSession,
     capabilitiesName,
-    imagesPath
+    imagesPath,
+    startDeviceOptions
 }: INsCapabilitiesArgs = config;
