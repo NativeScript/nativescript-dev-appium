@@ -90,6 +90,10 @@ export class DeviceManager implements IDeviceManager {
 
             if (device.status === Status.SHUTDOWN) {
                 await DeviceController.startDevice(device);
+                try {
+                    delete device.process;
+                } catch (error) { }
+                
                 logInfo("Started device: ", device);
             } else {
                 device.type === DeviceType.DEVICE ? logInfo("Device is connected:", device) : logInfo("Device is already started", device)
