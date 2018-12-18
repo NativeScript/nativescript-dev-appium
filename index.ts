@@ -71,6 +71,9 @@ if (nsCapabilities.startSession) {
 
 export async function startServer(port?: number, deviceManager?: IDeviceManager) {
     await appiumServer.start(port || nsCapabilities.port, deviceManager);
+    if (nsCapabilities.cleanApp && !nsCapabilities.ignoreDeviceController) {
+        await DeviceController.uninstallApp(nsCapabilities.device, nsCapabilities.appPath);
+    }
     await attachToExitProcessHoockup(appiumServer.server, "appium");
     return appiumServer;
 }
@@ -83,7 +86,7 @@ export async function stopServer() {
         await appiumServer.stop();
     }
 
-    if (nsCapabilities.cleanApp) {
+    if (nsCapabilities.cleanApp && !nsCapabilities.ignoreDeviceController) {
         await DeviceController.uninstallApp(nsCapabilities.device, nsCapabilities.appPath);
     }
 };

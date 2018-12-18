@@ -80,7 +80,7 @@ const config = (() => {
                 type: "boolean",
                 default: false
             })
-        .option("cleanApp", { alias: "c", describe: "Uninstall app after test are finished", type: "boolean", default: false })
+        .option("cleanApp", { alias: "c", describe: "Clean app before and after run.", type: "boolean", default: false })
         .option("imagesPath", { describe: "comparison images path relative to resources/images", type: "string" })
         .help()
         .argv;
