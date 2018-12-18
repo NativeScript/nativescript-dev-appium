@@ -5,25 +5,81 @@ import { INsCapabilitiesArgs } from "./interfaces/ns-capabilities-args";
 
 const config = (() => {
     const options = yargs
-        .option("runType", { describe: "Path to excute command.", type: "string", default: null })
-        .option("testFolder", { describe: "e2e test folder name", default: "e2e", type: "string" })
-        .option("appiumCapsLocation", { describe: "Capabilities", type: "string" })
-        .option("sauceLab", { describe: "SauceLab", default: false, type: "boolean" })
-        .option("port", { alias: "p", describe: "Appium port", type: "number"})
-        .option("attachToDebug", { alias: "a", describe: "Attach to appium desktop app.", default: false, type: "boolean" })
-        .option("capabilitiesName", { describe: "Capabilities file name", default: "appium.capabilities.json", type: "string" })
-        .option("sessionId", { alias: "s", describe: "Session to attach", default: false, type: "string" })
-        .option("startSession", { describe: "Start session.", default: false, type: "boolean" })
+        .option("runType",
+            {
+                describe: "Which option to use from appium capabilities.json",
+                type: "string"
+            })
+        .option("testFolder",
+            {
+                describe: "e2e test folder name",
+                default: "e2e",
+                type: "string"
+            })
+        .option("appiumCapsLocation",
+            {
+                describe: "Custom capabilities location",
+                type: "string"
+            })
+        .option("sauceLab",
+            {
+                describe: "Use it mandatory for sauceLab run!",
+                default: false,
+                type: "boolean"
+            })
+        .option("port",
+            {
+                alias: "p",
+                describe: "Appium port",
+                type: "number"
+            })
+        .option("attachToDebug",
+            {
+                alias: "a",
+                describe: "Attach to appium desktop application. Will use first met session!",
+                default: false,
+                type: "boolean"
+            })
+        .option("capabilitiesName",
+            {
+                describe: "Capabilities file name",
+                default: "appium.capabilities.json",
+                type: "string"
+            })
+        .option("startSession",
+            {
+                describe: "Start session. This option will start a new session can be reused for tests!",
+                default: false,
+                type: "boolean"
+            })
+        .option("sessionId", {
+            alias: "s",
+            describe: "Provide session id which you want to attach",
+            default: false,
+            type: "string"
+        })
         .option("wdaLocalPort", { alias: "wda", describe: "WDA port", type: "number" })
         .option("verbose", { alias: "v", describe: "Log actions", type: "boolean" })
-        .option("path", { describe: "path", default: process.cwd(), type: "string" })
+        .option("path", { describe: "Execution path", default: process.cwd(), type: "string" })
         .option("relaxedSecurity", { describe: "appium relaxedSecurity", default: false, type: "boolean" })
         .option("appPath", { describe: "application path", type: "string" })
         .option("storage", { describe: "Storage for images folder.", type: "string" })
         .option("testReports", { describe: "Test reporting folder", type: "string" })
-        .option("reuseDevice", { describe: "Reusing device if available.", type: "boolean", default: false })
-        .option("devMode", { alias: "dev-mode", describe: "Will skipp app instalation and will reuse the one installed on device!", type: "boolean", default: false })
-        .option("ignoreDeviceController", { alias: "i-ns-device-controller", describe: "Use default appium options for running emulatos/ simulators.", type: "boolean", default: false })
+        .option("devMode",
+            {
+                alias: "dev-mode",
+                describe: "Skips app installation and uses the one that should already be installed on device! Good to use during development.",
+                type: "boolean",
+                default: false
+            })
+        .option("ignoreDeviceController",
+            {
+                alias: "idc",
+                describe: `Use default appium options for running emulators/ simulators. Provide this option will not use custom device controller.
+                Device controller is disabled by default when --sauceLab option is provided!`,
+                type: "boolean",
+                default: false
+            })
         .option("cleanApp", { alias: "c", describe: "Uninstall app after test are finished", type: "boolean", default: false })
         .option("imagesPath", { describe: "comparison images path relative to resources/images", type: "string" })
         .help()
@@ -55,8 +111,7 @@ const config = (() => {
         options.attachToDebug = true;
         options.devMode = true;
         if (!options.port) {
-            logError("Provide appium server port started from desktop application!")
-            process.exit(1);
+            logError(`Provide appium server port that has been used to start session or the default '${port}' one will be used`);
         }
     }
 
@@ -70,7 +125,7 @@ const config = (() => {
         projectBinary: projectBinary,
         pluginRoot: pluginRoot,
         pluginBinary: pluginBinary,
-        port: options.port || process.env.npm_config_port || process.env["APPIUM_PORT"] || 4723 ,
+        port: options.port || process.env.npm_config_port || process.env["APPIUM_PORT"] || 4723,
         wdaLocalPort: options.wdaLocalPort || process.env.npm_config_wdaLocalPort || process.env["WDA_LOCAL_PORT"] || 8410,
         testFolder: options.testFolder || process.env.npm_config_testFolder || "e2e",
         runType: options.runType || process.env.npm_config_runType,
@@ -80,8 +135,7 @@ const config = (() => {
         appPath: options.appPath || process.env.npm_config_appPath,
         storage: options.storage || process.env.npm_config_STORAGE || process.env.STORAGE,
         testReports: options.testReports || process.env.npm_config_testReports || process.env.TEST_REPORTS,
-        devMode: options.devMode || process.env.npm_config_devMode  || process.env.REUSE_APP,
-        reuseDevice: options.devMode ? true : options.reuseDevice || process.env.npm_config_reuseDevice || process.env.REUSE_DEVICE,
+        devMode: options.devMode || process.env.npm_config_devMode || process.env.REUSE_APP,
         cleanApp: !options.devMode && options.cleanApp && !options.sauceLab && !options.ignoreDeviceController,
         ignoreDeviceController: options.ignoreDeviceController || process.env.npm_ignoreDeviceController,
         path: options.path || process.env.npm_path,
@@ -110,7 +164,6 @@ export const {
     appPath,
     storage,
     testReports,
-    reuseDevice,
     devMode,
     ignoreDeviceController,
     wdaLocalPort,
