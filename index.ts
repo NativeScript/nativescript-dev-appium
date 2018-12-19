@@ -83,8 +83,9 @@ export async function stopServer() {
         await appiumServer.stop();
     }
 
-    if (nsCapabilities.cleanApp) {
+    if (nsCapabilities.cleanApp && !nsCapabilities.ignoreDeviceController) {
         await DeviceController.uninstallApp(nsCapabilities.device, nsCapabilities.appPath);
+        logInfo("Application from device is uninstalled.")
     }
 };
 

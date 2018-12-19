@@ -58,7 +58,6 @@ export class NsCapabilities implements INsCapabilities {
         this._testFolder = this._parser.testFolder;
         this._storage = this._parser.storage;
         this._testReports = this._parser.testReports;
-        this._reuseDevice = this._parser.reuseDevice;
         this._devMode = this._parser.devMode;
         this._runType = this._parser.runType;
         this._isSauceLab = this._parser.isSauceLab;
@@ -116,7 +115,7 @@ export class NsCapabilities implements INsCapabilities {
     //set isValidated(isValidated: boolean) { this._isValidated = isValidated; }
 
     setAutomationNameFromString(automationName: String) {
-        const key  = Object.keys(AutomationName).filter((v,i,a) => v.toLowerCase() === automationName.toLowerCase());
+        const key = Object.keys(AutomationName).filter((v, i, a) => v.toLowerCase() === automationName.toLowerCase());
         this._automationName = AutomationName[key[0]];
     }
 
@@ -134,6 +133,7 @@ export class NsCapabilities implements INsCapabilities {
         if (this._attachToDebug || this._sessionId) {
             this._isValidated = true;
         }
+
         if (!this._attachToDebug && !this._sessionId) {
             this._appiumCaps = resolveCapabilities(this.appiumCapsLocation, this.runType, this.projectDir, this._capabilitiesName);
 
@@ -151,10 +151,15 @@ export class NsCapabilities implements INsCapabilities {
     private isAndroidPlatform() { return this._appiumCaps && this._appiumCaps ? this._appiumCaps.platformName.toLowerCase().includes("android") : undefined; }
 
     private shouldSetFullResetOption() {
-        if (this._ignoreDeviceController) {
-            this.appiumCaps["fullReset"] = true;
-            this.appiumCaps["noReset"] = false;
-            logInfo("Changing appium setting fullReset: true and noReset: false ");
+        if (!this._ignoreDeviceController) {
+            this._reuseDevice = !this.appiumCaps["fullReset"];
+            this.appiumCaps["fullReset"] = false;
+            if(!this.reuseDevice){
+                logWarn("The started device will be killed after the session!");
+                logInfo("To avoid it, set 'fullReset: false' in appium capabilities.");
+            }
+
+            this._cleanApp = !this.appiumCaps["noReset"];
         }
 
         if (this._attachToDebug || this._devMode) {
