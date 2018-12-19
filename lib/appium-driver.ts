@@ -348,7 +348,7 @@ export class AppiumDriver {
      * @param text
      * @param waitInMiliseconds till element is displayed
      */
-    public async waitForElement(automationText: string, waitInMiliseconds: number = 3000): Promise<UIElement> {
+    public async waitForElement(automationText: string, waitInMiliseconds: number = this.defaultWaitTime): Promise<UIElement> {
         let element;
         try {
             element = await this.findElementByAutomationText(automationText, 100);
