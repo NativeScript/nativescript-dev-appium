@@ -34,19 +34,17 @@
     "blink-diff": "~1.0.13",
     "chai": "~4.2.0",
     "chai-as-promised": "~7.1.0",
-    "chalk": "^2.4.1",
-    "figlet": "^1.2.0",
     "frame-comparer": "^2.0.1",
-    "glob": "^7.1.0",
-    "inquirer": "^6.2.0",
-    "mobile-devices-controller": "~3.0.8-5",
+    "glob": "~7.1.0",
+    "inquirer": "~6.2.0",
+    "mobile-devices-controller": "~3.1.0",
     "wd": "~1.11.1",
     "webdriverio": "~4.14.0",
     "yargs": "~12.0.5"
   },
   "devDependencies": {
-    "@types/node": "~10.12.15",
-    "typescript": "^3.2.0"
+    "@types/node": "~10.12.18",
+    "typescript": "~3.1.6"
   },
   "scripts": {
     "postinstall": "node ./postinstall.js",
