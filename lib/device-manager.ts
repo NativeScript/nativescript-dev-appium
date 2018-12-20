@@ -33,7 +33,7 @@ export class DeviceManager implements IDeviceManager {
         args.appiumCaps.platformName = args.appiumCaps.platformName.toLowerCase();
         let device: IDevice = DeviceManager.getDefaultDevice(args);
         const token = process.env["DEVICE_TOKEN"] || process.env.npm_config_deviceToken;
-        device.token = device.token.replace("emulator-", "");
+        device.token = token && token.replace("emulator-", "");
         device.name = process.env["DEVICE_NAME"] || device.name;
         console.log("Default device: ", device);
         DeviceManager.cleanUnsetProp(device);
