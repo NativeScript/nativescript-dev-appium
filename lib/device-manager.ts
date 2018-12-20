@@ -32,12 +32,13 @@ export class DeviceManager implements IDeviceManager {
     public async startDevice(args: INsCapabilities): Promise<IDevice> {
         args.appiumCaps.platformName = args.appiumCaps.platformName.toLowerCase();
         let device: IDevice = DeviceManager.getDefaultDevice(args);
-        console.log("Default device: ", device);
         const token = process.env["DEVICE_TOKEN"] || process.env.npm_config_deviceToken;
-        if (token) {
-            device.token = device.token.replace("emulator-", "");
-            device.name = process.env["DEVICE_NAME"] || device.name;
-            DeviceManager.cleanUnsetProp(device);
+        device.token = device.token.replace("emulator-", "");
+        device.name = process.env["DEVICE_NAME"] || device.name;
+        console.log("Default device: ", device);
+        DeviceManager.cleanUnsetProp(device);
+
+        if (device.token) {
             device = await DeviceController.getDevices(device)[0];
             logInfo("Device: ", device);
             return device;
