@@ -1,6 +1,6 @@
 import * as yargs from "yargs";
 import { join } from "path";
-import { resolve, logError } from "./utils";
+import { resolvePath, logError } from "./utils";
 import { INsCapabilitiesArgs } from "./interfaces/ns-capabilities-args";
 
 const config = (() => {
@@ -12,13 +12,19 @@ const config = (() => {
             })
         .option("testFolder",
             {
-                describe: "e2e test folder name",
+                describe: "Name of folder with tests",
                 default: "e2e",
                 type: "string"
             })
         .option("appiumCapsLocation",
             {
-                describe: "Custom capabilities location",
+                describe: "Custom capabilities location `/some-path/appium.capabilities.json`",
+                type: "string"
+            })
+        .option("capabilitiesName",
+            {
+                describe: "Capabilities file name",
+                default: "appium.capabilities.json",
                 type: "string"
             })
         .option("sauceLab",
@@ -39,12 +45,6 @@ const config = (() => {
                 describe: "Attach to appium desktop application. Will use first met session!",
                 default: false,
                 type: "boolean"
-            })
-        .option("capabilitiesName",
-            {
-                describe: "Capabilities file name",
-                default: "appium.capabilities.json",
-                type: "string"
             })
         .option("startSession",
             {
@@ -116,9 +116,9 @@ const config = (() => {
     }
 
     const projectDir = appRootPath;
-    const projectBinary = resolve(projectDir, "node_modules", ".bin");
-    const pluginRoot = resolve(projectDir, "node_modules", "nativescript-dev-appium");
-    const pluginBinary = resolve(pluginRoot, "node_modules", ".bin");
+    const projectBinary = resolvePath(projectDir, "node_modules", ".bin");
+    const pluginRoot = resolvePath(projectDir, "node_modules", "nativescript-dev-appium");
+    const pluginBinary = resolvePath(pluginRoot, "node_modules", ".bin");
 
     const config = {
         projectDir: projectDir,

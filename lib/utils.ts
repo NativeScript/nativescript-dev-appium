@@ -1,5 +1,3 @@
-import * as path from "path";
-import * as fs from "fs";
 import * as childProcess from "child_process";
 import * as glob from "glob";
 import * as http from "http";
@@ -9,44 +7,35 @@ import { AndroidController, IOSController } from "mobile-devices-controller";
 import { Point } from "./point";
 import { Direction } from "./direction";
 import { IDeviceManager } from "./interfaces/device-manager";
+import {
+    existsSync,
+    statSync,
+    mkdirSync,
+    readdirSync,
+    writeFileSync,
+    readFileSync
+} from "fs";
+import {
+    extname,
+    basename,
+    join,
+    sep,
+    isAbsolute,
+    resolve
+} from "path";
 
-export function resolve(mainPath, ...args) {
-    if (!path.isAbsolute(mainPath)) {
-        if (mainPath.startsWith('~')) {
-            mainPath = path.join(process.env.HOME, mainPath.slice(1));
-        } else {
-            mainPath = path.resolve(mainPath);
-        }
+export function resolvePath(mainPath, ...args) {
+    if (!isAbsolute(mainPath) && mainPath.startsWith('~')) {
+        mainPath = mainPath.replace("~", process.env.HOM);
     }
 
-    let fullPath = mainPath;
-    args.forEach(p => {
-        fullPath = path.resolve(fullPath, p);
-    });
+    const fullPath = resolve(mainPath, ...args);
     return fullPath;
-}
-
-export function fileExists(p) {
-    try {
-        if (fs.existsSync(p)) {
-            return true;
-        }
-
-        return false;
-    } catch (e) {
-        if (e.code == 'ENOENT') {
-            logError("File does not exist. " + p, true);
-            return false;
-        }
-
-        logError("Exception fs.statSync (" + path + "): " + e, true);
-        throw e;
-    }
 }
 
 export function isDirectory(fullName) {
     try {
-        if (fileExists(fullName) && fs.statSync(fullName).isDirectory()) {
+        if (existsSync(fullName) && statSync(fullName).isDirectory()) {
             return true;
         }
     } catch (e) {
@@ -59,7 +48,7 @@ export function isDirectory(fullName) {
 
 export function isFile(fullName) {
     try {
-        if (fileExists(fullName) && fs.statSync(fullName).isFile()) {
+        if (existsSync(fullName) && statSync(fullName).isFile()) {
             return true;
         }
     } catch (e) {
@@ -71,29 +60,29 @@ export function isFile(fullName) {
 }
 
 export function copy(src, dest, verbose) {
-    if (!fileExists(src)) {
+    if (!existsSync(src)) {
         return Error("Cannot copy: " + src + ". Source doesn't exist: " + dest);
     }
-    if (fileExists(src) && isFile(src) && isDirectory(dest)) {
-        dest = path.join(dest, path.basename(src));
+    if (existsSync(src) && isFile(src) && isDirectory(dest)) {
+        dest = join(dest, basename(src));
     }
 
     if (isDirectory(src)) {
-        if (!fileExists(dest)) {
+        if (!existsSync(dest)) {
             console.info("CREATE Directory: " + dest);
-            fs.mkdirSync(dest);
+            mkdirSync(dest);
         }
         const files = getAllFileNames(src);
         const destination = dest;
         files.forEach(file => {
-            const destt = path.resolve(destination, file);
-            copy(path.join(src, file), destt, verbose);
+            const newFileDest = resolvePath(destination, file);
+            copy(join(src, file), newFileDest, verbose);
         });
     } else {
-        fs.writeFileSync(dest, fs.readFileSync(src));
+        writeFileSync(dest, readFileSync(src));
     }
     if (verbose) {
-        console.info("File " + src + " is coppied to " + dest);
+        console.info("File " + src + " is copied to " + dest);
     }
 
     return dest;
@@ -101,7 +90,7 @@ export function copy(src, dest, verbose) {
 
 function getAllFileNames(folder) {
     let files = new Array();
-    fs.readdirSync(resolve(folder)).forEach(file => {
+    readdirSync(resolvePath(folder)).forEach(file => {
         files.push(file);
     });
 
@@ -111,50 +100,46 @@ function getAllFileNames(folder) {
 /// ^nativ\w*(.+).gz$ native*.gz
 /// \w*nativ\w*(.+)\.gz$ is like *native*.gz
 /// \w*nativ\w*(.+)\.gz\w*(.+)$ is like *native*.gz*
-function createRegexPattern(text) {
-    let finalRex = "";
-    text.split(",").forEach(word => {
-        word = word.trim();
-        let searchRegex = word;
-        if (word !== "" && word !== " ") {
-            searchRegex = searchRegex.replace(".", "\\.");
-            searchRegex = searchRegex.replace("*", "\\w*(.+)?");
-            if (!word.startsWith("*")) {
-                searchRegex = "^" + searchRegex;
-            }
-            if (!word.endsWith("*")) {
-                searchRegex += "$";
-            }
-            if (!contains(finalRex, searchRegex)) {
-                finalRex += searchRegex + "|";
-            }
-        }
-    });
-    finalRex = finalRex.substring(0, finalRex.length - 1);
-    const regex = new RegExp(finalRex, "gi");
-    return regex;
-}
-
-export function contains(source, check) {
-    return source.indexOf(check) >= 0;
-}
+// function createRegexPattern(text) {
+//     let finalRex = "";
+//     text.split(",").forEach(word => {
+//         word = word.trim();
+//         let searchRegex = word;
+//         if (word !== "" && word !== " ") {
+//             searchRegex = searchRegex.replace(".", "\\.");
+//             searchRegex = searchRegex.replace("*", "\\w*(.+)?");
+//             if (!word.startsWith("*")) {
+//                 searchRegex = "^" + searchRegex;
+//             }
+//             if (!word.endsWith("*")) {
+//                 searchRegex += "$";
+//             }
+//             if (finalRex.indexOf(searchRegex) < 0) {
+//                 finalRex += searchRegex + "|";
+//             }
+//         }
+//     });
+//     finalRex = finalRex.substring(0, finalRex.length - 1);
+//     const regex = new RegExp(finalRex, "gi");
+//     return regex;
+// }
 
 // Search for files and folders. If should not match, than the filter will skip this words. Could be use with wildcards
-export function searchFiles(folder, words, recursive: boolean = true, files = new Array()): Array<string> {
-    const rootFiles = getAllFileNames(folder);
-    const regex = createRegexPattern(words);
-    rootFiles.filter(f => {
-        const fileFullName = resolve(folder, f);
-        let m = regex.test(f);
-        if (m) {
-            files.push(fileFullName);
-        } else if (isDirectory(fileFullName) && recursive) {
-            searchFiles(fileFullName, words, recursive, files);
-        }
-    });
+// export function searchFiles(folder, words, recursive: boolean = true, files = new Array()): Array<string> {
+//     const rootFiles = getAllFileNames(folder);
+//     const regex = createRegexPattern(words);
+//     rootFiles.filter(f => {
+//         const fileFullName = resolve(folder, f);
+//         let m = regex.test(f);
+//         if (m) {
+//             files.push(fileFullName);
+//         } else if (isDirectory(fileFullName) && recursive) {
+//             searchFiles(fileFullName, words, recursive, files);
+//         }
+//     });
 
-    return files;
-}
+//     return files;
+// }
 
 export function shutdown(processToKill: childProcess.ChildProcess, verbose) {
     try {
@@ -227,7 +212,7 @@ export function getStorageByDeviceName(args: INsCapabilities) {
     let storage = getStorage(args);
     if (args.imagesPath) {
         const segments = args.imagesPath.split(/[\/\\]+/);
-        storage = path.join(storage, segments.join(path.sep));
+        storage = join(storage, segments.join(sep));
         return storage;
     }
     const appName = resolveSauceLabAppName(getAppName(args));
@@ -251,7 +236,7 @@ const checkStorageIsUndefined = (storage) => { return !storage || storage === 'u
 export const getStorage = (args: INsCapabilities) => {
     let storage = args.storage;
     if (checkStorageIsUndefined(storage)) {
-        storage = createStorageFolder(resolve(args.projectDir, args.testFolder), "resources");
+        storage = createStorageFolder(resolvePath(args.projectDir, args.testFolder), "resources");
         storage = createStorageFolder(storage, "images");
     }
 
@@ -261,7 +246,7 @@ export const getStorage = (args: INsCapabilities) => {
 export function getReportPath(args: INsCapabilities) {
     let report = args.testReports;
     if (!report) {
-        report = createStorageFolder(resolve(args.projectDir, args.testFolder), "reports");
+        report = createStorageFolder(resolvePath(args.projectDir, args.testFolder), "reports");
     }
     const appName = getAppName(args);
     report = createStorageFolder(report, appName);
@@ -289,8 +274,8 @@ export const getRegexResultsAsArray = (regex, str) => {
 }
 
 function getAppName(args: INsCapabilities) {
-    const appName = args.appName || path.basename(args.appPath)
-        .replace(path.extname(args.appPath), "")
+    const appName = args.appName || basename(args.appPath)
+        .replace(extname(args.appPath), "")
         .replace("-release", "").replace("-debug", "");
 
     return appName;
@@ -298,12 +283,12 @@ function getAppName(args: INsCapabilities) {
 
 export function getAppPath(caps: INsCapabilities) {
     let basePath = caps.appiumCaps.app || caps.appPath;
-    if (fs.existsSync(basePath) && ((basePath.endsWith(".apk") || basePath.endsWith(".app") || basePath.endsWith(".ipa")))) {
-        return resolve(basePath);
+    if (existsSync(basePath) && ((basePath.endsWith(".apk") || basePath.endsWith(".app") || basePath.endsWith(".ipa")))) {
+        return resolvePath(basePath);
     }
 
     // try to resolve app automatically
-    if (!fs.existsSync(basePath)) {
+    if (!existsSync(basePath)) {
         if (caps.isAndroid) {
             const androidPlatformsPath = 'platforms/android';
             //platforms/android/build/outputs/apk/
@@ -313,7 +298,7 @@ export function getAppPath(caps: INsCapabilities) {
             //   /debug
 
             basePath = `${androidPlatformsPath}/app/build/outputs/apk/**/*.apk`;
-            if (!fs.existsSync(`${androidPlatformsPath}/app/build/outputs/apk`)) {
+            if (!existsSync(`${androidPlatformsPath}/app/build/outputs/apk`)) {
                 basePath = `${androidPlatformsPath}/build/outputs/apk/**/*.apk`;
             }
         } else {
@@ -339,7 +324,7 @@ export function getAppPath(caps: INsCapabilities) {
 
     logInfo(`Available applications:`, apps);
     logInfo(`Pick first application: `, apps[0]);
-    const appFullPath = apps.length > 0 ? resolve(apps[0]) : undefined;
+    const appFullPath = apps.length > 0 ? resolvePath(apps[0]) : undefined;
     return appFullPath;
 }
 
@@ -413,9 +398,9 @@ export async function scroll(wd, driver, direction: Direction, isIOS: boolean, y
 }
 
 function createStorageFolder(storage, directory) {
-    storage = resolve(storage, directory);
-    if (!fileExists(storage)) {
-        fs.mkdirSync(storage);
+    storage = resolvePath(storage, directory);
+    if (!existsSync(storage)) {
+        mkdirSync(storage);
     }
 
     return storage;
@@ -427,7 +412,7 @@ export const isPortAvailable = (port) => {
     const net = require('net');
     return new Promise(resolve => {
         if (isNaN(port) || port != parseInt(port) || port < 0 || port > 65536) {
-            // const err = 'Ivalid input. Port must be an Integer number betwen 0 and 65536';
+            // const err = 'Invalid input. Port must be an Integer number between 0 and 65536';
             // console.error(err);
             resolve(false);
         }
@@ -453,9 +438,9 @@ export const findFreePort = async (retries: number = 10, port: number = 3000) =>
     return p;
 }
 
-export function wait(milisecodns) {
+export function wait(milliseconds) {
     const startTime = Date.now();
-    while (Date.now() - startTime <= milisecodns) {
+    while (Date.now() - startTime <= milliseconds) {
     }
 
     return;
@@ -563,16 +548,16 @@ export const prepareApp = async (args: INsCapabilities) => {
 }
 
 export const sessionIds = async (port) => {
-    const sesssions = JSON.parse(((await getSessions(port)) || "{}") + '');
+    const sessions = JSON.parse(((await getSessions(port)) || "{}") + '');
     const ids = [];
-    sesssions.value.forEach(value => {
+    sessions.value.forEach(value => {
         ids.push(value.id);
     });
     return ids;
 }
 
 export function encodeImageToBase64(path) {
-    const bitmap = fs.readFileSync(path);
+    const bitmap = readFileSync(path);
     // convert binary data to base64 encoded string
     return new Buffer(bitmap).toString('base64');
 }

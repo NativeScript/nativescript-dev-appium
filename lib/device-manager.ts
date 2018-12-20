@@ -1,6 +1,6 @@
 import {
     waitForOutput,
-    resolve,
+    resolvePath,
     log,
     isWin,
     shutdown,
@@ -35,16 +35,16 @@ export class DeviceManager implements IDeviceManager {
         const token = process.env["DEVICE_TOKEN"] || process.env.npm_config_deviceToken;
         device.token = token && token.replace("emulator-", "");
         device.name = process.env["DEVICE_NAME"] || device.name;
+        DeviceManager.cleanUnsetProperties(device);
         console.log("Default device: ", device);
-        DeviceManager.cleanUnsetProp(device);
 
-        if (device.token) {
+        if (!!process.env["USE_DEVICES_CONTROLLER_SERVER"]) {
             device = (await DeviceController.getDevices(device))[0];
             logInfo("Device: ", device);
             return device;
         }
 
-        // When isSauceLab specified we simply do nothing;
+        // When '--isSauceLab' option is set we should do nothing;
         if (args.isSauceLab || args.ignoreDeviceController) {
             args.ignoreDeviceController = true;
             DeviceManager._emulators.set(args.runType, device);
@@ -165,8 +165,7 @@ export class DeviceManager implements IDeviceManager {
 
         delete args.appiumCaps.density;
         delete args.appiumCaps.offsetPixels;
-
-        DeviceManager.cleanUnsetProp(device);
+        DeviceManager.cleanUnsetProperties(device);
 
         return device;
     }
@@ -193,8 +192,8 @@ export class DeviceManager implements IDeviceManager {
         }
     }
 
-    public static async executeShellCommand(driver, commandAndargs: { command: string, "args": Array<any> }) {
-        const output = await driver.execute("mobile: shell", commandAndargs);
+    public static async executeShellCommand(driver, commandArgs: { command: string, "args": Array<any> }) {
+        const output = await driver.execute("mobile: shell", commandArgs);
         return output;
     }
 
@@ -226,12 +225,12 @@ export class DeviceManager implements IDeviceManager {
         }
     }
 
-    public static async applyDeviceAdditionsSettings(driver, args: INsCapabilities, sessionIfno: any) {
+    public static async applyDeviceAdditionsSettings(driver, args: INsCapabilities, sessionInfo: any) {
         if (!args.device.config || !args.device.config.offsetPixels) {
             args.device.config = {};
             let density: number;
-            if (sessionIfno && sessionIfno.length >= 1) {
-                density = sessionIfno[1].deviceScreenDensity ? sessionIfno[1].deviceScreenDensity / 100 : undefined;
+            if (sessionInfo && sessionInfo.length >= 1) {
+                density = sessionInfo[1].deviceScreenDensity ? sessionInfo[1].deviceScreenDensity / 100 : undefined;
             }
 
             if (density) {
@@ -255,7 +254,7 @@ export class DeviceManager implements IDeviceManager {
         return appActivity;
     }
 
-    private static cleanUnsetProp(obj) {
+    private static cleanUnsetProperties(obj) {
         Object.getOwnPropertyNames(obj).forEach(prop => !obj[prop] && delete obj[prop]);
     }
 }

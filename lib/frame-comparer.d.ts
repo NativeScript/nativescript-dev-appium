@@ -8,6 +8,6 @@ export declare class FrameComparer {
     private _cropImageRect;
     constructor(_nsCapabilities: INsCapabilities, _storage: string, _logPath: string);
     processVideo(videoFullName: any, framesGeneralName?: string, videoTempStorage?: string): Promise<any>;
-    compareFrameRanges(frames: Array<string>, imageFrameCount: number, startRange: any, endRange: any, logImageComparisonResults?: boolean, tollerancePixels?: number, verbose?: boolean): Promise<boolean>;
-    compareFrames(frames: Array<string>, imageFrameCount: number, tolleranceRange?: number, tollerancePixels?: number, logImageComparisonResults?: boolean, verbose?: boolean): Promise<boolean>;
+    compareFrameRanges(frames: Array<string>, imageFrameCount: number, startRange: any, endRange: any, logImageComparisonResults?: boolean, tolerancePixels?: number, verbose?: boolean): Promise<boolean>;
+    compareFrames(frames: Array<string>, imageFrameCount: number, toleranceRange?: number, tolerancePixels?: number, logImageComparisonResults?: boolean, verbose?: boolean): Promise<boolean>;
 }
