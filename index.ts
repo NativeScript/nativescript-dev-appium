@@ -10,6 +10,7 @@ import { logInfo, logError, logWarn } from "./lib/utils";
 import { INsCapabilities } from "./lib/interfaces/ns-capabilities";
 import { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
 import * as parser from "./lib/parser"
+import { isWin } from "mobile-devices-controller/lib/utils";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { AppiumServer } from "./lib/appium-server";
@@ -32,21 +33,6 @@ export const nsCapabilities: INsCapabilities = new NsCapabilities(parser);
 const appiumServer = new AppiumServer(nsCapabilities);
 let frameComparer: FrameComparer;
 let appiumDriver = null;
-
-const attachToExitProcessHoockup = (processToAttach, processName) => {
-    const signals = ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
-        'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'];
-    if (!processToAttach) {
-        return;
-    }
-    signals.forEach(function (sig) {
-        processToAttach.once(sig, async function () {
-            await killProcesses(sig);
-            console.log(`Exited from ${processName}`);
-            processToAttach.removeListener(sig, killProcesses);
-        });
-    });
-}
 
 if (nsCapabilities.startSession) {
     startServer(nsCapabilities.port).then(s => {
@@ -71,7 +57,7 @@ if (nsCapabilities.startSession) {
 
 export async function startServer(port?: number, deviceManager?: IDeviceManager) {
     await appiumServer.start(port || nsCapabilities.port, deviceManager);
-    await attachToExitProcessHoockup(appiumServer.server, "appium");
+    await attachToExitProcessHookup(appiumServer.server, "appium");
     return appiumServer;
 }
 
@@ -144,8 +130,25 @@ const killProcesses = async (code) => {
     if (appiumServer) {
         await stopServer();
     }
+    process.removeAllListeners();
+    try {
+        if (isWin() && process) {
+            process.exit(0);
+        }
+    } catch (error) { }
 }
 
-process.once("exit", async (code) => await killProcesses(code));
-
-attachToExitProcessHoockup(process, "main process");
+const attachToExitProcessHookup = (processToAttach, processName) => {
+    const signals = ['exit', 'SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
+        'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'];
+    if (!processToAttach) {
+        return;
+    }
+    signals.forEach(function (sig) {
+        processToAttach.once(sig, async function () {
+            await killProcesses(sig);
+            console.log(`Exited from ${processName}`);
+            processToAttach.removeListener(sig, killProcesses);
+        });
+    });
+}
