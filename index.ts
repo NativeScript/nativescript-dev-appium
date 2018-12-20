@@ -129,8 +129,6 @@ const killProcesses = async (code) => {
     if (appiumServer) {
         await stopServer();
     }
-
-    process.exit(0);
 }
 
 const attachToExitProcessHookup = (processToAttach, processName) => {
@@ -144,6 +142,9 @@ const attachToExitProcessHookup = (processToAttach, processName) => {
             await killProcesses(sig);
             console.log(`Exited from ${processName}`);
             processToAttach.removeListener(sig, killProcesses);
+            try {
+                process.exit(0);
+            } catch (error) { }
         });
     });
 }
