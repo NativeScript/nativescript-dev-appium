@@ -10,6 +10,7 @@ import { logInfo, logError, logWarn } from "./lib/utils";
 import { INsCapabilities } from "./lib/interfaces/ns-capabilities";
 import { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
 import * as parser from "./lib/parser"
+import { isWin } from "mobile-devices-controller/lib/utils";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { AppiumServer } from "./lib/appium-server";
@@ -129,6 +130,12 @@ const killProcesses = async (code) => {
     if (appiumServer) {
         await stopServer();
     }
+    process.removeAllListeners();
+    try {
+        if (isWin() && process) {
+            process.exit(0);
+        }
+    } catch (error) { }
 }
 
 const attachToExitProcessHookup = (processToAttach, processName) => {
@@ -142,9 +149,6 @@ const attachToExitProcessHookup = (processToAttach, processName) => {
             await killProcesses(sig);
             console.log(`Exited from ${processName}`);
             processToAttach.removeListener(sig, killProcesses);
-            try {
-                process.exit(0);
-            } catch (error) { }
         });
     });
 }
