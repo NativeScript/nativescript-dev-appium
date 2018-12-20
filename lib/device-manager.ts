@@ -152,7 +152,7 @@ export class DeviceManager implements IDeviceManager {
     }
 
     public static getDefaultDevice(args: INsCapabilities, deviceName?: string, token?: string, type?: DeviceType, platformVersion?: number) {
-        const device: IDevice = {
+        let device: IDevice = {
             name: deviceName || args.appiumCaps.deviceName,
             type: type,
             platform: args.appiumCaps.platformName.toLowerCase(),
@@ -163,6 +163,8 @@ export class DeviceManager implements IDeviceManager {
 
         delete args.appiumCaps.density;
         delete args.appiumCaps.offsetPixels;
+
+        Object.getOwnPropertyNames(device).forEach(prop => !device[prop] && delete device[prop]);
 
         return device;
     }
