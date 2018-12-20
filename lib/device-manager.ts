@@ -77,7 +77,7 @@ export class DeviceManager implements IDeviceManager {
             // If there is no shutdown device
             if (!device || !device.status) {
                 deviceStatus = args.reuseDevice ? Status.SHUTDOWN : Status.BOOTED;
-                device = DeviceController.filter(searchedDevices, deviceStatus)[0];
+                device = DeviceController.filter(searchedDevices, { status: deviceStatus })[0];
             }
 
             // If the device should not be reused we need to shutdown device and boot a clean instance
