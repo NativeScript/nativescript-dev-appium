@@ -39,7 +39,7 @@ export class DeviceManager implements IDeviceManager {
         DeviceManager.cleanUnsetProp(device);
 
         if (device.token) {
-            device = await DeviceController.getDevices(device)[0];
+            device = (await DeviceController.getDevices(device))[0];
             logInfo("Device: ", device);
             return device;
         }
