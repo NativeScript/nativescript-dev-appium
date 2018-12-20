@@ -35,11 +35,12 @@ export class DeviceManager implements IDeviceManager {
         console.log("Default device: ", device);
         const token = process.env["DEVICE_TOKEN"] || process.env.npm_config_deviceToken;
         if (token) {
-            device.token = token;
+            device.token = device.token.replace("emulator-", "");
             device.name = process.env["DEVICE_NAME"] || device.name;
-            const foundDevice = await DeviceController.getDevices({ token: device.token.replace("emulator-", "") })[0];
-            logInfo("Device: ", foundDevice);
-            return foundDevice;
+            DeviceManager.cleanUnsetProp(device);
+            device = await DeviceController.getDevices(device)[0];
+            logInfo("Device: ", device);
+            return device;
         }
 
         // When isSauceLab specified we simply do nothing;
@@ -164,7 +165,7 @@ export class DeviceManager implements IDeviceManager {
         delete args.appiumCaps.density;
         delete args.appiumCaps.offsetPixels;
 
-        Object.getOwnPropertyNames(device).forEach(prop => !device[prop] && delete device[prop]);
+        DeviceManager.cleanUnsetProp(device);
 
         return device;
     }
@@ -251,5 +252,9 @@ export class DeviceManager implements IDeviceManager {
     public getPackageId(device: IDevice, appPath: string): string {
         const appActivity = (device.type === DeviceType.EMULATOR || device.platform === Platform.ANDROID) ? AndroidController.getPackageId(appPath) : IOSController.getIOSPackageId(device.type, appPath);
         return appActivity;
+    }
+
+    private static cleanUnsetProp(obj) {
+        Object.getOwnPropertyNames(obj).forEach(prop => !obj[prop] && delete obj[prop]);
     }
 }
