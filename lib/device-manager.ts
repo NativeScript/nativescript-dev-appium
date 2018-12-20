@@ -32,6 +32,7 @@ export class DeviceManager implements IDeviceManager {
     public async startDevice(args: INsCapabilities): Promise<IDevice> {
         args.appiumCaps.platformName = args.appiumCaps.platformName.toLowerCase();
         let device: IDevice = DeviceManager.getDefaultDevice(args);
+        console.log("Default device: ", device);
         const token = process.env["DEVICE_TOKEN"] || process.env.npm_config_deviceToken;
         if (token) {
             device.token = token;
@@ -48,11 +49,11 @@ export class DeviceManager implements IDeviceManager {
             return device;
         }
 
-        const searchObj = args.appiumCaps.udid ? { token: args.appiumCaps.udid } : device;
+        const searchQuery = args.appiumCaps.udid ? { token: args.appiumCaps.udid } : device;
 
-        const searchedDevices = await DeviceController.getDevices(searchObj);
-        if (!searchedDevices || searchedDevices.length === 0) {
-            logError("We couldn't find any devices of type: ", searchObj);
+        const foundDevices = await DeviceController.getDevices(searchQuery);
+        if (!foundDevices || foundDevices.length === 0) {
+            logError("We couldn't find any devices of type: ", searchQuery);
             logError("We will try to proceed to appium!");
             if (device.platform) {
                 console.log("Available devices:\t\t\t\t", await DeviceController.getDevices({ platform: device.platform }));
@@ -70,14 +71,18 @@ export class DeviceManager implements IDeviceManager {
             return device;
         }
 
-        if (searchedDevices && searchedDevices.length > 0) {
+        if (args.verbose) {
+            console.log("Found devices: ", foundDevices);
+        }
+
+        if (foundDevices && foundDevices.length > 0) {
             let deviceStatus = args.reuseDevice ? Status.BOOTED : Status.SHUTDOWN;
-            device = DeviceController.filter(searchedDevices, { status: deviceStatus })[0];
+            device = DeviceController.filter(foundDevices, { status: deviceStatus })[0];
 
             // If there is no shutdown device
             if (!device || !device.status) {
                 deviceStatus = args.reuseDevice ? Status.SHUTDOWN : Status.BOOTED;
-                device = DeviceController.filter(searchedDevices, { status: deviceStatus })[0];
+                device = DeviceController.filter(foundDevices, { status: deviceStatus })[0];
             }
 
             // If the device should not be reused we need to shutdown device and boot a clean instance
@@ -90,7 +95,7 @@ export class DeviceManager implements IDeviceManager {
             }
 
             if (device.type === DeviceType.DEVICE) {
-                logInfo("Device is connected:", device) 
+                logInfo("Device is connected:", device)
             }
             if (device.status === Status.SHUTDOWN) {
                 await DeviceController.startDevice(device, startDeviceOptions);
@@ -147,10 +152,18 @@ export class DeviceManager implements IDeviceManager {
     }
 
     public static getDefaultDevice(args: INsCapabilities, deviceName?: string, token?: string, type?: DeviceType, platformVersion?: number) {
-        let device = new Device(deviceName || args.appiumCaps.deviceName, platformVersion || args.appiumCaps.platformVersion, type, args.appiumCaps.platformName.toLowerCase(), token, undefined, undefined);
-        device.config = { "density": args.appiumCaps.density, "offsetPixels": args.appiumCaps.offsetPixels };
+        const device: IDevice = {
+            name: deviceName || args.appiumCaps.deviceName,
+            type: type,
+            platform: args.appiumCaps.platformName.toLowerCase(),
+            token: token,
+            apiLevel: platformVersion || args.appiumCaps.platformVersion,
+            config: { "density": args.appiumCaps.density, "offsetPixels": args.appiumCaps.offsetPixels }
+        }
+
         delete args.appiumCaps.density;
         delete args.appiumCaps.offsetPixels;
+
         return device;
     }
 
