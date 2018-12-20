@@ -10,7 +10,7 @@ import { logInfo, logError, logWarn } from "./lib/utils";
 import { INsCapabilities } from "./lib/interfaces/ns-capabilities";
 import { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
 import * as parser from "./lib/parser"
-import { isWin } from "mobile-devices-controller/lib/utils";
+import { isWin } from "./lib/utils";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { AppiumServer } from "./lib/appium-server";
