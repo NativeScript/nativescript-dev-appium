@@ -33,21 +33,6 @@ const appiumServer = new AppiumServer(nsCapabilities);
 let frameComparer: FrameComparer;
 let appiumDriver = null;
 
-const attachToExitProcessHoockup = (processToAttach, processName) => {
-    const signals = ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
-        'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'];
-    if (!processToAttach) {
-        return;
-    }
-    signals.forEach(function (sig) {
-        processToAttach.once(sig, async function () {
-            await killProcesses(sig);
-            console.log(`Exited from ${processName}`);
-            processToAttach.removeListener(sig, killProcesses);
-        });
-    });
-}
-
 if (nsCapabilities.startSession) {
     startServer(nsCapabilities.port).then(s => {
         createDriver().then((d: AppiumDriver) => {
@@ -71,7 +56,7 @@ if (nsCapabilities.startSession) {
 
 export async function startServer(port?: number, deviceManager?: IDeviceManager) {
     await appiumServer.start(port || nsCapabilities.port, deviceManager);
-    await attachToExitProcessHoockup(appiumServer.server, "appium");
+    await attachToExitProcessHookup(appiumServer.server, "appium");
     return appiumServer;
 }
 
@@ -144,8 +129,21 @@ const killProcesses = async (code) => {
     if (appiumServer) {
         await stopServer();
     }
+
+    process.exit(0);
 }
 
-process.once("exit", async (code) => await killProcesses(code));
-
-attachToExitProcessHoockup(process, "main process");
+const attachToExitProcessHookup = (processToAttach, processName) => {
+    const signals = ['exit', 'SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
+        'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'];
+    if (!processToAttach) {
+        return;
+    }
+    signals.forEach(function (sig) {
+        processToAttach.once(sig, async function () {
+            await killProcesses(sig);
+            console.log(`Exited from ${processName}`);
+            processToAttach.removeListener(sig, killProcesses);
+        });
+    });
+}
