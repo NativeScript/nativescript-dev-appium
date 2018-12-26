@@ -196,7 +196,7 @@ export function executeCommand(args, cwd = process.cwd()): string {
         encoding: "UTF8"
     });
 
-    return output.output[1].toString();
+    return output.stdout && output.stdout.toString();
 }
 
 export function isWin() {

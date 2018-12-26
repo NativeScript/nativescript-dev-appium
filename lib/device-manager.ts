@@ -1,20 +1,8 @@
-import {
-    waitForOutput,
-    resolvePath,
-    log,
-    isWin,
-    shutdown,
-    executeCommand,
-    logError,
-    logInfo,
-    logWarn
-} from "./utils";
+import { logError, logInfo, logWarn } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
-
 import {
     IDevice,
-    Device,
     DeviceController,
     IOSController,
     AndroidController,
