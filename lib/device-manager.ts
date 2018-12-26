@@ -38,7 +38,7 @@ export class DeviceManager implements IDeviceManager {
         DeviceManager.cleanUnsetProperties(device);
         console.log("Default device: ", device);
 
-        if (!!process.env["USE_DEVICES_CONTROLLER_SERVER"]) {
+        if (!!process.env["USE_MOBILE_DEVICES_CONTROLLER_SERVER"]) {
             device = (await DeviceController.getDevices(device))[0];
             logInfo("Device: ", device);
             return device;
