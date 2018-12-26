@@ -2,9 +2,10 @@ import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { INsCapabilitiesArgs } from "./interfaces/ns-capabilities-args";
 import { AutomationName } from "./automation-name";
 import { resolveCapabilities } from "./capabilities-helper";
-import { getAppPath, fileExists, logInfo, logError, logWarn } from "./utils";
+import { getAppPath, logInfo, logError, logWarn } from "./utils";
 import { IDevice } from "mobile-devices-controller";
 import { IDeviceManager } from "./interfaces/device-manager";
+import { existsSync } from "fs";
 
 export class NsCapabilities implements INsCapabilities {
     private _projectDir: string;
@@ -232,7 +233,7 @@ export class NsCapabilities implements INsCapabilities {
     private checkMandatoryCapabiliies() {
         const appPackage = this.isAndroid ? "appPackage" : "bundleId";
 
-        if (!this.isSauceLab && (!this._appiumCaps[appPackage] && !fileExists(this._appiumCaps.app))) {
+        if (!this.isSauceLab && (!this._appiumCaps[appPackage] && !existsSync(this._appiumCaps.app))) {
             this._exceptions.push(`The application folder doesn't exists or no ${appPackage} provided!`);
         }
 

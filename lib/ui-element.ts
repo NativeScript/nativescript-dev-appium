@@ -6,6 +6,7 @@ import { AutomationName } from "./automation-name";
 import { calculateOffset } from "./utils";
 
 export class UIElement {
+    private static readonly DEFAULT_REFETCH_TIME = 1000;
     constructor(private _element: any,
         private _driver: any,
         private _wd: any,
@@ -167,7 +168,7 @@ export class UIElement {
     }
 
     /**
-     * Scroll with offset from elemnt with minimum inertia
+     * Scroll with offset from element with minimum inertia
      * @param direction
      * @param yOffset 
      * @param xOffset 
@@ -214,7 +215,7 @@ export class UIElement {
 
 
     /**
-     * Scroll with offset from elemnt with minimum inertia
+     * Scroll with offset from element with minimum inertia
      * @param direction
      * @param yOffset 
      * @param xOffset 
@@ -241,7 +242,7 @@ export class UIElement {
     }
 
     /**
- * Scroll with offset from elemnt with minimum inertia
+ * Scroll with offset from element with minimum inertia
  * @param direction
  * @param yOffset 
  * @param xOffset 
@@ -277,7 +278,7 @@ export class UIElement {
 
     /**
      * Click and hold over an element
-     * @param time in miliseconds to increase the default press period.
+     * @param time in milliseconds to increase the default press period.
      */
     public async hold(time?: number) {
         let action = new this._wd.TouchAction(this._driver);
@@ -304,9 +305,9 @@ export class UIElement {
     public async refetch() {
         try {
             if (this._index != null) {
-                return (await this._driver[this._searchMethod](this._searchParams, 1000))[this._index];
+                return (await this._driver[this._searchMethod](this._searchParams, UIElement.DEFAULT_REFETCH_TIME))[this._index];
             } else {
-                return await this._driver[this._searchMethod](this._searchParams, 1000);
+                return await this._driver[this._searchMethod](this._searchParams, UIElement.DEFAULT_REFETCH_TIME);
             }
         } catch (error) {
             console.log("Refetch error: " + error);
@@ -315,7 +316,7 @@ export class UIElement {
     }
 
     /**
-     * Easy to use in order to chain and search for nested elemetns
+     * Easy to use in order to chain and search for nested elements
      */
     public driver() {
         return this._element.browser;

@@ -3,7 +3,6 @@ import * as PngJsImage from "pngjs-image";
 import { ImageOptions } from "./image-options";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IRectangle } from "./interfaces/rectangle";
-import { Point } from "./point";
 
 export class ImageHelper {
 
@@ -101,7 +100,7 @@ export class ImageHelper {
             valueThreshold = Math.floor(valueThreshold * 100);
         }
 
-        console.log("Using " + valueThreshold + " " + typeThreshold + "s tolerance");
+        console.log(`Using ${valueThreshold}\ ${typeThreshold} tolerance`);
         const result = this.runDiff(diff, output);
         this._blockOutAreas = undefined;
         return result;

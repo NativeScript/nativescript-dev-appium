@@ -1,10 +1,9 @@
 import * as child_process from "child_process";
 import {
     log,
-    resolve,
+    resolvePath,
     waitForOutput,
     shutdown,
-    fileExists,
     isWin,
     findFreePort,
     logWarn,
@@ -15,6 +14,7 @@ import {
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
 import { DeviceManager } from "./device-manager";
+import { existsSync } from "fs";
 
 export class AppiumServer {
     private _server: child_process.ChildProcess;
@@ -177,13 +177,13 @@ export class AppiumServer {
             this._appium = appium;
             return;
         }
-        const pluginAppiumBinary = resolve(pluginBinary, appium);
-        const projectAppiumBinary = resolve(projectBinary, appium);
+        const pluginAppiumBinary = resolvePath(pluginBinary, appium);
+        const projectAppiumBinary = resolvePath(projectBinary, appium);
 
-        if (fileExists(pluginAppiumBinary)) {
+        if (existsSync(pluginAppiumBinary)) {
             logInfo("Using plugin-local Appium binary.", this._args.verbose);
             appium = pluginAppiumBinary;
-        } else if (fileExists(projectAppiumBinary)) {
+        } else if (existsSync(projectAppiumBinary)) {
             logInfo("Using project-local Appium binary.", this._args.verbose);
             appium = projectAppiumBinary;
         } else {
