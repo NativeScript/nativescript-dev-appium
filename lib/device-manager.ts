@@ -8,7 +8,8 @@ import {
     AndroidController,
     Platform,
     Status,
-    DeviceType
+    DeviceType,
+    sortDescByApiLevelPredicate
 } from "mobile-devices-controller";
 
 export class DeviceManager implements IDeviceManager {
@@ -41,7 +42,9 @@ export class DeviceManager implements IDeviceManager {
 
         const searchQuery = args.appiumCaps.udid ? { token: args.appiumCaps.udid } : device;
 
-        const foundDevices = await DeviceController.getDevices(searchQuery);
+        const foundDevices = (await DeviceController.getDevices(searchQuery))
+            .sort((a, b) => sortDescByApiLevelPredicate(a, b));
+
         if (!foundDevices || foundDevices.length === 0) {
             logError("We couldn't find any devices of type: ", searchQuery);
             logError("We will try to proceed to appium!");
@@ -110,12 +113,10 @@ export class DeviceManager implements IDeviceManager {
         return device;
     }
 
-    public async stopDevice(args: INsCapabilities): Promise<any> {
-        if (DeviceManager._emulators.has(args.runType)
-            && !args.reuseDevice
+    public async stopDevice(device: IDevice, args: INsCapabilities): Promise<any> {
+        if (!args.reuseDevice
             && !args.isSauceLab
             && !args.ignoreDeviceController) {
-            const device = DeviceManager._emulators.get(args.runType);
             await DeviceManager.kill(device);
         }
     }
