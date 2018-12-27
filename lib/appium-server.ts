@@ -116,29 +116,30 @@ export class AppiumServer {
     }
 
     public async stop() {
+        const onServerKilled = (server, signal, code, verbose) => {
+            log(`Appium terminated due signal: ${signal} and code: ${code}`, verbose);
+            server && server.removeAllListeners();
+        }
+
         await this._args.deviceManager.stopDevice(this._args.device, this._args);
         return new Promise((resolve, reject) => {
             this._server.once("close", (code, signal) => {
-                log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
-                this._server.removeAllListeners();
+                onServerKilled(this._server, signal,code, this._args.verbose);
                 resolve();
             });
 
             this._server.once("exit", (code, signal) => {
-                log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
-                this._server.removeAllListeners();
+                onServerKilled(this._server, signal,code, this._args.verbose);
                 resolve();
             });
 
             this._server.once("error", (code, signal) => {
-                log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
-                this._server.removeAllListeners();
+                onServerKilled(this._server, signal,code, this._args.verbose);
                 resolve();
             });
 
             this._server.once("disconnect", (code, signal) => {
-                log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
-                this._server.removeAllListeners();
+                onServerKilled(this._server, signal,code, this._args.verbose);
                 resolve();
             });
 
