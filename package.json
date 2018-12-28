@@ -22,7 +22,7 @@
     {
       "name": "SvetoslavTsenov",
       "email": "tsenov@progress.com"
-    }
+    }  
   ],
   "bin": {
     "nativescript-dev-appium": "./bin/nativescript-dev-appium",
@@ -37,7 +37,7 @@
     "frame-comparer": "^2.0.1",
     "glob": "^7.1.0",
     "inquirer": "^6.2.0",
-    "mobile-devices-controller": "~3.1.5-1",
+    "mobile-devices-controller": "~3.1.5-2",
     "wd": "~1.11.1",
     "webdriverio": "~4.14.0",
     "yargs": "~12.0.5"
