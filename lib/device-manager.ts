@@ -20,6 +20,7 @@ export class DeviceManager implements IDeviceManager {
 
     public async startDevice(args: INsCapabilities): Promise<IDevice> {
         args.appiumCaps.platformName = args.appiumCaps.platformName.toLowerCase();
+        const shouldFullyResetDevice = !args.appiumCaps.udid;
         let device: IDevice = DeviceManager.getDefaultDevice(args);
         const token = process.env["DEVICE_TOKEN"] || process.env.npm_config_deviceToken;
         device.token = token && token.replace("emulator-", "");
@@ -91,7 +92,7 @@ export class DeviceManager implements IDeviceManager {
                 logInfo("Device is connected:", device)
             }
             if (device.status === Status.SHUTDOWN) {
-                await DeviceController.startDevice(device, startDeviceOptions);
+                await DeviceController.startDevice(device, startDeviceOptions, shouldFullyResetDevice);
                 try {
                     delete device.process;
                 } catch (error) { }
