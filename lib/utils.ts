@@ -3,7 +3,7 @@ import * as glob from "glob";
 import * as http from "http";
 
 import { INsCapabilities } from "./interfaces/ns-capabilities";
-import { AndroidController, IOSController } from "mobile-devices-controller";
+import { AndroidController, IOSController, DeviceType } from "mobile-devices-controller";
 import { Point } from "./point";
 import { Direction } from "./direction";
 import { IDeviceManager } from "./interfaces/device-manager";
@@ -283,6 +283,7 @@ function getAppName(args: INsCapabilities) {
 
 export function getAppPath(caps: INsCapabilities) {
     let basePath = caps.appiumCaps.app || caps.appPath;
+    basePath = basePath && basePath.startsWith("~") ? basePath.replace("~", process.env["HOME"]) : basePath;
     if (existsSync(basePath) && ((basePath.endsWith(".apk") || basePath.endsWith(".app") || basePath.endsWith(".ipa")))) {
         return resolvePath(basePath);
     }
@@ -486,6 +487,11 @@ export const prepareDevice = async (args: INsCapabilities, deviceManager: IDevic
     if (!args.device) {
         const device = await deviceManager.startDevice(args);
         args.device = device;
+        if (!args.ignoreDeviceController) {
+            args.appiumCaps.deviceName = device.name;
+            args.appiumCaps.udid = device.type === DeviceType.EMULATOR ? `emulator-${device.token}` : device.token;
+            args.appiumCaps.platformVersion = device.apiLevel;
+        }
     }
 
     return args;

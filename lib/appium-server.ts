@@ -92,13 +92,13 @@ export class AppiumServer {
                 response = await waitForOutput(this._server, /listener started/, /Error: listen/, 60000, true);
             }
 
+            this.hasStarted = response;
             return response;
         } else if (!this._args.attachToDebug) {
             return true;
         }
 
         return false;
-
     }
 
     private startAppiumServer(logLevel: string, isSauceLab: boolean) {
@@ -116,25 +116,30 @@ export class AppiumServer {
     }
 
     public async stop() {
-        await this._args.deviceManager.stopDevice(this._args);
+        const onServerKilled = (server, signal, code, verbose) => {
+            log(`Appium terminated due signal: ${signal} and code: ${code}`, verbose);
+            server && server.removeAllListeners();
+        }
+
+        await this._args.deviceManager.stopDevice(this._args.device, this._args);
         return new Promise((resolve, reject) => {
-            this._server.on("close", (code, signal) => {
-                log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
+            this._server.once("close", (code, signal) => {
+                onServerKilled(this._server, signal,code, this._args.verbose);
                 resolve();
             });
 
-            this._server.on("exit", (code, signal) => {
-                log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
+            this._server.once("exit", (code, signal) => {
+                onServerKilled(this._server, signal,code, this._args.verbose);
                 resolve();
             });
 
-            this._server.on("error", (code, signal) => {
-                log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
+            this._server.once("error", (code, signal) => {
+                onServerKilled(this._server, signal,code, this._args.verbose);
                 resolve();
             });
 
-            this._server.on("disconnect", (code, signal) => {
-                log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
+            this._server.once("disconnect", (code, signal) => {
+                onServerKilled(this._server, signal,code, this._args.verbose);
                 resolve();
             });
 
@@ -149,6 +154,7 @@ export class AppiumServer {
                     this._server.kill("SIGINT");
                     this._server.kill("SIGINT");
                     this._server.kill("SIGKILL");
+                    process.kill(this._server.pid, "SIGKILL");
                     shutdown(this._server, this._args.verbose);
                 }
             } catch (error) {
