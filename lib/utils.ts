@@ -487,9 +487,11 @@ export const prepareDevice = async (args: INsCapabilities, deviceManager: IDevic
     if (!args.device) {
         const device = await deviceManager.startDevice(args);
         args.device = device;
-        args.appiumCaps.deviceName = device.name;
-        args.appiumCaps.udid = device.type === DeviceType.EMULATOR ? `emulator-${device.token}` : device.token;
-        args.appiumCaps.platformVersion = device.apiLevel;
+        if (!args.ignoreDeviceController) {
+            args.appiumCaps.deviceName = device.name;
+            args.appiumCaps.udid = device.type === DeviceType.EMULATOR ? `emulator-${device.token}` : device.token;
+            args.appiumCaps.platformVersion = device.apiLevel;
+        }
     }
 
     return args;

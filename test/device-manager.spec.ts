@@ -23,6 +23,7 @@ describe("android devices", () => {
     const appiumArgs: INsCapabilities = nsCapabilities;
 
     before("Init: DeviceManager", () => {
+        DeviceController.killAll(DeviceType.EMULATOR);
         deviceManager = new DeviceManager();
         appiumArgs.extend(<any>{ appiumCaps: { platformName: Platform.ANDROID, fullReset: false } });
     });
@@ -37,7 +38,7 @@ describe("android devices", () => {
         assert.isTrue(foundBootedDevices.some(d => d.token === device.token));
         await deviceManager.stopDevice(device, appiumArgs);
         foundBootedDevices = await DeviceController.getDevices({ platform: Platform.ANDROID, status: Status.BOOTED });
-        assert.isTrue(foundBootedDevices.some(d => d.token === device.token));
+        assert.isTrue(!foundBootedDevices.some(d => d.token === device.token));
     });
 
     it("Start emulator when already started", async () => {
