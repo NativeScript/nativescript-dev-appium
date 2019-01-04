@@ -1,4 +1,4 @@
-import { logError, logInfo, logWarn } from "./utils";
+import { logError, logInfo, logWarn, shouldUserMobileDevicesController } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
 import {
@@ -28,7 +28,7 @@ export class DeviceManager implements IDeviceManager {
         DeviceManager.cleanUnsetProperties(device);
         console.log("Default device: ", device);
 
-        if (!!process.env["USE_MOBILE_DEVICES_CONTROLLER_SERVER"]) {
+        if (shouldUserMobileDevicesController(args)) {
             device = (await DeviceController.getDevices(device))[0];
             logInfo("Device: ", device);
             return device;

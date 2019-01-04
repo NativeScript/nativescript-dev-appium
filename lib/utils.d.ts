@@ -40,6 +40,7 @@ export declare const prepareDevice: (args: INsCapabilities, deviceManager: IDevi
 export declare const prepareApp: (args: INsCapabilities) => Promise<INsCapabilities>;
 export declare const sessionIds: (port: any) => Promise<any[]>;
 export declare function encodeImageToBase64(path: any): string;
+export declare const shouldUserMobileDevicesController: (args: INsCapabilities) => boolean;
 export declare function logInfo(info: any, obj?: any): void;
 export declare function logWarn(info: any, obj?: any): void;
 export declare function logError(info: any, obj?: any): void;
