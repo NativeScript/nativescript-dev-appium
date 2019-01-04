@@ -22,7 +22,7 @@
     {
       "name": "SvetoslavTsenov",
       "email": "tsenov@progress.com"
-    }  
+    }
   ],
   "bin": {
     "nativescript-dev-appium": "./bin/nativescript-dev-appium",
@@ -37,18 +37,18 @@
     "frame-comparer": "^2.0.1",
     "glob": "^7.1.0",
     "inquirer": "^6.2.0",
-    "mobile-devices-controller": "~3.1.5-2",
+    "mobile-devices-controller": "~4.0.0-1",
     "wd": "~1.11.1",
     "webdriverio": "~4.14.0",
     "yargs": "~12.0.5"
   },
   "devDependencies": {
-    "@types/node": "~10.12.18",
-    "typescript": "~3.1.6",
-    "mocha": "^5.2.0",
-    "chai": "^4.2.0",
+    "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.5",
-    "@types/chai": "^4.1.7"
+    "@types/node": "~10.12.18",
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "typescript": "~3.1.6"
   },
   "scripts": {
     "postinstall": "node ./postinstall.js",
