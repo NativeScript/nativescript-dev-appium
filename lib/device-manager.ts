@@ -28,7 +28,7 @@ export class DeviceManager implements IDeviceManager {
         DeviceManager.cleanUnsetProperties(device);
         console.log("Default device: ", device);
 
-        if (!shouldUserMobileDevicesController(args)) {
+        if (shouldUserMobileDevicesController(args)) {
             device = (await DeviceController.getDevices(device))[0];
             logInfo("Device: ", device);
             return device;
