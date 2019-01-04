@@ -577,6 +577,15 @@ const convertObjToString = obj => {
 
     return "";
 }
+
+export const shouldUserMobileDevicesController = (args: INsCapabilities)=>{
+    const useDsCS = process.env["USE_DEVICES_CONTROLLER_SERVER"] || false;
+    const useMDsCS = process.env["USE_MOBILE_DEVICES_CONTROLLER_SERVER"] || false;
+
+    return !args.isSauceLab && (new RegExp(`${useDsCS}`).test(`true`) || new RegExp(`${useMDsCS}`).test(`true`));
+}
+
+
 export function logInfo(info, obj = undefined) {
     info += " " + convertObjToString(obj);
     console.log(`${ConsoleColor.FgCyan}%s${ConsoleColor.Reset}`, info);
