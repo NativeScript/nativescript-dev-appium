@@ -77,6 +77,46 @@ export class UIElement {
     }
 
     /**
+     * Returns if an element is selected
+     */
+    public async select(retries: number = 3) {
+        (await (await this.element())).click();
+        let el = (await this.element());
+        if(!el) return el;
+
+        const hasSelectedAttr = await (await this.element()).getAttribute("selected");
+        if (hasSelectedAttr) {
+            let isSelected = await el.isSelected();
+            while (retries >= 0 && !isSelected) {
+                (await (await this.element())).click();
+                isSelected = await el.isSelected();
+                retries--;
+                await this._driver.sleep(200);
+            }
+        } else {
+            console.log(`This element doesn't contains selected attribute!`);
+        }
+
+        return el;
+    }
+
+    /**
+     * Returns if an element is selected
+     */
+    public async isSelected() {
+        const el = (await this.element());
+        if(!el) return false;
+
+        const hasSelectedAttr = await (await this.element()).getAttribute("selected");
+        if (!hasSelectedAttr) {
+            console.log(`This element doesn't contains selected attribute! Skip check!`);
+            return true;
+        } else {
+            return await (await this.element()).isSelected();
+        }
+    }
+
+    /**
      * Get web driver element
      */
     public async element() {
@@ -318,28 +358,28 @@ export class UIElement {
     /**
      * Easy to use in order to chain and search for nested elements
      */
-    public driver() {
+    public driver(): any {
         return this._element.browser;
     }
 
-     /**
-     * Swipe element left/right
-     * @param direction
-     */
-    public async swipe(direction: Direction){
+    /**
+    * Swipe element left/right
+    * @param direction
+    */
+    public async swipe(direction: Direction) {
         const rectangle = await this.getRectangle();
         const centerX = rectangle.x + rectangle.width / 2;
         const centerY = rectangle.y + rectangle.height / 2;
         let swipeX;
-        if(direction == Direction.right){
+        if (direction == Direction.right) {
             const windowSize = await this._driver.getWindowSize();
             swipeX = windowSize.width - 10;
-        } else if (direction == Direction.left){
+        } else if (direction == Direction.left) {
             swipeX = 10;
         } else {
             console.log("Provided direction must be left or right !");
         }
-    
+
         if (this._args.isAndroid) {
             const action = new this._wd.TouchAction(this._driver);
             action.press({ x: centerX, y: centerY })

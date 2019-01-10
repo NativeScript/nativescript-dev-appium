@@ -25,8 +25,12 @@ export class DeviceManager implements IDeviceManager {
         const token = process.env["DEVICE_TOKEN"] || process.env.npm_config_deviceToken;
         device.token = token && token.replace("emulator-", "");
         device.name = process.env["DEVICE_NAME"] || device.name;
+  
         DeviceManager.cleanUnsetProperties(device);
-        console.log("Default device: ", device);
+
+        if (args.ignoreDeviceController) {
+            console.log("Default device: ", device);
+        }
 
         if (shouldUserMobileDevicesController(args)) {
             device = (await DeviceController.getDevices(device))[0];
@@ -111,6 +115,11 @@ export class DeviceManager implements IDeviceManager {
             console.error("Check appium capabilities and provide correct device options!");
             process.exit(1);
         }
+
+        if (!args.ignoreDeviceController) {
+            console.log("Default device: ", device);
+        }
+
         return device;
     }
 

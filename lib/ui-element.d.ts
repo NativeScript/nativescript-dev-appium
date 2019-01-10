@@ -38,6 +38,14 @@ export declare class UIElement {
      */
     text(): Promise<any>;
     /**
+     * Returns if an element is selected
+     */
+    select(retries?: number): Promise<any>;
+    /**
+     * Returns if an element is selected
+     */
+    isSelected(): Promise<any>;
+    /**
      * Get web driver element
      */
     element(): Promise<any>;
