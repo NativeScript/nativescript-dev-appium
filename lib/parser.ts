@@ -10,6 +10,9 @@ const config = (() => {
                 describe: "Which option to use from appium capabilities.json",
                 type: "string"
             })
+        .option("device",{
+            describe: "Pass device as argument instead capabilities file: e.g. --device.platform=android and/ or some other device options" 
+        })
         .option("testFolder",
             {
                 describe: "Name of folder with tests",
@@ -119,7 +122,15 @@ const config = (() => {
     const projectBinary = resolvePath(projectDir, "node_modules", ".bin");
     const pluginRoot = resolvePath(projectDir, "node_modules", "nativescript-dev-appium");
     const pluginBinary = resolvePath(pluginRoot, "node_modules", ".bin");
-    const deviceTypeOrPlatform = options.runType ? options.runType : options._[0].toLowerCase() === "android" ? "android" : "ios";
+    let deviceTypeOrPlatform;
+    if (!options.runType && !options.device) {
+        if (!options._[0]) {
+            logError("Not enough args specified! Please provide at least platform `\\node_modules\.bin\\mocha --timeout 99999 ios`");
+            process.exit(1);
+         }
+        deviceTypeOrPlatform = options._[0].toLowerCase() === "android" ? "android" : "ios";
+
+    }
     const config = {
         projectDir: projectDir,
         projectBinary: projectBinary,
@@ -146,7 +157,8 @@ const config = (() => {
         capabilitiesName: options.capabilitiesName || process.env.npm_capabilitiesName,
         imagesPath: options.imagesPath || process.env.npm_config_imagesPath,
         startDeviceOptions: options.startDeviceOptions || process.env.npm_config_startDeviceOptions,
-        deviceTypeOrPlatform: deviceTypeOrPlatform
+        deviceTypeOrPlatform: deviceTypeOrPlatform,
+        device: options.device || process.env.npm_config_device,
     };
 
     return config;
@@ -179,4 +191,5 @@ export const {
     imagesPath,
     startDeviceOptions,
     deviceTypeOrPlatform: deviceTypeOrPlatform,
+    device: device,
 }: INsCapabilitiesArgs = config;

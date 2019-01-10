@@ -72,6 +72,7 @@ export class NsCapabilities implements INsCapabilities {
         this.imagesPath = this._parser.imagesPath;
         this.appiumCaps = this._parser.appiumCaps;
         this.deviceTypeOrPlatform = this._parser.deviceTypeOrPlatform;
+        this.device = this._parser.device;
     }
 
     get isAndroid() { return this.isAndroidPlatform(); }
@@ -102,13 +103,19 @@ export class NsCapabilities implements INsCapabilities {
             this.isValidated = true;
         }
 
-        if (this.deviceTypeOrPlatform) {
-            const searchQuery = <IDevice>{};
-            if (this.deviceTypeOrPlatform === Platform.ANDROID || this.deviceTypeOrPlatform === Platform.IOS) {
-                searchQuery.platform = this.deviceTypeOrPlatform
+        if (this.deviceTypeOrPlatform || this.device) {
+
+            let searchQuery = <IDevice>{};
+            if (this.deviceTypeOrPlatform) {
+                if (this.deviceTypeOrPlatform === Platform.ANDROID || this.deviceTypeOrPlatform === Platform.IOS) {
+                    searchQuery.platform = this.deviceTypeOrPlatform
+                } else {
+                    searchQuery.type = this.deviceTypeOrPlatform
+                }
             } else {
-                searchQuery.type = this.deviceTypeOrPlatform
+                Object.assign(searchQuery, this.device);
             }
+
             searchQuery.status = Status.BOOTED;
 
             const runningDevices = await DeviceManager.getDevices(searchQuery);
@@ -250,7 +257,7 @@ export class NsCapabilities implements INsCapabilities {
             this.exceptions.push(`The application folder doesn't exists or no ${appPackage} provided!`);
         }
 
-        if (!this.runType && !this.deviceTypeOrPlatform) {
+        if (!this.runType && !this.appiumCaps) {
             this.exceptions.push("Missing runType or device type! Please select one from appium capabilities file!");
         }
 
