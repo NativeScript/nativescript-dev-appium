@@ -9,7 +9,7 @@ export declare class DeviceManager implements IDeviceManager {
     installApp(args: INsCapabilities): Promise<any>;
     uninstallApp(args: INsCapabilities): Promise<any>;
     static kill(device: IDevice): Promise<void>;
-    static getDefaultDevice(args: INsCapabilities, deviceName?: string, token?: string, type?: DeviceType, platformVersion?: number): IDevice;
+    static getDefaultDevice(args: INsCapabilities, deviceName?: string, token?: string, type?: DeviceType, platformVersion?: number): any;
     static setDontKeepActivities(args: INsCapabilities, driver: any, value: any): Promise<void>;
     static executeShellCommand(driver: any, commandArgs: {
         command: string;
