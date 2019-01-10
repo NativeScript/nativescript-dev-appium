@@ -173,7 +173,7 @@ export class NsCapabilities implements INsCapabilities {
             logInfo("Changing appium setting fullReset: false and noReset: true ");
         }
 
-        if (this.appiumCaps["fullReset"] === false && this.appiumCaps["noReset"] === true) {
+        if (!this.isSauceLab && this.appiumCaps["fullReset"] === false && this.appiumCaps["noReset"] === true) {
             this.devMode = true;
             logWarn("Running in devMode!");
         }
