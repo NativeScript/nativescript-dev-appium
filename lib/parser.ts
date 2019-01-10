@@ -119,7 +119,7 @@ const config = (() => {
     const projectBinary = resolvePath(projectDir, "node_modules", ".bin");
     const pluginRoot = resolvePath(projectDir, "node_modules", "nativescript-dev-appium");
     const pluginBinary = resolvePath(pluginRoot, "node_modules", ".bin");
-
+    const deviceTypeOrPlatform = options.runType ? options.runType : options._[0].toLowerCase() === "android" ? "android" : "ios";
     const config = {
         projectDir: projectDir,
         projectBinary: projectBinary,
@@ -146,6 +146,7 @@ const config = (() => {
         capabilitiesName: options.capabilitiesName || process.env.npm_capabilitiesName,
         imagesPath: options.imagesPath || process.env.npm_config_imagesPath,
         startDeviceOptions: options.startDeviceOptions || process.env.npm_config_startDeviceOptions,
+        deviceTypeOrPlatform: deviceTypeOrPlatform
     };
 
     return config;
@@ -176,5 +177,6 @@ export const {
     startSession,
     capabilitiesName,
     imagesPath,
-    startDeviceOptions
+    startDeviceOptions,
+    deviceTypeOrPlatform: deviceTypeOrPlatform,
 }: INsCapabilitiesArgs = config;

@@ -11,6 +11,7 @@ import {
     DeviceType,
     sortDescByApiLevelPredicate
 } from "mobile-devices-controller";
+import { isRegExp } from "util";
 
 export class DeviceManager implements IDeviceManager {
     private static _emulators: Map<string, IDevice> = new Map();
@@ -45,7 +46,12 @@ export class DeviceManager implements IDeviceManager {
             return device;
         }
 
-        const searchQuery = args.appiumCaps.udid ? { token: args.appiumCaps.udid } : device;
+        const searchQuery = args.appiumCaps.udid ? { token: args.appiumCaps.udid } :Object.assign(device);
+        if (searchQuery.name && (!isRegExp(searchQuery.name) || !searchQuery.name.startWith("/"))) {
+            searchQuery.name = new RegExp(`^${searchQuery.name}$`);
+            delete searchQuery.config;
+            console.log(searchQuery);
+        }       
 
         const foundDevices = (await DeviceController.getDevices(searchQuery))
             .sort((a, b) => sortDescByApiLevelPredicate(a, b));
@@ -88,7 +94,7 @@ export class DeviceManager implements IDeviceManager {
             if (!args.reuseDevice && device.status !== Status.SHUTDOWN) {
                 await DeviceController.kill(device);
                 device.status = Status.SHUTDOWN;
-                startDeviceOptions = device.type === DeviceType.EMULATOR ? "-wipe-data -no-snapshot-load -no-boot-anim -no-audio" : "";
+                startDeviceOptions = device.type === DeviceType.EMULATOR ? "-wipe-data -no-snapshot-load -no-boot-anim -no-audio -snapshot clean_boot" : "";
                 logInfo("Change appium config to fullReset: false if no restart of the device needed!");
             }
 
@@ -131,6 +137,10 @@ export class DeviceManager implements IDeviceManager {
         }
     }
 
+    public static async getDevices(query: IDevice){
+        return await DeviceController.getDevices(query);
+    }
+
     public async installApp(args: INsCapabilities): Promise<any> {
         if (args.isIOS) {
             IOSController.installApp(args.device, args.appiumCaps.app);
@@ -150,6 +160,10 @@ export class DeviceManager implements IDeviceManager {
 
     public static async kill(device: IDevice) {
         await DeviceController.kill(device);
+    }
+
+    public static async getInstalledApps(device: IDevice) {
+        return await DeviceController.getInstalledApps(device);
     }
 
     public static getDefaultDevice(args: INsCapabilities, deviceName?: string, token?: string, type?: DeviceType, platformVersion?: number) {

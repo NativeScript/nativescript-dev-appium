@@ -38,4 +38,5 @@ export interface INsCapabilitiesArgs {
     deviceManager?: IDeviceManager;
     imagesPath?: string;
     startDeviceOptions?: string;
+    deviceTypeOrPlatform?: string
 }

@@ -189,7 +189,7 @@ export class AppiumDriver {
         };
 
         if (!args.isValidated) {
-            args.validateArgs();
+            await args.validateArgs();
         }
 
         if (args.isSauceLab) {

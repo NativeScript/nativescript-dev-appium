@@ -60,7 +60,7 @@ export class AppiumServer {
 
     public async start(port, deviceManager: IDeviceManager = new DeviceManager()) {
         if (!this._args.isValidated) {
-            this._args.validateArgs();
+            await this._args.validateArgs();
             this._args.port = port;
         }
         this._args.deviceManager = deviceManager;

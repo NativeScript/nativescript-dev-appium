@@ -304,7 +304,8 @@ export function getAppPath(caps: INsCapabilities) {
             }
         } else {
             const iosPlatformsPath = 'platforms/ios/build';
-            basePath = caps.runType.includes("device") ? `${iosPlatformsPath}/device/**/*.ipa` : `${iosPlatformsPath}/emulator/**/*.app`;
+            const appType = caps.runType || caps.device.type === DeviceType.SIMULATOR ? "sim" : "device";
+            basePath = appType.includes("device") ? `${iosPlatformsPath}/device/**/*.ipa` : `${iosPlatformsPath}/emulator/**/*.app`;
         }
     }
 
