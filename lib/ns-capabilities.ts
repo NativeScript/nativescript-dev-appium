@@ -103,15 +103,6 @@ export class NsCapabilities implements INsCapabilities {
         }
 
         if (this.deviceTypeOrPlatform) {
-            this.appiumCaps = {
-                "platformName": this.deviceTypeOrPlatform.toLowerCase(),
-                "lt": 60000,
-                "newCommandTimeout": 720,
-                "noReset": true,
-                "fullReset": false,
-                "app": ""
-            }
-
             const searchQuery = <IDevice>{};
             if (this.deviceTypeOrPlatform === Platform.ANDROID || this.deviceTypeOrPlatform === Platform.IOS) {
                 searchQuery.platform = this.deviceTypeOrPlatform
@@ -123,6 +114,14 @@ export class NsCapabilities implements INsCapabilities {
             const runningDevices = await DeviceManager.getDevices(searchQuery);
             if (runningDevices && runningDevices.length > 0) {
                 const d = runningDevices[0];
+
+                this.appiumCaps = {
+                    "platformName": d.platform,
+                    "noReset": true,
+                    "fullReset": false,
+                    "app": ""
+                }
+
                 this.appiumCaps.deviceName = d.name;
                 this.appiumCaps.platformVersion = d.apiLevel;
                 this.appiumCaps.udid = d.token;
