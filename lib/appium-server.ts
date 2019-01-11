@@ -15,6 +15,7 @@ import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
 import { DeviceManager } from "./device-manager";
 import { existsSync } from "fs";
+import { killAllProcessAndRelatedCommand } from "mobile-devices-controller";
 
 export class AppiumServer {
     private _server: child_process.ChildProcess;
@@ -59,12 +60,12 @@ export class AppiumServer {
     }
 
     public async start(port, deviceManager: IDeviceManager = new DeviceManager()) {
-        if (!this._args.isValidated) {
+        if (!this._args.isValidated && this._args.validateArgs) {
             await this._args.validateArgs();
             this._args.port = port;
         }
         this._args.deviceManager = deviceManager;
-        if (!this._args.attachToDebug && !this._args.sessionId) {
+        if (this._args.isValidated && !this._args.attachToDebug && !this._args.sessionId) {
             await this.prepDevice(deviceManager);
             await this.prepApp();
         }
@@ -84,6 +85,9 @@ export class AppiumServer {
 
             let retries = 11;
             while (retries > 0 && !response) {
+                if (retries < 5) {
+                    killAllProcessAndRelatedCommand(this._port);
+                }
                 retries--;
                 this.port += 10;
                 this.port = (await findFreePort(100, this.port));
@@ -109,10 +113,7 @@ export class AppiumServer {
 
         logInfo(`Server args: `, startingServerArgs);
 
-        this._server = child_process.spawn(this._appium, startingServerArgs, {
-            shell: true,
-            detached: false
-        });
+        this._server = child_process.spawn(this._appium, startingServerArgs);
     }
 
     public async stop() {
@@ -124,22 +125,22 @@ export class AppiumServer {
         await this._args.deviceManager.stopDevice(this._args.device, this._args);
         return new Promise((resolve, reject) => {
             this._server.once("close", (code, signal) => {
-                onServerKilled(this._server, signal,code, this._args.verbose);
+                onServerKilled(this._server, signal, code, this._args.verbose);
                 resolve();
             });
 
             this._server.once("exit", (code, signal) => {
-                onServerKilled(this._server, signal,code, this._args.verbose);
+                onServerKilled(this._server, signal, code, this._args.verbose);
                 resolve();
             });
 
             this._server.once("error", (code, signal) => {
-                onServerKilled(this._server, signal,code, this._args.verbose);
+                onServerKilled(this._server, signal, code, this._args.verbose);
                 resolve();
             });
 
             this._server.once("disconnect", (code, signal) => {
-                onServerKilled(this._server, signal,code, this._args.verbose);
+                onServerKilled(this._server, signal, code, this._args.verbose);
                 resolve();
             });
 

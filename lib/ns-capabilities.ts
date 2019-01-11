@@ -3,7 +3,7 @@ import { INsCapabilitiesArgs } from "./interfaces/ns-capabilities-args";
 import { AutomationName } from "./automation-name";
 import { resolveCapabilities } from "./capabilities-helper";
 import { getAppPath, logInfo, logError, logWarn } from "./utils";
-import { IDevice, Platform, Status } from "mobile-devices-controller";
+import { IDevice, Platform, Status, DeviceType } from "mobile-devices-controller";
 import { IDeviceManager } from "./interfaces/device-manager";
 import { existsSync } from "fs";
 import { DeviceManager } from "./device-manager";
@@ -110,7 +110,7 @@ export class NsCapabilities implements INsCapabilities {
                 if (this.deviceTypeOrPlatform === Platform.ANDROID || this.deviceTypeOrPlatform === Platform.IOS) {
                     searchQuery.platform = this.deviceTypeOrPlatform
                 } else {
-                    searchQuery.type = this.deviceTypeOrPlatform
+                    searchQuery.type = this.deviceTypeOrPlatform as DeviceType;
                 }
             } else {
                 Object.assign(searchQuery, this.device);
@@ -148,7 +148,7 @@ export class NsCapabilities implements INsCapabilities {
             this.devMode = true;
         }
         if (!this.attachToDebug && !this.sessionId) {
-            this.appiumCaps = this.appiumCaps || resolveCapabilities(this.appiumCapsLocation, this.runType, this.projectDir, this.capabilitiesName);
+            this.appiumCaps = this.appiumCaps || resolveCapabilities(this.appiumCapsLocation || process.cwd(), this.runType, this.projectDir, this.capabilitiesName || "appium.capabilities.json");
 
             this.setAutomationName();
             this.resolveApplication();
@@ -176,13 +176,14 @@ export class NsCapabilities implements INsCapabilities {
         if (!this.isSauceLab && this.appiumCaps["fullReset"] === false && this.appiumCaps["noReset"] === true) {
             this.devMode = true;
             logWarn("Running in devMode!");
+            logWarn("If the application is not installed on device, you can use 'tns run android/ ios' to install it!");
         }
 
         if (!this.ignoreDeviceController) {
             this.reuseDevice = !this.appiumCaps["fullReset"];
             this.appiumCaps["fullReset"] = false;
             if (!this.reuseDevice) {
-                logWarn("The started device will be killed after the session!");
+                logWarn("The started device will be killed after the session quits!");
                 logInfo("To avoid it, set 'fullReset: false' in appium capabilities.");
             }
 
@@ -270,7 +271,7 @@ export class NsCapabilities implements INsCapabilities {
         }
 
         if (!this.appiumCaps.platformVersion) {
-            logWarn("Platform version is missing! You'd better to set it in order to use the correct device");
+            logWarn("Platform version is missing! It would be better to set it in order to use the correct device!");
         }
 
         if (!this.appiumCaps.deviceName && !this.appiumCaps.udid) {

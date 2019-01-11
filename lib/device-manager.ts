@@ -26,7 +26,7 @@ export class DeviceManager implements IDeviceManager {
         const token = process.env["DEVICE_TOKEN"] || process.env.npm_config_deviceToken;
         device.token = token && token.replace("emulator-", "");
         device.name = process.env["DEVICE_NAME"] || device.name;
-  
+
         DeviceManager.cleanUnsetProperties(device);
 
         if (args.ignoreDeviceController) {
@@ -46,13 +46,7 @@ export class DeviceManager implements IDeviceManager {
             return device;
         }
 
-        const searchQuery = args.appiumCaps.udid ? { token: args.appiumCaps.udid } :Object.assign(device);
-        if (searchQuery.name && (!isRegExp(searchQuery.name) || !searchQuery.name.startWith("/"))) {
-            searchQuery.name = new RegExp(`^${searchQuery.name}$`);
-            delete searchQuery.config;
-            console.log(searchQuery);
-        }       
-
+        const searchQuery = args.appiumCaps.udid ? { token: args.appiumCaps.udid } : Object.assign(device);
         const foundDevices = (await DeviceController.getDevices(searchQuery))
             .sort((a, b) => sortDescByApiLevelPredicate(a, b));
 
@@ -81,12 +75,14 @@ export class DeviceManager implements IDeviceManager {
 
         if (foundDevices && foundDevices.length > 0) {
             let deviceStatus = args.reuseDevice ? Status.BOOTED : Status.SHUTDOWN;
-            device = DeviceController.filter(foundDevices, { status: deviceStatus })[0];
+            device = DeviceController.filter(foundDevices, { status: deviceStatus })
+                .filter(d => d.type !== DeviceType.TV && d.type !== DeviceType.WATCH)[0];
 
             // If there is no shutdown device
             if (!device || !device.status) {
                 deviceStatus = args.reuseDevice ? Status.SHUTDOWN : Status.BOOTED;
-                device = DeviceController.filter(foundDevices, { status: deviceStatus })[0];
+                device = DeviceController.filter(foundDevices, { status: deviceStatus })
+                    .filter(d => d.type !== DeviceType.TV && d.type !== DeviceType.WATCH)[0];
             }
 
             // If the device should not be reused we need to shutdown device and boot a clean instance
@@ -137,7 +133,7 @@ export class DeviceManager implements IDeviceManager {
         }
     }
 
-    public static async getDevices(query: IDevice){
+    public static async getDevices(query: IDevice) {
         return await DeviceController.getDevices(query);
     }
 
@@ -159,11 +155,13 @@ export class DeviceManager implements IDeviceManager {
     }
 
     public static async kill(device: IDevice) {
-        await DeviceController.kill(device);
+        if (device) {
+            await DeviceController.kill(device);
+        }
     }
 
     public static async getInstalledApps(device: IDevice) {
-        return await DeviceController.getInstalledApps(device);
+        return await DeviceController.getInstalledApplication(device);
     }
 
     public static getDefaultDevice(args: INsCapabilities, deviceName?: string, token?: string, type?: DeviceType, platformVersion?: number) {

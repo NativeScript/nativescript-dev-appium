@@ -10,8 +10,8 @@ const config = (() => {
                 describe: "Which option to use from appium capabilities.json",
                 type: "string"
             })
-        .option("device",{
-            describe: "Pass device as argument instead capabilities file: e.g. --device.platform=android and/ or some other device options" 
+        .option("device", {
+            describe: "Pass device as argument instead capabilities file: e.g. --device.platform=android and/ or some other device options"
         })
         .option("testFolder",
             {
@@ -123,13 +123,8 @@ const config = (() => {
     const pluginRoot = resolvePath(projectDir, "node_modules", "nativescript-dev-appium");
     const pluginBinary = resolvePath(pluginRoot, "node_modules", ".bin");
     let deviceTypeOrPlatform;
-    if (!options.runType && !options.device) {
-        if (!options._[0]) {
-            logError("Not enough args specified! Please provide at least platform `\\node_modules\.bin\\mocha --timeout 99999 ios`");
-            process.exit(1);
-         }
+    if (!options.runType && !options.device && options._[0]) {
         deviceTypeOrPlatform = options._[0].toLowerCase() === "android" ? "android" : "ios";
-
     }
     const config = {
         projectDir: projectDir,

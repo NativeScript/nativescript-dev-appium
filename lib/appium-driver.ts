@@ -16,7 +16,8 @@ import {
     DeviceController,
     IDevice,
     DeviceType,
-    AndroidController
+    AndroidController,
+    killAllProcessAndRelatedCommand
 } from "mobile-devices-controller";
 import {
     addExt,

@@ -9,14 +9,15 @@ import {
     IOSController
 } from "mobile-devices-controller";
 import { assert } from "chai";
-import { startServer, nsCapabilities, createDriver } from "../index";
+import { nsCapabilities } from "../index";
 import { AppiumServer } from "../lib/appium-server";
 import { AppiumDriver } from "../lib/appium-driver";
 import { resolveCapabilities } from "../lib/capabilities-helper";
 import { INsCapabilities } from "lib/interfaces/ns-capabilities";
+import { INsCapabilitiesArgs } from "lib/interfaces/ns-capabilities-args";
 
-const androidApp = "~/git/out/QSF-release.apk";
-const iosApp = "/Users/tsenov/git/nativescript-sdk-examples-ng/platforms/ios/build/emulator/nativescriptsdkexamplesng.app";
+const androidApp = `${process.cwd()}/test/out/template-hello-world-ts-release.apk`;
+const iosApp = `${process.cwd()}/test/out/template-hello-world-ts.app`;
 
 describe("android devices", () => {
     let deviceManager: DeviceManager;
@@ -59,7 +60,7 @@ describe("ios devices", () => {
     before("Init: DeviceManager", () => {
         deviceManager = new DeviceManager();
         appiumArgs = new NsCapabilities(<any>{});
-        appiumArgs.extend(<any>{ appiumCaps: { platformName: Platform.IOS, fullReset: false } })
+        appiumArgs.extend(<any>{ appiumCaps: { platformName: Platform.IOS, fullReset: false, deviceName: /iPhone XR/ } })
         appiumArgs.shouldSetFullResetOption();
     });
 
@@ -77,7 +78,7 @@ describe("ios devices", () => {
     });
 
     it("Start simulator fullReset", async () => {
-        appiumArgs.extend(<any>{ appiumCaps: { platformName: Platform.IOS, fullReset: true } });
+        appiumArgs.extend(<any>{ appiumCaps: { platformName: Platform.IOS, fullReset: true, deviceName: /iPhone X/ } });
         appiumArgs.shouldSetFullResetOption();
         const device = await deviceManager.startDevice(appiumArgs);
         let foundBootedDevices = await DeviceController.getDevices({ platform: Platform.IOS, status: Status.BOOTED });
@@ -156,7 +157,7 @@ describe("start Appium server ios", async () => {
             appPath: iosApp,
             appiumCaps: {
                 platformName: Platform.IOS,
-                deviceName: "^iPhone 6$",
+                deviceName: /^iPhone 6$/,
                 platformVersion: "11.2",
                 fullReset: false
             },
@@ -175,14 +176,14 @@ describe("start Appium server ios", async () => {
             appPath: iosApp,
             appiumCaps: {
                 platformName: Platform.IOS,
-                deviceName: "^iPhone XR$",
-                platformVersion: "12",
+                deviceName: /^iPhone XR$/,
+                platformVersion: /12/,
                 fullReset: true
             },
             verbose: false
         });
         const server: AppiumServer = new AppiumServer(nsCaps);
-        await server.start(9900);
+        await server.start(8822);
         assert.isTrue(server.hasStarted);
         const driver = await AppiumDriver.createAppiumDriver(server.port, nsCaps);
         await driver.quit();
@@ -190,22 +191,21 @@ describe("start Appium server ios", async () => {
     });
 });
 
-
 describe("Start device by apiLevel", async () => {
     it("test-start-emulator-apiLevel-6.0", async () => {
-        const nsCaps = nsCapabilities;
-        nsCaps.runType = "android23";
-        nsCaps.appPath = androidApp;
+        const nsCaps = new NsCapabilities({
+            runType: "android23",
+            appPath: androidApp,
+            appiumCaps: {
+                platformVersion: "6.0",
+                platformName: Platform.ANDROID,
+                fullReset: true
+            }
+        });
 
-        nsCaps.appiumCaps = {
-            platformVersion: "6.0",
-            platformName: Platform.ANDROID,
-            fullReset: true
-        };
-
-        const server = await startServer();
-        const driver = await createDriver();
-
+        const server = new AppiumServer(nsCaps);
+        await server.start(8799);
+        const driver = await AppiumDriver.createAppiumDriver(server.port, nsCaps);
         const currentWindowName = AndroidController.getCurrentFocusedScreen(nsCaps.device);
         const startTime = Date.now();
         while (!currentWindowName.includes("com.tns.NativeScriptActivity") && Date.now() - startTime < 5000) { }
@@ -215,18 +215,18 @@ describe("Start device by apiLevel", async () => {
     });
 
     it("test-start-simulator-apiLevel-12.", async () => {
-        const nsCaps = nsCapabilities;
-        nsCaps.runType = "android23";
-        nsCaps.appPath = iosApp,
-
-            nsCaps.appiumCaps = {
-                platformVersion: "12.",
+        const nsCaps = new NsCapabilities({
+            appPath: iosApp,
+            appiumCaps: {
+                platformVersion: /12./,
                 platformName: Platform.IOS,
                 fullReset: true
-            };
+            }
+        });
 
-        const server = await startServer();
-        const driver = await createDriver();
+        const server = new AppiumServer(nsCaps);
+        await server.start(8887);
+        const driver = await  AppiumDriver.createAppiumDriver(server.port, nsCaps);
 
         const apps = IOSController.getInstalledApps(nsCaps.device);
 
@@ -236,3 +236,65 @@ describe("Start device by apiLevel", async () => {
         await server.stop();
     });
 });
+
+describe("dev-mode-options", async () => {
+    let appiumServer: AppiumServer;
+
+    before("start devices", async () => {
+        await DeviceController.startDevice({ platform: Platform.ANDROID, apiLevel: "23" });
+        await DeviceController.startDevice({ platform: Platform.IOS, apiLevel: <any>/12./, name: "iPhone XR" });
+        appiumServer = new AppiumServer({});
+        await appiumServer.start(8399);
+    });
+
+    after("kill server", async () => {
+        await DeviceController.killAll(DeviceType.EMULATOR);
+        await DeviceController.killAll(DeviceType.SIMULATOR);
+        await appiumServer.stop();
+    })
+
+    it("test ios", async () => {
+        const nsCaps = new NsCapabilities(<INsCapabilitiesArgs>{
+            deviceTypeOrPlatform: Platform.IOS,
+            appPath: iosApp,
+        });
+
+        const appiumDriver = await AppiumDriver.createAppiumDriver(appiumServer.port, nsCaps);
+        assert.isTrue(appiumDriver.nsCapabilities.device.platform === Platform.IOS);
+        assert.isDefined(appiumDriver.nsCapabilities.appiumCaps.app);
+        await appiumDriver.quit();
+    });
+    it("test android", async () => {
+        const nsCaps = new NsCapabilities(<INsCapabilitiesArgs>{
+            deviceTypeOrPlatform: Platform.ANDROID,
+            appPath: androidApp
+        });
+
+        const appiumDriver = await AppiumDriver.createAppiumDriver(appiumServer.port, nsCaps);
+        assert.isTrue(appiumDriver.nsCapabilities.device.platform === Platform.ANDROID);
+        assert.isDefined(appiumDriver.nsCapabilities.appiumCaps.app);
+        await appiumDriver.quit();
+    });
+    it("test --device.platform=android", async () => {
+        const nsCaps = new NsCapabilities(<INsCapabilitiesArgs>{
+            device: { platform: Platform.ANDROID },
+            appPath: androidApp
+        });
+
+        const appiumDriver = await AppiumDriver.createAppiumDriver(appiumServer.port, nsCaps);
+        assert.isTrue(appiumDriver.nsCapabilities.device.platform === Platform.ANDROID);
+        assert.isDefined(appiumDriver.nsCapabilities.appiumCaps.app);
+        await appiumDriver.quit();
+    });
+    it("test --device.platform=ios", async () => {
+        const nsCaps = new NsCapabilities(<INsCapabilitiesArgs>{
+            device: { platform: Platform.IOS },
+            appPath: iosApp
+        });
+
+        const appiumDriver = await AppiumDriver.createAppiumDriver(appiumServer.port, nsCaps);
+        assert.isTrue(appiumDriver.nsCapabilities.device.platform === Platform.IOS);
+        assert.isDefined(appiumDriver.nsCapabilities.appiumCaps.app);
+        await appiumDriver.quit();
+    });
+})
