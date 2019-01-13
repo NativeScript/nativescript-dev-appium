@@ -3,9 +3,10 @@ import { INsCapabilitiesArgs } from "./interfaces/ns-capabilities-args";
 import { AutomationName } from "./automation-name";
 import { resolveCapabilities } from "./capabilities-helper";
 import { getAppPath, logInfo, logError, logWarn } from "./utils";
-import { IDevice } from "mobile-devices-controller";
+import { IDevice, Platform, Status, DeviceType } from "mobile-devices-controller";
 import { IDeviceManager } from "./interfaces/device-manager";
 import { existsSync } from "fs";
+import { DeviceManager } from "./device-manager";
 
 export class NsCapabilities implements INsCapabilities {
     private _automationName: AutomationName;
@@ -42,6 +43,7 @@ export class NsCapabilities implements INsCapabilities {
     public deviceManager: IDeviceManager;
     public exceptions: Array<string> = new Array();
     public imagesPath: string;
+    public deviceTypeOrPlatform: string;
 
     constructor(private _parser: INsCapabilitiesArgs) {
         this.projectDir = this._parser.projectDir;
@@ -69,53 +71,16 @@ export class NsCapabilities implements INsCapabilities {
         this.capabilitiesName = this._parser.capabilitiesName;
         this.imagesPath = this._parser.imagesPath;
         this.appiumCaps = this._parser.appiumCaps;
+        this.deviceTypeOrPlatform = this._parser.deviceTypeOrPlatform;
+        this.device = this._parser.device;
     }
 
-    // get path() { return this.path; }
-    // get projectDir() { return this.projectDir; }
-    // get projectBinary() { return this.projectBinary; }
-    // get pluginRoot() { return this.pluginRoot; }
-    // get pluginBinary() { return this.pluginBinary; }
-    // get port() { return this.port; }
-    // set port(port) { this.port = port; }
-    // get verbose() { return this.verbose; }
-    // set verbose(verbose: boolean) { this.verbose = verbose; }
-    // get appiumCapsLocation() { return this.appiumCapsLocation; }
-    // get appiumCaps() { return this.appiumCaps; }
-    // set appiumCaps(appiumCaps) { this.appiumCaps = appiumCaps; }
-    // get testFolder() { return this.testFolder; }
-    // get storage() { return this.storage; }
-    // get testReports() { return this.testReports; }
-    // get reuseDevice() { return this.reuseDevice; }
-    // get devMode() { return this.devMode; }
-    // get runType() { return this.runType; }
     get isAndroid() { return this.isAndroidPlatform(); }
     get isIOS() { return !this.isAndroid; }
-    // get isSauceLab() { return this.isSauceLab; }
     get automationName() { return this._automationName; }
     set automationName(automationName: AutomationName) {
         this._automationName = automationName;
     }
-    // get appPath() { return this.appPath; }
-    // get appName() { return this.appName; }
-    // set appName(appName: string) { this.appName = appName; }
-    // get ignoreDeviceController() { return this.ignoreDeviceController; }
-    // set ignoreDeviceController(ignoreDeviceController: boolean) { this.ignoreDeviceController = ignoreDeviceController; }
-    // get wdaLocalPort() { return this.wdaLocalPort; }
-    // get device() { return this.device; }
-    // set device(device: IDevice) { this.device = device; }
-    // get emulatorOptions() { return (this.emulatorOptions || "-wipe-data -gpu on") }
-    // get relaxedSecurity() { return this.relaxedSecurity }
-    // get cleanApp() { return this.cleanApp; }
-    // get attachToDebug() { return this.attachToDebug; }
-    // get sessionId() { return this.sessionId; }
-    // set sessionId(sessionId: string) { this.sessionId = sessionId; }
-    // get startSession() { return this.startSession; }
-    // get deviceManager() { return this.deviceManager; }
-    // set deviceManager(deviceManager: IDeviceManager) { this.deviceManager = deviceManager; }
-    // get isValidated() { return this.isValidated; }
-    // get imagesPath() { return this.imagesPath; }
-    //set isValidated(isValidated: boolean) { this.isValidated = isValidated; }
 
     setAutomationNameFromString(automationName: String) {
         const key = Object.keys(AutomationName).filter((v, i, a) => v.toLowerCase() === automationName.toLowerCase());
@@ -133,45 +98,96 @@ export class NsCapabilities implements INsCapabilities {
         return this;
     }
 
-    public validateArgs(): any {
+    public async validateArgs() {
         if (this.attachToDebug || this.sessionId) {
             this.isValidated = true;
         }
 
+        if (this.deviceTypeOrPlatform || this.device) {
+
+            let searchQuery = <IDevice>{};
+            if (this.deviceTypeOrPlatform) {
+                if (this.deviceTypeOrPlatform === Platform.ANDROID || this.deviceTypeOrPlatform === Platform.IOS) {
+                    searchQuery.platform = this.deviceTypeOrPlatform
+                } else {
+                    searchQuery.type = this.deviceTypeOrPlatform as DeviceType;
+                }
+            } else {
+                Object.assign(searchQuery, this.device);
+            }
+
+            searchQuery.status = Status.BOOTED;
+
+            const runningDevices = await DeviceManager.getDevices(searchQuery);
+            if (runningDevices && runningDevices.length > 0) {
+                const d = runningDevices[0];
+
+                this.appiumCaps = {
+                    "platformName": d.platform,
+                    "noReset": true,
+                    "fullReset": false,
+                    "app": ""
+                }
+
+                this.appiumCaps.deviceName = d.name;
+                this.appiumCaps.platformVersion = d.apiLevel;
+                this.appiumCaps.udid = d.token;
+
+                if (this.deviceTypeOrPlatform === "android") {
+                    this.appiumCaps["lt"] = 60000;
+                    this.appiumCaps["newCommandTimeout"] = 720;
+                }
+
+                this.device = d;
+                logInfo("Using device: ", d);
+            } else {
+                logError(`There is no running device of type:${this.deviceTypeOrPlatform}`);
+                logInfo(`Use tns run ios/ android to install app on device!`)
+            }
+
+            this.devMode = true;
+        }
         if (!this.attachToDebug && !this.sessionId) {
-            this.appiumCaps = this.appiumCaps || resolveCapabilities(this.appiumCapsLocation, this.runType, this.projectDir, this.capabilitiesName);
+            this.appiumCaps = this.appiumCaps || resolveCapabilities(this.appiumCapsLocation || process.cwd(), this.runType, this.projectDir, this.capabilitiesName || "appium.capabilities.json");
 
             this.setAutomationName();
             this.resolveApplication();
             this.checkMandatoryCapabilities();
             this.throwExceptions();
             this.shouldSetFullResetOption();
+
             this.isValidated = true;
         } else {
             this.isValidated = false;
         }
     }
 
-    private isAndroidPlatform() { 
+    private isAndroidPlatform() {
         return this.appiumCaps && this.appiumCaps ? this.appiumCaps.platformName.toLowerCase().includes("android") : undefined;
-     }
+    }
 
     public shouldSetFullResetOption() {
-        if (!this.ignoreDeviceController) {
-            this.reuseDevice = !this.appiumCaps["fullReset"];
-            this.appiumCaps["fullReset"] = false;
-            if (!this.reuseDevice) {
-                logWarn("The started device will be killed after the session!");
-                logInfo("To avoid it, set 'fullReset: false' in appium capabilities.");
-            }
-
-            this.cleanApp = !this.appiumCaps["noReset"];
-        }
-
         if (this.attachToDebug || this.devMode) {
             this.appiumCaps["fullReset"] = false;
             this.appiumCaps["noReset"] = true;
             logInfo("Changing appium setting fullReset: false and noReset: true ");
+        }
+
+        if (!this.isSauceLab && this.appiumCaps["fullReset"] === false && this.appiumCaps["noReset"] === true) {
+            this.devMode = true;
+            logWarn("Running in devMode!");
+            logWarn("If the application is not installed on device, you can use 'tns run android/ ios' to install it!");
+        }
+
+        if (!this.ignoreDeviceController) {
+            this.reuseDevice = !this.appiumCaps["fullReset"];
+            this.appiumCaps["fullReset"] = false;
+            if (!this.reuseDevice) {
+                logWarn("The started device will be killed after the session quits!");
+                logInfo("To avoid it, set 'fullReset: false' in appium capabilities.");
+            }
+
+            this.cleanApp = !this.appiumCaps["noReset"];
         }
     }
 
@@ -243,7 +259,11 @@ export class NsCapabilities implements INsCapabilities {
         }
 
         if (!this.runType && !this.appiumCaps) {
-            this.exceptions.push("Missing runType or appium capabilities! Please select one from appium capabilities file!");
+            this.exceptions.push("Missing runType or device type! Please select one from appium capabilities file!");
+        }
+
+        if (!this.appiumCaps) {
+            this.exceptions.push("Missing appium capabilities!");
         }
 
         if (!this.appiumCaps.platformName) {
@@ -251,7 +271,7 @@ export class NsCapabilities implements INsCapabilities {
         }
 
         if (!this.appiumCaps.platformVersion) {
-            logWarn("Platform version is missing! You'd better to set it in order to use the correct device");
+            logWarn("Platform version is missing! It would be better to set it in order to use the correct device!");
         }
 
         if (!this.appiumCaps.deviceName && !this.appiumCaps.udid) {

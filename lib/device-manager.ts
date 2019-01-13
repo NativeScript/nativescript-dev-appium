@@ -11,6 +11,7 @@ import {
     DeviceType,
     sortDescByApiLevelPredicate
 } from "mobile-devices-controller";
+import { isRegExp } from "util";
 
 export class DeviceManager implements IDeviceManager {
     private static _emulators: Map<string, IDevice> = new Map();
@@ -25,7 +26,7 @@ export class DeviceManager implements IDeviceManager {
         const token = process.env["DEVICE_TOKEN"] || process.env.npm_config_deviceToken;
         device.token = token && token.replace("emulator-", "");
         device.name = process.env["DEVICE_NAME"] || device.name;
-  
+
         DeviceManager.cleanUnsetProperties(device);
 
         if (args.ignoreDeviceController) {
@@ -45,8 +46,7 @@ export class DeviceManager implements IDeviceManager {
             return device;
         }
 
-        const searchQuery = args.appiumCaps.udid ? { token: args.appiumCaps.udid } : device;
-
+        const searchQuery = args.appiumCaps.udid ? { token: args.appiumCaps.udid } : Object.assign(device);
         const foundDevices = (await DeviceController.getDevices(searchQuery))
             .sort((a, b) => sortDescByApiLevelPredicate(a, b));
 
@@ -75,12 +75,14 @@ export class DeviceManager implements IDeviceManager {
 
         if (foundDevices && foundDevices.length > 0) {
             let deviceStatus = args.reuseDevice ? Status.BOOTED : Status.SHUTDOWN;
-            device = DeviceController.filter(foundDevices, { status: deviceStatus })[0];
+            device = DeviceController.filter(foundDevices, { status: deviceStatus })
+                .filter(d => d.type !== DeviceType.TV && d.type !== DeviceType.WATCH)[0];
 
             // If there is no shutdown device
             if (!device || !device.status) {
                 deviceStatus = args.reuseDevice ? Status.SHUTDOWN : Status.BOOTED;
-                device = DeviceController.filter(foundDevices, { status: deviceStatus })[0];
+                device = DeviceController.filter(foundDevices, { status: deviceStatus })
+                    .filter(d => d.type !== DeviceType.TV && d.type !== DeviceType.WATCH)[0];
             }
 
             // If the device should not be reused we need to shutdown device and boot a clean instance
@@ -88,7 +90,7 @@ export class DeviceManager implements IDeviceManager {
             if (!args.reuseDevice && device.status !== Status.SHUTDOWN) {
                 await DeviceController.kill(device);
                 device.status = Status.SHUTDOWN;
-                startDeviceOptions = device.type === DeviceType.EMULATOR ? "-wipe-data -no-snapshot-load -no-boot-anim -no-audio" : "";
+                startDeviceOptions = device.type === DeviceType.EMULATOR ? "-wipe-data -no-snapshot-load -no-boot-anim -no-audio -snapshot clean_boot" : "";
                 logInfo("Change appium config to fullReset: false if no restart of the device needed!");
             }
 
@@ -131,6 +133,10 @@ export class DeviceManager implements IDeviceManager {
         }
     }
 
+    public static async getDevices(query: IDevice) {
+        return await DeviceController.getDevices(query);
+    }
+
     public async installApp(args: INsCapabilities): Promise<any> {
         if (args.isIOS) {
             IOSController.installApp(args.device, args.appiumCaps.app);
@@ -149,7 +155,13 @@ export class DeviceManager implements IDeviceManager {
     }
 
     public static async kill(device: IDevice) {
-        await DeviceController.kill(device);
+        if (device) {
+            await DeviceController.kill(device);
+        }
+    }
+
+    public static async getInstalledApps(device: IDevice) {
+        return await DeviceController.getInstalledApplication(device);
     }
 
     public static getDefaultDevice(args: INsCapabilities, deviceName?: string, token?: string, type?: DeviceType, platformVersion?: number) {

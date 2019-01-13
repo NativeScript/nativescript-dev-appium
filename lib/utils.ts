@@ -284,6 +284,9 @@ function getAppName(args: INsCapabilities) {
 export function getAppPath(caps: INsCapabilities) {
     let basePath = caps.appiumCaps.app || caps.appPath;
     basePath = basePath && basePath.startsWith("~") ? basePath.replace("~", process.env["HOME"]) : basePath;
+    if (basePath) {
+        basePath = resolve(basePath);
+    }
     if (existsSync(basePath) && ((basePath.endsWith(".apk") || basePath.endsWith(".app") || basePath.endsWith(".ipa")))) {
         return resolvePath(basePath);
     }
@@ -304,7 +307,8 @@ export function getAppPath(caps: INsCapabilities) {
             }
         } else {
             const iosPlatformsPath = 'platforms/ios/build';
-            basePath = caps.runType.includes("device") ? `${iosPlatformsPath}/device/**/*.ipa` : `${iosPlatformsPath}/emulator/**/*.app`;
+            const appType = caps.runType || caps.device.type === DeviceType.SIMULATOR ? "sim" : "device";
+            basePath = appType.includes("device") ? `${iosPlatformsPath}/device/**/*.ipa` : `${iosPlatformsPath}/emulator/**/*.app`;
         }
     }
 

@@ -16,7 +16,8 @@ import {
     DeviceController,
     IDevice,
     DeviceType,
-    AndroidController
+    AndroidController,
+    killAllProcessAndRelatedCommand
 } from "mobile-devices-controller";
 import {
     addExt,
@@ -189,7 +190,7 @@ export class AppiumDriver {
         };
 
         if (!args.isValidated) {
-            args.validateArgs();
+            await args.validateArgs();
         }
 
         if (args.isSauceLab) {

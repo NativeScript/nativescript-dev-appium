@@ -38,13 +38,14 @@ export declare class NsCapabilities implements INsCapabilities {
     deviceManager: IDeviceManager;
     exceptions: Array<string>;
     imagesPath: string;
+    deviceTypeOrPlatform: string;
     constructor(_parser: INsCapabilitiesArgs);
     readonly isAndroid: any;
     readonly isIOS: boolean;
     automationName: AutomationName;
     setAutomationNameFromString(automationName: String): void;
     extend(args: INsCapabilities): this;
-    validateArgs(): any;
+    validateArgs(): Promise<void>;
     private isAndroidPlatform;
     shouldSetFullResetOption(): void;
     private setAutomationName;

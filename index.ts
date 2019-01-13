@@ -94,7 +94,7 @@ export async function createDriver(args?: INsCapabilitiesArgs) {
     if (!nsCapabilities.appiumCapsLocation) {
         throw new Error("Provided path to appium capabilities is not correct!");
     }
-    if (!nsCapabilities.runType) {
+    if (!nsCapabilities.runType && !nsCapabilities.appiumCaps) {
         throw new Error("--runType is missing! Make sure it is provided correctly! It is used to parse the configuration for appium driver!");
     }
 
