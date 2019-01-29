@@ -60,7 +60,7 @@ describe("ios devices", () => {
     before("Init: DeviceManager", () => {
         deviceManager = new DeviceManager();
         appiumArgs = new NsCapabilities(<any>{});
-        appiumArgs.extend(<any>{ appiumCaps: { platformName: Platform.IOS, fullReset: false, deviceName: /iPhone XR/ } })
+        appiumArgs.extend(<any>{ appiumCaps: { platformName: Platform.IOS, fullReset: false, deviceName: /iPhone X/ } })
         appiumArgs.shouldSetFullResetOption();
     });
 
