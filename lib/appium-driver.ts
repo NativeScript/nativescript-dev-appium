@@ -438,7 +438,7 @@ export class AppiumDriver {
      * @param xOffset
      */
     public async scroll(direction: Direction, y: number, x: number, yOffset: number, xOffset: number = 0) {
-        scroll(this._wd, this._driver, direction, this._webio.isIOS, y, x, yOffset, xOffset, this._args.verbose);
+        await scroll(this._wd, this._driver, direction, this._webio.isIOS, y, x, yOffset, xOffset, this._args.verbose);
     }
 
     /**
