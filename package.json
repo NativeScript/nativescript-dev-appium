@@ -1,6 +1,6 @@
 {
   "name": "nativescript-dev-appium",
-  "version": "4.0.9",
+  "version": "5.0.0",
   "description": "A NativeScript plugin to help integrate and run Appium tests",
   "author": "NativeScript",
   "license": "MIT",

@@ -1,4 +1,26 @@
 <a name="4.0.6"></a>
+# [5.0.0]() (2019-01-29)
+
+### Bug Fixes
+* isDisplayed already to checks actual coordinates whether element is in visible port of display 
+
+### Features
+* run tests without providing appium capabilities config/ --runType. This option is only available for local runs when a device is already started and app is already installed.
+* device properties can be passed as regex expression (this is not available in sauceLab)
+* isSelected method - works only if the element has tag select
+* --runType is already case insensitive
+* waitForElement method by element automation text and wait time in milliseconds.
+* include support for jasmine.
+* include support for javascript, typescript, angular, vue and angular(shared project)
+*
+
+
+
+### Bug Fixes
+* fix: resolve app name when skip starting server
+
+
+<a name="4.0.6"></a>
 # [4.0.6]() (2018-08-08)
 ### Bug Fixes
 * fix: resolve app name when skip starting server
