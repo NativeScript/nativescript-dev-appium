@@ -2,165 +2,192 @@ import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { INsCapabilitiesArgs } from "./interfaces/ns-capabilities-args";
 import { AutomationName } from "./automation-name";
 import { resolveCapabilities } from "./capabilities-helper";
-import { getAppPath, fileExists, logInfo, logError, logWarn } from "./utils";
-import { IDevice } from "mobile-devices-controller";
+import { getAppPath, logInfo, logError, logWarn } from "./utils";
+import { IDevice, Platform, Status, DeviceType } from "mobile-devices-controller";
 import { IDeviceManager } from "./interfaces/device-manager";
+import { existsSync } from "fs";
+import { DeviceManager } from "./device-manager";
 
 export class NsCapabilities implements INsCapabilities {
-    private _projectDir: string;
-    private _projectBinary: string;
-    private _pluginRoot: string;
-    private _pluginBinary: string;
-    private _port: number;
-    private _verbose: boolean;
-    private _appiumCapsLocation: string;
-    private _appiumCaps: any;
-    private _testFolder: string;
-    private _storage: string;
-    private _testReports: any;
-    private _reuseDevice: boolean;
-    private _devMode: boolean;
-    private _runType: string;
-    private _isSauceLab: boolean;
-    private _wdaLocalPort: number;
-    private _appName: string;
-    private _appPath: string;
-    private _path: string;
-    private _emulatorOptions: string;
-    private _sessionId: string;
-    private _capabilitiesName: string;
-    private _ignoreDeviceController: boolean;
-    private _relaxedSecurity: boolean;
-    private _cleanApp: boolean;
-    private _attachToDebug: boolean;
-    private _startSession: boolean;
-    private _isValidated: boolean;
     private _automationName: AutomationName;
-    private _device: IDevice;
-    private _deviceManager: IDeviceManager;
-    private _exceptions: Array<string> = new Array();
-    private _imagesPath: string;
+
+    public projectDir: string;
+    public projectBinary: string;
+    public pluginRoot: string;
+    public pluginBinary: string;
+    public port: number;
+    public verbose: boolean;
+    public appiumCapsLocation: string;
+    public appiumCaps: any;
+    public testFolder: string;
+    public storage: string;
+    public testReports: any;
+    public reuseDevice: boolean;
+    public devMode: boolean;
+    public runType: string;
+    public isSauceLab: boolean;
+    public wdaLocalPort: number;
+    public appName: string;
+    public appPath: string;
+    public path: string;
+    public emulatorOptions: string;
+    public sessionId: string;
+    public capabilitiesName: string;
+    public ignoreDeviceController: boolean;
+    public relaxedSecurity: boolean;
+    public cleanApp: boolean;
+    public attachToDebug: boolean;
+    public startSession: boolean;
+    public isValidated: boolean;
+    public device: IDevice;
+    public deviceManager: IDeviceManager;
+    public exceptions: Array<string> = new Array();
+    public imagesPath: string;
+    public deviceTypeOrPlatform: string;
 
     constructor(private _parser: INsCapabilitiesArgs) {
-        this._projectDir = this._parser.projectDir;
-        this._projectBinary = this._parser.projectBinary;
-        this._pluginRoot = this._parser.pluginRoot;
-        this._pluginBinary = this._parser.pluginBinary;
-        this._appPath = this._parser.appPath;
-        this._port = this._parser.port;
-        this._verbose = this._parser.verbose;
-        this._appiumCapsLocation = this._parser.appiumCapsLocation;
-        this._relaxedSecurity = this._parser.relaxedSecurity;
-        this._cleanApp = this._parser.cleanApp;
-        this._attachToDebug = this._parser.attachToDebug;
-        this._sessionId = this._parser.sessionId;
-        this._startSession = this._parser.startSession;
-        this._testFolder = this._parser.testFolder;
-        this._storage = this._parser.storage;
-        this._testReports = this._parser.testReports;
-        this._reuseDevice = this._parser.reuseDevice;
-        this._devMode = this._parser.devMode;
-        this._runType = this._parser.runType;
-        this._isSauceLab = this._parser.isSauceLab;
-        this._ignoreDeviceController = this._parser.ignoreDeviceController;
-        this._wdaLocalPort = this._parser.wdaLocalPort;
-        this._path = this._parser.path;
-        this._capabilitiesName = this._parser.capabilitiesName;
-        this._imagesPath = this._parser.imagesPath;
+        this.projectDir = this._parser.projectDir;
+        this.projectBinary = this._parser.projectBinary;
+        this.pluginRoot = this._parser.pluginRoot;
+        this.pluginBinary = this._parser.pluginBinary;
+        this.appPath = this._parser.appPath;
+        this.port = this._parser.port;
+        this.verbose = this._parser.verbose;
+        this.appiumCapsLocation = this._parser.appiumCapsLocation;
+        this.relaxedSecurity = this._parser.relaxedSecurity;
+        this.cleanApp = this._parser.cleanApp;
+        this.attachToDebug = this._parser.attachToDebug;
+        this.sessionId = this._parser.sessionId;
+        this.startSession = this._parser.startSession;
+        this.testFolder = this._parser.testFolder;
+        this.storage = this._parser.storage;
+        this.testReports = this._parser.testReports;
+        this.devMode = this._parser.devMode;
+        this.runType = this._parser.runType;
+        this.isSauceLab = this._parser.isSauceLab;
+        this.ignoreDeviceController = this._parser.ignoreDeviceController;
+        this.wdaLocalPort = this._parser.wdaLocalPort;
+        this.path = this._parser.path;
+        this.capabilitiesName = this._parser.capabilitiesName;
+        this.imagesPath = this._parser.imagesPath;
+        this.appiumCaps = this._parser.appiumCaps;
+        this.deviceTypeOrPlatform = this._parser.deviceTypeOrPlatform;
+        this.device = this._parser.device;
     }
 
-    get path() { return this._path; }
-    get projectDir() { return this._projectDir; }
-    get projectBinary() { return this._projectBinary; }
-    get pluginRoot() { return this._pluginRoot; }
-    get pluginBinary() { return this._pluginBinary; }
-    get port() { return this._port; }
-    set port(port) { this._port = port; }
-    get verbose() { return this._verbose; }
-    set verbose(verbose: boolean) { this._verbose = verbose; }
-    get appiumCapsLocation() { return this._appiumCapsLocation; }
-    get appiumCaps() { return this._appiumCaps; }
-    set appiumCaps(appiumCaps) { this._appiumCaps = appiumCaps; }
-    get testFolder() { return this._testFolder; }
-    get storage() { return this._storage; }
-    get testReports() { return this._testReports; }
-    get reuseDevice() { return this._reuseDevice; }
-    get devMode() { return this._devMode; }
-    get runType() { return this._runType; }
     get isAndroid() { return this.isAndroidPlatform(); }
     get isIOS() { return !this.isAndroid; }
-    get isSauceLab() { return this._isSauceLab; }
     get automationName() { return this._automationName; }
     set automationName(automationName: AutomationName) {
         this._automationName = automationName;
     }
-    get appPath() { return this._appPath; }
-    get appName() { return this._appName; }
-    set appName(appName: string) { this._appName = appName; }
-    get ignoreDeviceController() { return this._ignoreDeviceController; }
-    set ignoreDeviceController(ignoreDeviceController: boolean) { this._ignoreDeviceController = ignoreDeviceController; }
-    get wdaLocalPort() { return this._wdaLocalPort; }
-    get device() { return this._device; }
-    set device(device: IDevice) { this._device = device; }
-    get emulatorOptions() { return (this._emulatorOptions || "-wipe-data -gpu on") }
-    get relaxedSecurity() { return this._relaxedSecurity }
-    get cleanApp() { return this._cleanApp; }
-    get attachToDebug() { return this._attachToDebug; }
-    get sessionId() { return this._sessionId; }
-    set sessionId(sessionId: string) { this._sessionId = sessionId; }
-    get startSession() { return this._startSession; }
-    get deviceManager() { return this._deviceManager; }
-    set deviceManager(deviceManager: IDeviceManager) { this._deviceManager = deviceManager; }
-    get isValidated() { return this._isValidated; }
-    get imagesPath() { return this._imagesPath; }
-    //set isValidated(isValidated: boolean) { this._isValidated = isValidated; }
 
     setAutomationNameFromString(automationName: String) {
-        const key  = Object.keys(AutomationName).filter((v,i,a) => v.toLowerCase() === automationName.toLowerCase());
-        this._automationName = AutomationName[key[0]];
+        const key = Object.keys(AutomationName).filter((v, i, a) => v.toLowerCase() === automationName.toLowerCase());
+        this.automationName = AutomationName[key[0]];
     }
 
     public extend(args: INsCapabilities) {
         Object.keys(args).forEach(key => {
             if (args[key]) {
                 this[`_${key}`] = args[key];
+                this[`${key}`] = args[key];
             }
         });
 
         return this;
     }
 
-    public validateArgs(): void {
-        if (this._attachToDebug || this._sessionId) {
-            this._isValidated = true;
+    public async validateArgs() {
+        if (this.attachToDebug || this.sessionId) {
+            this.isValidated = true;
         }
-        if (!this._attachToDebug && !this._sessionId) {
-            this._appiumCaps = resolveCapabilities(this.appiumCapsLocation, this.runType, this.projectDir, this._capabilitiesName);
+
+        if (this.deviceTypeOrPlatform || this.device) {
+
+            let searchQuery = <IDevice>{};
+            if (this.deviceTypeOrPlatform) {
+                if (this.deviceTypeOrPlatform === Platform.ANDROID || this.deviceTypeOrPlatform === Platform.IOS) {
+                    searchQuery.platform = this.deviceTypeOrPlatform
+                } else {
+                    searchQuery.type = this.deviceTypeOrPlatform as DeviceType;
+                }
+            } else {
+                Object.assign(searchQuery, this.device);
+            }
+
+            searchQuery.status = Status.BOOTED;
+
+            const runningDevices = await DeviceManager.getDevices(searchQuery);
+            if (runningDevices && runningDevices.length > 0) {
+                const d = runningDevices[0];
+
+                this.appiumCaps = {
+                    "platformName": d.platform,
+                    "noReset": true,
+                    "fullReset": false,
+                    "app": ""
+                }
+
+                this.appiumCaps.deviceName = d.name;
+                this.appiumCaps.platformVersion = d.apiLevel;
+                this.appiumCaps.udid = d.token;
+
+                if (this.deviceTypeOrPlatform === "android") {
+                    this.appiumCaps["lt"] = 60000;
+                    this.appiumCaps["newCommandTimeout"] = 720;
+                }
+
+                this.device = d;
+                logInfo("Using device: ", d);
+            } else {
+                logError(`There is no running device of type:${this.deviceTypeOrPlatform}`);
+                logInfo(`Use tns run ios/ android to install app on device!`)
+            }
+
+            this.devMode = true;
+        }
+        if (!this.attachToDebug && !this.sessionId) {
+            this.appiumCaps = this.appiumCaps || resolveCapabilities(this.appiumCapsLocation || process.cwd(), this.runType, this.projectDir, this.capabilitiesName || "appium.capabilities.json");
 
             this.setAutomationName();
             this.resolveApplication();
-            this.checkMandatoryCapabiliies();
+            this.checkMandatoryCapabilities();
             this.throwExceptions();
             this.shouldSetFullResetOption();
-            this._isValidated = true;
+
+            this.isValidated = true;
         } else {
-            this._isValidated = false;
+            this.isValidated = false;
         }
     }
 
-    private isAndroidPlatform() { return this._appiumCaps && this._appiumCaps ? this._appiumCaps.platformName.toLowerCase().includes("android") : undefined; }
+    private isAndroidPlatform() {
+        return this.appiumCaps && this.appiumCaps ? this.appiumCaps.platformName.toLowerCase().includes("android") : undefined;
+    }
 
-    private shouldSetFullResetOption() {
-        if (this._ignoreDeviceController) {
-            this.appiumCaps["fullReset"] = true;
-            this.appiumCaps["noReset"] = false;
-            logInfo("Changing appium setting fullReset: true and noReset: false ");
-        }
-
-        if (this._attachToDebug || this._devMode) {
+    public shouldSetFullResetOption() {
+        if (this.attachToDebug || this.devMode) {
             this.appiumCaps["fullReset"] = false;
             this.appiumCaps["noReset"] = true;
             logInfo("Changing appium setting fullReset: false and noReset: true ");
+        }
+
+        if (!this.isSauceLab && this.appiumCaps["fullReset"] === false && this.appiumCaps["noReset"] === true) {
+            this.devMode = true;
+            logWarn("Running in devMode!");
+            logWarn("If the application is not installed on device, you can use 'tns run android/ ios' to install it!");
+        }
+
+        if (!this.ignoreDeviceController) {
+            this.reuseDevice = !this.appiumCaps["fullReset"];
+            this.appiumCaps["fullReset"] = false;
+            if (!this.reuseDevice) {
+                logWarn("The started device will be killed after the session quits!");
+                logInfo("To avoid it, set 'fullReset: false' in appium capabilities.");
+            }
+
+            this.cleanApp = !this.appiumCaps["noReset"];
         }
     }
 
@@ -168,22 +195,22 @@ export class NsCapabilities implements INsCapabilities {
         if (this.appiumCaps["automationName"]) {
             switch (this.appiumCaps["automationName"].toLowerCase()) {
                 case AutomationName.UiAutomator2.toString().toLowerCase():
-                    this._automationName = AutomationName.UiAutomator2; break;
+                    this.automationName = AutomationName.UiAutomator2; break;
                 case AutomationName.Appium.toString().toLowerCase():
-                    this._automationName = AutomationName.Appium; break;
+                    this.automationName = AutomationName.Appium; break;
                 case AutomationName.XCUITest.toString().toLowerCase():
-                    this._automationName = AutomationName.XCUITest; break;
+                    this.automationName = AutomationName.XCUITest; break;
             }
         } else {
             if (this.isAndroid) {
                 if (this.tryGetAndroidApiLevel() > 6 || (this.appiumCaps["apiLevel"] && this.appiumCaps["apiLevel"].toLowerCase().includes("p"))) {
-                    this._automationName = AutomationName.UiAutomator2;
+                    this.automationName = AutomationName.UiAutomator2;
                 }
             }
         }
 
-        if (this._automationName) {
-            this.appiumCaps["automationName"] = this._automationName.toString();
+        if (this.automationName) {
+            this.appiumCaps["automationName"] = this.automationName.toString();
             logInfo(`Automation name set to: ${this.appiumCaps["automationName"]}`);
             console.log(`To change automation name, you need to set it in appium capabilities!`);
         } else {
@@ -202,58 +229,62 @@ export class NsCapabilities implements INsCapabilities {
     }
 
     private resolveApplication() {
-        if (this._isSauceLab) {
-            if (this._appPath) {
-                this._appiumCaps.app = this._appPath.startsWith("http") ? this._appPath : `sauce-storage:${this._appPath}`;
+        if (this.isSauceLab) {
+            if (this.appPath) {
+                this.appiumCaps.app = this.appPath.startsWith("http") ? this.appPath : `sauce-storage:${this.appPath}`;
             }
 
-            if (!this._appiumCaps.app) {
+            if (!this.appiumCaps.app) {
                 const errorMsg = "Neither appPath option nor capabilities.app provided!!!";
                 logError(errorMsg);
                 throw new Error(errorMsg);
             }
 
-            this._appPath = this._appiumCaps.app;
-            this._ignoreDeviceController = true;
-            logInfo(`Using Sauce Labs. The application path is changed to: ${this._appiumCaps.app}`);
+            this.appPath = this.appiumCaps.app;
+            this.ignoreDeviceController = true;
+            logInfo(`Using Sauce Labs. The application path is changed to: ${this.appiumCaps.app}`);
         } else {
-            this._appiumCaps.app = getAppPath(this);
-            this._appPath = this._appiumCaps.app;
+            this.appiumCaps.app = getAppPath(this);
+            this.appPath = this.appiumCaps.app;
 
-            logInfo(`Application full path: ${this._appiumCaps.app}`);
+            logInfo(`Application full path: ${this.appiumCaps.app}`);
         }
     }
 
-    private checkMandatoryCapabiliies() {
+    private checkMandatoryCapabilities() {
         const appPackage = this.isAndroid ? "appPackage" : "bundleId";
 
-        if (!this.isSauceLab && (!this._appiumCaps[appPackage] && !fileExists(this._appiumCaps.app))) {
-            this._exceptions.push(`The application folder doesn't exists or no ${appPackage} provided!`);
+        if (!this.isSauceLab && (!this.appiumCaps[appPackage] && !existsSync(this.appiumCaps.app))) {
+            this.exceptions.push(`The application folder doesn't exists or no ${appPackage} provided!`);
         }
 
-        if (!this._runType) {
-            this._exceptions.push("Missing runType! Please select one from appium capabilities file!");
+        if (!this.runType && !this.appiumCaps) {
+            this.exceptions.push("Missing runType or device type! Please select one from appium capabilities file!");
         }
 
-        if (!this._appiumCaps.platformName) {
-            this._exceptions.push("Platform name is missing! Please, check appium capabilities file!");
+        if (!this.appiumCaps) {
+            this.exceptions.push("Missing appium capabilities!");
         }
 
-        if (!this._appiumCaps.platformVersion) {
-            logWarn("Platform version is missing! You'd better to set it in order to use the correct device");
+        if (!this.appiumCaps.platformName) {
+            logWarn("Platform name is missing! Please, check appium capabilities file!");
         }
 
-        if (!this._appiumCaps.deviceName && !this._appiumCaps.udid) {
-            this._exceptions.push("The device name or udid are missing! Please, check appium capabilities file!");
+        if (!this.appiumCaps.platformVersion) {
+            logWarn("Platform version is missing! It would be better to set it in order to use the correct device!");
+        }
+
+        if (!this.appiumCaps.deviceName && !this.appiumCaps.udid) {
+            logWarn("The device name or udid are missing! Please, check appium capabilities file!");
         }
     }
 
     private throwExceptions() {
-        this._exceptions.forEach(msg => {
+        this.exceptions.forEach(msg => {
             logError(msg);
         });
 
-        if (this._exceptions.length > 0) {
+        if (this.exceptions.length > 0) {
             process.exit(1);
         }
     }

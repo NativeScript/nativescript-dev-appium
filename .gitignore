@@ -13,3 +13,4 @@ samples/reports
 !samples/e2e-tsc/*.ts
 !samples/e2e-js/*.js
 !samples/e2e-tsc/tsconfig.json
+test/out/*

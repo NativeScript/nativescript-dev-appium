@@ -13,7 +13,7 @@ const { basename, resolve } = require("path");
 const appRootPath = require('app-root-path').toString();
 
 const inquirer = require("inquirer");
-const chalk = require("chalk");
+// const chalk = require("chalk");
 // const figlet = require("figlet");
 
 const jasmine = "jasmine";
@@ -83,29 +83,27 @@ const copy = (src, dest) => {
 }
 
 const getDevDependencies = (frameworkType) => {
-    const tesstingFrameworkDeps = new Map();
+    const testingFrameworkDeps = new Map();
 
-    tesstingFrameworkDeps.set(jasmine, [
-        { name: "jasmine", version: "~3.2.0" },
-        { name: "jasmine-core", version: "~2.99.1" },
+    testingFrameworkDeps.set(jasmine, [
+        { name: "jasmine", version: "~3.3.1" },
+        { name: "jasmine-core", version: "~3.3.0" },
         { name: "jasmine-spec-reporter", version: "~4.2.1" },
-        { name: "@types/jasmine", version: "~2.8.11" },
-        { name: "@types/node", version: "10.11.4" },
+        { name: "@types/jasmine", version: "~3.3.4" },
+        { name: "@types/node", version: "~10.12.18" },
     ]);
 
-    tesstingFrameworkDeps.set(mocha, [
-        { name: "mocha", version: "~5.1.0" },
-        { name: "mocha-junit-reporter", version: "~1.17.0" },
-        { name: "mocha-multi", version: "~1.0.0" },
-        { name: "@types/mocha", version: "~5.2.1" },
-        { name: "@types/chai", version: "~4.1.3" },
-        { name: "@types/node", version: "10.11.4" },
+    testingFrameworkDeps.set(mocha, [
+        { name: "mocha", version: "~5.2.0" },
+        { name: "mocha-junit-reporter", version: "~1.18.0" },
+        { name: "mocha-multi", version: "~1.0.1" },
+        { name: "@types/mocha", version: "~5.2.5" },
+        { name: "@types/chai", version: "~4.1.7" },
+        { name: "@types/node", version: "~10.12.18" },
     ]);
 
-    tesstingFrameworkDeps.set(js, []);
-
-    return tesstingFrameworkDeps.get(frameworkType);
-
+    testingFrameworkDeps.set(js, []);
+    return testingFrameworkDeps.get(frameworkType);
 }
 
 const configureDevDependencies = (packageJson, frameworkType) => {
@@ -131,7 +129,7 @@ const updatePackageJsonDependencies = (packageJson, projectType, testingFramewor
 
     const runner = (testingFrameworkType === none) ? undefined : (testingFrameworkType === mocha ? mochaCommand : jasmineCommand);
     const executeTestsCommand = projectType !== sharedNg ? "e2e" : "e2e-appium";
-    const watchTestsCommandName = executeTestsCommand + "-watch";// = "tsc -p e2e --watch";"
+    const watchTestsCommandName = executeTestsCommand + "-watch";
     const watchTestsCommand = "tsc -p e2e --watch";
 
     if (!packageJson.scripts[executeTestsCommand] && runner) {

@@ -74,7 +74,7 @@ export declare class AppiumDriver {
      */
     findElementsByXPath(xPath: string, waitForElement?: number): Promise<UIElement[]>;
     /**
-     * Search for element by given text. The seacrch is case insensitive for android
+     * Search for element by given text. The search is case insensitive for android
      * @param text
      * @param match
      * @param waitForElement
@@ -89,9 +89,9 @@ export declare class AppiumDriver {
     /**
      * Search for element by given automationText and waits until the element is displayed.
      * @param text
-     * @param waitInMiliseconds till element is displayed
+     * @param waitInMilliseconds till element is displayed
      */
-    waitForElement(automationText: string, waitInMiliseconds?: number): Promise<UIElement>;
+    waitForElement(automationText: string, waitInMilliseconds?: number): Promise<UIElement>;
     /**
      * Search for elements by given automationText. Searches only for exact string. Returns promise with array of elements.
      * @param text
@@ -99,7 +99,7 @@ export declare class AppiumDriver {
      */
     findElementsByAutomationText(automationText: string, waitForElement?: number): Promise<UIElement[]>;
     /**
-     * Search for elements by given text. The seacrch is case insensitive for android
+     * Search for elements by given text. The search is case insensitive for android
      * @param text
      * @param match
      * @param waitForElement
@@ -207,14 +207,14 @@ export declare class AppiumDriver {
     private getExpectedImagePath;
     /**
     * Wait specific amount of time before continue execution
-    * @param miliseconds
+    * @param milliseconds
     */
-    sleep(miliseconds: number): Promise<void>;
+    sleep(milliseconds: number): Promise<void>;
     /**
   * Wait specific amount of time before continue execution
-  * @param miliseconds
+  * @param milliseconds
   */
-    wait(miliseconds: number): void;
+    wait(milliseconds: number): void;
     /**
     * Search for element by given xPath but does not throw error if can not find it. Instead returns 'undefined'.
     * @param xPath

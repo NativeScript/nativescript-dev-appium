@@ -1,27 +1,17 @@
-import {
-    waitForOutput,
-    resolve,
-    log,
-    isWin,
-    shutdown,
-    executeCommand,
-    logError,
-    logInfo,
-    logWarn
-} from "./utils";
+import { logError, logInfo, logWarn, shouldUserMobileDevicesController } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
-
 import {
     IDevice,
-    Device,
     DeviceController,
     IOSController,
     AndroidController,
     Platform,
     Status,
-    DeviceType
+    DeviceType,
+    sortDescByApiLevelPredicate
 } from "mobile-devices-controller";
+import { isRegExp } from "util";
 
 export class DeviceManager implements IDeviceManager {
     private static _emulators: Map<string, IDevice> = new Map();
@@ -31,74 +21,89 @@ export class DeviceManager implements IDeviceManager {
 
     public async startDevice(args: INsCapabilities): Promise<IDevice> {
         args.appiumCaps.platformName = args.appiumCaps.platformName.toLowerCase();
+        const shouldFullyResetDevice = !args.appiumCaps.udid;
         let device: IDevice = DeviceManager.getDefaultDevice(args);
-        if (process.env["DEVICE_TOKEN"]) {
-            device.token = process.env["DEVICE_TOKEN"];
-            device.name = process.env["DEVICE_NAME"] || device.name;
-            const allDevices = await DeviceController.getDevices({ platform: device.platform });
-            const foundDevice = DeviceController.filter(allDevices, { token: device.token.replace("emulator-", "") })[0];
-            logInfo("Device: ", foundDevice);
-            return foundDevice;
+        const token = process.env["DEVICE_TOKEN"] || process.env.npm_config_deviceToken;
+        device.token = token && token.replace("emulator-", "");
+        device.name = process.env["DEVICE_NAME"] || device.name;
+
+        DeviceManager.cleanUnsetProperties(device);
+
+        if (args.ignoreDeviceController) {
+            console.log("Default device: ", device);
         }
 
-        // When isSauceLab specified we simply do nothing;
+        if (shouldUserMobileDevicesController(args)) {
+            device = (await DeviceController.getDevices(device))[0];
+            logInfo("Device: ", device);
+            return device;
+        }
+
+        // When '--isSauceLab' option is set we should do nothing;
         if (args.isSauceLab || args.ignoreDeviceController) {
             args.ignoreDeviceController = true;
             DeviceManager._emulators.set(args.runType, device);
             return device;
         }
 
-        const allDevices = await DeviceController.getDevices({ platform: args.appiumCaps.platformName });
-        if (!allDevices || allDevices === null || allDevices.length === 0) {
-            logError("We couldn't find any devices. We will try to proceed to appium!")
-            console.log("Available devices:\n", allDevices);
+        const searchQuery = args.appiumCaps.udid ? { token: args.appiumCaps.udid } : Object.assign(device);
+        const foundDevices = (await DeviceController.getDevices(searchQuery))
+            .sort((a, b) => sortDescByApiLevelPredicate(a, b));
+
+        if (!foundDevices || foundDevices.length === 0) {
+            logError("We couldn't find any devices of type: ", searchQuery);
+            logError("We will try to proceed to appium!");
+            if (device.platform) {
+                console.log("Available devices:\t\t\t\t", await DeviceController.getDevices({ platform: device.platform }));
+            } else {
+                console.log("Available devices:\t\t\t\t", await DeviceController.getDevices({}));
+            }
             logWarn(`We couldn't find any devices. We will try to proceed to appium!`);
             if (args.appiumCaps.platformVersion.toLowerCase() === Platform.ANDROID) {
                 const errMsg = `1. Check if ANDROID_HOME environment variable is set correctly!\n
                 2. Check if avd manager is available!
-                3. Check appium capabilites and provide correct device options!`;
+                3. Check appium capabilities and provide correct device options!`;
                 logWarn(errMsg);
             }
             args.ignoreDeviceController = true;
+            return device;
         }
 
-        const searchObj = args.appiumCaps.udid ? { token: args.appiumCaps.udid } : { name: args.appiumCaps.deviceName, apiLevel: args.appiumCaps.platformVersion };
-        let searchedDevices = DeviceController.filter(allDevices, searchObj);
-        if (!searchedDevices || searchedDevices.length === 0) {
-            logError(`No such device ${args.appiumCaps.deviceName}!!!`);
-            logWarn("All properties like platformVersion, deviceName etc should match!");
-            logInfo("Available devices:\t\t\t\t");
-            console.log('', allDevices);
+        if (args.verbose) {
+            console.log("Found devices: ", foundDevices);
         }
 
-        if (searchedDevices && searchedDevices.length > 0) {
-
-            // Should find new device
-            if (!args.reuseDevice) {
-                device = DeviceController.filter(searchedDevices, { status: Status.SHUTDOWN })[0];
-            }
+        if (foundDevices && foundDevices.length > 0) {
+            let deviceStatus = args.reuseDevice ? Status.BOOTED : Status.SHUTDOWN;
+            device = DeviceController.filter(foundDevices, { status: deviceStatus })
+                .filter(d => d.type !== DeviceType.TV && d.type !== DeviceType.WATCH)[0];
 
             // If there is no shutdown device
-            if (!device || device === null || !device.status) {
-                device = DeviceController.filter(searchedDevices, { status: Status.BOOTED })[0];
+            if (!device || !device.status) {
+                deviceStatus = args.reuseDevice ? Status.SHUTDOWN : Status.BOOTED;
+                device = DeviceController.filter(foundDevices, { status: deviceStatus })
+                    .filter(d => d.type !== DeviceType.TV && d.type !== DeviceType.WATCH)[0];
             }
 
-            // In case reuse device is true but there weren't any booted devices. We need to fall back and boot new one.
-            if (!device || device === null && args.reuseDevice) {
-                device = DeviceController.filter(searchedDevices, { status: Status.SHUTDOWN })[0];
+            // If the device should not be reused we need to shutdown device and boot a clean instance
+            let startDeviceOptions = args.startDeviceOptions || undefined;
+            if (!args.reuseDevice && device.status !== Status.SHUTDOWN) {
+                await DeviceController.kill(device);
+                device.status = Status.SHUTDOWN;
+                startDeviceOptions = device.type === DeviceType.EMULATOR ? "-wipe-data -no-snapshot-load -no-boot-anim -no-audio -snapshot clean_boot" : "";
+                logInfo("Change appium config to fullReset: false if no restart of the device needed!");
             }
 
+            if (device.type === DeviceType.DEVICE) {
+                logInfo("Device is connected:", device)
+            }
             if (device.status === Status.SHUTDOWN) {
-                await DeviceController.startDevice(device);
+                await DeviceController.startDevice(device, startDeviceOptions, shouldFullyResetDevice);
+                try {
+                    delete device.process;
+                } catch (error) { }
+
                 logInfo("Started device: ", device);
-            } else {
-                device.type === DeviceType.DEVICE ? logInfo("Device is connected:", device) : logInfo("Device is already started", device)
-                if (!args.reuseDevice && device.type !== DeviceType.DEVICE) {
-                    logInfo("Option --reuseDevice is set to false, the device would be shut down and restart!");
-                    logInfo("Use --reuseDevice to preserve device state!");
-                    DeviceController.kill(device);
-                    await DeviceController.startDevice(device);
-                }
             }
         }
 
@@ -109,20 +114,27 @@ export class DeviceManager implements IDeviceManager {
         DeviceManager._emulators.set(args.runType, device);
 
         if (!device || !device.token) {
-            console.error("Check appium capabilites and provide correct device options!");
+            console.error("Check appium capabilities and provide correct device options!");
             process.exit(1);
         }
+
+        if (!args.ignoreDeviceController) {
+            console.log("Default device: ", device);
+        }
+
         return device;
     }
 
-    public async stopDevice(args: INsCapabilities): Promise<any> {
-        if (DeviceManager._emulators.has(args.runType)
-            && !args.reuseDevice
+    public async stopDevice(device: IDevice, args: INsCapabilities): Promise<any> {
+        if (!args.reuseDevice
             && !args.isSauceLab
             && !args.ignoreDeviceController) {
-            const device = DeviceManager._emulators.get(args.runType);
             await DeviceManager.kill(device);
         }
+    }
+
+    public static async getDevices(query: IDevice) {
+        return await DeviceController.getDevices(query);
     }
 
     public async installApp(args: INsCapabilities): Promise<any> {
@@ -143,14 +155,29 @@ export class DeviceManager implements IDeviceManager {
     }
 
     public static async kill(device: IDevice) {
-        await DeviceController.kill(device);
+        if (device) {
+            await DeviceController.kill(device);
+        }
+    }
+
+    public static async getInstalledApps(device: IDevice) {
+        return await DeviceController.getInstalledApplication(device);
     }
 
     public static getDefaultDevice(args: INsCapabilities, deviceName?: string, token?: string, type?: DeviceType, platformVersion?: number) {
-        let device = new Device(deviceName || args.appiumCaps.deviceName, platformVersion || args.appiumCaps.platformVersion, type, args.appiumCaps.platformName.toLowerCase(), token, undefined, undefined);
-        device.config = { "density": args.appiumCaps.density, "offsetPixels": args.appiumCaps.offsetPixels };
+        let device: IDevice = {
+            name: deviceName || args.appiumCaps.deviceName,
+            type: type,
+            platform: args.appiumCaps.platformName.toLowerCase(),
+            token: token,
+            apiLevel: platformVersion || args.appiumCaps.platformVersion,
+            config: { "density": args.appiumCaps.density, "offsetPixels": args.appiumCaps.offsetPixels }
+        }
+
         delete args.appiumCaps.density;
         delete args.appiumCaps.offsetPixels;
+        DeviceManager.cleanUnsetProperties(device);
+
         return device;
     }
 
@@ -176,8 +203,8 @@ export class DeviceManager implements IDeviceManager {
         }
     }
 
-    public static async executeShellCommand(driver, commandAndargs: { command: string, "args": Array<any> }) {
-        const output = await driver.execute("mobile: shell", commandAndargs);
+    public static async executeShellCommand(driver, commandArgs: { command: string, "args": Array<any> }) {
+        const output = await driver.execute("mobile: shell", commandArgs);
         return output;
     }
 
@@ -209,12 +236,12 @@ export class DeviceManager implements IDeviceManager {
         }
     }
 
-    public static async applyDeviceAdditionsSettings(driver, args: INsCapabilities, sessionIfno: any) {
+    public static async applyDeviceAdditionsSettings(driver, args: INsCapabilities, sessionInfo: any) {
         if (!args.device.config || !args.device.config.offsetPixels) {
             args.device.config = {};
             let density: number;
-            if (sessionIfno && sessionIfno.length >= 1) {
-                density = sessionIfno[1].deviceScreenDensity ? sessionIfno[1].deviceScreenDensity / 100 : undefined;
+            if (sessionInfo && sessionInfo.length >= 1) {
+                density = sessionInfo[1].deviceScreenDensity ? sessionInfo[1].deviceScreenDensity / 100 : undefined;
             }
 
             if (density) {
@@ -236,5 +263,9 @@ export class DeviceManager implements IDeviceManager {
     public getPackageId(device: IDevice, appPath: string): string {
         const appActivity = (device.type === DeviceType.EMULATOR || device.platform === Platform.ANDROID) ? AndroidController.getPackageId(appPath) : IOSController.getIOSPackageId(device.type, appPath);
         return appActivity;
+    }
+
+    private static cleanUnsetProperties(obj) {
+        Object.getOwnPropertyNames(obj).forEach(prop => !obj[prop] && delete obj[prop]);
     }
 }

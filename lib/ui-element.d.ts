@@ -10,6 +10,7 @@ export declare class UIElement {
     private _searchMethod;
     private _searchParams;
     private _index?;
+    private static readonly DEFAULT_REFETCH_TIME;
     constructor(_element: any, _driver: any, _wd: any, _webio: any, _args: INsCapabilities, _searchMethod: string, _searchParams: string, _index?: number);
     /**
      * Click on element
@@ -36,6 +37,14 @@ export declare class UIElement {
      * Get text of element
      */
     text(): Promise<any>;
+    /**
+     * Returns if an element is selected
+     */
+    select(retries?: number): Promise<any>;
+    /**
+     * Returns if an element is selected
+     */
+    isSelected(): Promise<any>;
     /**
      * Get web driver element
      */
@@ -82,21 +91,21 @@ export declare class UIElement {
         height: number;
     }>;
     /**
-     * Scroll with offset from elemnt with minimum inertia
+     * Scroll with offset from element with minimum inertia
      * @param direction
      * @param yOffset
      * @param xOffset
      */
     scroll(direction: Direction, yOffset?: number, xOffset?: number): Promise<void>;
     /**
-     * Scroll with offset from elemnt with minimum inertia
+     * Scroll with offset from element with minimum inertia
      * @param direction
      * @param yOffset
      * @param xOffset
      */
     scrollTo(direction: Direction, elementToSearch: any, yOffset?: number, xOffset?: number): Promise<UIElement>;
     /**
- * Scroll with offset from elemnt with minimum inertia
+ * Scroll with offset from element with minimum inertia
  * @param direction
  * @param yOffset
  * @param xOffset
@@ -104,7 +113,7 @@ export declare class UIElement {
     drag(direction: Direction, yOffset: number, xOffset?: number): Promise<void>;
     /**
      * Click and hold over an element
-     * @param time in miliseconds to increase the default press period.
+     * @param time in milliseconds to increase the default press period.
      */
     hold(time?: number): Promise<void>;
     /**
@@ -115,7 +124,7 @@ export declare class UIElement {
     log(): Promise<void>;
     refetch(): Promise<any>;
     /**
-     * Easy to use in order to chain and search for nested elemetns
+     * Easy to use in order to chain and search for nested elements
      */
     driver(): any;
     /**

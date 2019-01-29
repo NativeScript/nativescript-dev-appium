@@ -1,10 +1,9 @@
 import * as child_process from "child_process";
 import {
     log,
-    resolve,
+    resolvePath,
     waitForOutput,
     shutdown,
-    fileExists,
     isWin,
     findFreePort,
     logWarn,
@@ -15,6 +14,8 @@ import {
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
 import { DeviceManager } from "./device-manager";
+import { existsSync } from "fs";
+import { killAllProcessAndRelatedCommand } from "mobile-devices-controller";
 
 export class AppiumServer {
     private _server: child_process.ChildProcess;
@@ -59,12 +60,12 @@ export class AppiumServer {
     }
 
     public async start(port, deviceManager: IDeviceManager = new DeviceManager()) {
-        if (!this._args.isValidated) {
-            this._args.validateArgs();
+        if (!this._args.isValidated && this._args.validateArgs) {
+            await this._args.validateArgs();
             this._args.port = port;
         }
         this._args.deviceManager = deviceManager;
-        if (!this._args.attachToDebug && !this._args.sessionId) {
+        if (this._args.isValidated && !this._args.attachToDebug && !this._args.sessionId) {
             await this.prepDevice(deviceManager);
             await this.prepApp();
         }
@@ -84,6 +85,9 @@ export class AppiumServer {
 
             let retries = 11;
             while (retries > 0 && !response) {
+                if (retries < 5) {
+                    killAllProcessAndRelatedCommand(this._port);
+                }
                 retries--;
                 this.port += 10;
                 this.port = (await findFreePort(100, this.port));
@@ -92,13 +96,13 @@ export class AppiumServer {
                 response = await waitForOutput(this._server, /listener started/, /Error: listen/, 60000, true);
             }
 
+            this.hasStarted = response;
             return response;
         } else if (!this._args.attachToDebug) {
             return true;
         }
 
         return false;
-
     }
 
     private startAppiumServer(logLevel: string, isSauceLab: boolean) {
@@ -109,32 +113,34 @@ export class AppiumServer {
 
         logInfo(`Server args: `, startingServerArgs);
 
-        this._server = child_process.spawn(this._appium, startingServerArgs, {
-            shell: true,
-            detached: false
-        });
+        this._server = child_process.spawn(this._appium, startingServerArgs);
     }
 
     public async stop() {
-        await this._args.deviceManager.stopDevice(this._args);
+        const onServerKilled = (server, signal, code, verbose) => {
+            log(`Appium terminated due signal: ${signal} and code: ${code}`, verbose);
+            server && server.removeAllListeners();
+        }
+
+        await this._args.deviceManager.stopDevice(this._args.device, this._args);
         return new Promise((resolve, reject) => {
-            this._server.on("close", (code, signal) => {
-                log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
+            this._server.once("close", (code, signal) => {
+                onServerKilled(this._server, signal, code, this._args.verbose);
                 resolve();
             });
 
-            this._server.on("exit", (code, signal) => {
-                log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
+            this._server.once("exit", (code, signal) => {
+                onServerKilled(this._server, signal, code, this._args.verbose);
                 resolve();
             });
 
-            this._server.on("error", (code, signal) => {
-                log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
+            this._server.once("error", (code, signal) => {
+                onServerKilled(this._server, signal, code, this._args.verbose);
                 resolve();
             });
 
-            this._server.on("disconnect", (code, signal) => {
-                log(`Appium terminated due signal: ${signal} and code: ${code}`, this._args.verbose);
+            this._server.once("disconnect", (code, signal) => {
+                onServerKilled(this._server, signal, code, this._args.verbose);
                 resolve();
             });
 
@@ -149,6 +155,7 @@ export class AppiumServer {
                     this._server.kill("SIGINT");
                     this._server.kill("SIGINT");
                     this._server.kill("SIGKILL");
+                    process.kill(this._server.pid, "SIGKILL");
                     shutdown(this._server, this._args.verbose);
                 }
             } catch (error) {
@@ -177,13 +184,13 @@ export class AppiumServer {
             this._appium = appium;
             return;
         }
-        const pluginAppiumBinary = resolve(pluginBinary, appium);
-        const projectAppiumBinary = resolve(projectBinary, appium);
+        const pluginAppiumBinary = resolvePath(pluginBinary, appium);
+        const projectAppiumBinary = resolvePath(projectBinary, appium);
 
-        if (fileExists(pluginAppiumBinary)) {
+        if (existsSync(pluginAppiumBinary)) {
             logInfo("Using plugin-local Appium binary.", this._args.verbose);
             appium = pluginAppiumBinary;
-        } else if (fileExists(projectAppiumBinary)) {
+        } else if (existsSync(projectAppiumBinary)) {
             logInfo("Using project-local Appium binary.", this._args.verbose);
             appium = projectAppiumBinary;
         } else {

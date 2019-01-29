@@ -10,6 +10,7 @@ import { logInfo, logError, logWarn } from "./lib/utils";
 import { INsCapabilities } from "./lib/interfaces/ns-capabilities";
 import { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
 import * as parser from "./lib/parser"
+import { isWin } from "./lib/utils";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { AppiumServer } from "./lib/appium-server";
@@ -27,26 +28,12 @@ export { LogType } from "./lib/log-types";
 export { INsCapabilities } from "./lib/interfaces/ns-capabilities";
 export { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
 export { logInfo, logError, logWarn } from "./lib/utils";
+
 export const nsCapabilities: INsCapabilities = new NsCapabilities(parser);
 
 const appiumServer = new AppiumServer(nsCapabilities);
 let frameComparer: FrameComparer;
 let appiumDriver = null;
-
-const attachToExitProcessHoockup = (processToAttach, processName) => {
-    const signals = ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
-        'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'];
-    if (!processToAttach) {
-        return;
-    }
-    signals.forEach(function (sig) {
-        processToAttach.once(sig, async function () {
-            await killProcesses(sig);
-            console.log(`Exited from ${processName}`);
-            processToAttach.removeListener(sig, killProcesses);
-        });
-    });
-}
 
 if (nsCapabilities.startSession) {
     startServer(nsCapabilities.port).then(s => {
@@ -71,7 +58,7 @@ if (nsCapabilities.startSession) {
 
 export async function startServer(port?: number, deviceManager?: IDeviceManager) {
     await appiumServer.start(port || nsCapabilities.port, deviceManager);
-    await attachToExitProcessHoockup(appiumServer.server, "appium");
+    await attachToExitProcessHookup(appiumServer.server, "appium");
     return appiumServer;
 }
 
@@ -83,8 +70,9 @@ export async function stopServer() {
         await appiumServer.stop();
     }
 
-    if (nsCapabilities.cleanApp) {
+    if (nsCapabilities.cleanApp && !nsCapabilities.ignoreDeviceController) {
         await DeviceController.uninstallApp(nsCapabilities.device, nsCapabilities.appPath);
+        logInfo("Application from device is uninstalled.")
     }
 };
 
@@ -106,7 +94,7 @@ export async function createDriver(args?: INsCapabilitiesArgs) {
     if (!nsCapabilities.appiumCapsLocation) {
         throw new Error("Provided path to appium capabilities is not correct!");
     }
-    if (!nsCapabilities.runType) {
+    if (!nsCapabilities.runType && !nsCapabilities.appiumCaps) {
         throw new Error("--runType is missing! Make sure it is provided correctly! It is used to parse the configuration for appium driver!");
     }
 
@@ -143,8 +131,25 @@ const killProcesses = async (code) => {
     if (appiumServer) {
         await stopServer();
     }
+    process.removeAllListeners();
+    try {
+        if (isWin() && process) {
+            process.exit(0);
+        }
+    } catch (error) { }
 }
 
-process.once("exit", async (code) => await killProcesses(code));
-
-attachToExitProcessHoockup(process, "main process");
+const attachToExitProcessHookup = (processToAttach, processName) => {
+    const signals = ['exit', 'SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
+        'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'];
+    if (!processToAttach) {
+        return;
+    }
+    signals.forEach(function (sig) {
+        processToAttach.once(sig, async function () {
+            await killProcesses(sig);
+            console.log(`Exited from ${processName}`);
+            processToAttach.removeListener(sig, killProcesses);
+        });
+    });
+}

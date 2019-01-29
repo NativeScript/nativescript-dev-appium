@@ -6,6 +6,7 @@ import { AutomationName } from "./automation-name";
 import { calculateOffset } from "./utils";
 
 export class UIElement {
+    private static readonly DEFAULT_REFETCH_TIME = 1000;
     constructor(private _element: any,
         private _driver: any,
         private _wd: any,
@@ -73,6 +74,46 @@ export class UIElement {
      */
     public async text() {
         return await (await this.element()).text();
+    }
+
+    /**
+     * Returns if an element is selected
+     */
+    public async select(retries: number = 3) {
+        (await (await this.element())).click();
+        let el = (await this.element());
+        if(!el) return el;
+
+        const hasSelectedAttr = await (await this.element()).getAttribute("selected");
+        if (hasSelectedAttr) {
+            let isSelected = await el.isSelected();
+            while (retries >= 0 && !isSelected) {
+                (await (await this.element())).click();
+                isSelected = await el.isSelected();
+                retries--;
+                await this._driver.sleep(200);
+            }
+        } else {
+            console.log(`This element doesn't contains selected attribute!`);
+        }
+
+        return el;
+    }
+
+    /**
+     * Returns if an element is selected
+     */
+    public async isSelected() {
+        const el = (await this.element());
+        if(!el) return false;
+
+        const hasSelectedAttr = await (await this.element()).getAttribute("selected");
+        if (!hasSelectedAttr) {
+            console.log(`This element doesn't contains selected attribute! Skip check!`);
+            return true;
+        } else {
+            return await (await this.element()).isSelected();
+        }
     }
 
     /**
@@ -167,7 +208,7 @@ export class UIElement {
     }
 
     /**
-     * Scroll with offset from elemnt with minimum inertia
+     * Scroll with offset from element with minimum inertia
      * @param direction
      * @param yOffset 
      * @param xOffset 
@@ -214,7 +255,7 @@ export class UIElement {
 
 
     /**
-     * Scroll with offset from elemnt with minimum inertia
+     * Scroll with offset from element with minimum inertia
      * @param direction
      * @param yOffset 
      * @param xOffset 
@@ -241,7 +282,7 @@ export class UIElement {
     }
 
     /**
- * Scroll with offset from elemnt with minimum inertia
+ * Scroll with offset from element with minimum inertia
  * @param direction
  * @param yOffset 
  * @param xOffset 
@@ -277,7 +318,7 @@ export class UIElement {
 
     /**
      * Click and hold over an element
-     * @param time in miliseconds to increase the default press period.
+     * @param time in milliseconds to increase the default press period.
      */
     public async hold(time?: number) {
         let action = new this._wd.TouchAction(this._driver);
@@ -304,9 +345,9 @@ export class UIElement {
     public async refetch() {
         try {
             if (this._index != null) {
-                return (await this._driver[this._searchMethod](this._searchParams, 1000))[this._index];
+                return (await this._driver[this._searchMethod](this._searchParams, UIElement.DEFAULT_REFETCH_TIME))[this._index];
             } else {
-                return await this._driver[this._searchMethod](this._searchParams, 1000);
+                return await this._driver[this._searchMethod](this._searchParams, UIElement.DEFAULT_REFETCH_TIME);
             }
         } catch (error) {
             console.log("Refetch error: " + error);
@@ -315,30 +356,30 @@ export class UIElement {
     }
 
     /**
-     * Easy to use in order to chain and search for nested elemetns
+     * Easy to use in order to chain and search for nested elements
      */
-    public driver() {
+    public driver(): any {
         return this._element.browser;
     }
 
-     /**
-     * Swipe element left/right
-     * @param direction
-     */
-    public async swipe(direction: Direction){
+    /**
+    * Swipe element left/right
+    * @param direction
+    */
+    public async swipe(direction: Direction) {
         const rectangle = await this.getRectangle();
         const centerX = rectangle.x + rectangle.width / 2;
         const centerY = rectangle.y + rectangle.height / 2;
         let swipeX;
-        if(direction == Direction.right){
+        if (direction == Direction.right) {
             const windowSize = await this._driver.getWindowSize();
             swipeX = windowSize.width - 10;
-        } else if (direction == Direction.left){
+        } else if (direction == Direction.left) {
             swipeX = 10;
         } else {
             console.log("Provided direction must be left or right !");
         }
-    
+
         if (this._args.isAndroid) {
             const action = new this._wd.TouchAction(this._driver);
             action.press({ x: centerX, y: centerY })

@@ -16,15 +16,15 @@ import {
     DeviceController,
     IDevice,
     DeviceType,
-    AndroidController
+    AndroidController,
+    killAllProcessAndRelatedCommand
 } from "mobile-devices-controller";
 import {
     addExt,
     log,
     getStorageByPlatform,
     getStorageByDeviceName,
-    resolve,
-    fileExists,
+    resolvePath,
     getReportPath,
     scroll,
     findFreePort,
@@ -44,7 +44,7 @@ import { IRectangle } from "./interfaces/rectangle";
 import { Point } from "./point";
 import { ImageHelper } from "./image-helper";
 import { ImageOptions } from "./image-options"
-import { unlinkSync, writeFileSync } from "fs";
+import { unlinkSync, writeFileSync, existsSync } from "fs";
 import { DeviceManager } from "../lib/device-manager";
 import { extname, basename } from "path";
 import { LogType } from "./log-types";
@@ -190,7 +190,7 @@ export class AppiumDriver {
         };
 
         if (!args.isValidated) {
-            args.validateArgs();
+            await args.validateArgs();
         }
 
         if (args.isSauceLab) {
@@ -228,31 +228,31 @@ export class AppiumDriver {
         let retries = 10;
         while (retries > 0 && !hasStarted) {
             try {
-                let sessionIfno;
+                let sessionInfo;
 
                 try {
                     if (args.sessionId || args.attachToDebug) {
-                        const sessionIfnos = JSON.parse(((await getSessions(args.port)) || "{}") + '');
+                        const sessionInfos = JSON.parse(((await getSessions(args.port)) || "{}") + '');
 
-                        sessionIfno = sessionIfnos.value.filter(value => args.sessionId ? args.sessionId === value.id : true)[0];
-                        if (!sessionIfno || !sessionIfno.id) {
-                            logError("No info suitable session found", sessionIfno);
+                        sessionInfo = sessionInfos.value.filter(value => args.sessionId ? args.sessionId === value.id : true)[0];
+                        if (!sessionInfo || !sessionInfo.id) {
+                            logError("No suitable session info found", sessionInfo);
                             process.exit(1);
                         }
 
-                        args.sessionId = sessionIfno.id;
-                        args.appiumCaps = sessionIfno.capabilities;
-                        // remove app to prevent appium installiing it again
+                        args.sessionId = sessionInfo.id;
+                        args.appiumCaps = sessionInfo.capabilities;
+                        // remove app to prevent appium from installing app again
                         args.appiumCaps.app = "";
 
-                        if (sessionIfno.capabilities.automationName) {
-                            (<any>args).setAutomationNameFromString(sessionIfno.capabilities.automationName);
+                        if (sessionInfo.capabilities.automationName) {
+                            (<any>args).setAutomationNameFromString(sessionInfo.capabilities.automationName);
                         }
 
                         prepareApp(args);
                         if (!args.device) {
                             if (args.isAndroid) {
-                                args.device = DeviceManager.getDefaultDevice(args, sessionIfno.capabilities.avd, sessionIfno.capabilities.deviceUDID.replace("emulator-", ""), sessionIfno.capabilities.deviceUDID.includes("emulator") ? DeviceType.EMULATOR : DeviceType.SIMULATOR, sessionIfno.capabilities.desired.platformVersion || sessionIfno.capabilities.platformVersion);
+                                args.device = DeviceManager.getDefaultDevice(args, sessionInfo.capabilities.avd, sessionInfo.capabilities.deviceUDID.replace("emulator-", ""), sessionInfo.capabilities.deviceUDID.includes("emulator") ? DeviceType.EMULATOR : DeviceType.SIMULATOR, sessionInfo.capabilities.desired.platformVersion || sessionInfo.capabilities.platformVersion);
                             } else {
                                 args.device = DeviceManager.getDefaultDevice(args);
                             }
@@ -260,7 +260,7 @@ export class AppiumDriver {
 
                         await driver.attach(args.sessionId);
                     } else {
-                        sessionIfno = await driver.init(args.appiumCaps);
+                        sessionInfo = await driver.init(args.appiumCaps);
                     }
 
                 } catch (error) {
@@ -272,10 +272,10 @@ export class AppiumDriver {
                 }
                 if (args.verbose) {
                     logInfo("Session info");
-                    console.info(sessionIfno);
+                    console.info(sessionInfo);
                 }
 
-                await DeviceManager.applyDeviceAdditionsSettings(driver, args, sessionIfno);
+                await DeviceManager.applyDeviceAdditionsSettings(driver, args, sessionInfo);
 
                 hasStarted = true;
             } catch (error) {
@@ -321,7 +321,7 @@ export class AppiumDriver {
     }
 
     /**
-     * Search for element by given text. The seacrch is case insensitive for android
+     * Search for element by given text. The search is case insensitive for android
      * @param text
      * @param match
      * @param waitForElement
@@ -346,22 +346,22 @@ export class AppiumDriver {
     /**
      * Search for element by given automationText and waits until the element is displayed.
      * @param text
-     * @param waitInMiliseconds till element is displayed
+     * @param waitInMilliseconds till element is displayed
      */
-    public async waitForElement(automationText: string, waitInMiliseconds: number = 3000): Promise<UIElement> {
+    public async waitForElement(automationText: string, waitInMilliseconds: number = this.defaultWaitTime): Promise<UIElement> {
         let element;
         try {
             element = await this.findElementByAutomationText(automationText, 100);
         } catch (error) { }
         const startTime = Date.now();
-        while ((!element || !(await element.isDisplayed())) && Date.now() - startTime <= waitInMiliseconds) {
+        while ((!element || !(await element.isDisplayed())) && Date.now() - startTime <= waitInMilliseconds) {
             try {
                 element = await this.findElementByAutomationText(automationText, 100);
             } catch (error) { }
         }
 
         if (!element || !await element.isDisplayed()) {
-            const msg = `Element with automationText: '${automationText}' is not dislpayed after ${waitInMiliseconds} milliseconds.`;
+            const msg = `Element with automationText: '${automationText}' is not displayed after ${waitInMilliseconds} milliseconds.`;
             logInfo(msg);
         }
 
@@ -381,7 +381,7 @@ export class AppiumDriver {
     }
 
     /**
-     * Search for elements by given text. The seacrch is case insensitive for android
+     * Search for elements by given text. The search is case insensitive for android
      * @param text
      * @param match
      * @param waitForElement
@@ -583,15 +583,15 @@ export class AppiumDriver {
         const pathExpectedImage = this.getExpectedImagePath(imageName);
 
         // First time capture
-        if (!fileExists(pathExpectedImage)) {
-            const pathActualImage = resolve(this._storageByDeviceName, imageName.replace(".", "_actual."));
+        if (!existsSync(pathExpectedImage)) {
+            const pathActualImage = resolvePath(this._storageByDeviceName, imageName.replace(".", "_actual."));
             await this.takeScreenshot(pathActualImage);
 
             if (rect) {
                 await this._imageHelper.clipRectangleImage(rect, pathActualImage);
             }
 
-            const pathActualImageToReportsFolder = resolve(this._logPath, basename(pathActualImage));
+            const pathActualImageToReportsFolder = resolvePath(this._logPath, basename(pathActualImage));
             copy(pathActualImage, pathActualImageToReportsFolder, false);
 
             console.log("Remove the 'actual' suffix to continue using the image as expected one ", pathExpectedImage);
@@ -599,7 +599,7 @@ export class AppiumDriver {
         }
 
         // Compare
-        let pathActualImage = await this.takeScreenshot(resolve(this._logPath, imageName.replace(".", "_actual.")));
+        let pathActualImage = await this.takeScreenshot(resolvePath(this._logPath, imageName.replace(".", "_actual.")));
         const pathDiffImage = pathActualImage.replace("actual", "diff");
 
         await this.prepareImageToCompare(pathActualImage, rect);
@@ -611,7 +611,7 @@ export class AppiumDriver {
             let counter = 1;
             timeOutSeconds *= 1000;
             while ((Date.now().valueOf() - eventStartTime) <= timeOutSeconds && !result) {
-                const pathActualImageConter = resolve(this._logPath, imageName.replace(".", "_actual_" + counter + "."));
+                const pathActualImageConter = resolvePath(this._logPath, imageName.replace(".", "_actual_" + counter + "."));
                 pathActualImage = await this.takeScreenshot(pathActualImageConter);
 
                 await this.prepareImageToCompare(pathActualImage, rect);
@@ -619,10 +619,10 @@ export class AppiumDriver {
                 counter++;
             }
         } else {
-            if (fileExists(pathDiffImage)) {
+            if (existsSync(pathDiffImage)) {
                 unlinkSync(pathDiffImage);
             }
-            if (fileExists(pathActualImage)) {
+            if (existsSync(pathActualImage)) {
                 unlinkSync(pathActualImage);
             }
         }
@@ -668,7 +668,7 @@ export class AppiumDriver {
             fileName = fileName.concat(AppiumDriver.pngFileExt);
         }
 
-        const imgPath = await this.takeScreenshot(resolve(this._logPath, fileName));
+        const imgPath = await this.takeScreenshot(resolvePath(this._logPath, fileName));
         return imgPath;
     }
 
@@ -685,7 +685,7 @@ export class AppiumDriver {
             fileName = fileName.concat(".xml");
         }
 
-        const path = resolve(this._logPath, fileName);
+        const path = resolvePath(this._logPath, fileName);
         const xml = await this.source();
         writeFileSync(path, xml.value, 'utf8');
     }
@@ -719,7 +719,7 @@ export class AppiumDriver {
                 this._logPath = getReportPath(this._args);
             }
 
-            const path = resolve(this._logPath, fileName);
+            const path = resolvePath(this._logPath, fileName);
             writeFileSync(path, deviceLog, 'utf8');
         } else {
             console.log(`Log type: ${logType} is empty!`);
@@ -763,8 +763,8 @@ export class AppiumDriver {
 
     public async quit() {
         console.log("Killing driver");
-        if (this._recordVideoInfo && this._recordVideoInfo['videoRecoringProcess']) {
-            this._recordVideoInfo['videoRecoringProcess'].kill("SIGINT");
+        if (this._recordVideoInfo && this._recordVideoInfo['videoRecordingProcess']) {
+            this._recordVideoInfo['videoRecordingProcess'].kill("SIGINT");
         }
         try {
             if (!this._args.attachToDebug) {
@@ -834,22 +834,21 @@ export class AppiumDriver {
     };
 
     private getExpectedImagePath(imageName: string) {
-
         if (!this._storageByDeviceName) {
             this._storageByDeviceName = getStorageByDeviceName(this._args);
         }
 
-        let pathExpectedImage = resolve(this._storageByDeviceName, imageName);
+        let pathExpectedImage = resolvePath(this._storageByDeviceName, imageName);
 
-        if (!fileExists(pathExpectedImage)) {
+        if (!existsSync(pathExpectedImage)) {
             if (!this._storageByPlatform) {
                 this._storageByPlatform = getStorageByPlatform(this._args);
             }
-            pathExpectedImage = resolve(this._storageByPlatform, imageName);
+            pathExpectedImage = resolvePath(this._storageByPlatform, imageName);
         }
 
-        if (!fileExists(pathExpectedImage)) {
-            pathExpectedImage = resolve(this._storageByDeviceName, imageName);
+        if (!existsSync(pathExpectedImage)) {
+            pathExpectedImage = resolvePath(this._storageByDeviceName, imageName);
         }
 
         return pathExpectedImage;
@@ -857,18 +856,18 @@ export class AppiumDriver {
 
     /**
     * Wait specific amount of time before continue execution
-    * @param miliseconds
+    * @param milliseconds
     */
-    public async sleep(miliseconds: number) {
-        await this._driver.sleep(miliseconds);
+    public async sleep(milliseconds: number) {
+        await this._driver.sleep(milliseconds);
     }
 
     /**
   * Wait specific amount of time before continue execution
-  * @param miliseconds
+  * @param milliseconds
   */
-    public wait(miliseconds: number) {
-        wait(miliseconds);
+    public wait(milliseconds: number) {
+        wait(milliseconds);
     }
 
 
@@ -936,7 +935,7 @@ export class AppiumDriver {
         const imageName = addExt(image, AppiumDriver.pngFileExt);
         const pathExpectedImage = this.getExpectedImagePath(imageName);
 
-        if (!fileExists(pathExpectedImage)) {
+        if (!existsSync(pathExpectedImage)) {
             throw new Error("The provided image does not exist!!!");
         }
         const imageAsBase64 = encodeImageToBase64(pathExpectedImage);

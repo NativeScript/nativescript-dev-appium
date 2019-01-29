@@ -30,27 +30,30 @@
     "ns-appium": "./bin/nativescript-dev-appium"
   },
   "dependencies": {
-    "app-root-path": "~2.0.1",
+    "app-root-path": "~2.1.0",
     "blink-diff": "~1.0.13",
-    "chai": "~4.1.0",
+    "chai": "~4.2.0",
     "chai-as-promised": "~7.1.0",
     "frame-comparer": "^2.0.1",
-    "glob": "7.1.0",
-    "mobile-devices-controller": "~2.8.6",
-    "wd": "~1.10.3",
-    "webdriverio": "~4.12.0",
-    "yargs": "~8.0.2",
-    "chalk": "^2.4.1",
-    "figlet": "^1.2.0",
-    "inquirer": "^6.2.0"
+    "glob": "^7.1.0",
+    "inquirer": "^6.2.0",
+    "mobile-devices-controller": "~4.0.1-1",
+    "wd": "~1.11.1",
+    "webdriverio": "~4.14.0",
+    "yargs": "~12.0.5"
   },
   "devDependencies": {
-    "@types/node": "10.11.4",
-    "typescript": "^3.0.0"
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "~10.12.18",
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "typescript": "~3.1.6"
   },
   "scripts": {
     "postinstall": "node ./postinstall.js",
     "prepare": "tsc",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "test": "mocha --timeout 999999"
   }
 }
