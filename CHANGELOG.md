@@ -5,19 +5,36 @@
 * isDisplayed already to checks actual coordinates whether element is in visible port of display 
 
 ### Features
-* run tests without providing appium capabilities config/ --runType. This option is only available for local runs when a device is already started and app is already installed.
+* run tests without providing appium capabilities config/ --runType. This option is only available for local runs in case a        device is already started and app is already installed.
 * device properties can be passed as regex expression (this is not available in sauceLab)
 * isSelected method - works only if the element has tag select
-* --runType is already case insensitive
-* waitForElement method by element automation text and wait time in milliseconds.
+* --runType parameter is already case insensitive e.g. sim.iOS == sim.ios
+* waitForElement method = searched for element by automation text and wait time in milliseconds.
 * include support for jasmine.
 * include support for javascript, typescript, angular, vue and angular(shared project)
-*
 
+### BREAKING CHANGES
+
+* --reuseDevice options is removed. This is not concerning sauceLabs
+
+Before:
+```
+$ npm run e2e -- --runType android23 --reuseDevice
+```
+After there are a few options in order to preserve device alive:
+
+1. If you are developing your application simply run
+
+```
+$ npm run e2e android or ios
+```
+2. If you are running on CI, change appium options
+    --fullReset: false -> this will keep device alive
+    --noReset: false -> this will install app on device
 
 
 ### Bug Fixes
-* fix: resolve app name when skip starting server
+* fix: resolve app name when skip starting of appium server
 
 
 <a name="4.0.6"></a>
@@ -84,10 +101,10 @@ Default automation was 'Appium' for all api levels.
 ```
 After:
 ```
-For all api levels higer or equal than api23 (including) default automator name is 'UiAutomator2'
+For all api levels higher or equal than api23 (including) default automator name is 'UiAutomator2'
 For all api levels lower than api23 default automator is still 'Appium'
 ```
-* rename DeviceController to DeviceManager - In general this should not affect any user except those that are using DeviceManager explicity
+* rename DeviceController to DeviceManager - In general this should not affect any user except those that are using DeviceManager explicitly
 * bump version of mocha to ~5.1.0 which requires flag --exit to be set in mocha config file when the tests are run ot Travis 
 ```
 
