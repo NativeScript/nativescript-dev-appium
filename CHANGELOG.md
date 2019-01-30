@@ -2,7 +2,7 @@
 # [5.0.0]() (2019-01-29)
 
 ### Bug Fixes
-* isDisplayed already to checks actual coordinates whether element is in visible port of display 
+* isDisplayed already checks whether actual coordinates of element are in visible viewport of display 
 * **locators** android webView locator is renamed to android.webkit.WebView
 
 ### Features
