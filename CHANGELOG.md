@@ -3,6 +3,7 @@
 
 ### Bug Fixes
 * isDisplayed already to checks actual coordinates whether element is in visible port of display 
+* **locators** android webView locator is renamed to android.webkit.WebView
 
 ### Features
 * run tests without providing appium capabilities config/ --runType. This option is only available for local runs in case a        device is already started and app is already installed.
