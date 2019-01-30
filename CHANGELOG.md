@@ -2,11 +2,14 @@
 # [5.0.0]() (2019-01-29)
 
 ### Bug Fixes
-* isDisplayed already checks whether actual coordinates of element are in visible viewport of display 
+* isDisplayed already checks whether actual coordinates of an element are in visible viewport of display
+* resolve app name when starting of appium server is skipped
 * **locators** android webView locator is renamed to android.webkit.WebView
 
 ### Features
-* run tests without providing appium capabilities config/ --runType. This option is only available for local runs in case a        device is already started and app is already installed.
+* run tests without providing appium capabilities config/ --runType. 
+  This option is only available for local runs which means that 
+  device should already be started and the app should already be installed.
 * device properties can be passed as regex expression (this is not available in sauceLab)
 * isSelected method - works only if the element has tag select
 * --runType parameter is already case insensitive e.g. sim.iOS == sim.ios
@@ -16,7 +19,7 @@
 
 ### BREAKING CHANGES
 
-* --reuseDevice options is removed. This is not concerning sauceLabs
+* --reuseDevice options is removed. This is not concerning test which uses sauceLabs
 
 Before:
 ```
@@ -24,18 +27,15 @@ $ npm run e2e -- --runType android23 --reuseDevice
 ```
 After there are a few options in order to preserve device alive:
 
-1. If you are developing your application simply run
+1. If you are developing your application with `tns run android/ ios`
 
 ```
 $ npm run e2e android or ios
 ```
-2. If you are running on CI, change appium options
+2. If you are running on CI, change appium options as
     --fullReset: false -> this will keep device alive
     --noReset: false -> this will install app on device
 
-
-### Bug Fixes
-* fix: resolve app name when skip starting of appium server
 
 
 <a name="4.0.6"></a>
