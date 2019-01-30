@@ -218,7 +218,7 @@ describe("Start device by apiLevel", async () => {
         const nsCaps = new NsCapabilities({
             appPath: iosApp,
             appiumCaps: {
-                platformVersion: /12./,
+                platformVersion: /12.||11./,
                 platformName: Platform.IOS,
                 fullReset: true
             }
