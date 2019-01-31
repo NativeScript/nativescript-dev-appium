@@ -60,7 +60,7 @@ describe("ios devices", () => {
     before("Init: DeviceManager", () => {
         deviceManager = new DeviceManager();
         appiumArgs = new NsCapabilities(<any>{});
-        appiumArgs.extend(<any>{ appiumCaps: { platformName: Platform.IOS, fullReset: false, deviceName: /iPhone XR/ } })
+        appiumArgs.extend(<any>{ appiumCaps: { platformName: Platform.IOS, fullReset: false, deviceName: /iPhone X/ } })
         appiumArgs.shouldSetFullResetOption();
     });
 
@@ -218,7 +218,7 @@ describe("Start device by apiLevel", async () => {
         const nsCaps = new NsCapabilities({
             appPath: iosApp,
             appiumCaps: {
-                platformVersion: /12./,
+                platformVersion: /12.||11./,
                 platformName: Platform.IOS,
                 fullReset: true
             }

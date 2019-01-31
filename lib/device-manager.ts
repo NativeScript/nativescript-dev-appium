@@ -133,7 +133,7 @@ export class DeviceManager implements IDeviceManager {
         }
     }
 
-    public static async getDevices(query: IDevice) {
+    public static async getDevices(query: IDevice): Promise<IDevice[]> {
         return await DeviceController.getDevices(query);
     }
 
@@ -160,11 +160,11 @@ export class DeviceManager implements IDeviceManager {
         }
     }
 
-    public static async getInstalledApps(device: IDevice) {
+    public static async getInstalledApps(device: IDevice): Promise<string[]> {
         return await DeviceController.getInstalledApplication(device);
     }
 
-    public static getDefaultDevice(args: INsCapabilities, deviceName?: string, token?: string, type?: DeviceType, platformVersion?: number) {
+    public static getDefaultDevice(args: INsCapabilities, deviceName?: string, token?: string, type?: DeviceType, platformVersion?: number): IDevice {
         let device: IDevice = {
             name: deviceName || args.appiumCaps.deviceName,
             type: type,

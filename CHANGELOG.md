@@ -1,3 +1,43 @@
+<a name="5.0.0"></a>
+# [5.0.0]() (2019-01-29)
+
+### Bug Fixes
+* isDisplayed already checks whether actual coordinates of an element are in visible viewport of display
+* resolve app name when starting of appium server is skipped
+* **locators** android webView locator is renamed to android.webkit.WebView
+
+### Features
+* run tests without providing appium capabilities config/ --runType. 
+  This option is only available for local runs which means that 
+  device should already be started and the app should already be installed.
+* device properties can be passed as regex expression (this is not available in sauceLab)
+* isSelected method - works only if the element has tag select
+* --runType parameter is already case insensitive e.g. sim.iOS == sim.ios
+* waitForElement method = searched for element by automation text and wait time in milliseconds.
+* include support for jasmine.
+* include support for javascript, typescript, angular, vue and angular(shared project)
+
+### BREAKING CHANGES
+
+* --reuseDevice options is removed. This is not concerning test which uses sauceLabs
+
+Before:
+```
+$ npm run e2e -- --runType android23 --reuseDevice
+```
+After there are a few options in order to preserve device alive:
+
+1. If you are developing your application with `tns run android/ ios`
+
+```
+$ npm run e2e android or ios
+```
+2. If you are running on CI, change appium options as
+    --fullReset: false -> this will keep device alive
+    --noReset: false -> this will install app on device
+
+
+
 <a name="4.0.6"></a>
 # [4.0.6]() (2018-08-08)
 ### Bug Fixes
@@ -62,10 +102,10 @@ Default automation was 'Appium' for all api levels.
 ```
 After:
 ```
-For all api levels higer or equal than api23 (including) default automator name is 'UiAutomator2'
+For all api levels higher or equal than api23 (including) default automator name is 'UiAutomator2'
 For all api levels lower than api23 default automator is still 'Appium'
 ```
-* rename DeviceController to DeviceManager - In general this should not affect any user except those that are using DeviceManager explicity
+* rename DeviceController to DeviceManager - In general this should not affect any user except those that are using DeviceManager explicitly
 * bump version of mocha to ~5.1.0 which requires flag --exit to be set in mocha config file when the tests are run ot Travis 
 ```
 
