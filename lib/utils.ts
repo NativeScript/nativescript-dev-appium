@@ -307,22 +307,28 @@ export function getAppPath(caps: INsCapabilities) {
             }
         } else {
             const iosPlatformsPath = 'platforms/ios/build';
-            const appType = caps.runType || caps.device.type === DeviceType.SIMULATOR ? "sim" : "device";
-            basePath = appType.includes("device") ? `${iosPlatformsPath}/device/**/*.ipa` : `${iosPlatformsPath}/emulator/**/*.app`;
+            // possible paths
+            // "Release-iphoneos"
+            // "Release-iphonesimulator"
+            // "Debug-iphoneos"
+            // "Debug-iphonesimulator"
+            // "device"
+            // "emulator"
+            basePath = caps.device.type === DeviceType.DEVICE ? `${iosPlatformsPath}/**/*.ipa` : `${iosPlatformsPath}/**/*.app`;
         }
     }
 
     let apps = glob.sync(basePath);
-
     if (!apps || apps.length === 0) {
-        apps = glob.sync(`${caps.projectDir}`)
-            .filter(function (file) {
+        const appExt = caps.isAndroid ? "*.apk" : caps.device.type === DeviceType.DEVICE ? `*.ipa` : `*.app`;
+        apps = glob.sync(`${caps.projectDir}/**/${appExt}`)
+            .filter(file => {
                 return file.endsWith(".ipa") || file.endsWith(".app") || file.endsWith(".apk")
             });
     }
 
     if (!apps || apps.length === 0) {
-        logError(`No 'app' capability provided or the convension for 'runType'${caps.runType} is not as excpeced! 
+        logError(`No 'app' capability provided or the convention for 'runType'${caps.runType} is not as expected! 
                 In order to automatically search and locate app package please use 'device' in your 'runType' name. E.g --runType device.iPhone7.iOS110, --runType sim.iPhone7.iOS110 or
                 specify correct app path`);
     }
