@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import * as childProcess from "child_process";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { Point } from "./point";
