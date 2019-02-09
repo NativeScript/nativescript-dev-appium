@@ -18,7 +18,7 @@ import { existsSync } from "fs";
 import { killAllProcessAndRelatedCommand } from "mobile-devices-controller";
 
 export class AppiumServer {
-    private _server: child_process.ChildProcess;
+    private _server: any;
     private _appium;
     private _port: number;
     private _runType: string;

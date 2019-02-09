@@ -141,7 +141,7 @@ function getAllFileNames(folder) {
 //     return files;
 // }
 
-export function shutdown(processToKill: childProcess.ChildProcess, verbose) {
+export function shutdown(processToKill: any, verbose) {
     try {
         if (processToKill && processToKill !== null) {
             if (isWin()) {
