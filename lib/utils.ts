@@ -314,17 +314,28 @@ export function getAppPath(caps: INsCapabilities) {
             // "Debug-iphonesimulator"
             // "device"
             // "emulator"
-            basePath = caps.device.type === DeviceType.DEVICE ? `${iosPlatformsPath}/**/*.ipa` : `${iosPlatformsPath}/**/*.app`;
+            if (caps.device && caps.device.type) {
+                basePath = caps.device.type === DeviceType.DEVICE ? `${iosPlatformsPath}/**/*.ipa` : `${iosPlatformsPath}/**/*.app`;
+            } else if (caps.runType.startsWith("dev")) {
+                basePath = `${iosPlatformsPath}/**/*.ipa`;
+            } else {
+                basePath = `${iosPlatformsPath}/**/*.app`;
+            }
         }
     }
 
     let apps = glob.sync(basePath);
     if (!apps || apps.length === 0) {
-        const appExt = caps.isAndroid ? "*.apk" : caps.device.type === DeviceType.DEVICE ? `*.ipa` : `*.app`;
-        apps = glob.sync(`${caps.projectDir}/**/${appExt}`)
-            .filter(file => {
-                return file.endsWith(".ipa") || file.endsWith(".app") || file.endsWith(".apk")
-            });
+        if (caps.isAndroid) {
+            apps = glob.sync(`${caps.projectDir}/**/*.apk`);
+        }
+        if (caps.isIOS) {
+            if (caps.runType.startsWith("dev")) {
+                apps = glob.sync(`${caps.projectDir}/**/*.app`);
+            } else {
+                apps = glob.sync(`${caps.projectDir}/**/*.ipa`);
+            }
+        }
     }
 
     if (!apps || apps.length === 0) {
@@ -588,7 +599,7 @@ const convertObjToString = obj => {
     return "";
 }
 
-export const shouldUserMobileDevicesController = (args: INsCapabilities)=>{
+export const shouldUserMobileDevicesController = (args: INsCapabilities) => {
     const useDsCS = process.env["USE_DEVICES_CONTROLLER_SERVER"] || false;
     const useMDsCS = process.env["USE_MOBILE_DEVICES_CONTROLLER_SERVER"] || false;
 
