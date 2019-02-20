@@ -249,6 +249,7 @@ const run = async () => {
             switch (template.testingFramwork) {
                 case jasmine:
                     tsConfigJson.compilerOptions.types.push("jasmine");
+                    tsConfigJson.compilerOptions.types.push("node");
                     break;
                 case mocha:
                     tsConfigJson.compilerOptions.types.push("mocha");
