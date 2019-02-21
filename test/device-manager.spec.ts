@@ -131,7 +131,7 @@ describe("start Appium server android", async () => {
         const server: AppiumServer = new AppiumServer(nsCaps);
         await server.start(9900);
         assert.isTrue(server.hasStarted);
-        const driver = await AppiumDriver.createAppiumDriver(server.port, nsCaps);
+        const driver = await AppiumDriver.createAppiumDriver(nsCaps);
         const currentWindowName = AndroidController.getCurrentFocusedScreen(nsCaps.device);
         const startTime = Date.now();
         while (!currentWindowName.includes("com.tns.NativeScriptActivity") && Date.now() - startTime < 5000) { }
@@ -185,7 +185,7 @@ describe("start Appium server ios", async () => {
         const server: AppiumServer = new AppiumServer(nsCaps);
         await server.start(8822);
         assert.isTrue(server.hasStarted);
-        const driver = await AppiumDriver.createAppiumDriver(server.port, nsCaps);
+        const driver = await AppiumDriver.createAppiumDriver(nsCaps);
         await driver.quit();
         await server.stop();
     });
@@ -205,7 +205,7 @@ describe("Start device by apiLevel", async () => {
 
         const server = new AppiumServer(nsCaps);
         await server.start(8799);
-        const driver = await AppiumDriver.createAppiumDriver(server.port, nsCaps);
+        const driver = await AppiumDriver.createAppiumDriver(nsCaps);
         const currentWindowName = AndroidController.getCurrentFocusedScreen(nsCaps.device);
         const startTime = Date.now();
         while (!currentWindowName.includes("com.tns.NativeScriptActivity") && Date.now() - startTime < 5000) { }
@@ -226,7 +226,7 @@ describe("Start device by apiLevel", async () => {
 
         const server = new AppiumServer(nsCaps);
         await server.start(8887);
-        const driver = await  AppiumDriver.createAppiumDriver(server.port, nsCaps);
+        const driver = await AppiumDriver.createAppiumDriver(nsCaps);
 
         const apps = IOSController.getInstalledApps(nsCaps.device);
 
@@ -259,7 +259,7 @@ describe("dev-mode-options", async () => {
             appPath: iosApp,
         });
 
-        const appiumDriver = await AppiumDriver.createAppiumDriver(appiumServer.port, nsCaps);
+        const appiumDriver = await AppiumDriver.createAppiumDriver(nsCaps);
         assert.isTrue(appiumDriver.nsCapabilities.device.platform === Platform.IOS);
         assert.isDefined(appiumDriver.nsCapabilities.appiumCaps.app);
         await appiumDriver.quit();
@@ -270,7 +270,7 @@ describe("dev-mode-options", async () => {
             appPath: androidApp
         });
 
-        const appiumDriver = await AppiumDriver.createAppiumDriver(appiumServer.port, nsCaps);
+        const appiumDriver = await AppiumDriver.createAppiumDriver(nsCaps);
         assert.isTrue(appiumDriver.nsCapabilities.device.platform === Platform.ANDROID);
         assert.isDefined(appiumDriver.nsCapabilities.appiumCaps.app);
         await appiumDriver.quit();
@@ -281,7 +281,7 @@ describe("dev-mode-options", async () => {
             appPath: androidApp
         });
 
-        const appiumDriver = await AppiumDriver.createAppiumDriver(appiumServer.port, nsCaps);
+        const appiumDriver = await AppiumDriver.createAppiumDriver(nsCaps);
         assert.isTrue(appiumDriver.nsCapabilities.device.platform === Platform.ANDROID);
         assert.isDefined(appiumDriver.nsCapabilities.appiumCaps.app);
         await appiumDriver.quit();
@@ -292,7 +292,7 @@ describe("dev-mode-options", async () => {
             appPath: iosApp
         });
 
-        const appiumDriver = await AppiumDriver.createAppiumDriver(appiumServer.port, nsCaps);
+        const appiumDriver = await AppiumDriver.createAppiumDriver(nsCaps);
         assert.isTrue(appiumDriver.nsCapabilities.device.platform === Platform.IOS);
         assert.isDefined(appiumDriver.nsCapabilities.appiumCaps.app);
         await appiumDriver.quit();

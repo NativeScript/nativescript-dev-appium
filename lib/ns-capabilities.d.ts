@@ -39,6 +39,7 @@ export declare class NsCapabilities implements INsCapabilities {
     exceptions: Array<string>;
     imagesPath: string;
     deviceTypeOrPlatform: string;
+    driverConfig: any;
     constructor(_parser: INsCapabilitiesArgs);
     readonly isAndroid: any;
     readonly isIOS: boolean;

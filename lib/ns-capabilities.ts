@@ -44,6 +44,7 @@ export class NsCapabilities implements INsCapabilities {
     public exceptions: Array<string> = new Array();
     public imagesPath: string;
     public deviceTypeOrPlatform: string;
+    public driverConfig: any;
 
     constructor(private _parser: INsCapabilitiesArgs) {
         this.projectDir = this._parser.projectDir;
@@ -73,6 +74,7 @@ export class NsCapabilities implements INsCapabilities {
         this.appiumCaps = this._parser.appiumCaps;
         this.deviceTypeOrPlatform = this._parser.deviceTypeOrPlatform;
         this.device = this._parser.device;
+        this.driverConfig = this._parser.driverConfig;
     }
 
     get isAndroid() { return this.isAndroidPlatform(); }
@@ -104,7 +106,6 @@ export class NsCapabilities implements INsCapabilities {
         }
 
         if (this.deviceTypeOrPlatform || this.device) {
-
             let searchQuery = <IDevice>{};
             if (this.deviceTypeOrPlatform) {
                 if (this.deviceTypeOrPlatform === Platform.ANDROID || this.deviceTypeOrPlatform === Platform.IOS) {
