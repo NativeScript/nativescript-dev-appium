@@ -141,7 +141,7 @@ function getAllFileNames(folder) {
 //     return files;
 // }
 
-export function shutdown(processToKill: childProcess.ChildProcess, verbose) {
+export function shutdown(processToKill: any, verbose) {
     try {
         if (processToKill && processToKill !== null) {
             if (isWin()) {
@@ -307,22 +307,39 @@ export function getAppPath(caps: INsCapabilities) {
             }
         } else {
             const iosPlatformsPath = 'platforms/ios/build';
-            const appType = caps.runType || caps.device.type === DeviceType.SIMULATOR ? "sim" : "device";
-            basePath = appType.includes("device") ? `${iosPlatformsPath}/device/**/*.ipa` : `${iosPlatformsPath}/emulator/**/*.app`;
+            // possible paths
+            // "Release-iphoneos"
+            // "Release-iphonesimulator"
+            // "Debug-iphoneos"
+            // "Debug-iphonesimulator"
+            // "device"
+            // "emulator"
+            if (caps.device && caps.device.type) {
+                basePath = caps.device.type === DeviceType.DEVICE ? `${iosPlatformsPath}/**/*.ipa` : `${iosPlatformsPath}/**/*.app`;
+            } else if (caps.runType.startsWith("dev")) {
+                basePath = `${iosPlatformsPath}/**/*.ipa`;
+            } else {
+                basePath = `${iosPlatformsPath}/**/*.app`;
+            }
         }
     }
 
     let apps = glob.sync(basePath);
-
     if (!apps || apps.length === 0) {
-        apps = glob.sync(`${caps.projectDir}`)
-            .filter(function (file) {
-                return file.endsWith(".ipa") || file.endsWith(".app") || file.endsWith(".apk")
-            });
+        if (caps.isAndroid) {
+            apps = glob.sync(`${caps.projectDir}/**/*.apk`);
+        }
+        if (caps.isIOS) {
+            if (caps.runType.startsWith("dev")) {
+                apps = glob.sync(`${caps.projectDir}/**/*.app`);
+            } else {
+                apps = glob.sync(`${caps.projectDir}/**/*.ipa`);
+            }
+        }
     }
 
     if (!apps || apps.length === 0) {
-        logError(`No 'app' capability provided or the convension for 'runType'${caps.runType} is not as excpeced! 
+        logError(`No 'app' capability provided or the convention for 'runType'${caps.runType} is not as expected! 
                 In order to automatically search and locate app package please use 'device' in your 'runType' name. E.g --runType device.iPhone7.iOS110, --runType sim.iPhone7.iOS110 or
                 specify correct app path`);
     }
@@ -582,7 +599,7 @@ const convertObjToString = obj => {
     return "";
 }
 
-export const shouldUserMobileDevicesController = (args: INsCapabilities)=>{
+export const shouldUserMobileDevicesController = (args: INsCapabilities) => {
     const useDsCS = process.env["USE_DEVICES_CONTROLLER_SERVER"] || false;
     const useMDsCS = process.env["USE_MOBILE_DEVICES_CONTROLLER_SERVER"] || false;
 

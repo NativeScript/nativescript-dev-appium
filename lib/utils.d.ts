@@ -1,5 +1,3 @@
-/// <reference types="node" />
-import * as childProcess from "child_process";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { Point } from "./point";
 import { Direction } from "./direction";
@@ -8,7 +6,7 @@ export declare function resolvePath(mainPath: any, ...args: any[]): string;
 export declare function isDirectory(fullName: any): boolean;
 export declare function isFile(fullName: any): boolean;
 export declare function copy(src: any, dest: any, verbose: any): any;
-export declare function shutdown(processToKill: childProcess.ChildProcess, verbose: any): void;
+export declare function shutdown(processToKill: any, verbose: any): void;
 export declare function killPid(pid: any, verbose: any): void;
 export declare function waitForOutput(process: any, matcher: any, errorMatcher: any, timeout: any, verbose: any): Promise<boolean>;
 export declare function executeCommand(args: any, cwd?: string): string;
