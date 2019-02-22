@@ -1,3 +1,4 @@
+import { ChildProcess } from "child_process";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
 export declare class AppiumServer {
@@ -10,7 +11,7 @@ export declare class AppiumServer {
     constructor(_args: INsCapabilities);
     port: number;
     runType: string;
-    readonly server: any;
+    readonly server: ChildProcess;
     hasStarted: boolean;
     start(port: any, deviceManager?: IDeviceManager): Promise<boolean | this>;
     private startAppiumServer;

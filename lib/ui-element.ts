@@ -77,42 +77,74 @@ export class UIElement {
     }
 
     /**
-     * Returns if an element is selected
+    * Returns if an element is selected
+    */
+    public async isSelected() {
+        const el = (await this.element());
+        if (!el) return false;
+        if (this._args.isAndroid) {
+            try {
+                await el.getAttribute("selected");
+            } catch (error) {
+                console.error("Check if this is the correct element!");
+            }
+        }
+
+        try {
+            return await el.isSelected();
+        } catch (ex) {
+            console.warn("'selected' attr is not reachable on this element!");
+        }
+
+        console.warn("Trying use 'value' attr!");
+        try {
+            const attrValue = await el.getAttribute("value");
+            return attrValue === "1" || attrValue === "true" || attrValue === true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    /**
+     * Selected an element
      */
     public async select(retries: number = 3) {
         (await (await this.element())).click();
         let el = (await this.element());
-        if(!el) return el;
+        if (!el) return el;
 
-        const hasSelectedAttr = await (await this.element()).getAttribute("selected");
-        if (hasSelectedAttr) {
-            let isSelected = await el.isSelected();
-            while (retries >= 0 && !isSelected) {
-                (await (await this.element())).click();
-                isSelected = await el.isSelected();
-                retries--;
-                await this._driver.sleep(200);
-            }
-        } else {
-            console.log(`This element doesn't contains selected attribute!`);
+        let isSelected = await this.isSelected();
+        while (retries >= 0 && !isSelected) {
+            (await (await this.element())).click();
+            isSelected = await this.isSelected();
+            retries--;
+            await this._driver.sleep(200);
         }
 
         return el;
     }
 
     /**
-     * Returns if an element is selected
+     * Returns if an element is checked
      */
-    public async isSelected() {
+    public async isChecked() {
         const el = (await this.element());
-        if(!el) return false;
+        if (!el) return false;
+        if (this._args.isAndroid) {
+            try {
+                const isChecked = await el.getAttribute("checked");
+                return isChecked === "true" || isChecked === true;
+            } catch (error) {
+                console.error("Check if this is the correct element!");
+            }
+        }
 
-        const hasSelectedAttr = await (await this.element()).getAttribute("selected");
-        if (!hasSelectedAttr) {
-            console.log(`This element doesn't contains selected attribute! Skip check!`);
-            return true;
-        } else {
-            return await (await this.element()).isSelected();
+        console.warn("Trying use 'value' attr!");
+        try {
+            const attrValue = await el.getAttribute("value");
+            return attrValue === "1" || attrValue === "true" || attrValue === true;
+        } catch (error) {
+            return false;
         }
     }
 

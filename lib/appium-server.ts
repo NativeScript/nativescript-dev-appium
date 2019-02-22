@@ -1,4 +1,4 @@
-import * as child_process from "child_process";
+import { ChildProcess, spawn } from "child_process";
 import {
     log,
     resolvePath,
@@ -18,7 +18,7 @@ import { existsSync } from "fs";
 import { killAllProcessAndRelatedCommand } from "mobile-devices-controller";
 
 export class AppiumServer {
-    private _server: any;
+    private _server: ChildProcess;
     private _appium;
     private _port: number;
     private _runType: string;
@@ -113,7 +113,7 @@ export class AppiumServer {
 
         logInfo(`Server args: `, startingServerArgs);
 
-        this._server = child_process.spawn(this._appium, startingServerArgs);
+        this._server = spawn(this._appium, startingServerArgs);
     }
 
     public async stop() {
