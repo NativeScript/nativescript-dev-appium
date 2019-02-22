@@ -105,6 +105,12 @@ export class NsCapabilities implements INsCapabilities {
             this.isValidated = true;
         }
 
+        if (!this.driverConfig) {
+            this.driverConfig = {};
+            this.driverConfig.host = "localhost";
+            this.driverConfig.port = this.port;
+        }
+        
         if (this.deviceTypeOrPlatform || this.device) {
             let searchQuery = <IDevice>{};
             if (this.deviceTypeOrPlatform) {

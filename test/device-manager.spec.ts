@@ -105,6 +105,7 @@ describe("start Appium server android", async () => {
 
     it("Start server", async () => {
         const nsCaps = new NsCapabilities({
+            port: 8799,
             appPath: androidApp,
             appiumCaps: {
                 platformName: Platform.ANDROID,
@@ -112,7 +113,7 @@ describe("start Appium server android", async () => {
             },
         });
         const server: AppiumServer = new AppiumServer(nsCaps);
-        await server.start(8799);
+        await server.start(nsCaps.port);
         assert.isTrue(server.hasStarted);
         await server.stop();
         const startTime = Date.now();
@@ -123,13 +124,14 @@ describe("start Appium server android", async () => {
     it("Start appium driver", async () => {
         const nsCaps = new NsCapabilities({
             appPath: androidApp,
+            port: 9900,
             appiumCaps: {
                 platformName: Platform.ANDROID,
                 fullReset: true
             },
         });
         const server: AppiumServer = new AppiumServer(nsCaps);
-        await server.start(9900);
+        await server.start(nsCaps.port);
         assert.isTrue(server.hasStarted);
         const driver = await AppiumDriver.createAppiumDriver(nsCaps);
         const currentWindowName = AndroidController.getCurrentFocusedScreen(nsCaps.device);
@@ -155,6 +157,7 @@ describe("start Appium server ios", async () => {
     it("Start server", async () => {
         const nsCaps = new NsCapabilities({
             appPath: iosApp,
+            port: 8799,
             appiumCaps: {
                 platformName: Platform.IOS,
                 deviceName: /^iPhone 6$/,
@@ -163,7 +166,7 @@ describe("start Appium server ios", async () => {
             },
         });
         const server: AppiumServer = new AppiumServer(nsCaps);
-        await server.start(8799);
+        await server.start(nsCaps.port);
         assert.isTrue(server.hasStarted);
         await server.stop();
         const startTime = Date.now();
@@ -173,6 +176,7 @@ describe("start Appium server ios", async () => {
 
     it("Start appium driver", async () => {
         const nsCaps = new NsCapabilities({
+            port: 8822,
             appPath: iosApp,
             appiumCaps: {
                 platformName: Platform.IOS,
@@ -183,7 +187,7 @@ describe("start Appium server ios", async () => {
             verbose: false
         });
         const server: AppiumServer = new AppiumServer(nsCaps);
-        await server.start(8822);
+        await server.start(nsCaps.port);
         assert.isTrue(server.hasStarted);
         const driver = await AppiumDriver.createAppiumDriver(nsCaps);
         await driver.quit();
@@ -194,6 +198,7 @@ describe("start Appium server ios", async () => {
 describe("Start device by apiLevel", async () => {
     it("test-start-emulator-apiLevel-6.0", async () => {
         const nsCaps = new NsCapabilities({
+            port: 8799,
             runType: "android23",
             appPath: androidApp,
             appiumCaps: {
@@ -204,7 +209,7 @@ describe("Start device by apiLevel", async () => {
         });
 
         const server = new AppiumServer(nsCaps);
-        await server.start(8799);
+        await server.start(nsCaps.port);
         const driver = await AppiumDriver.createAppiumDriver(nsCaps);
         const currentWindowName = AndroidController.getCurrentFocusedScreen(nsCaps.device);
         const startTime = Date.now();
@@ -217,6 +222,7 @@ describe("Start device by apiLevel", async () => {
     it("test-start-simulator-apiLevel-12.", async () => {
         const nsCaps = new NsCapabilities({
             appPath: iosApp,
+            port: 8887,
             appiumCaps: {
                 platformVersion: /12.||11./,
                 platformName: Platform.IOS,
@@ -225,7 +231,7 @@ describe("Start device by apiLevel", async () => {
         });
 
         const server = new AppiumServer(nsCaps);
-        await server.start(8887);
+        await server.start(nsCaps.port);
         const driver = await AppiumDriver.createAppiumDriver(nsCaps);
 
         const apps = IOSController.getInstalledApps(nsCaps.device);
