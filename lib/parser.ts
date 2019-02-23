@@ -138,9 +138,10 @@ const config = (() => {
         };
     }
 
+    options.isSauceLab = options.sauceLab || process.env.npm_config_sauceLab;
     if (options.isSauceLab && !options.remoteAddress) {
         const sauceUser = options.sauceUser || process.env.SAUCE_USER || process.env.npm_config["SAUCE_USER"];
-        const sauceKey = options.sauceLab || process.env.SAUCE_KEY || process.env.npm_config["SAUCE_KEY"];
+        const sauceKey = options.sauceKey || process.env.SAUCE_KEY || process.env.npm_config["SAUCE_KEY"];
 
         if (!sauceKey || !sauceUser) {
             throw new Error("Sauce Labs Username or Access Key is missing! Check environment variables for SAUCE_USER and SAUCE_KEY !!!");
@@ -159,7 +160,7 @@ const config = (() => {
         testFolder: options.testFolder || process.env.npm_config_testFolder || "e2e",
         runType: options.runType || process.env.npm_config_runType,
         appiumCapsLocation: options.appiumCapsLocation || process.env.npm_config_appiumCapsLocation || join(projectDir, options.testFolder, "config", options.capabilitiesName),
-        isSauceLab: options.sauceLab || process.env.npm_config_sauceLab,
+        isSauceLab: options.isSauceLab,
         verbose: options.verbose || process.env.npm_config_loglevel === "verbose",
         appPath: options.appPath || process.env.npm_config_appPath,
         storage: options.storage || process.env.npm_config_STORAGE || process.env.STORAGE,
