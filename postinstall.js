@@ -254,6 +254,7 @@ const run = async () => {
                 case mocha:
                     tsConfigJson.compilerOptions.types.push("mocha");
                     tsConfigJson.compilerOptions.types.push("chai");
+                    tsConfigJson.compilerOptions.types.push("node");
                     break;
                 default:
                     break;
