@@ -39,4 +39,5 @@ export interface INsCapabilitiesArgs {
     imagesPath?: string;
     startDeviceOptions?: string;
     deviceTypeOrPlatform?: string
+    driverConfig?: any;
 }

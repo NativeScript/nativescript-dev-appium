@@ -84,7 +84,7 @@ export async function createDriver(args?: INsCapabilitiesArgs) {
 
     if (nsCapabilities.attachToDebug) {
         if (!appiumDriver) {
-            appiumDriver = await AppiumDriver.createAppiumDriver(port, nsCapabilities);
+            appiumDriver = await AppiumDriver.createAppiumDriver(nsCapabilities);
         }
         return appiumDriver;
     }
@@ -101,7 +101,7 @@ export async function createDriver(args?: INsCapabilitiesArgs) {
     if (appiumDriver !== null && appiumDriver.isAlive) {
         return appiumDriver;
     } else if (appiumDriver === null) {
-        appiumDriver = await AppiumDriver.createAppiumDriver(port, nsCapabilities);
+        appiumDriver = await AppiumDriver.createAppiumDriver(nsCapabilities);
     } else if (appiumDriver !== null && !appiumDriver.isAlive) {
         await appiumDriver.init();
     }

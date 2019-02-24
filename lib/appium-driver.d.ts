@@ -60,7 +60,7 @@ export declare class AppiumDriver {
     wd(): any;
     click(args: any): Promise<any>;
     navBack(): Promise<any>;
-    static createAppiumDriver(port: number, args: INsCapabilities): Promise<AppiumDriver>;
+    static createAppiumDriver(args: INsCapabilities): Promise<AppiumDriver>;
     /**
      *
      * @param xPath

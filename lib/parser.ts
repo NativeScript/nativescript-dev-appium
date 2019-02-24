@@ -126,17 +126,41 @@ const config = (() => {
     if (!options.runType && !options.device && options._[0]) {
         deviceTypeOrPlatform = options._[0].toLowerCase() === "android" ? "android" : "ios";
     }
+
+    options.driverConfig = options.remoteAddress;
+
+    options.port = options.port || process.env.npm_config_port || process.env["APPIUM_PORT"] || 4723;
+
+    if (!options.driverConfig) {
+        options.driverConfig = {
+            host: "localhost",
+            port: options.port
+        };
+    }
+
+    options.isSauceLab = options.sauceLab || process.env.npm_config_sauceLab;
+    if (options.isSauceLab && !options.remoteAddress) {
+        const sauceUser = options.sauceUser || process.env.SAUCE_USER || process.env.npm_config["SAUCE_USER"];
+        const sauceKey = options.sauceKey || process.env.SAUCE_KEY || process.env.npm_config["SAUCE_KEY"];
+
+        if (!sauceKey || !sauceUser) {
+            throw new Error("Sauce Labs Username or Access Key is missing! Check environment variables for SAUCE_USER and SAUCE_KEY !!!");
+        }
+
+        options.driverConfig = "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub";
+    }
+
     const config = {
+        port: options.port,
         projectDir: projectDir,
         projectBinary: projectBinary,
         pluginRoot: pluginRoot,
         pluginBinary: pluginBinary,
-        port: options.port || process.env.npm_config_port || process.env["APPIUM_PORT"] || 4723,
         wdaLocalPort: options.wdaLocalPort || process.env.npm_config_wdaLocalPort || process.env["WDA_LOCAL_PORT"] || 8410,
         testFolder: options.testFolder || process.env.npm_config_testFolder || "e2e",
         runType: options.runType || process.env.npm_config_runType,
         appiumCapsLocation: options.appiumCapsLocation || process.env.npm_config_appiumCapsLocation || join(projectDir, options.testFolder, "config", options.capabilitiesName),
-        isSauceLab: options.sauceLab || process.env.npm_config_sauceLab,
+        isSauceLab: options.isSauceLab,
         verbose: options.verbose || process.env.npm_config_loglevel === "verbose",
         appPath: options.appPath || process.env.npm_config_appPath,
         storage: options.storage || process.env.npm_config_STORAGE || process.env.STORAGE,
@@ -154,6 +178,7 @@ const config = (() => {
         startDeviceOptions: options.startDeviceOptions || process.env.npm_config_startDeviceOptions,
         deviceTypeOrPlatform: deviceTypeOrPlatform,
         device: options.device || process.env.npm_config_device,
+        driverConfig: options.driverConfig
     };
 
     return config;
@@ -187,4 +212,5 @@ export const {
     startDeviceOptions,
     deviceTypeOrPlatform: deviceTypeOrPlatform,
     device: device,
+    driverConfig: driverConfig
 }: INsCapabilitiesArgs = config;

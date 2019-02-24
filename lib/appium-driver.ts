@@ -16,8 +16,7 @@ import {
     DeviceController,
     IDevice,
     DeviceType,
-    AndroidController,
-    killAllProcessAndRelatedCommand
+    AndroidController
 } from "mobile-devices-controller";
 import {
     addExt,
@@ -183,25 +182,9 @@ export class AppiumDriver {
     //     return await this._driver.getPerformanceData(this._args.appiumCaps.appPackage, type, timeout);
     // }
 
-    public static async createAppiumDriver(port: number, args: INsCapabilities) {
-        let driverConfig: any = {
-            host: "localhost",
-            port: port
-        };
-
+    public static async createAppiumDriver(args: INsCapabilities) {
         if (!args.isValidated) {
             await args.validateArgs();
-        }
-
-        if (args.isSauceLab) {
-            const sauceUser = process.env.SAUCE_USER || process.env.npm_config["SAUCE_USER"];
-            const sauceKey = process.env.SAUCE_KEY || process.env.npm_config["SAUCE_KEY"];
-
-            if (!sauceKey || !sauceUser) {
-                throw new Error("Sauce Labs Username or Access Key is missing! Check environment variables for SAUCE_USER and SAUCE_KEY !!!");
-            }
-
-            driverConfig = "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub";
         }
 
         log("Creating driver!", args.verbose);
@@ -216,12 +199,12 @@ export class AppiumDriver {
         }
 
         const webio = webdriverio.remote({
-            baseUrl: driverConfig.host,
-            port: driverConfig.port,
+            baseUrl: args.driverConfig.host,
+            port: args.driverConfig.port,
             desiredCapabilities: args.appiumCaps
         });
 
-        const driver = await wd.promiseChainRemote(driverConfig);
+        const driver = await wd.promiseChainRemote(args.driverConfig);
         AppiumDriver.configureLogging(driver, args.verbose);
 
         let hasStarted = false;
@@ -298,7 +281,7 @@ export class AppiumDriver {
             retries--;
         }
 
-        return new AppiumDriver(driver, wd, webio, driverConfig, args);
+        return new AppiumDriver(driver, wd, webio, args.driverConfig, args);
     }
 
     /**
