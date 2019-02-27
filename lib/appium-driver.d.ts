@@ -85,7 +85,7 @@ export declare class AppiumDriver {
      * @param text
      * @param waitForElement
      */
-    findElementByAutomationText(automationText: string, waitForElement?: number): Promise<UIElement>;
+    findElementByAutomationText(automationText: string, waitForElement?: number): Promise<any>;
     /**
      * Search for element by given automationText and waits until the element is displayed.
      * @param text

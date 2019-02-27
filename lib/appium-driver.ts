@@ -321,9 +321,9 @@ export class AppiumDriver {
      */
     public async findElementByAutomationText(automationText: string, waitForElement: number = this.defaultWaitTime) {
         if (this.isIOS) {
-            return await this.findElementByAccessibilityId(`${automationText}`, waitForElement);
+            return await this.findElementByAccessibilityIdIfExists(`${automationText}`, waitForElement);
         }
-        return await this.findElementByXPath(this._elementHelper.getXPathByText(automationText, true), waitForElement);
+        return await this.findElementByXPathIfExists(this._elementHelper.getXPathByText(automationText, true), waitForElement);
     }
 
     /**
@@ -753,7 +753,7 @@ export class AppiumDriver {
             if (!this._args.attachToDebug) {
                 await this._driver.quit();
             } else {
-                await this._webio.detach();
+                //await this._webio.detach();
             }
         } catch (error) {
         }
