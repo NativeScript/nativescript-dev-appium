@@ -27,7 +27,8 @@
   "bin": {
     "nativescript-dev-appium": "./bin/nativescript-dev-appium",
     "ns-dev-appium": "./bin/nativescript-dev-appium",
-    "ns-appium": "./bin/nativescript-dev-appium"
+    "ns-appium": "./bin/nativescript-dev-appium",
+    "ns-start-session": "./bin/start-session"
   },
   "dependencies": {
     "app-root-path": "~2.1.0",

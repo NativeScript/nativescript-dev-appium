@@ -188,7 +188,7 @@ export class AppiumDriver {
         }
 
         log("Creating driver!", args.verbose);
-
+        
         if (!args.attachToDebug && !args.sessionId) {
             if (!args.device) {
                 args.deviceManager = args.deviceManager || new DeviceManager();
@@ -730,7 +730,7 @@ export class AppiumDriver {
      * @param time in minutes
      */
     public async backgroundApp(minutes: number) {
-        console.log("Sending the currently active app to the background ...");
+        logInfo("Sending the currently active app to the background ...");
         await this._driver.backgroundApp(minutes);
     }
 
@@ -745,20 +745,21 @@ export class AppiumDriver {
     }
 
     public async quit() {
-        console.log("Killing driver");
         if (this._recordVideoInfo && this._recordVideoInfo['videoRecordingProcess']) {
             this._recordVideoInfo['videoRecordingProcess'].kill("SIGINT");
         }
         try {
             if (!this._args.attachToDebug) {
+                console.log("Killing driver...");
                 await this._driver.quit();
+                this._isAlive = false;
+                console.log("Driver is dead!");
             } else {
-                await this._webio.detach();
+                //await this._webio.detach();
             }
         } catch (error) {
+            console.dir(error)
         }
-        this._isAlive = false;
-        console.log("Driver is dead");
     }
 
     private static async applyAdditionalSettings(args) {
@@ -808,11 +809,14 @@ export class AppiumDriver {
         driver.on("status", function (info) {
             log(info.cyan, verbose);
         });
+        driver.on("quit", function (info) {
+            console.log("QUIT: ",info);
+        });
         driver.on("command", function (meth, path, data) {
-            log(" > " + meth.yellow + path.grey + " " + (data || ""), verbose);
+            log(" > " + meth + " " + path + " " + (data || ""), verbose);
         });
         driver.on("http", function (meth, path, data) {
-            log(" > " + meth.magenta + path + " " + (data || "").grey, verbose);
+            log(" > " + meth + " " + path + " " + (data || ""), verbose);
         });
     };
 
