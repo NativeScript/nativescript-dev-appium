@@ -273,7 +273,7 @@ export class UIElement {
 
         const endPoint = calculateOffset(direction, y, yOffset, x, xOffset, this._webio.isIOS, false);
         if (direction === Direction.down) {
-            endPoint.point.y += location.y;
+            //endPoint.point.y += location.y;
         }
         let action = new this._wd.TouchAction(this._driver);
         action
@@ -292,11 +292,10 @@ export class UIElement {
      * @param yOffset 
      * @param xOffset 
      */
-    public async scrollTo(direction: Direction, elementToSearch, yOffset: number = 0, xOffset: number = 0) {
+    public async scrollTo(direction: Direction, elementToSearch: () => Promise<UIElement>, yOffset: number = 0, xOffset: number = 0, retries: number = 10) {
         //await this._driver.execute("mobile: scroll", [{direction: 'up'}])
         //await this._driver.execute('mobile: scroll', { direction: direction === 0 ? "down" : "up", element: this._element.ELEMENT });
         let el: UIElement = null;
-        let retries = 7;
         while (el === null && retries >= 0) {
             try {
                 el = await elementToSearch();
