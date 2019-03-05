@@ -406,7 +406,7 @@ export class UIElement {
     * Clears text form ui element
     */
     public async clearText() {
-        await this.tapAtTheEnd();
+        await this.click();
         await this._element.clear();
     }
 
