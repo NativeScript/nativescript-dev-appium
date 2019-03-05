@@ -17,6 +17,7 @@ export declare class UIElement {
      */
     click(): Promise<any>;
     tapCenter(): Promise<void>;
+    tapAtTheEnd(): Promise<void>;
     /**
      * Tap on element
      */
@@ -107,7 +108,7 @@ export declare class UIElement {
      * @param yOffset
      * @param xOffset
      */
-    scrollTo(direction: Direction, elementToSearch: any, yOffset?: number, xOffset?: number): Promise<UIElement>;
+    scrollTo(direction: Direction, elementToSearch: () => Promise<UIElement>, yOffset?: number, xOffset?: number, retries?: number): Promise<UIElement>;
     /**
  * Scroll with offset from element with minimum inertia
  * @param direction
@@ -123,8 +124,24 @@ export declare class UIElement {
     /**
      * Send keys to field or other UI component
      * @param text
+     * @param shouldClearText, default value is true
      */
-    sendKeys(text: string): Promise<void>;
+    sendKeys(text: string, shouldClearText?: boolean): Promise<void>;
+    /**
+    * Type text to field or other UI component
+    * @param text
+    * @param shouldClearText, default value is true
+    */
+    type(text: string, shouldClearText?: boolean): Promise<void>;
+    /**
+    * Send key code to device
+    * @param key code
+    */
+    pressKeycode(keyCode: number): Promise<void>;
+    /**
+    * Clears text form ui element
+    */
+    clearText(): Promise<void>;
     log(): Promise<void>;
     refetch(): Promise<any>;
     /**
