@@ -1,9 +1,9 @@
 import { Point } from "./point";
 import { Direction } from "./direction";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
-import { IRectangle } from "./interfaces/rectangle";
 import { AutomationName } from "./automation-name";
 import { calculateOffset } from "./utils";
+import { AndroidKeyEvent } from "mobile-devices-controller";
 
 export class UIElement {
     private static readonly DEFAULT_REFETCH_TIME = 1000;
@@ -29,6 +29,15 @@ export class UIElement {
         const rect = await this.getActualRectangle();
         action
             .tap({ x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 });
+        await action.perform();
+        await this._driver.sleep(150);
+    }
+
+    public async tapAtTheEnd() {
+        let action = new this._wd.TouchAction(this._driver);
+        const rect = await this.getActualRectangle();
+        action
+            .tap({ x: (rect.x + rect.width) - 1, y: rect.y + rect.height / 2 });
         await action.perform();
         await this._driver.sleep(150);
     }
@@ -364,9 +373,41 @@ export class UIElement {
     /**
      * Send keys to field or other UI component
      * @param text
+     * @param shouldClearText, default value is true
      */
-    public async sendKeys(text: string) {
+    public async sendKeys(text: string, shouldClearText: boolean = true) {
+        if (shouldClearText) {
+            await this.clearText();
+        }
         await this._element.sendKeys(text);
+    }
+
+    /**
+    * Type text to field or other UI component
+    * @param text
+    * @param shouldClearText, default value is true
+    */
+    public async type(text: string, shouldClearText: boolean = true) {
+        if (shouldClearText) {
+            await this.clearText();
+        }
+        await this._element.type(text);
+    }
+
+    /**
+    * Send key code to device
+    * @param key code
+    */
+    public async pressKeycode(keyCode: number) {
+        await this._driver.pressKeycode(keyCode);
+    }
+
+    /**
+    * Clears text form ui element
+    */
+    public async clearText() {
+        await this.tapAtTheEnd();
+        await this._element.clear();
     }
 
     public async log() {

@@ -734,6 +734,17 @@ export class AppiumDriver {
         await this._driver.backgroundApp(minutes);
     }
 
+    /**
+     * Hides device keyboard
+     */
+    public async hideDeviceKeyboard() {
+        await this._driver.hideDeviceKeyboard();
+    }
+
+    public async isKeyboardShown() {
+        return await this._driver.isKeyboardShown();
+    }
+
     public async resetApp() {
         await this._driver.resetApp();
     }
