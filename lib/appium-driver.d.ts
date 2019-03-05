@@ -198,6 +198,11 @@ export declare class AppiumDriver {
      * @param time in minutes
      */
     backgroundApp(minutes: number): Promise<void>;
+    /**
+     * Hides device keyboard
+     */
+    hideDeviceKeyboard(): Promise<void>;
+    isKeyboardShown(): Promise<any>;
     resetApp(): Promise<void>;
     init(): Promise<void>;
     quit(): Promise<void>;
