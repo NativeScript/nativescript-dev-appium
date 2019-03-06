@@ -188,7 +188,7 @@ export class AppiumDriver {
         }
 
         log("Creating driver!", args.verbose);
-        
+
         if (!args.attachToDebug && !args.sessionId) {
             if (!args.device) {
                 args.deviceManager = args.deviceManager || new DeviceManager();
@@ -769,7 +769,9 @@ export class AppiumDriver {
                 //await this._webio.detach();
             }
         } catch (error) {
-            console.dir(error)
+            if (this._args.verbose) {
+                console.dir(error);
+            }
         }
     }
 
@@ -821,7 +823,7 @@ export class AppiumDriver {
             log(info.cyan, verbose);
         });
         driver.on("quit", function (info) {
-            console.log("QUIT: ",info);
+            console.log("QUIT: ", info);
         });
         driver.on("command", function (meth, path, data) {
             log(" > " + meth + " " + path + " " + (data || ""), verbose);
