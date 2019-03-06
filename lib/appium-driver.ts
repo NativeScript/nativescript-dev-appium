@@ -903,7 +903,7 @@ export class AppiumDriver {
     public async findElementByAccessibilityIdIfExists(id: string, waitForElement: number = this.defaultWaitTime) {
         let element = undefined;
         try {
-            element = await this._driver.elementByAccessibilityIdIfExists(id, waitForElement);
+            element = await this._driver.waitForElementByAccessibilityIdIfExists(id, waitForElement);
         } catch (error) { }
 
         if (element) {
