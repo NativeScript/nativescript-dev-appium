@@ -1,3 +1,24 @@
+<a name="5.1.0"></a>
+# [5.1.0](https://github.com/NativeScript/nativescript-dev-appium/compare/5.0.0...5.1.0) (2019-03-07)
+
+
+### Bug Fixes
+
+* args ([#163](https://github.com/NativeScript/nativescript-dev-appium/issues/163)) ([db33521](https://github.com/NativeScript/nativescript-dev-appium/commit/db33521))
+* find element by automation name ([#206](https://github.com/NativeScript/nativescript-dev-appium/issues/206)) ([df9e6ed](https://github.com/NativeScript/nativescript-dev-appium/commit/df9e6ed))
+* skip propmting on post install when the console is not interactive ([1042328](https://github.com/NativeScript/nativescript-dev-appium/commit/1042328))
+* **uielement:** isSelected and isChecked ([#203](https://github.com/NativeScript/nativescript-dev-appium/issues/203)) ([4e3e290](https://github.com/NativeScript/nativescript-dev-appium/commit/4e3e290))
+* check if storage is 'undefined' ([#99](https://github.com/NativeScript/nativescript-dev-appium/issues/99)) ([e2ca7cf](https://github.com/NativeScript/nativescript-dev-appium/commit/e2ca7cf))
+
+
+
+### Features
+
+* extend interaction with text ([#208](https://github.com/NativeScript/nativescript-dev-appium/issues/208)) ([45a8ff6](https://github.com/NativeScript/nativescript-dev-appium/commit/45a8ff6))
+* remoteAddress option ([#202](https://github.com/NativeScript/nativescript-dev-appium/issues/202)) ([efee24e](https://github.com/NativeScript/nativescript-dev-appium/commit/efee24e))
+* start session command. ([#207](https://github.com/NativeScript/nativescript-dev-appium/issues/207)) ([89ab7b0](https://github.com/NativeScript/nativescript-dev-appium/commit/89ab7b0))
+
+
 <a name="5.0.0"></a>
 # [5.0.0]() (2019-01-29)
 
@@ -19,7 +40,12 @@
 
 ### BREAKING CHANGES
 
-* --reuseDevice options is removed. This is not concerning test which uses sauceLabs
+* **devMode:** validate() args returns a promise
+* There will be no longer --reuseDevice option available. From now on will be preserved options from appium caps "fullReset"
+
+Migration steps:
+To reuse device set in your Appium capabilities file <b>"fullReset": false</b>
+Not to reuse device set <b>"fullReset": true</b>
 
 Before:
 ```
