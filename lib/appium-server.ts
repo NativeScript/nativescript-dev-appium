@@ -158,7 +158,6 @@ export class AppiumServer {
                     this._server.kill("SIGKILL");
                     process.kill(this._server.pid, "SIGKILL");
                     shutdown(this._server, this._args.verbose);
-                    execSync(stopServerCommand(this._args.port));
                 }
             } catch (error) {
                 console.log(error);
