@@ -1,4 +1,4 @@
-import { ChildProcess, spawn } from "child_process";
+import { ChildProcess, spawn, execSync } from "child_process";
 import {
     log,
     resolvePath,
@@ -9,7 +9,8 @@ import {
     logWarn,
     logInfo,
     prepareApp,
-    prepareDevice
+    prepareDevice,
+    stopServerCommand
 } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";

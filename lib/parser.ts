@@ -1,6 +1,6 @@
 import * as yargs from "yargs";
 import { join } from "path";
-import { resolvePath, logError } from "./utils";
+import { resolvePath, logError, logWarn } from "./utils";
 import { INsCapabilitiesArgs } from "./interfaces/ns-capabilities-args";
 
 const config = (() => {
@@ -105,8 +105,8 @@ const config = (() => {
         options.devMode = true;
         console.log(`Option attachToDebug is set to true. Option --devMode is set true as well !`)
         if (!options.port) {
-            logError("Provide appium server port started from desktop application!")
-            process.exit(1);
+            logWarn(`Default appium server port 4732!`);
+            logWarn(`In order to change it use --port option!`);
         }
     }
 

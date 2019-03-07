@@ -245,6 +245,7 @@ describe("Start device by apiLevel", async () => {
 
 describe("dev-mode-options", async () => {
     let appiumServer: AppiumServer;
+    const port = 8399;
 
     before("start devices", async () => {
         await DeviceController.startDevice({ platform: Platform.ANDROID, apiLevel: "23" });
@@ -263,6 +264,8 @@ describe("dev-mode-options", async () => {
         const nsCaps = new NsCapabilities(<INsCapabilitiesArgs>{
             deviceTypeOrPlatform: Platform.IOS,
             appPath: iosApp,
+            port: port,
+            verbose: true
         });
 
         const appiumDriver = await AppiumDriver.createAppiumDriver(nsCaps);
@@ -273,7 +276,8 @@ describe("dev-mode-options", async () => {
     it("test android", async () => {
         const nsCaps = new NsCapabilities(<INsCapabilitiesArgs>{
             deviceTypeOrPlatform: Platform.ANDROID,
-            appPath: androidApp
+            appPath: androidApp,
+            port: port,
         });
 
         const appiumDriver = await AppiumDriver.createAppiumDriver(nsCaps);
@@ -284,7 +288,8 @@ describe("dev-mode-options", async () => {
     it("test --device.platform=android", async () => {
         const nsCaps = new NsCapabilities(<INsCapabilitiesArgs>{
             device: { platform: Platform.ANDROID },
-            appPath: androidApp
+            appPath: androidApp,
+            port: port
         });
 
         const appiumDriver = await AppiumDriver.createAppiumDriver(nsCaps);
@@ -295,7 +300,8 @@ describe("dev-mode-options", async () => {
     it("test --device.platform=ios", async () => {
         const nsCaps = new NsCapabilities(<INsCapabilitiesArgs>{
             device: { platform: Platform.IOS },
-            appPath: iosApp
+            appPath: iosApp,
+            port: port
         });
 
         const appiumDriver = await AppiumDriver.createAppiumDriver(nsCaps);

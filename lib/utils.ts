@@ -606,6 +606,9 @@ export const shouldUserMobileDevicesController = (args: INsCapabilities) => {
     return !args.isSauceLab && (new RegExp(`${useDsCS}`).test(`true`) || new RegExp(`${useMDsCS}`).test(`true`));
 }
 
+export const stopServerCommand = (port) => {
+    return `lsof -i tcp:${port} | grep -v grep | grep -v PID | awk '{print $2}' | xargs kill -9 || true`;
+}
 
 export function logInfo(info, obj = undefined) {
     info += " " + convertObjToString(obj);

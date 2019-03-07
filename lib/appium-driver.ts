@@ -321,6 +321,18 @@ export class AppiumDriver {
      */
     public async findElementByAutomationText(automationText: string, waitForElement: number = this.defaultWaitTime) {
         if (this.isIOS) {
+            return await this.findElementByAccessibilityId(`${automationText}`, waitForElement);
+        }
+        return await this.findElementByXPath(this._elementHelper.getXPathByText(automationText, true), waitForElement);
+    }
+
+    /**
+     * Search for element by given automationText. Searches only for exact string.
+     * @param text
+     * @param waitForElement
+    */
+    public async findElementByAutomationTextIfExists(automationText: string, waitForElement: number = this.defaultWaitTime) {
+        if (this.isIOS) {
             return await this.findElementByAccessibilityIdIfExists(`${automationText}`, waitForElement);
         }
         return await this.findElementByXPathIfExists(this._elementHelper.getXPathByText(automationText, true), waitForElement);
@@ -334,12 +346,12 @@ export class AppiumDriver {
     public async waitForElement(automationText: string, waitInMilliseconds: number = this.defaultWaitTime): Promise<UIElement> {
         let element;
         try {
-            element = await this.findElementByAutomationText(automationText, 100);
+            element = await this.findElementByAutomationTextIfExists(automationText, 100);
         } catch (error) { }
         const startTime = Date.now();
         while ((!element || !(await element.isDisplayed())) && Date.now() - startTime <= waitInMilliseconds) {
             try {
-                element = await this.findElementByAutomationText(automationText, 100);
+                element = await this.findElementByAutomationTextIfExists(automationText, 100);
             } catch (error) { }
         }
 
@@ -730,7 +742,7 @@ export class AppiumDriver {
      * @param time in minutes
      */
     public async backgroundApp(minutes: number) {
-        console.log("Sending the currently active app to the background ...");
+        logInfo("Sending the currently active app to the background ...");
         await this._driver.backgroundApp(minutes);
     }
 
@@ -756,20 +768,23 @@ export class AppiumDriver {
     }
 
     public async quit() {
-        console.log("Killing driver");
         if (this._recordVideoInfo && this._recordVideoInfo['videoRecordingProcess']) {
             this._recordVideoInfo['videoRecordingProcess'].kill("SIGINT");
         }
         try {
             if (!this._args.attachToDebug) {
+                console.log("Killing driver...");
                 await this._driver.quit();
+                this._isAlive = false;
+                console.log("Driver is dead!");
             } else {
                 //await this._webio.detach();
             }
         } catch (error) {
+            if (this._args.verbose) {
+                console.dir(error);
+            }
         }
-        this._isAlive = false;
-        console.log("Driver is dead");
     }
 
     private static async applyAdditionalSettings(args) {
@@ -817,13 +832,16 @@ export class AppiumDriver {
 
     private static configureLogging(driver, verbose) {
         driver.on("status", function (info) {
-            log(info.cyan, verbose);
+            log(info, verbose);
+        });
+        driver.on("quit", function (info) {
+            console.log("QUIT: ", info);
         });
         driver.on("command", function (meth, path, data) {
-            log(" > " + meth.yellow + path.grey + " " + (data || ""), verbose);
+            log(" > " + meth + " " + path + " " + (data || ""), verbose);
         });
         driver.on("http", function (meth, path, data) {
-            log(" > " + meth.magenta + path + " " + (data || "").grey, verbose);
+            log(" > " + meth + " " + path + " " + (data || ""), verbose);
         });
     };
 
