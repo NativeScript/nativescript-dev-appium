@@ -321,6 +321,18 @@ export class AppiumDriver {
      */
     public async findElementByAutomationText(automationText: string, waitForElement: number = this.defaultWaitTime) {
         if (this.isIOS) {
+            return await this.findElementByAccessibilityId(`${automationText}`, waitForElement);
+        }
+        return await this.findElementByXPath(this._elementHelper.getXPathByText(automationText, true), waitForElement);
+    }
+
+    /**
+     * Search for element by given automationText. Searches only for exact string.
+     * @param text
+     * @param waitForElement
+    */
+    public async findElementByAutomationTextIfExists(automationText: string, waitForElement: number = this.defaultWaitTime) {
+        if (this.isIOS) {
             return await this.findElementByAccessibilityIdIfExists(`${automationText}`, waitForElement);
         }
         return await this.findElementByXPathIfExists(this._elementHelper.getXPathByText(automationText, true), waitForElement);
@@ -334,12 +346,12 @@ export class AppiumDriver {
     public async waitForElement(automationText: string, waitInMilliseconds: number = this.defaultWaitTime): Promise<UIElement> {
         let element;
         try {
-            element = await this.findElementByAutomationText(automationText, 100);
+            element = await this.findElementByAutomationTextIfExists(automationText, 100);
         } catch (error) { }
         const startTime = Date.now();
         while ((!element || !(await element.isDisplayed())) && Date.now() - startTime <= waitInMilliseconds) {
             try {
-                element = await this.findElementByAutomationText(automationText, 100);
+                element = await this.findElementByAutomationTextIfExists(automationText, 100);
             } catch (error) { }
         }
 
@@ -820,7 +832,7 @@ export class AppiumDriver {
 
     private static configureLogging(driver, verbose) {
         driver.on("status", function (info) {
-            log(info.cyan, verbose);
+            log(info, verbose);
         });
         driver.on("quit", function (info) {
             console.log("QUIT: ", info);
@@ -905,7 +917,7 @@ export class AppiumDriver {
     public async findElementByAccessibilityIdIfExists(id: string, waitForElement: number = this.defaultWaitTime) {
         let element = undefined;
         try {
-            element = await this._driver.waitForElementByAccessibilityIdIfExists(id, waitForElement);
+            element = await this._driver.elementByAccessibilityIdIfExists(id, waitForElement);
         } catch (error) { }
 
         if (element) {
