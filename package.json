@@ -1,6 +1,6 @@
 {
   "name": "nativescript-dev-appium",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "A NativeScript plugin to help integrate and run Appium tests",
   "author": "NativeScript",
   "license": "MIT",
@@ -55,6 +55,7 @@
     "postinstall": "node ./postinstall.js",
     "prepare": "tsc",
     "watch": "tsc --watch",
-    "test": "mocha --timeout 999999"
+    "test": "mocha --timeout 999999",
+    "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
   }
 }
