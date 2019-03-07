@@ -17,7 +17,7 @@ import { INsCapabilities } from "lib/interfaces/ns-capabilities";
 import { INsCapabilitiesArgs } from "lib/interfaces/ns-capabilities-args";
 
 const androidApp = `${process.cwd()}/test/out/template-hello-world-ts-release.apk`;
-const iosApp = `${process.cwd()}/test/out/template-hello-world.app`;
+const iosApp = `${process.cwd()}/test/out/template-hello-world-ts.app`;
 
 describe("android devices", () => {
     let deviceManager: DeviceManager;
