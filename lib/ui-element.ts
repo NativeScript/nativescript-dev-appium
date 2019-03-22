@@ -162,7 +162,7 @@ export class UIElement {
      */
     public async element() {
         this._element = await this.refetch();
-        return await this._element;
+        return this._element;
     }
 
     /**
@@ -170,15 +170,15 @@ export class UIElement {
      */
     public async isDisplayed() {
         const displaySize = await this._driver.getWindowSize();
-        const el = (await this.element());
+        const el = this._element;
         let isDisplayed = true;
         if (!el || el === null) {
             return false;
         }
-
         try {
-            const elemCoordinates = await this.getRectangle();
-            isDisplayed = (await el.isDisplayed()) && elemCoordinates.x >= 0 && elemCoordinates.x < displaySize.width
+            const elemCoordinates = await el.getLocation();
+            const isDisplayedWebDriver = await el.isDisplayed();
+            isDisplayed = isDisplayedWebDriver && elemCoordinates.x >= 0 && elemCoordinates.x < displaySize.width
                 && elemCoordinates.y >= 0 && elemCoordinates.y < displaySize.height;
         } catch (error) {
             console.log("ERROR: " + error);
@@ -322,10 +322,10 @@ export class UIElement {
     }
 
     /**
- * Scroll with offset from element with minimum inertia
+ * Drag element with specific offset
  * @param direction
  * @param yOffset 
- * @param xOffset 
+ * @param xOffset - default value 0
  */
     public async drag(direction: Direction, yOffset: number, xOffset: number = 0) {
         const location = await this.location();

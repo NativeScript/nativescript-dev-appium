@@ -110,10 +110,10 @@ export declare class UIElement {
      */
     scrollTo(direction: Direction, elementToSearch: () => Promise<UIElement>, yOffset?: number, xOffset?: number, retries?: number): Promise<UIElement>;
     /**
- * Scroll with offset from element with minimum inertia
+ * Drag element with specific offset
  * @param direction
  * @param yOffset
- * @param xOffset
+ * @param xOffset - default value 0
  */
     drag(direction: Direction, yOffset: number, xOffset?: number): Promise<void>;
     /**

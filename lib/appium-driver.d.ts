@@ -155,7 +155,7 @@ export declare class AppiumDriver {
      * @param xOffset
      * @param retryCount
      */
-    scrollTo(direction: Direction, element: any, startPoint: Point, yOffset: number, xOffset?: number, retryCount?: number): Promise<any>;
+    scrollTo(direction: Direction, element: any, startPoint: Point, yOffset: number, xOffset?: number, retryCount?: number): Promise<UIElement>;
     /**
      * Swipe from point with offset and inertia according to duatio
      * @param y
