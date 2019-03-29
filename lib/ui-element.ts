@@ -455,7 +455,7 @@ export class UIElement {
         if (this._args.isAndroid) {
             const action = new this._wd.TouchAction(this._driver);
             action.press({ x: centerX, y: centerY })
-                .wait(100)
+                .wait(200)
                 .moveTo({ x: swipeX, y: centerY })
                 .release();
             await action.perform();

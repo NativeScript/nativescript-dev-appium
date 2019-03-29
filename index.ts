@@ -89,7 +89,7 @@ export async function createDriver(args?: INsCapabilitiesArgs) {
         return appiumDriver;
     }
     if (!appiumServer.server && !nsCapabilities.isSauceLab) {
-        logInfo("Server is not available! To start appium server programaticlly use startServer()!");
+        logInfo("Server is not available! To start appium server programmaticаlly use startServer()!");
     }
     if (!nsCapabilities.appiumCapsLocation) {
         throw new Error("Provided path to appium capabilities is not correct!");

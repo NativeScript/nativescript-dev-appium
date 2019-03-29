@@ -213,7 +213,13 @@ export function getStorageByDeviceName(args: INsCapabilities) {
     if (args.imagesPath) {
         const segments = args.imagesPath.split(/[\/\\]+/);
         storage = join(storage, segments.join(sep));
-        return storage;
+        if (existsSync(storage)) {
+            return storage;
+        } else {
+            const error = `Current imagesPath (${args.imagesPath}) does not exist !!!`;
+            logError(error)
+            throw new Error(error);
+        }
     }
     const appName = resolveSauceLabAppName(getAppName(args));
     storage = createStorageFolder(storage, appName);

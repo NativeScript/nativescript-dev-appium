@@ -748,7 +748,9 @@ export class AppiumDriver {
      * Hides device keyboard
      */
     public async hideDeviceKeyboard() {
-        await this._driver.hideDeviceKeyboard();
+        try {
+            await this._driver.hideDeviceKeyboard();
+        } catch (error) {}
     }
 
     public async isKeyboardShown() {
