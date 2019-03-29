@@ -291,7 +291,7 @@ export class AppiumDriver {
      */
     public async findElementByXPath(xPath: string, waitForElement: number = this.defaultWaitTime) {
         const searchM = "waitForElementByXPath";
-        return await new UIElement(await this._driver.waitForElementByXPath(xPath, waitForElement), this._driver, this._wd, this._webio, this._args, searchM, xPath);
+        return new UIElement(await this._driver.waitForElementByXPath(xPath, waitForElement), this._driver, this._wd, this._webio, this._args, searchM, xPath);
     }
 
     /**
@@ -446,20 +446,18 @@ export class AppiumDriver {
      * @param retryCount
      */
     public async scrollTo(direction: Direction, element: any, startPoint: Point, yOffset: number, xOffset: number = 0, retryCount: number = 7) {
-        let el = null;
-        while (el === null && retryCount > 0) {
+        let el: UIElement = null;
+        let isDisplayed: boolean = false;
+        while ((el === null || !isDisplayed) && retryCount > 0) {
             try {
                 el = await element();
-                if (!(await el.isDisplayed())) {
+                isDisplayed = await el.isDisplayed();
+                if (!isDisplayed) {
                     await scroll(this._wd, this._driver, direction, this._webio.isIOS, startPoint.y, startPoint.x, yOffset, xOffset, this._args.verbose);
+                    el = null;
                 }
             } catch (error) {
-                await scroll(this._wd, this._driver, direction, this._webio.isIOS, startPoint.y, startPoint.x, yOffset, xOffset, this._args.verbose);
-            }
-            if (el !== null && (await el.isDisplayed())) {
-                break;
-            } else {
-                el = null;
+                console.log("scrollTo Error: " + error);
             }
 
             retryCount--;
@@ -750,7 +748,9 @@ export class AppiumDriver {
      * Hides device keyboard
      */
     public async hideDeviceKeyboard() {
-        await this._driver.hideDeviceKeyboard();
+        try {
+            await this._driver.hideDeviceKeyboard();
+        } catch (error) {}
     }
 
     public async isKeyboardShown() {
@@ -892,7 +892,7 @@ export class AppiumDriver {
         const element = await this._driver.elementByXPathIfExists(xPath, waitForElement);
         if (element) {
             const searchMethod = "elementByXPathIfExists";
-            return await new UIElement(element, this._driver, this._wd, this._webio, this._args, searchMethod, xPath);
+            return new UIElement(element, this._driver, this._wd, this._webio, this._args, searchMethod, xPath);
         } else {
             return undefined;
         }
