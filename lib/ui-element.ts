@@ -169,15 +169,19 @@ export class UIElement {
      * Shows if element is displayed. Returns true or false. If the element doesn't exist it will return false
      */
     public async isDisplayed() {
-        const displaySize = await this._driver.getWindowSize();
         const el = this._element;
         let isDisplayed = true;
         if (!el || el === null) {
             return false;
         }
+        const isDisplayedWebDriver = await el.isDisplayed();
+        if (!isDisplayedWebDriver) {
+            return false;
+        }
+        const displaySize = await this._driver.getWindowSize();
         try {
             const elemCoordinates = await el.getLocation();
-            const isDisplayedWebDriver = await el.isDisplayed();
+            
             isDisplayed = isDisplayedWebDriver && elemCoordinates.x >= 0 && elemCoordinates.x < displaySize.width
                 && elemCoordinates.y >= 0 && elemCoordinates.y < displaySize.height;
         } catch (error) {
