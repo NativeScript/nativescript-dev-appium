@@ -28,6 +28,7 @@ export { LogType } from "./lib/log-types";
 export { INsCapabilities } from "./lib/interfaces/ns-capabilities";
 export { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
 export { logInfo, logError, logWarn } from "./lib/utils";
+export { ITestReporter } from "./lib/interfaces/test-reporter";
 
 export const nsCapabilities: INsCapabilities = new NsCapabilities(parser);
 

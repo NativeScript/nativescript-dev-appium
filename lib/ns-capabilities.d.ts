@@ -3,9 +3,11 @@ import { INsCapabilitiesArgs } from "./interfaces/ns-capabilities-args";
 import { AutomationName } from "./automation-name";
 import { IDevice } from "mobile-devices-controller";
 import { IDeviceManager } from "./interfaces/device-manager";
+import { ITestReporter } from "./interfaces/test-reporter";
 export declare class NsCapabilities implements INsCapabilities {
     private _parser;
     private _automationName;
+    private _testReporter;
     projectDir: string;
     projectBinary: string;
     pluginRoot: string;
@@ -40,11 +42,28 @@ export declare class NsCapabilities implements INsCapabilities {
     imagesPath: string;
     deviceTypeOrPlatform: string;
     driverConfig: any;
+    logImageVerificationStatus: boolean;
     constructor(_parser: INsCapabilitiesArgs);
     readonly isAndroid: any;
     readonly isIOS: boolean;
     automationName: AutomationName;
     setAutomationNameFromString(automationName: String): void;
+    /**
+     * Set testRoprter
+     * @experimental
+     */
+    /**
+    * Set testRoprter name like mochawesome
+    * Set testRoprter context usually this
+    * Set testRoprter log method like addContext in mochawesome
+    * @experimental
+    */
+    testReporter: ITestReporter;
+    /**
+     * @exprimental
+     * @param text to log in test report
+     */
+    testReporterLog(text: any): {};
     extend(args: INsCapabilities): this;
     validateArgs(): Promise<void>;
     private isAndroidPlatform;

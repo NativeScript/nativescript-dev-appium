@@ -1,6 +1,7 @@
 import { IDevice } from "mobile-devices-controller";
 import { IDeviceManager } from "./device-manager";
 import { AutomationName } from "../automation-name";
+import { ITestReporter } from "./test-reporter";
 
 export interface INsCapabilitiesArgs {
     port?: number;
@@ -40,4 +41,6 @@ export interface INsCapabilitiesArgs {
     startDeviceOptions?: string;
     deviceTypeOrPlatform?: string
     driverConfig?: any;
+    testReporter?:ITestReporter;
+    logImageVerificationStatus?: boolean;
 }

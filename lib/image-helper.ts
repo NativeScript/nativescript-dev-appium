@@ -57,12 +57,13 @@ export class ImageHelper {
     }
 
     private runDiff(diffOptions: BlinkDiff, diffImage: string) {
+        var that = this;
         return new Promise<boolean>((resolve, reject) => {
             diffOptions.run(function (error, result) {
                 if (error) {
                     throw error;
                 } else {
-                    let message;
+                    let message: string;
                     let resultCode = diffOptions.hasPassed(result.code);
                     if (resultCode) {
                         message = "Screen compare passed!";
@@ -70,10 +71,12 @@ export class ImageHelper {
                         console.log('Found ' + result.differences + ' differences.');
                         return resolve(true);
                     } else {
-                        message = "Screen compare failed!";
+                        message = `Screen compare failed! Found ${result.differences} differences.\n`;
                         console.log(message);
-                        console.log('Found ' + result.differences + ' differences.');
-                        console.log('Diff image: ' + diffImage);
+                        if (that._args.testReporter && that._args.testReporter.logImageVerificationStatus) {
+                            that._args.testReporterLog(message);
+                            that._args.testReporterLog(diffImage);
+                        }
                         return resolve(false);
                     }
                 }

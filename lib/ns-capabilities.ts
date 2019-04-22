@@ -7,9 +7,11 @@ import { IDevice, Platform, Status, DeviceType } from "mobile-devices-controller
 import { IDeviceManager } from "./interfaces/device-manager";
 import { existsSync } from "fs";
 import { DeviceManager } from "./device-manager";
+import { ITestReporter } from "./interfaces/test-reporter";
 
 export class NsCapabilities implements INsCapabilities {
     private _automationName: AutomationName;
+    private _testReporter: ITestReporter = <ITestReporter>{};
 
     public projectDir: string;
     public projectBinary: string;
@@ -45,6 +47,7 @@ export class NsCapabilities implements INsCapabilities {
     public imagesPath: string;
     public deviceTypeOrPlatform: string;
     public driverConfig: any;
+    public logImageVerificationStatus: boolean;
 
     constructor(private _parser: INsCapabilitiesArgs) {
         this.projectDir = this._parser.projectDir;
@@ -75,6 +78,7 @@ export class NsCapabilities implements INsCapabilities {
         this.deviceTypeOrPlatform = this._parser.deviceTypeOrPlatform;
         this.device = this._parser.device;
         this.driverConfig = this._parser.driverConfig;
+        this.logImageVerificationStatus = this._parser.logImageVerificationStatus;
     }
 
     get isAndroid() { return this.isAndroidPlatform(); }
@@ -87,6 +91,39 @@ export class NsCapabilities implements INsCapabilities {
     setAutomationNameFromString(automationName: String) {
         const key = Object.keys(AutomationName).filter((v, i, a) => v.toLowerCase() === automationName.toLowerCase());
         this.automationName = AutomationName[key[0]];
+    }
+
+    /**
+     * Set testRoprter
+     * @experimental
+     */
+    public get testReporter() {
+        return this._testReporter;
+    }
+
+    /**
+     * Set testRoprter name like mochawesome
+     * Set testRoprter context usually this
+     * Set testRoprter log method like addContext in mochawesome
+     * @experimental
+     */
+    public set testReporter(testReporter: ITestReporter) {
+        this._testReporter = testReporter;
+        if (this.logImageVerificationStatus) {
+            this._testReporter.logImageVerificationStatus = this.logImageVerificationStatus;
+        }
+    }
+
+    /**
+     * @exprimental
+     * @param text to log in test report
+     */
+    public testReporterLog(text: any) {
+        if (this._testReporter.name === "mochawesome") {
+            this._testReporter.log(this._testReporter.context, text);
+        }
+
+        return {};
     }
 
     public extend(args: INsCapabilities) {
@@ -110,7 +147,7 @@ export class NsCapabilities implements INsCapabilities {
             this.driverConfig.host = "localhost";
             this.driverConfig.port = this.port;
         }
-        
+
         if (this.deviceTypeOrPlatform || this.device) {
             let searchQuery = <IDevice>{};
             if (this.deviceTypeOrPlatform) {

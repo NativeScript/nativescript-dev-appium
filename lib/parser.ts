@@ -85,6 +85,7 @@ const config = (() => {
             })
         .option("cleanApp", { alias: "c", describe: "Clean app before and after run.", type: "boolean", default: false })
         .option("imagesPath", { describe: "comparison images path relative to resources/images", type: "string" })
+        .option("logImageVerificationStatus", { describe: "Applicable only if testReporter is set", type: "boolean", default: false })
         .help()
         .argv;
 
@@ -93,9 +94,9 @@ const config = (() => {
         appRootPath = require('app-root-path').toString();
     }
 
-    if (appRootPath.includes("mocha")) {
-        appRootPath = join(appRootPath, "../../..");
-    }
+    // if (appRootPath.includes("mocha")) {
+    //     appRootPath = join(appRootPath, "../../..");
+    // }
 
     if (options.startSession) {
         options.reuseDevice = true;
@@ -178,7 +179,8 @@ const config = (() => {
         startDeviceOptions: options.startDeviceOptions || process.env.npm_config_startDeviceOptions,
         deviceTypeOrPlatform: deviceTypeOrPlatform,
         device: options.device || process.env.npm_config_device,
-        driverConfig: options.driverConfig
+        driverConfig: options.driverConfig,
+        logImageVerificationStatus: options.logImageVerificationStatus
     };
 
     return config;
@@ -212,5 +214,6 @@ export const {
     startDeviceOptions,
     deviceTypeOrPlatform: deviceTypeOrPlatform,
     device: device,
-    driverConfig: driverConfig
+    driverConfig: driverConfig,
+    logImageVerificationStatus: logImageVerificationStatus
 }: INsCapabilitiesArgs = config;

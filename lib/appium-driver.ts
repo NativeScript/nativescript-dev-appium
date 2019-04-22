@@ -566,7 +566,6 @@ export class AppiumDriver {
     }
 
     private async compare(imageName: string, timeOutSeconds: number = 3, tolerance: number = 0.01, rect?: IRectangle, toleranceType?: ImageOptions) {
-
         if (!this._logPath) {
             this._logPath = getReportPath(this._args);
         }
@@ -588,6 +587,8 @@ export class AppiumDriver {
             copy(pathActualImage, pathActualImageToReportsFolder, false);
 
             console.log("Remove the 'actual' suffix to continue using the image as expected one ", pathExpectedImage);
+            this._args.testReporterLog(pathActualImage);
+
             return false;
         }
 
@@ -609,7 +610,16 @@ export class AppiumDriver {
 
                 await this.prepareImageToCompare(pathActualImage, rect);
                 result = await this._imageHelper.compareImages(pathActualImage, pathExpectedImage, pathDiffImage, tolerance, toleranceType);
+                if (this._args.testReporter && this._args.testReporter.logImageVerificationStatus) {
+                    this._args.testReporterLog("Actual image: ");
+                    this._args.testReporterLog(pathActualImage);
+                }
                 counter++;
+            }
+
+            if (!result && this._args.testReporterLog && !this._args.testReporter.logImageVerificationStatus) {
+                this._args.testReporterLog("Actual image: ");
+                this._args.testReporterLog(pathDiffImage);
             }
         } else {
             if (existsSync(pathDiffImage)) {
@@ -651,6 +661,10 @@ export class AppiumDriver {
                 }
             )
         });
+    }
+
+    public testReporterLog(log: any) {
+        this._args.testReporterLog(log);
     }
 
     public async logScreenshot(fileName: string) {
@@ -750,7 +764,7 @@ export class AppiumDriver {
     public async hideDeviceKeyboard() {
         try {
             await this._driver.hideDeviceKeyboard();
-        } catch (error) {}
+        } catch (error) { }
     }
 
     public async isKeyboardShown() {
