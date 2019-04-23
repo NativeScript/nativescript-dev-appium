@@ -95,7 +95,7 @@ const getDevDependencies = (frameworkType) => {
 
     testingFrameworkDeps.set(mocha, [
         { name: "mocha", version: "~5.2.0" },
-        { name: "mochawesome", version: "~3.2.0" },
+        { name: "mochawesome", version: "~3.1.2" },
         { name: "@types/mocha", version: "~5.2.5" },
         { name: "@types/chai", version: "~4.1.7" },
         { name: "@types/node", version: "~10.12.18" },
