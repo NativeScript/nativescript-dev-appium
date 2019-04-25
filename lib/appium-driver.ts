@@ -275,10 +275,14 @@ export class AppiumDriver {
             }
             if (hasStarted) {
                 console.log("Appium driver has started successfully!");
-                args.testReporterLog(screencapture(`${getReportPath(args)}/appium_driver_started.png`));
+                if (args.projectDir && args.testFolder) {
+                    args.testReporterLog(screencapture(`${getReportPath(args)}/appium_driver_started.png`));
+                }
             } else {
                 logError("Appium driver is NOT started!");
-                args.testReporterLog(screencapture(`${getReportPath(args)}/appium_fail.png`));
+                if (args.projectDir && args.testFolder) {
+                    args.testReporterLog(screencapture(`${getReportPath(args)}/appium_driver_started.png`));
+                }
             }
 
             retries--;
