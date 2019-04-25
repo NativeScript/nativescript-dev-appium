@@ -20,6 +20,7 @@ export { INsCapabilities } from "./lib/interfaces/ns-capabilities";
 export { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
 export { logInfo, logError, logWarn } from "./lib/utils";
 export { ITestReporter } from "./lib/interfaces/test-reporter";
+export { screencapture } from "./lib/helpers/screenshot-manager";
 export declare const nsCapabilities: INsCapabilities;
 export declare function startServer(port?: number, deviceManager?: IDeviceManager): Promise<AppiumServer>;
 export declare function stopServer(): Promise<void>;

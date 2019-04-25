@@ -47,6 +47,7 @@ import { unlinkSync, writeFileSync, existsSync } from "fs";
 import { DeviceManager } from "../lib/device-manager";
 import { extname, basename } from "path";
 import { LogType } from "./log-types";
+import { screencapture } from "./helpers/screenshot-manager";
 
 export class AppiumDriver {
     private static pngFileExt = '.png';
@@ -274,8 +275,10 @@ export class AppiumDriver {
             }
             if (hasStarted) {
                 console.log("Appium driver has started successfully!");
+                args.testReporterLog(screencapture(`${getReportPath(args)}/appium_driver_started.png`));
             } else {
-                logError("Appium driver is NOT started!")
+                logError("Appium driver is NOT started!");
+                args.testReporterLog(screencapture(`${getReportPath(args)}/appium_fail.png`));
             }
 
             retries--;
@@ -755,6 +758,8 @@ export class AppiumDriver {
      */
     public async backgroundApp(minutes: number) {
         logInfo("Sending the currently active app to the background ...");
+        this._args.testReporterLog("Sending the currently active app to the background ...");
+
         await this._driver.backgroundApp(minutes);
     }
 
@@ -791,6 +796,7 @@ export class AppiumDriver {
                 await this._driver.quit();
                 this._isAlive = false;
                 console.log("Driver is dead!");
+                this._args.testReporterLog(screencapture(`${getReportPath(this._args)}/appium_quit_driver.png`));
             } else {
                 //await this._webio.detach();
             }

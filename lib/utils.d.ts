@@ -11,6 +11,8 @@ export declare function killPid(pid: any, verbose: any): void;
 export declare function waitForOutput(process: any, matcher: any, errorMatcher: any, timeout: any, verbose: any): Promise<boolean>;
 export declare function executeCommand(args: any, cwd?: string): string;
 export declare function isWin(): boolean;
+export declare function isMac(): boolean;
+export declare function isLinux(): boolean;
 export declare function getStorageByDeviceName(args: INsCapabilities): string;
 export declare function getStorageByPlatform(args: INsCapabilities): string;
 export declare const getStorage: (args: INsCapabilities) => string;

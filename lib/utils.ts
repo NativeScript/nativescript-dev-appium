@@ -200,7 +200,15 @@ export function executeCommand(args, cwd = process.cwd()): string {
 }
 
 export function isWin() {
-    return /^win/.test(process.platform);
+    return /^win/i.test(process.platform);
+}
+
+export function isMac() {
+    return /^darwin/i.test(process.platform);
+}
+
+export function isLinux() {
+    return /^linux/i.test(process.platform);
 }
 
 const getDeviceName = (args) => {

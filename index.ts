@@ -6,11 +6,12 @@ import * as frameComparerHelper from "./lib/frame-comparer";
 import { FrameComparer } from "./lib/frame-comparer";
 import { DeviceManager } from "./lib/device-manager";
 import { DeviceController } from "mobile-devices-controller";
-import { logInfo, logError, logWarn } from "./lib/utils";
+import { logInfo, logError, logWarn, getReportPath } from "./lib/utils";
 import { INsCapabilities } from "./lib/interfaces/ns-capabilities";
 import { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
 import * as parser from "./lib/parser"
 import { isWin } from "./lib/utils";
+import { screencapture } from "./lib/helpers/screenshot-manager";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { AppiumServer } from "./lib/appium-server";
@@ -29,6 +30,7 @@ export { INsCapabilities } from "./lib/interfaces/ns-capabilities";
 export { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
 export { logInfo, logError, logWarn } from "./lib/utils";
 export { ITestReporter } from "./lib/interfaces/test-reporter";
+export { screencapture } from "./lib/helpers/screenshot-manager";
 
 export const nsCapabilities: INsCapabilities = new NsCapabilities(parser);
 
@@ -58,7 +60,12 @@ if (nsCapabilities.startSession) {
 }
 
 export async function startServer(port?: number, deviceManager?: IDeviceManager) {
-    await appiumServer.start(port || nsCapabilities.port, deviceManager);
+    try {
+        await appiumServer.start(port || nsCapabilities.port, deviceManager);
+    } catch (error) {
+        logError(`Appium driver is NOT started - ${error.message}`);
+        nsCapabilities.testReporterLog(screencapture(`${getReportPath(nsCapabilities)}/on_start_server_failure.png`));
+    }
     await attachToExitProcessHookup(appiumServer.server, "appium");
     return appiumServer;
 }
