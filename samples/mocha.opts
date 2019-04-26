@@ -1,4 +1,4 @@
 --timeout 999999
 --recursive e2e
---reporter mochawesome --quiet --html
---exit
+--reporter mochawesome 
+--reporter-options quiet=true,html=true,overwrite=true,inline=true 
