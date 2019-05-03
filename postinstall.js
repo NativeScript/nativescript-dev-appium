@@ -18,6 +18,7 @@ const inquirer = require("inquirer");
 
 const jasmine = "jasmine";
 const mocha = "mocha";
+const mochawesome = "mochawesome";
 const none = "none";
 const js = "javascript";
 const tsc = "typescript";
@@ -285,8 +286,9 @@ const run = async () => {
 
         const samplesFilePostfix = "sample.e2e-spec";
 
-        copy(resolve(e2eSamplesFolder, `${template.projectType}.${template.testingFramwork}.${samplesFilePostfix}.${template.fileExt}`), resolve(sampleTestsProjectFolderPath, `${samplesFilePostfix}.${template.fileExt}`));
-        copy(resolve(e2eSamplesFolder, `${template.testingFramwork}.setup.${template.fileExt}`), resolve(sampleTestsProjectFolderPath, `setup.${template.fileExt}`));
+        const includeMochawesomeReport = !isWin() && template.testingFramwork === mocha ? `${mochawesome}.` : "";
+        copy(resolve(e2eSamplesFolder, `${template.projectType}.${template.testingFramwork}.${samplesFilePostfix}.${includeMochawesomeReport}${template.fileExt}`), resolve(sampleTestsProjectFolderPath, `${samplesFilePostfix}.${template.fileExt}`));
+        copy(resolve(e2eSamplesFolder, `${template.testingFramwork}.setup.${includeMochawesomeReport}${template.fileExt}`), resolve(sampleTestsProjectFolderPath, `setup.${template.fileExt}`));
 
         copy(resolve(basicSampleTestsPluginFolderPath, "config"), resolve(sampleTestsProjectFolderPath, "config"));
 
