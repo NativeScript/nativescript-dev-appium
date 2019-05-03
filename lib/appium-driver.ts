@@ -276,12 +276,14 @@ export class AppiumDriver {
             if (hasStarted) {
                 console.log("Appium driver has started successfully!");
                 if (args.projectDir && args.testFolder) {
-                    args.testReporterLog(screencapture(`${getReportPath(args)}/appium_driver_started.png`));
+                    args.testReporterLog(`appium_driver_started`);
+                    args.testReporterLog(screencapture(`${getReportPath(args)}/appium_driver_started`));
                 }
             } else {
                 logError("Appium driver is NOT started!");
                 if (args.projectDir && args.testFolder) {
-                    args.testReporterLog(screencapture(`${getReportPath(args)}/appium_driver_started.png`));
+                    args.testReporterLog(`on_appium_driver_started_failure`);
+                    args.testReporterLog(screencapture(`${getReportPath(args)}/on_appium_driver_started_failure.png`));
                 }
             }
 
@@ -594,6 +596,7 @@ export class AppiumDriver {
             copy(pathActualImage, pathActualImageToReportsFolder, false);
 
             console.log("Remove the 'actual' suffix to continue using the image as expected one ", pathExpectedImage);
+            this._args.testReporterLog(basename(pathActualImage));
             this._args.testReporterLog(pathActualImage);
 
             return false;

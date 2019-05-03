@@ -62,9 +62,11 @@ if (nsCapabilities.startSession) {
 export async function startServer(port?: number, deviceManager?: IDeviceManager) {
     try {
         await appiumServer.start(port || nsCapabilities.port, deviceManager);
+        nsCapabilities.testReporterLog(`on_start_server`);
         nsCapabilities.testReporterLog(screencapture(`${getReportPath(nsCapabilities)}/on_start_server.png`));
     } catch (error) {
         logError(`Appium server is NOT started - ${error.message}`);
+        nsCapabilities.testReporterLog(`on_start_server_failure`);
         nsCapabilities.testReporterLog(screencapture(`${getReportPath(nsCapabilities)}/on_start_server_failure.png`));
     }
     await attachToExitProcessHookup(appiumServer.server, "appium");

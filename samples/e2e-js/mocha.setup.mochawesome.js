@@ -8,7 +8,7 @@ testReporterContext.logImageVerificationStatus = false;
 nsAppium.nsCapabilities.testReporter = testReporterContext;
 
 before("start server", async function(){
-    nsCapabilities.testReporter.context = this;
+    nsAppium.nsCapabilities.testReporter.context = this;
     await startServer();
 });
 
