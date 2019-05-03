@@ -291,7 +291,7 @@ const run = async () => {
         copy(resolve(basicSampleTestsPluginFolderPath, "config"), resolve(sampleTestsProjectFolderPath, "config"));
 
         if (isWin() && template.testingFramwork === mocha) {
-            copy(resolve(basicSampleTestsPluginFolderPath, "mocha.win.opt"), resolve(sampleTestsProjectFolderPath, "config", "mocha.opt"));
+            copy(resolve(basicSampleTestsPluginFolderPath, "mocha.win.opts"), resolve(sampleTestsProjectFolderPath, "config", `${template.testingFramwork}.opts`));
         } else {
             const settingsFile = template.testingFramwork === jasmine ? `${template.testingFramwork}.json` : `${template.testingFramwork}.opts`;
             copy(resolve(basicSampleTestsPluginFolderPath, settingsFile), resolve(sampleTestsProjectFolderPath, "config", settingsFile));
