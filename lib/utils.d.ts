@@ -38,6 +38,7 @@ export declare function wait(milliseconds: any): void;
 export declare function getSessions(port: any, host?: string): Promise<{}>;
 export declare const prepareDevice: (args: INsCapabilities, deviceManager: IDeviceManager) => Promise<INsCapabilities>;
 export declare const prepareApp: (args: INsCapabilities) => Promise<INsCapabilities>;
+export declare const checkForReportDir: (nsCapabilities: any) => void;
 export declare const sessionIds: (port: any) => Promise<any[]>;
 export declare function encodeImageToBase64(path: any): string;
 export declare const shouldUserMobileDevicesController: (args: INsCapabilities) => boolean;

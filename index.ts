@@ -6,13 +6,12 @@ import * as frameComparerHelper from "./lib/frame-comparer";
 import { FrameComparer } from "./lib/frame-comparer";
 import { DeviceManager } from "./lib/device-manager";
 import { DeviceController } from "mobile-devices-controller";
-import { logInfo, logError, logWarn, getReportPath } from "./lib/utils";
+import { logInfo, logError, logWarn, getReportPath, checkForReportDir } from "./lib/utils";
 import { INsCapabilities } from "./lib/interfaces/ns-capabilities";
 import { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
 import * as parser from "./lib/parser"
 import { isWin } from "./lib/utils";
 import { screencapture } from "./lib/helpers/screenshot-manager";
-import { existsSync, mkdirSync } from "fs";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { AppiumServer } from "./lib/appium-server";
@@ -63,11 +62,7 @@ if (nsCapabilities.startSession) {
 export async function startServer(port?: number, deviceManager?: IDeviceManager) {
     try {
         await appiumServer.start(port || nsCapabilities.port, deviceManager);
-        if (nsCapabilities.testReporter
-            && nsCapabilities.testReporter.reportDir
-            && !existsSync(nsCapabilities.testReporter.reportDir)) {
-            mkdirSync(nsCapabilities.testReporter.reportDir);
-        }
+        checkForReportDir(nsCapabilities);
         nsCapabilities.testReporterLog(`on_start_server`);
         nsCapabilities.testReporterLog(screencapture(`${getReportPath(nsCapabilities)}/on_start_server.png`));
     } catch (error) {
@@ -97,7 +92,10 @@ export async function createDriver(args?: INsCapabilitiesArgs) {
     if (args) {
         nsCapabilities.extend(args);
     }
-    const port = nsCapabilities.port || appiumServer.port;
+    if (!nsCapabilities.port) {
+        nsCapabilities.port = appiumServer.port;
+    }
+    checkForReportDir(nsCapabilities);
 
     if (nsCapabilities.attachToDebug) {
         if (!appiumDriver) {

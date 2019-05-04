@@ -591,6 +591,15 @@ export const prepareApp = async (args: INsCapabilities) => {
     return args;
 }
 
+export const checkForReportDir = (nsCapabilities) => {
+    if (nsCapabilities
+        && nsCapabilities.testReporter
+        && nsCapabilities.testReporter.reportDir
+        && !existsSync(nsCapabilities.testReporter.reportDir)) {
+        mkdirSync(nsCapabilities.testReporter.reportDir);
+    }
+}
+
 export const sessionIds = async (port) => {
     const sessions = JSON.parse(((await getSessions(port)) || "{}") + '');
     const ids = [];
