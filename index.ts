@@ -12,6 +12,7 @@ import { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
 import * as parser from "./lib/parser"
 import { isWin } from "./lib/utils";
 import { screencapture } from "./lib/helpers/screenshot-manager";
+import { existsSync, mkdirSync } from "fs";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { AppiumServer } from "./lib/appium-server";
@@ -62,6 +63,11 @@ if (nsCapabilities.startSession) {
 export async function startServer(port?: number, deviceManager?: IDeviceManager) {
     try {
         await appiumServer.start(port || nsCapabilities.port, deviceManager);
+        if (nsCapabilities.testReporter
+            && nsCapabilities.testReporter.reportDir
+            && !existsSync(nsCapabilities.testReporter.reportDir)) {
+            mkdirSync(nsCapabilities.testReporter.reportDir);
+        }
         nsCapabilities.testReporterLog(`on_start_server`);
         nsCapabilities.testReporterLog(screencapture(`${getReportPath(nsCapabilities)}/on_start_server.png`));
     } catch (error) {
