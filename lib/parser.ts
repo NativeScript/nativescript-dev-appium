@@ -67,7 +67,7 @@ const config = (() => {
         .option("relaxedSecurity", { describe: "appium relaxedSecurity", default: false, type: "boolean" })
         .option("appPath", { describe: "application path", type: "string" })
         .option("storage", { describe: "Storage for images folder.", type: "string" })
-        .option("testReports", { describe: "Test reporting folder", type: "string" })
+        .option("testReports", { describe: "Override default test reporting storage", type: "string" })
         .option("devMode",
             {
                 alias: "dev-mode",

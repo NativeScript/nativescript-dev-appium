@@ -277,7 +277,7 @@ export class AppiumDriver {
                 console.log("Appium driver has started successfully!");
                 if (args.projectDir && args.testFolder) {
                     args.testReporterLog(`appium_driver_started`);
-                    args.testReporterLog(screencapture(`${getReportPath(args)}/appium_driver_started`));
+                    args.testReporterLog(screencapture(`${getReportPath(args)}/appium_driver_started.png`));
                 }
             } else {
                 logError("Appium driver is NOT started!");

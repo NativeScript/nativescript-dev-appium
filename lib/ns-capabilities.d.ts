@@ -59,6 +59,7 @@ export declare class NsCapabilities implements INsCapabilities {
     * @experimental
     */
     testReporter: ITestReporter;
+    private _imagesReportDir;
     /**
      * @exprimental
      * @param text to log in test report

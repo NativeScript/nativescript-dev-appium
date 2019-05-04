@@ -2,12 +2,13 @@ import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { INsCapabilitiesArgs } from "./interfaces/ns-capabilities-args";
 import { AutomationName } from "./automation-name";
 import { resolveCapabilities } from "./capabilities-helper";
-import { getAppPath, logInfo, logError, logWarn } from "./utils";
+import { getAppPath, logInfo, logError, logWarn, isFile } from "./utils";
 import { IDevice, Platform, Status, DeviceType } from "mobile-devices-controller";
 import { IDeviceManager } from "./interfaces/device-manager";
-import { existsSync } from "fs";
+import { existsSync, mkdirSync } from "fs";
 import { DeviceManager } from "./device-manager";
 import { ITestReporter } from "./interfaces/test-reporter";
+import { sep, basename } from "path";
 
 export class NsCapabilities implements INsCapabilities {
     private _automationName: AutomationName;
@@ -114,13 +115,30 @@ export class NsCapabilities implements INsCapabilities {
         }
     }
 
+    private _imagesReportDir: string;
     /**
      * @exprimental
      * @param text to log in test report
      */
     public testReporterLog(text: any) {
         if (this._testReporter.name === "mochawesome") {
-            this._testReporter.log(this._testReporter.context, text);
+            if (isFile(text) && this._testReporter.reportDir) {
+                if (!this._imagesReportDir) {
+                    if (!existsSync(this._testReporter.reportDir)) {
+                        mkdirSync(this._testReporter.reportDir);
+                    }
+
+                    const reportDir = this._testReporter.reportDir.replace(/^\.\//, "")
+                    const reportDirs = reportDir.split("/");
+                    const reportDirsSeparated = reportDirs.slice(1, reportDirs.length);
+                    this._imagesReportDir = reportDirsSeparated.length > 0 ? reportDirsSeparated.join(sep) : `.`;
+                }
+
+                const imagesPath = `${this._imagesReportDir}${sep}${basename(text)}`.replace(/\/{2,9}/ig, "/");
+                this._testReporter.log(this._testReporter.context, imagesPath);
+            } else {
+                this._testReporter.log(this._testReporter.context, text);
+            }
         }
 
         return {};

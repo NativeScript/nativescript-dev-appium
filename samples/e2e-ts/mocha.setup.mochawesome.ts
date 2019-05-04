@@ -3,6 +3,7 @@ const addContext = require('mochawesome/addContext');
 
 const testReporterContext = <ITestReporter>{};
 testReporterContext.name = "mochawesome";
+testReporterContext.reportDir = "mochawesome-report";
 testReporterContext.log = addContext;
 testReporterContext.logImageVerificationStatus = false;
 nsCapabilities.testReporter = testReporterContext;

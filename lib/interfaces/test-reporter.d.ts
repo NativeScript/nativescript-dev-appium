@@ -20,4 +20,8 @@ export interface ITestReporter {
      * Method for logging
      */
     log: any;
+    /**
+     * Report drirecotry
+     */
+    reportDir: string;
 }

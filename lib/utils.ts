@@ -258,6 +258,9 @@ export const getStorage = (args: INsCapabilities) => {
 }
 
 export function getReportPath(args: INsCapabilities) {
+    if (args.testReporter.reportDir) {
+        return args.testReporter.reportDir;
+    }
     let report = args.testReports;
     if (!report) {
         report = createStorageFolder(resolvePath(args.projectDir, args.testFolder), "reports");
