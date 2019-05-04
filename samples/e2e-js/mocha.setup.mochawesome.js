@@ -13,6 +13,6 @@ before("start server", async function(){
     await nsAppium.startServer();
 });
 
-after("stop appium server", async () => {
+after("stop appium server", async function () {
     await nsAppium.stopServer();
 });

@@ -10,7 +10,7 @@ describe("sample scenario", () => {
         driver = await nsAppium.createDriver();
     });
 
-    after(async () => {
+    after(async function () {
         await driver.quit();
         console.log("Quit driver!");
     });
@@ -21,7 +21,7 @@ describe("sample scenario", () => {
         }
     });
 
-    it("should find an element by text", async () => {
+    it("should find an element by text", async function () {
         const label = await driver.findElementByText("Welcome", "contains");
         assert.isTrue(await label.isDisplayed());
     });

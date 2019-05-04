@@ -10,7 +10,7 @@ describe("sample scenario", () => {
         driver = await createDriver();
     });
 
-    after(async () => {
+    after(async function () {
         await driver.quit();
         console.log("Quit driver!");
     });
@@ -21,7 +21,7 @@ describe("sample scenario", () => {
         }
     });
 
-    it("should find an element by text", async () => {
+    it("should find an element by text", async function () {
         const btnTap = await driver.findElementByAutomationText("TAP");
         await btnTap.click();
 
@@ -34,7 +34,7 @@ describe("sample scenario", () => {
         // assert.isTrue(screen);
     });
 
-    it("should find an element by type", async () => {
+    it("should find an element by type", async function () {
         const btnTap = await driver.findElementByClassName(driver.locators.button);
         await btnTap.click();
 

@@ -13,6 +13,6 @@ before("start server", async function(){
     await startServer();
 });
 
-after("stop server", async () => {
+after("stop server", async function () {
     await stopServer();
 });
