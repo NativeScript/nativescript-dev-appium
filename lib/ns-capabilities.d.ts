@@ -64,7 +64,7 @@ export declare class NsCapabilities implements INsCapabilities {
      * @exprimental
      * @param text to log in test report
      */
-    testReporterLog(text: any): {};
+    testReporterLog(text: any): any;
     extend(args: INsCapabilities): this;
     validateArgs(): Promise<void>;
     private isAndroidPlatform;

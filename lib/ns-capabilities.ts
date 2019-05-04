@@ -121,8 +121,8 @@ export class NsCapabilities implements INsCapabilities {
      * @param text to log in test report
      */
     public testReporterLog(text: any) {
-        if (this._testReporter.name === "mochawesome") {
-            if (isFile(text) && this._testReporter.reportDir) {
+        if (this._testReporter && this._testReporter.name === "mochawesome") {
+            if (/\.\w{3,3}$/ig.test(text) && this._testReporter.reportDir) {
                 if (!this._imagesReportDir) {
                     if (!existsSync(this._testReporter.reportDir)) {
                         mkdirSync(this._testReporter.reportDir);
@@ -136,12 +136,14 @@ export class NsCapabilities implements INsCapabilities {
 
                 const imagesPath = `${this._imagesReportDir}${sep}${basename(text)}`.replace(/\/{2,9}/ig, "/");
                 this._testReporter.log(this._testReporter.context, imagesPath);
+                return imagesPath;
             } else {
                 this._testReporter.log(this._testReporter.context, text);
+                return text;
             }
         }
 
-        return {};
+        return undefined;
     }
 
     public extend(args: INsCapabilities) {

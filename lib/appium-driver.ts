@@ -45,7 +45,7 @@ import { ImageHelper } from "./image-helper";
 import { ImageOptions } from "./image-options"
 import { unlinkSync, writeFileSync, existsSync } from "fs";
 import { DeviceManager } from "../lib/device-manager";
-import { extname, basename } from "path";
+import { extname, basename, join } from "path";
 import { LogType } from "./log-types";
 import { screencapture } from "./helpers/screenshot-manager";
 
@@ -597,7 +597,7 @@ export class AppiumDriver {
 
             console.log("Remove the 'actual' suffix to continue using the image as expected one ", pathExpectedImage);
             this._args.testReporterLog(basename(pathActualImage));
-            this._args.testReporterLog(pathActualImage);
+            this._args.testReporterLog(join(this._logPath, basename(pathActualImage)));
 
             return false;
         }
@@ -622,14 +622,14 @@ export class AppiumDriver {
                 result = await this._imageHelper.compareImages(pathActualImage, pathExpectedImage, pathDiffImage, tolerance, toleranceType);
                 if (this._args.testReporter && this._args.testReporter.logImageVerificationStatus) {
                     this._args.testReporterLog("Actual image: ");
-                    this._args.testReporterLog(pathActualImage);
+                    this._args.testReporterLog(join(this._logPath, basename(pathActualImage)));
                 }
                 counter++;
             }
 
             if (!result && this._args.testReporterLog && !this._args.testReporter.logImageVerificationStatus) {
                 this._args.testReporterLog("Actual image: ");
-                this._args.testReporterLog(pathDiffImage);
+                this._args.testReporterLog(join(this._logPath, basename(pathDiffImage)));
             }
         } else {
             if (existsSync(pathDiffImage)) {
@@ -673,8 +673,11 @@ export class AppiumDriver {
         });
     }
 
-    public testReporterLog(log: any) {
-        this._args.testReporterLog(log);
+    public testReporterLog(log: any): any {
+        if (this._args.testReporterLog) {
+            return this._args.testReporterLog(log);
+        }
+        return undefined;
     }
 
     public async logScreenshot(fileName: string) {
@@ -682,10 +685,18 @@ export class AppiumDriver {
             this._logPath = getReportPath(this._args);
         }
         if (!fileName.endsWith(AppiumDriver.pngFileExt)) {
-            fileName = fileName.concat(AppiumDriver.pngFileExt);
+            fileName = fileName.concat(AppiumDriver.pngFileExt).replace(/\s+/ig, "_");
         }
 
-        const imgPath = await this.takeScreenshot(resolvePath(this._logPath, fileName));
+        if (this._args.testReporter) {
+            this.testReporterLog(fileName.replace(/\.\w+/ig, ""));
+            fileName = join(this._logPath, fileName);
+            fileName = this.testReporterLog(fileName);
+        }
+
+        fileName = resolvePath(this._logPath, fileName)
+
+        const imgPath = await this.takeScreenshot(fileName);
         return imgPath;
     }
 
