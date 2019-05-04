@@ -9,7 +9,7 @@ nsAppium.nsCapabilities.testReporter = testReporterContext;
 
 before("start server", async function(){
     nsAppium.nsCapabilities.testReporter.context = this;
-    await startServer();
+    await nsAppium.startServer();
 });
 
 after("stop appium server", async () => {
