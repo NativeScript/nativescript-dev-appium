@@ -23,6 +23,8 @@ import {
     isAbsolute,
     resolve
 } from "path";
+import { LogImageType } from "./enums/log-image-type";
+import { ITestReporter } from "./interfaces/test-reporter";
 
 export function resolvePath(mainPath, ...args) {
     if (!isAbsolute(mainPath) && mainPath.startsWith('~')) {
@@ -200,7 +202,15 @@ export function executeCommand(args, cwd = process.cwd()): string {
 }
 
 export function isWin() {
-    return /^win/.test(process.platform);
+    return /^win/i.test(process.platform);
+}
+
+export function isMac() {
+    return /^darwin/i.test(process.platform);
+}
+
+export function isLinux() {
+    return /^linux/i.test(process.platform);
 }
 
 const getDeviceName = (args) => {
@@ -250,6 +260,9 @@ export const getStorage = (args: INsCapabilities) => {
 }
 
 export function getReportPath(args: INsCapabilities) {
+    if (Object.getOwnPropertyNames(args.testReporter).length > 0 && args.testReporter.reportDir) {
+        return args.testReporter.reportDir;
+    }
     let report = args.testReports;
     if (!report) {
         report = createStorageFolder(resolvePath(args.projectDir, args.testFolder), "reports");
@@ -578,6 +591,22 @@ export const prepareApp = async (args: INsCapabilities) => {
     }
 
     return args;
+}
+
+export const ensureReportsDirExists = (nsCapabilities) => {
+    if (nsCapabilities
+        && nsCapabilities.testReporter
+        && nsCapabilities.testReporter.reportDir
+        && !existsSync(nsCapabilities.testReporter.reportDir)) {
+        mkdirSync(nsCapabilities.testReporter.reportDir);
+    }
+}
+
+export const checkImageLogType = (testReporter: ITestReporter, logImageType: LogImageType) => {
+    return testReporter
+        && Object.getOwnPropertyNames(testReporter).length > 0
+        && testReporter.logImageTypes
+        && testReporter.logImageTypes.indexOf(logImageType) > -1;
 }
 
 export const sessionIds = async (port) => {

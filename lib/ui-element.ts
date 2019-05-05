@@ -27,6 +27,7 @@ export class UIElement {
     public async tapCenter() {
         let action = new this._wd.TouchAction(this._driver);
         const rect = await this.getActualRectangle();
+        this._args.testReporterLog(`Tap on center element ${ {"x": rect.x + rect.width / 2, "y": rect.y + rect.height / 2 }}`);
         action
             .tap({ x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 });
         await action.perform();
@@ -181,7 +182,7 @@ export class UIElement {
         const displaySize = await this._driver.getWindowSize();
         try {
             const elemCoordinates = await el.getLocation();
-            
+
             isDisplayed = isDisplayedWebDriver && elemCoordinates.x >= 0 && elemCoordinates.x < displaySize.width
                 && elemCoordinates.y >= 0 && elemCoordinates.y < displaySize.height;
         } catch (error) {
@@ -415,7 +416,9 @@ export class UIElement {
     }
 
     public async log() {
-        console.dir(await this.element());
+        const el = await this.element();
+        console.dir(el);
+        this._args.testReporterLog(el);
     }
 
     public async refetch() {

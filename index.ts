@@ -6,11 +6,12 @@ import * as frameComparerHelper from "./lib/frame-comparer";
 import { FrameComparer } from "./lib/frame-comparer";
 import { DeviceManager } from "./lib/device-manager";
 import { DeviceController } from "mobile-devices-controller";
-import { logInfo, logError, logWarn } from "./lib/utils";
+import { logInfo, logError } from "./lib/utils";
 import { INsCapabilities } from "./lib/interfaces/ns-capabilities";
 import { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
 import * as parser from "./lib/parser"
 import { isWin } from "./lib/utils";
+import { LogImageType } from "./lib/enums/log-image-type";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { AppiumServer } from "./lib/appium-server";
@@ -28,6 +29,9 @@ export { LogType } from "./lib/log-types";
 export { INsCapabilities } from "./lib/interfaces/ns-capabilities";
 export { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
 export { logInfo, logError, logWarn } from "./lib/utils";
+export { ITestReporter } from "./lib/interfaces/test-reporter";
+export { screencapture } from "./lib/helpers/screenshot-manager";
+export { LogImageType } from "./lib/enums/log-image-type";
 
 export const nsCapabilities: INsCapabilities = new NsCapabilities(parser);
 
@@ -80,8 +84,9 @@ export async function createDriver(args?: INsCapabilitiesArgs) {
     if (args) {
         nsCapabilities.extend(args);
     }
-    const port = nsCapabilities.port || appiumServer.port;
-
+    if (!nsCapabilities.port) {
+        nsCapabilities.port = appiumServer.port;
+    }
     if (nsCapabilities.attachToDebug) {
         if (!appiumDriver) {
             appiumDriver = await AppiumDriver.createAppiumDriver(nsCapabilities);

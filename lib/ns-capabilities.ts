@@ -5,11 +5,15 @@ import { resolveCapabilities } from "./capabilities-helper";
 import { getAppPath, logInfo, logError, logWarn } from "./utils";
 import { IDevice, Platform, Status, DeviceType } from "mobile-devices-controller";
 import { IDeviceManager } from "./interfaces/device-manager";
-import { existsSync } from "fs";
+import { existsSync, mkdirSync } from "fs";
 import { DeviceManager } from "./device-manager";
+import { ITestReporter } from "./interfaces/test-reporter";
+import { sep, basename } from "path";
+import { LogImageType } from "./enums/log-image-type";
 
 export class NsCapabilities implements INsCapabilities {
     private _automationName: AutomationName;
+    private _testReporter: ITestReporter = <ITestReporter>{};
 
     public projectDir: string;
     public projectBinary: string;
@@ -45,6 +49,7 @@ export class NsCapabilities implements INsCapabilities {
     public imagesPath: string;
     public deviceTypeOrPlatform: string;
     public driverConfig: any;
+    public logImageTypes: Array<LogImageType>;
 
     constructor(private _parser: INsCapabilitiesArgs) {
         this.projectDir = this._parser.projectDir;
@@ -75,6 +80,7 @@ export class NsCapabilities implements INsCapabilities {
         this.deviceTypeOrPlatform = this._parser.deviceTypeOrPlatform;
         this.device = this._parser.device;
         this.driverConfig = this._parser.driverConfig;
+        this.logImageTypes = this._parser.logImageTypes;
     }
 
     get isAndroid() { return this.isAndroidPlatform(); }
@@ -87,6 +93,58 @@ export class NsCapabilities implements INsCapabilities {
     setAutomationNameFromString(automationName: String) {
         const key = Object.keys(AutomationName).filter((v, i, a) => v.toLowerCase() === automationName.toLowerCase());
         this.automationName = AutomationName[key[0]];
+    }
+
+    /**
+     * Set testRoprter
+     * @experimental
+     */
+    public get testReporter() {
+        return this._testReporter;
+    }
+
+    /**
+     * Set testRoprter name like mochawesome
+     * Set testRoprter context usually this
+     * Set testRoprter log method like addContext in mochawesome
+     * @experimental
+     */
+    public set testReporter(testReporter: ITestReporter) {
+        this._testReporter = testReporter;
+        if (this.logImageTypes && this.logImageTypes.length > 0) {
+            this._testReporter.logImageTypes = this.logImageTypes;
+        }
+    }
+
+    private _imagesReportDir: string;
+    /**
+     * @exprimental
+     * @param text to log in test report
+     */
+    public testReporterLog(text: any) {
+        if (this._testReporter && this._testReporter.name === "mochawesome") {
+            if (/\.\w{3,3}$/ig.test(text) && this._testReporter.reportDir) {
+                if (!this._imagesReportDir) {
+                    if (!existsSync(this._testReporter.reportDir)) {
+                        mkdirSync(this._testReporter.reportDir);
+                    }
+
+                    const reportDir = this._testReporter.reportDir.replace(/^\.\//, "")
+                    const reportDirs = reportDir.split("/");
+                    const reportDirsSeparated = reportDirs.slice(1, reportDirs.length);
+                    this._imagesReportDir = reportDirsSeparated.length > 0 ? reportDirsSeparated.join(sep) : `.`;
+                }
+
+                const imagesPath = `${this._imagesReportDir}${sep}${basename(text)}`.replace(/\/{2,9}/ig, "/");
+                this._testReporter.log(this._testReporter.context, imagesPath);
+                return imagesPath;
+            } else {
+                this._testReporter.log(this._testReporter.context, text);
+                return text;
+            }
+        }
+
+        return undefined;
     }
 
     public extend(args: INsCapabilities) {
@@ -110,7 +168,7 @@ export class NsCapabilities implements INsCapabilities {
             this.driverConfig.host = "localhost";
             this.driverConfig.port = this.port;
         }
-        
+
         if (this.deviceTypeOrPlatform || this.device) {
             let searchQuery = <IDevice>{};
             if (this.deviceTypeOrPlatform) {

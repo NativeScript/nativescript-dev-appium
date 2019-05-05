@@ -2,6 +2,7 @@ import * as yargs from "yargs";
 import { join } from "path";
 import { resolvePath, logError, logWarn } from "./utils";
 import { INsCapabilitiesArgs } from "./interfaces/ns-capabilities-args";
+import { LogImageType } from "./enums/log-image-type";
 
 const config = (() => {
     const options = yargs
@@ -67,7 +68,7 @@ const config = (() => {
         .option("relaxedSecurity", { describe: "appium relaxedSecurity", default: false, type: "boolean" })
         .option("appPath", { describe: "application path", type: "string" })
         .option("storage", { describe: "Storage for images folder.", type: "string" })
-        .option("testReports", { describe: "Test reporting folder", type: "string" })
+        .option("testReports", { describe: "Override default test reporting storage", type: "string" })
         .option("devMode",
             {
                 alias: "dev-mode",
@@ -85,6 +86,7 @@ const config = (() => {
             })
         .option("cleanApp", { alias: "c", describe: "Clean app before and after run.", type: "boolean", default: false })
         .option("imagesPath", { describe: "comparison images path relative to resources/images", type: "string" })
+        .option("logImageTypes", { describe: "Applicable only if testReporter is set", type: 'array', default: [] })
         .help()
         .argv;
 
@@ -93,9 +95,9 @@ const config = (() => {
         appRootPath = require('app-root-path').toString();
     }
 
-    if (appRootPath.includes("mocha")) {
-        appRootPath = join(appRootPath, "../../..");
-    }
+    // if (appRootPath.includes("mocha")) {
+    //     appRootPath = join(appRootPath, "../../..");
+    // }
 
     if (options.startSession) {
         options.reuseDevice = true;
@@ -178,7 +180,8 @@ const config = (() => {
         startDeviceOptions: options.startDeviceOptions || process.env.npm_config_startDeviceOptions,
         deviceTypeOrPlatform: deviceTypeOrPlatform,
         device: options.device || process.env.npm_config_device,
-        driverConfig: options.driverConfig
+        driverConfig: options.driverConfig,
+        logImageTypes: <Array<LogImageType>>options.logImageTypes
     };
 
     return config;
@@ -210,7 +213,8 @@ export const {
     capabilitiesName,
     imagesPath,
     startDeviceOptions,
-    deviceTypeOrPlatform: deviceTypeOrPlatform,
-    device: device,
-    driverConfig: driverConfig
+    deviceTypeOrPlatform,
+    device,
+    driverConfig,
+    logImageTypes
 }: INsCapabilitiesArgs = config;

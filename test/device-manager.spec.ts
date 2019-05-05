@@ -15,11 +15,33 @@ import { AppiumDriver } from "../lib/appium-driver";
 import { resolveCapabilities } from "../lib/capabilities-helper";
 import { INsCapabilities } from "lib/interfaces/ns-capabilities";
 import { INsCapabilitiesArgs } from "lib/interfaces/ns-capabilities-args";
+import { existsSync, mkdirSync, copyFileSync } from "fs";
+import { execSync } from "child_process";
 
-const androidApp = `${process.cwd()}/test/out/template-hello-world-ts-release.apk`;
-const iosApp = `${process.cwd()}/test/out/template-hello-world-ts.app`;
+const outDir = `${process.cwd()}/test/out`;
+const androidApp = `${outDir}/template-hello-world-ts-release.apk`;
+const iosApp = `${outDir}/template-hello-world-ts.app`;
+const remoteStorage = "/tns-dist";
 
-describe("android devices", () => {
+// For local run
+// if (!existsSync(outDir)) {
+//     mkdirSync(outDir);
+// }
+
+// if (!existsSync(`${outDir}/template-hello-world-ts-release.apk`)) {
+//     execSync(`cp ${remoteStorage}/TestApps/Stable/Android/template-hello-world-ts-release.apk ${outDir}`);
+// }
+
+// if (!existsSync(`${outDir}/vue-cli-template-simple-release.apk`)) {
+//     execSync(`cp ${remoteStorage}/TestApps/Stable/Android/vue-cli-template-simple-release.apk ${outDir}`);
+// }
+
+// if (!existsSync(`${outDir}/template-hello-world-ts.app`)) {
+//     execSync(`cp ${remoteStorage}/TestApps/Stable/iOS/template-hello-world-ts.tgz ${outDir}`);
+//     execSync("tar xf template-hello-world-ts.tgz", { cwd: outDir });
+// }
+
+describe("android-devices", () => {
     let deviceManager: DeviceManager;
     const appiumArgs: INsCapabilities = nsCapabilities;
 
@@ -53,7 +75,7 @@ describe("android devices", () => {
     });
 });
 
-describe("ios devices", () => {
+describe("ios-devices", () => {
     let deviceManager: DeviceManager;
     let appiumArgs: NsCapabilities;
 
@@ -68,7 +90,7 @@ describe("ios devices", () => {
         DeviceController.killAll(DeviceType.SIMULATOR);
     })
 
-    it("Start simulator fullReset: false", async () => {
+    it("Start simulator fullReset: false, should not kill device", async () => {
         const device = await deviceManager.startDevice(appiumArgs);
         let foundBootedDevices = await DeviceController.getDevices({ platform: Platform.IOS, status: Status.BOOTED });
         assert.isTrue(foundBootedDevices.some(d => d.token === device.token));
@@ -77,7 +99,7 @@ describe("ios devices", () => {
         assert.isTrue(foundBootedDevices.some(d => d.token === device.token));
     });
 
-    it("Start simulator fullReset", async () => {
+    it("Start simulator fullReset: true, should kill device", async () => {
         appiumArgs.extend(<any>{ appiumCaps: { platformName: Platform.IOS, fullReset: true, deviceName: /iPhone X/ } });
         appiumArgs.shouldSetFullResetOption();
         const device = await deviceManager.startDevice(appiumArgs);
@@ -89,12 +111,12 @@ describe("ios devices", () => {
     });
 });
 
-describe("find capabilities", async () => {
+describe("find-capabilities", async () => {
     const caps: any = resolveCapabilities("../samples", "android23", ".", "appium.capabilities.json");
     assert.isTrue(caps.deviceName === "Emulator-Api23-Default");
 })
 
-describe("start Appium server android", async () => {
+describe("start-appium-server-android", async () => {
 
     before("Init capabilities", () => {
     });
@@ -124,6 +146,7 @@ describe("start Appium server android", async () => {
     it("Start appium driver", async () => {
         const nsCaps = new NsCapabilities({
             appPath: androidApp,
+            testReports: `${process.cwd()}/test`,
             port: 9900,
             appiumCaps: {
                 platformName: Platform.ANDROID,
@@ -134,9 +157,12 @@ describe("start Appium server android", async () => {
         await server.start(nsCaps.port);
         assert.isTrue(server.hasStarted);
         const driver = await AppiumDriver.createAppiumDriver(nsCaps);
-        const currentWindowName = AndroidController.getCurrentFocusedScreen(nsCaps.device);
+        let currentWindowName = AndroidController.getCurrentFocusedScreen(nsCaps.device);
         const startTime = Date.now();
-        while (!currentWindowName.includes("com.tns.NativeScriptActivity") && Date.now() - startTime < 5000) { }
+        while (!currentWindowName.includes("com.tns.NativeScriptActivity") && Date.now() - startTime < 5000) { 
+            console.log(currentWindowName);
+            currentWindowName = AndroidController.getCurrentFocusedScreen(nsCaps.device); 
+        }
 
         assert.isTrue(currentWindowName.includes("com.tns.NativeScriptActivity"), `Focused screen doesn't include activity ${currentWindowName}!`);
         await driver.quit();
@@ -145,7 +171,7 @@ describe("start Appium server android", async () => {
 
 });
 
-describe("start Appium server ios", async () => {
+describe("start-appium-server-ios", async () => {
 
     before("Init capabilities", () => {
     });
@@ -195,7 +221,7 @@ describe("start Appium server ios", async () => {
     });
 });
 
-describe("Start device by apiLevel", async () => {
+describe("start-device-by-apiLevel", async () => {
     it("test-start-emulator-apiLevel-6.0", async () => {
         const nsCaps = new NsCapabilities({
             port: 8799,

@@ -190,6 +190,7 @@ export declare class AppiumDriver {
     private compare;
     prepareImageToCompare(filePath: string, rect: IRectangle): Promise<void>;
     takeScreenshot(fileName: string): Promise<string>;
+    testReporterLog(log: any): any;
     logScreenshot(fileName: string): Promise<string>;
     getlog(logType: LogType): Promise<any>;
     logPageSource(fileName: string): Promise<void>;

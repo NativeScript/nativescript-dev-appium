@@ -35,7 +35,9 @@ import {
     logInfo,
     prepareDevice,
     getStorage,
-    encodeImageToBase64
+    encodeImageToBase64,
+    ensureReportsDirExists,
+    checkImageLogType
 } from "./utils";
 
 import { INsCapabilities } from "./interfaces/ns-capabilities";
@@ -45,8 +47,10 @@ import { ImageHelper } from "./image-helper";
 import { ImageOptions } from "./image-options"
 import { unlinkSync, writeFileSync, existsSync } from "fs";
 import { DeviceManager } from "../lib/device-manager";
-import { extname, basename } from "path";
+import { extname, basename, join } from "path";
 import { LogType } from "./log-types";
+import { screencapture } from "./helpers/screenshot-manager";
+import { LogImageType } from "./enums/log-image-type";
 
 export class AppiumDriver {
     private static pngFileExt = '.png';
@@ -274,8 +278,17 @@ export class AppiumDriver {
             }
             if (hasStarted) {
                 console.log("Appium driver has started successfully!");
+                if (checkImageLogType(args.testReporter, LogImageType.screenshots)) {
+                    args.testReporterLog(`appium_driver_started`);
+                    args.testReporterLog(screencapture(`${getReportPath(args)}/appium_driver_started.png`));
+                }
             } else {
-                logError("Appium driver is NOT started!")
+                logError("Appium driver is NOT started!");
+                if (checkImageLogType(args.testReporter, LogImageType.screenshots)) {
+                    ensureReportsDirExists(args);
+                    args.testReporterLog(`appium_driver_boot_failure`);
+                    args.testReporterLog(screencapture(`${getReportPath(args)}/appium_driver_boot_failure.png`));
+                }
             }
 
             retries--;
@@ -566,7 +579,6 @@ export class AppiumDriver {
     }
 
     private async compare(imageName: string, timeOutSeconds: number = 3, tolerance: number = 0.01, rect?: IRectangle, toleranceType?: ImageOptions) {
-
         if (!this._logPath) {
             this._logPath = getReportPath(this._args);
         }
@@ -588,6 +600,9 @@ export class AppiumDriver {
             copy(pathActualImage, pathActualImageToReportsFolder, false);
 
             console.log("Remove the 'actual' suffix to continue using the image as expected one ", pathExpectedImage);
+            this._args.testReporterLog(basename(pathActualImage));
+            this._args.testReporterLog(join(this._logPath, basename(pathActualImage)));
+
             return false;
         }
 
@@ -609,7 +624,16 @@ export class AppiumDriver {
 
                 await this.prepareImageToCompare(pathActualImage, rect);
                 result = await this._imageHelper.compareImages(pathActualImage, pathExpectedImage, pathDiffImage, tolerance, toleranceType);
+                if (checkImageLogType(this._args.testReporter, LogImageType.everyImage)) {
+                    this._args.testReporterLog("Actual image: ");
+                    this._args.testReporterLog(join(this._logPath, basename(pathActualImage)));
+                }
                 counter++;
+            }
+
+            if (!checkImageLogType(this._args.testReporter, LogImageType.everyImage)) {
+                this._args.testReporterLog("Actual image: ");
+                this._args.testReporterLog(join(this._logPath, basename(pathDiffImage)));
             }
         } else {
             if (existsSync(pathDiffImage)) {
@@ -653,15 +677,30 @@ export class AppiumDriver {
         });
     }
 
+    public testReporterLog(log: any): any {
+        if (this._args.testReporterLog) {
+            return this._args.testReporterLog(log);
+        }
+        return undefined;
+    }
+
     public async logScreenshot(fileName: string) {
         if (!this._logPath) {
             this._logPath = getReportPath(this._args);
         }
         if (!fileName.endsWith(AppiumDriver.pngFileExt)) {
-            fileName = fileName.concat(AppiumDriver.pngFileExt);
+            fileName = fileName.concat(AppiumDriver.pngFileExt).replace(/\s+/ig, "_");
         }
 
-        const imgPath = await this.takeScreenshot(resolvePath(this._logPath, fileName));
+        if (Object.getOwnPropertyNames(this._args.testReporter).length > 0) {
+            this.testReporterLog(fileName.replace(/\.\w+/ig, ""));
+            fileName = join(this._logPath, fileName);
+            fileName = this.testReporterLog(fileName);
+        }
+
+        fileName = resolvePath(this._logPath, fileName)
+
+        const imgPath = await this.takeScreenshot(fileName);
         return imgPath;
     }
 
@@ -741,6 +780,8 @@ export class AppiumDriver {
      */
     public async backgroundApp(minutes: number) {
         logInfo("Sending the currently active app to the background ...");
+        this._args.testReporterLog("Sending the currently active app to the background ...");
+
         await this._driver.backgroundApp(minutes);
     }
 
@@ -750,7 +791,7 @@ export class AppiumDriver {
     public async hideDeviceKeyboard() {
         try {
             await this._driver.hideDeviceKeyboard();
-        } catch (error) {}
+        } catch (error) { }
     }
 
     public async isKeyboardShown() {
@@ -777,11 +818,19 @@ export class AppiumDriver {
                 await this._driver.quit();
                 this._isAlive = false;
                 console.log("Driver is dead!");
+                if (checkImageLogType(this._args.testReporter, LogImageType.screenshots)) {
+                    this._args.testReporterLog(`appium_driver_quit`);
+                    this._args.testReporterLog(screencapture(`${getReportPath(this._args)}/appium_driver_quit.png`));
+                }
             } else {
                 //await this._webio.detach();
             }
         } catch (error) {
             if (this._args.verbose) {
+                if (checkImageLogType(this._args.testReporter, LogImageType.screenshots)) {
+                    this._args.testReporterLog(`appium_driver_quit_failure`);
+                    this._args.testReporterLog(screencapture(`${getReportPath(this._args)}/appium_driver_quit_failure.png`));
+                }
                 console.dir(error);
             }
         }
