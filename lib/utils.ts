@@ -603,7 +603,8 @@ export const ensureReportsDirExists = (nsCapabilities) => {
 }
 
 export const checkImageLogType = (testReporter: ITestReporter, logImageType: LogImageType) => {
-    return Object.getOwnPropertyNames(testReporter).length > 0
+    return testReporter
+        && Object.getOwnPropertyNames(testReporter).length > 0
         && testReporter.logImageTypes
         && testReporter.logImageTypes.indexOf(logImageType) > -1;
 }

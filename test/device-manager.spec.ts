@@ -23,6 +23,7 @@ const androidApp = `${outDir}/template-hello-world-ts-release.apk`;
 const iosApp = `${outDir}/template-hello-world-ts.app`;
 const remoteStorage = "/tns-dist";
 
+// For local run
 // if (!existsSync(outDir)) {
 //     mkdirSync(outDir);
 // }
@@ -31,9 +32,9 @@ const remoteStorage = "/tns-dist";
 //     execSync(`cp ${remoteStorage}/TestApps/Stable/Android/template-hello-world-ts-release.apk ${outDir}`);
 // }
 
-// // if (!existsSync(`${outDir}/vue-cli-template-simple-release.apk`)) {
-// //     execSync(`cp ${remoteStorage}/TestApps/Stable/Android/vue-cli-template-simple-release.apk ${outDir}`);
-// // }
+// if (!existsSync(`${outDir}/vue-cli-template-simple-release.apk`)) {
+//     execSync(`cp ${remoteStorage}/TestApps/Stable/Android/vue-cli-template-simple-release.apk ${outDir}`);
+// }
 
 // if (!existsSync(`${outDir}/template-hello-world-ts.app`)) {
 //     execSync(`cp ${remoteStorage}/TestApps/Stable/iOS/template-hello-world-ts.tgz ${outDir}`);
