@@ -212,8 +212,8 @@ export const {
     capabilitiesName,
     imagesPath,
     startDeviceOptions,
-    deviceTypeOrPlatform: deviceTypeOrPlatform,
-    device: device,
-    driverConfig: driverConfig,
-    logImageTypes: logImageTypes
+    deviceTypeOrPlatform,
+    device,
+    driverConfig,
+    logImageTypes
 }: INsCapabilitiesArgs = config;
