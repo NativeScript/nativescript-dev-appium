@@ -12,7 +12,7 @@ testReporterContext.name = "mochawesome";
  */
 testReporterContext.reportDir = "mochawesome-report";
 testReporterContext.log = addContext;
-testReporterContext.logImageTypes = [LogImageType.screenshots];
+testReporterContext.logImageTypes = [nsAppium.LogImageType.screenshots];
 nsAppium.nsCapabilities.testReporter = testReporterContext;
 
 before("start server", async function () {
