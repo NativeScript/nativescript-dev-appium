@@ -2,13 +2,14 @@ import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { INsCapabilitiesArgs } from "./interfaces/ns-capabilities-args";
 import { AutomationName } from "./automation-name";
 import { resolveCapabilities } from "./capabilities-helper";
-import { getAppPath, logInfo, logError, logWarn, isFile } from "./utils";
+import { getAppPath, logInfo, logError, logWarn } from "./utils";
 import { IDevice, Platform, Status, DeviceType } from "mobile-devices-controller";
 import { IDeviceManager } from "./interfaces/device-manager";
 import { existsSync, mkdirSync } from "fs";
 import { DeviceManager } from "./device-manager";
 import { ITestReporter } from "./interfaces/test-reporter";
 import { sep, basename } from "path";
+import { LogImageType } from "./enums/log-image-type";
 
 export class NsCapabilities implements INsCapabilities {
     private _automationName: AutomationName;
@@ -48,7 +49,7 @@ export class NsCapabilities implements INsCapabilities {
     public imagesPath: string;
     public deviceTypeOrPlatform: string;
     public driverConfig: any;
-    public logImageVerificationStatus: boolean;
+    public logImageTypes: Array<LogImageType>;
 
     constructor(private _parser: INsCapabilitiesArgs) {
         this.projectDir = this._parser.projectDir;
@@ -79,7 +80,7 @@ export class NsCapabilities implements INsCapabilities {
         this.deviceTypeOrPlatform = this._parser.deviceTypeOrPlatform;
         this.device = this._parser.device;
         this.driverConfig = this._parser.driverConfig;
-        this.logImageVerificationStatus = this._parser.logImageVerificationStatus;
+        this.logImageTypes = this._parser.logImageTypes;
     }
 
     get isAndroid() { return this.isAndroidPlatform(); }
@@ -110,8 +111,8 @@ export class NsCapabilities implements INsCapabilities {
      */
     public set testReporter(testReporter: ITestReporter) {
         this._testReporter = testReporter;
-        if (this.logImageVerificationStatus) {
-            this._testReporter.logImageVerificationStatus = this.logImageVerificationStatus;
+        if (this.logImageTypes && this.logImageTypes.length > 0) {
+            this._testReporter.logImageTypes = this.logImageTypes;
         }
     }
 

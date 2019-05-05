@@ -3,6 +3,7 @@ import * as PngJsImage from "pngjs-image";
 import { ImageOptions } from "./image-options";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IRectangle } from "./interfaces/rectangle";
+import { LogImageType } from "./enums/log-image-type";
 
 export class ImageHelper {
 
@@ -73,7 +74,7 @@ export class ImageHelper {
                     } else {
                         message = `Screen compare failed! Found ${result.differences} differences.\n`;
                         console.log(message);
-                        if (that._args.testReporter && that._args.testReporter.logImageVerificationStatus) {
+                        if (Object.getOwnPropertyNames(that._args.testReporter).length > 0 && that._args.testReporter.logImageTypes && that._args.testReporter.logImageTypes.indexOf(LogImageType.everyImage) > -1) {
                             that._args.testReporterLog(message);
                             that._args.testReporterLog(diffImage);
                         }

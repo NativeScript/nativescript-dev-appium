@@ -6,12 +6,12 @@ import * as frameComparerHelper from "./lib/frame-comparer";
 import { FrameComparer } from "./lib/frame-comparer";
 import { DeviceManager } from "./lib/device-manager";
 import { DeviceController } from "mobile-devices-controller";
-import { logInfo, logError, logWarn, getReportPath, checkForReportDir } from "./lib/utils";
+import { logInfo, logError } from "./lib/utils";
 import { INsCapabilities } from "./lib/interfaces/ns-capabilities";
 import { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
 import * as parser from "./lib/parser"
 import { isWin } from "./lib/utils";
-import { screencapture } from "./lib/helpers/screenshot-manager";
+import { LogImageType } from "./lib/enums/log-image-type";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { AppiumServer } from "./lib/appium-server";
@@ -31,6 +31,7 @@ export { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
 export { logInfo, logError, logWarn } from "./lib/utils";
 export { ITestReporter } from "./lib/interfaces/test-reporter";
 export { screencapture } from "./lib/helpers/screenshot-manager";
+export { LogImageType } from "./lib/enums/log-image-type";
 
 export const nsCapabilities: INsCapabilities = new NsCapabilities(parser);
 
@@ -60,16 +61,7 @@ if (nsCapabilities.startSession) {
 }
 
 export async function startServer(port?: number, deviceManager?: IDeviceManager) {
-    try {
-        await appiumServer.start(port || nsCapabilities.port, deviceManager);
-        checkForReportDir(nsCapabilities);
-        nsCapabilities.testReporterLog(`on_start_server`);
-        nsCapabilities.testReporterLog(screencapture(`${getReportPath(nsCapabilities)}/on_start_server.png`));
-    } catch (error) {
-        logError(`Appium server is NOT started - ${error.message}`);
-        nsCapabilities.testReporterLog(`on_start_server_failure`);
-        nsCapabilities.testReporterLog(screencapture(`${getReportPath(nsCapabilities)}/on_start_server_failure.png`));
-    }
+    await appiumServer.start(port || nsCapabilities.port, deviceManager);
     await attachToExitProcessHookup(appiumServer.server, "appium");
     return appiumServer;
 }
@@ -95,8 +87,6 @@ export async function createDriver(args?: INsCapabilitiesArgs) {
     if (!nsCapabilities.port) {
         nsCapabilities.port = appiumServer.port;
     }
-    checkForReportDir(nsCapabilities);
-
     if (nsCapabilities.attachToDebug) {
         if (!appiumDriver) {
             appiumDriver = await AppiumDriver.createAppiumDriver(nsCapabilities);

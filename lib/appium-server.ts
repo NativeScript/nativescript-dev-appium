@@ -1,4 +1,4 @@
-import { ChildProcess, spawn, execSync } from "child_process";
+import { ChildProcess, spawn } from "child_process";
 import {
     log,
     resolvePath,
@@ -10,13 +10,16 @@ import {
     logInfo,
     prepareApp,
     prepareDevice,
-    stopServerCommand
+    getReportPath,
+    checkForReportDir,
+    logError
 } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
 import { DeviceManager } from "./device-manager";
 import { existsSync } from "fs";
 import { killAllProcessAndRelatedCommand } from "mobile-devices-controller";
+import { screencapture } from "./helpers/screenshot-manager";
 
 export class AppiumServer {
     private _server: ChildProcess;
@@ -98,6 +101,15 @@ export class AppiumServer {
             }
 
             this.hasStarted = response;
+            try {
+                checkForReportDir(this._args);
+                this._args.testReporterLog(`on_server_started`);
+                this._args.testReporterLog(screencapture(`${getReportPath(this._args)}/on_server_started.png`));
+            } catch (error) {
+                logError(`Appium server is NOT started - ${error.message}`);
+                this._args.testReporterLog(`on_start_server_failure`);
+                this._args.testReporterLog(screencapture(`${getReportPath(this._args)}/on_start_server_failure.png`));
+            }
             return response;
         } else if (!this._args.attachToDebug) {
             return true;
@@ -158,6 +170,10 @@ export class AppiumServer {
                     this._server.kill("SIGKILL");
                     process.kill(this._server.pid, "SIGKILL");
                     shutdown(this._server, this._args.verbose);
+                    try {
+                        this._args.testReporterLog(`on_server_stopped`);
+                        this._args.testReporterLog(screencapture(`${getReportPath(this._args)}/on_server_stopped.png`));
+                    } catch (error) { }
                 }
             } catch (error) {
                 console.log(error);
@@ -195,14 +211,15 @@ export class AppiumServer {
             logInfo("Using project-local Appium binary.", this._args.verbose);
             appium = projectAppiumBinary;
         } else {
+            // TODO: find faster and reliable way to check if appium is installed globally
             //const result = executeCommand("npm list -g");
-            //if (result.includes("appium")) {
+            // if (result.includes("appium")) {
             logWarn("Using global Appium binary.");
-            console.log('Please, make sure it is installed globally.');
+            //    console.log('Please, make sure it is installed globally.');
             //} else if (result.includes("appium")) {
-            //   const msg = "Appium not found. Please install appium before runnig tests!";
-            //     log(msg, this._args.verbose);
-            //     new Error(msg);
+            //    const msg = "Appium not found. Please install appium before runnig tests!";
+            //    log(msg, this._args.verbose);
+            //    new Error(msg);
             // }
         }
 

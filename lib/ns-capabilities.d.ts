@@ -4,6 +4,7 @@ import { AutomationName } from "./automation-name";
 import { IDevice } from "mobile-devices-controller";
 import { IDeviceManager } from "./interfaces/device-manager";
 import { ITestReporter } from "./interfaces/test-reporter";
+import { LogImageType } from "./enums/log-image-type";
 export declare class NsCapabilities implements INsCapabilities {
     private _parser;
     private _automationName;
@@ -42,7 +43,7 @@ export declare class NsCapabilities implements INsCapabilities {
     imagesPath: string;
     deviceTypeOrPlatform: string;
     driverConfig: any;
-    logImageVerificationStatus: boolean;
+    logImageTypes: Array<LogImageType>;
     constructor(_parser: INsCapabilitiesArgs);
     readonly isAndroid: any;
     readonly isIOS: boolean;

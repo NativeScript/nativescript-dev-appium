@@ -85,7 +85,7 @@ const config = (() => {
             })
         .option("cleanApp", { alias: "c", describe: "Clean app before and after run.", type: "boolean", default: false })
         .option("imagesPath", { describe: "comparison images path relative to resources/images", type: "string" })
-        .option("logImageVerificationStatus", { describe: "Applicable only if testReporter is set", type: "boolean", default: false })
+        .option("logImageTypes", { describe: "Applicable only if testReporter is set", type: 'array', default: [] })
         .help()
         .argv;
 
@@ -180,7 +180,7 @@ const config = (() => {
         deviceTypeOrPlatform: deviceTypeOrPlatform,
         device: options.device || process.env.npm_config_device,
         driverConfig: options.driverConfig,
-        logImageVerificationStatus: options.logImageVerificationStatus
+        logImageTypes: options.logImageTypes
     };
 
     return config;
@@ -215,5 +215,5 @@ export const {
     deviceTypeOrPlatform: deviceTypeOrPlatform,
     device: device,
     driverConfig: driverConfig,
-    logImageVerificationStatus: logImageVerificationStatus
+    logImageTypes: logImageTypes
 }: INsCapabilitiesArgs = config;

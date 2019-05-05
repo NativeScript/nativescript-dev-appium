@@ -1,3 +1,5 @@
+import { LogImageType } from "../enums/log-image-type";
+
 /**
  * Provide report context to nativescript-dev-appium plugin
  * to add logs and images to the report
@@ -11,7 +13,7 @@ export interface ITestReporter {
         /**
          * When we need to see all results from image comaprisson
          */
-        logImageVerificationStatus: boolean;
+        logImageTypes: Array<LogImageType>;
         /**
          * Usually shouldbe set on each describe
          */

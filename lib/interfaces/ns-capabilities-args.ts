@@ -2,6 +2,7 @@ import { IDevice } from "mobile-devices-controller";
 import { IDeviceManager } from "./device-manager";
 import { AutomationName } from "../automation-name";
 import { ITestReporter } from "./test-reporter";
+import { LogImageType } from "../enums/log-image-type";
 
 export interface INsCapabilitiesArgs {
     port?: number;
@@ -41,6 +42,6 @@ export interface INsCapabilitiesArgs {
     startDeviceOptions?: string;
     deviceTypeOrPlatform?: string
     driverConfig?: any;
-    testReporter?:ITestReporter;
-    logImageVerificationStatus?: boolean;
+    testReporter?: ITestReporter;
+    logImageTypes?: Array<LogImageType>;
 }

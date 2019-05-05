@@ -258,7 +258,7 @@ export const getStorage = (args: INsCapabilities) => {
 }
 
 export function getReportPath(args: INsCapabilities) {
-    if (args.testReporter.reportDir) {
+    if (Object.getOwnPropertyNames(args.testReporter).length > 0 && args.testReporter.reportDir) {
         return args.testReporter.reportDir;
     }
     let report = args.testReports;
