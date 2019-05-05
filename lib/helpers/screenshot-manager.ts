@@ -4,18 +4,16 @@ import { isWin, isMac, isLinux } from "../utils";
 import { execSync } from "child_process";
 
 export const screencapture = (imageFullName: string) => {
-    let command ="";
-    let result;
+    let command = "", result = "";
+
     if (isWin()) {
         command = "";
-    }
-
-    if (isMac()) {
+    } else if (isMac()) {
         command = `screencapture -x -f '${imageFullName}'`;
-    }
-
-    if (isLinux()) {
+    } else if (isLinux()) {
         command = `gnome-screenshot -f '${imageFullName}'`;
+    } else {
+        console.log("We could not capture the screen. Not supported OS!");
     }
 
     if (command) {

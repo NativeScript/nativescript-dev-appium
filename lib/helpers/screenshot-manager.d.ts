@@ -1,1 +1,1 @@
-export declare const screencapture: (imageFullName: string) => any;
+export declare const screencapture: (imageFullName: string) => string;
