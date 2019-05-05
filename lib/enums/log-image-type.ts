@@ -1,8 +1,8 @@
 export enum LogImageType {
     /**
      * Setting this property to add each image
-     * during the image comparisson into the report.
-     * If not set, it will be catured only the last comparisson.
+     * during the image comparison into the report.
+     * If not set, it will be logged only the last image comparison.
      */
     everyImage = "everyImage",
     /**
