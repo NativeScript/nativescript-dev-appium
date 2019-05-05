@@ -9,5 +9,5 @@ export enum LogImageType {
      * Setting this property to take screenshot on each hook
      * and add the images into the report. 
      */
-    screenshots = "everyImage"
+    screenshots = "screenshots"
 }
