@@ -23,6 +23,8 @@ import {
     isAbsolute,
     resolve
 } from "path";
+import { LogImageType } from "./enums/log-image-type";
+import { ITestReporter } from "./interfaces/test-reporter";
 
 export function resolvePath(mainPath, ...args) {
     if (!isAbsolute(mainPath) && mainPath.startsWith('~')) {
@@ -591,13 +593,17 @@ export const prepareApp = async (args: INsCapabilities) => {
     return args;
 }
 
-export const checkForReportDir = (nsCapabilities) => {
+export const ensureReportsDirExists = (nsCapabilities) => {
     if (nsCapabilities
         && nsCapabilities.testReporter
         && nsCapabilities.testReporter.reportDir
         && !existsSync(nsCapabilities.testReporter.reportDir)) {
         mkdirSync(nsCapabilities.testReporter.reportDir);
     }
+}
+
+export const checkImageLogType = (testReporter: ITestReporter, logImageType: LogImageType) => {
+    return Object.getOwnPropertyNames(testReporter).length > 0 && testReporter.logImageTypes && testReporter.logImageTypes.indexOf(logImageType) > -1;
 }
 
 export const sessionIds = async (port) => {

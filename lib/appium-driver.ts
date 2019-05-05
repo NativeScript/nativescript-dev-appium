@@ -36,7 +36,8 @@ import {
     prepareDevice,
     getStorage,
     encodeImageToBase64,
-    checkForReportDir
+    ensureReportsDirExists,
+    checkImageLogType
 } from "./utils";
 
 import { INsCapabilities } from "./interfaces/ns-capabilities";
@@ -277,14 +278,14 @@ export class AppiumDriver {
             }
             if (hasStarted) {
                 console.log("Appium driver has started successfully!");
-                if (args.projectDir && args.testFolder) {
+                if (checkImageLogType(args.testReporter, LogImageType.screenshots)) {
                     args.testReporterLog(`appium_driver_started`);
                     args.testReporterLog(screencapture(`${getReportPath(args)}/appium_driver_started.png`));
                 }
             } else {
                 logError("Appium driver is NOT started!");
-                if (args.testReporter) {
-                    checkForReportDir(args);
+                if (checkImageLogType(args.testReporter, LogImageType.screenshots)) {
+                    ensureReportsDirExists(args);
                     args.testReporterLog(`appium_driver_boot_failure`);
                     args.testReporterLog(screencapture(`${getReportPath(args)}/appium_driver_boot_failure.png`));
                 }
@@ -623,14 +624,14 @@ export class AppiumDriver {
 
                 await this.prepareImageToCompare(pathActualImage, rect);
                 result = await this._imageHelper.compareImages(pathActualImage, pathExpectedImage, pathDiffImage, tolerance, toleranceType);
-                if (Object.getOwnPropertyNames(this._args.testReporter).length > 0 && this._args.testReporter.logImageTypes && this._args.testReporter.logImageTypes.indexOf(LogImageType.everyImage) > -1) {
+                if (checkImageLogType(this._args.testReporter, LogImageType.everyImage)) {
                     this._args.testReporterLog("Actual image: ");
                     this._args.testReporterLog(join(this._logPath, basename(pathActualImage)));
                 }
                 counter++;
             }
 
-            if (!result && Object.getOwnPropertyNames(this._args.testReporter).length > 0  && this._args.testReporter.logImageTypes && this._args.testReporter.logImageTypes.indexOf(LogImageType.everyImage) < 0) {
+            if (!checkImageLogType(this._args.testReporter, LogImageType.everyImage)) {
                 this._args.testReporterLog("Actual image: ");
                 this._args.testReporterLog(join(this._logPath, basename(pathDiffImage)));
             }
@@ -691,7 +692,7 @@ export class AppiumDriver {
             fileName = fileName.concat(AppiumDriver.pngFileExt).replace(/\s+/ig, "_");
         }
 
-        if (Object.getOwnPropertyNames(this._args.testReporter).length > 0  && Object.getOwnPropertyNames(this._args.testReporter).length > 0) {
+        if (Object.getOwnPropertyNames(this._args.testReporter).length > 0) {
             this.testReporterLog(fileName.replace(/\.\w+/ig, ""));
             fileName = join(this._logPath, fileName);
             fileName = this.testReporterLog(fileName);
@@ -817,15 +818,19 @@ export class AppiumDriver {
                 await this._driver.quit();
                 this._isAlive = false;
                 console.log("Driver is dead!");
-                this._args.testReporterLog(`appium_driver_quit`);
-                this._args.testReporterLog(screencapture(`${getReportPath(this._args)}/appium_driver_quit.png`));
+                if (checkImageLogType(this._args.testReporter, LogImageType.screenshots)) {
+                    this._args.testReporterLog(`appium_driver_quit`);
+                    this._args.testReporterLog(screencapture(`${getReportPath(this._args)}/appium_driver_quit.png`));
+                }
             } else {
                 //await this._webio.detach();
             }
         } catch (error) {
             if (this._args.verbose) {
-                this._args.testReporterLog(`appium_driver_quit_failure`);
-                this._args.testReporterLog(screencapture(`${getReportPath(this._args)}/appium_driver_quit_failure.png`));
+                if (checkImageLogType(this._args.testReporter, LogImageType.screenshots)) {
+                    this._args.testReporterLog(`appium_driver_quit_failure`);
+                    this._args.testReporterLog(screencapture(`${getReportPath(this._args)}/appium_driver_quit_failure.png`));
+                }
                 console.dir(error);
             }
         }

@@ -2,6 +2,7 @@ import * as yargs from "yargs";
 import { join } from "path";
 import { resolvePath, logError, logWarn } from "./utils";
 import { INsCapabilitiesArgs } from "./interfaces/ns-capabilities-args";
+import { LogImageType } from "./enums/log-image-type";
 
 const config = (() => {
     const options = yargs
@@ -180,7 +181,7 @@ const config = (() => {
         deviceTypeOrPlatform: deviceTypeOrPlatform,
         device: options.device || process.env.npm_config_device,
         driverConfig: options.driverConfig,
-        logImageTypes: options.logImageTypes
+        logImageTypes: <Array<LogImageType>>options.logImageTypes
     };
 
     return config;

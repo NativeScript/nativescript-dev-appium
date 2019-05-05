@@ -11,8 +11,9 @@ import {
     prepareApp,
     prepareDevice,
     getReportPath,
-    checkForReportDir,
-    logError
+    ensureReportsDirExists,
+    logError,
+    checkImageLogType
 } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IDeviceManager } from "./interfaces/device-manager";
@@ -20,6 +21,7 @@ import { DeviceManager } from "./device-manager";
 import { existsSync } from "fs";
 import { killAllProcessAndRelatedCommand } from "mobile-devices-controller";
 import { screencapture } from "./helpers/screenshot-manager";
+import { LogImageType } from "./enums/log-image-type";
 
 export class AppiumServer {
     private _server: ChildProcess;
@@ -102,13 +104,17 @@ export class AppiumServer {
 
             this.hasStarted = response;
             try {
-                checkForReportDir(this._args);
-                this._args.testReporterLog(`on_server_started`);
-                this._args.testReporterLog(screencapture(`${getReportPath(this._args)}/on_server_started.png`));
+                ensureReportsDirExists(this._args);
+                if (checkImageLogType(this._args.testReporter, LogImageType.screenshots)) {
+                    this._args.testReporterLog(`on_server_started`);
+                    this._args.testReporterLog(screencapture(`${getReportPath(this._args)}/on_server_started.png`));
+                }
             } catch (error) {
                 logError(`Appium server is NOT started - ${error.message}`);
-                this._args.testReporterLog(`on_start_server_failure`);
-                this._args.testReporterLog(screencapture(`${getReportPath(this._args)}/on_start_server_failure.png`));
+                if (checkImageLogType(this._args.testReporter, LogImageType.screenshots)) {
+                    this._args.testReporterLog(`on_start_server_failure`);
+                    this._args.testReporterLog(screencapture(`${getReportPath(this._args)}/on_start_server_failure.png`));
+                }
             }
             return response;
         } else if (!this._args.attachToDebug) {
@@ -171,8 +177,10 @@ export class AppiumServer {
                     process.kill(this._server.pid, "SIGKILL");
                     shutdown(this._server, this._args.verbose);
                     try {
-                        this._args.testReporterLog(`on_server_stopped`);
-                        this._args.testReporterLog(screencapture(`${getReportPath(this._args)}/on_server_stopped.png`));
+                        if (checkImageLogType(this._args.testReporter, LogImageType.screenshots)) {
+                            this._args.testReporterLog(`on_server_stopped`);
+                            this._args.testReporterLog(screencapture(`${getReportPath(this._args)}/on_server_stopped.png`));
+                        }
                     } catch (error) { }
                 }
             } catch (error) {
