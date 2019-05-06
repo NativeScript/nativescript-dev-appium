@@ -600,7 +600,7 @@ export class AppiumDriver {
             copy(pathActualImage, pathActualImageToReportsFolder, false);
 
             console.log("Remove the 'actual' suffix to continue using the image as expected one ", pathExpectedImage);
-            this._args.testReporterLog(basename(pathActualImage));
+            this._args.testReporterLog(basename(pathActualImage).replace(/\.\w{3,3}$/ig, ""));
             this._args.testReporterLog(join(this._logPath, basename(pathActualImage)));
 
             return false;
@@ -625,15 +625,17 @@ export class AppiumDriver {
                 await this.prepareImageToCompare(pathActualImage, rect);
                 result = await this._imageHelper.compareImages(pathActualImage, pathExpectedImage, pathDiffImage, tolerance, toleranceType);
                 if (checkImageLogType(this._args.testReporter, LogImageType.everyImage)) {
-                    this._args.testReporterLog("Actual image: ");
+                    this._args.testReporterLog(`Actual image: ${basename(pathActualImage).replace(/\.\w{3,3}$/ig, "")}`);
                     this._args.testReporterLog(join(this._logPath, basename(pathActualImage)));
                 }
                 counter++;
             }
 
             if (!checkImageLogType(this._args.testReporter, LogImageType.everyImage)) {
-                this._args.testReporterLog("Actual image: ");
+                this._args.testReporterLog(`Actual image: ${basename(pathDiffImage).replace(/\.\w{3,3}$/ig, "")}`);
                 this._args.testReporterLog(join(this._logPath, basename(pathDiffImage)));
+                this._args.testReporterLog(`Actual image: ${basename(pathActualImage).replace(/\.\w{3,3}$/ig, "")}`);
+                this._args.testReporterLog(join(this._logPath, basename(pathActualImage)));
             }
         } else {
             if (existsSync(pathDiffImage)) {
