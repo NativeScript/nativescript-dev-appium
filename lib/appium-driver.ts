@@ -632,6 +632,8 @@ export class AppiumDriver {
             }
 
             if (!checkImageLogType(this._args.testReporter, LogImageType.everyImage)) {
+                this._args.testReporterLog(`Actual image: ${basename(pathDiffImage).replace(/\.\w{3,3}$/ig, "")}`);
+                this._args.testReporterLog(join(this._logPath, basename(pathDiffImage)));
                 this._args.testReporterLog(`Actual image: ${basename(pathActualImage).replace(/\.\w{3,3}$/ig, "")}`);
                 this._args.testReporterLog(join(this._logPath, basename(pathActualImage)));
             }
