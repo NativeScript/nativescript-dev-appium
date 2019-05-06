@@ -4,6 +4,7 @@ import { ImageOptions } from "./image-options";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IRectangle } from "./interfaces/rectangle";
 import { LogImageType } from "./enums/log-image-type";
+import { basename } from "path";
 
 export class ImageHelper {
 
@@ -75,7 +76,7 @@ export class ImageHelper {
                         message = `Screen compare failed! Found ${result.differences} differences.\n`;
                         console.log(message);
                         if (Object.getOwnPropertyNames(that._args.testReporter).length > 0 && that._args.testReporter.logImageTypes && that._args.testReporter.logImageTypes.indexOf(LogImageType.everyImage) > -1) {
-                            that._args.testReporterLog(message);
+                            that._args.testReporterLog(`${basename(diffImage)}\n\r${message}`);
                             that._args.testReporterLog(diffImage);
                         }
                         return resolve(false);

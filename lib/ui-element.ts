@@ -27,7 +27,7 @@ export class UIElement {
     public async tapCenter() {
         let action = new this._wd.TouchAction(this._driver);
         const rect = await this.getActualRectangle();
-        this._args.testReporterLog(`Tap on center element ${ {"x": rect.x + rect.width / 2, "y": rect.y + rect.height / 2 }}`);
+        this._args.testReporterLog(`Tap on center element ${{ "x": rect.x + rect.width / 2, "y": rect.y + rect.height / 2 }}`);
         action
             .tap({ x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 });
         await action.perform();
@@ -170,27 +170,26 @@ export class UIElement {
      * Shows if element is displayed. Returns true or false. If the element doesn't exist it will return false
      */
     public async isDisplayed() {
-        const el = this._element;
-        let isDisplayed = true;
-        if (!el || el === null) {
-            return false;
-        }
-        const isDisplayedWebDriver = await el.isDisplayed();
-        if (!isDisplayedWebDriver) {
-            return false;
-        }
-        const displaySize = await this._driver.getWindowSize();
         try {
+            const el = await this._element;
+            let isDisplayed = true;
+            if (!el || el === null) {
+                return false;
+            }
+            const isDisplayedWebDriver = await el.isDisplayed();
+            if (!isDisplayedWebDriver) {
+                return false;
+            }
+            const displaySize = await this._driver.getWindowSize();
             const elemCoordinates = await el.getLocation();
 
             isDisplayed = isDisplayedWebDriver && elemCoordinates.x >= 0 && elemCoordinates.x < displaySize.width
                 && elemCoordinates.y >= 0 && elemCoordinates.y < displaySize.height;
-        } catch (error) {
-            console.log("ERROR: " + error);
-            isDisplayed = false;
-        }
 
-        return isDisplayed;
+            return isDisplayed;
+        } catch (error) {
+            return false;
+        }
     }
 
     /**
