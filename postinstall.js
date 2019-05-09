@@ -100,17 +100,13 @@ const getDevDependencies = (frameworkType) => {
         const mochaDeps = [
             { name: "mocha", version: "~5.2.0" },
             { name: "mochawesome", version: "~3.1.2" },
+            { name: "chai", version: "~4.1.2" },
             { name: "@types/mocha", version: "~5.2.5" },
             { name: "@types/chai", version: "~4.1.7" },
             { name: "@types/node", version: "~10.12.18" },
-        ]
-
-        if (!isWin()) {
-            mochaDeps.push({ name: "mochawesome", version: "~3.1.2" });
-        } else {
-            mochaDeps.push({ name: "mocha-junit-reporter", version: "~1.18.0" });
-            mochaDeps.push({ name: "mocha-multi", version: "~1.0.1" });
-        }
+            { name: "mocha-junit-reporter", version: "~1.18.0" },
+            { name: "mocha-multi", version: "~1.0.1" }
+        ];
 
         return mochaDeps;
     }
@@ -292,12 +288,8 @@ const run = async () => {
 
         copy(resolve(basicSampleTestsPluginFolderPath, "config"), resolve(sampleTestsProjectFolderPath, "config"));
 
-        if (isWin() && template.testingFramwork === mocha) {
-            copy(resolve(basicSampleTestsPluginFolderPath, "mocha.win.opts"), resolve(sampleTestsProjectFolderPath, "config", `${template.testingFramwork}.opts`));
-        } else {
-            const settingsFile = template.testingFramwork === jasmine ? `${template.testingFramwork}.json` : `${template.testingFramwork}.opts`;
-            copy(resolve(basicSampleTestsPluginFolderPath, settingsFile), resolve(sampleTestsProjectFolderPath, "config", settingsFile));
-        }
+        const settingsFile = template.testingFramwork === jasmine ? `${template.testingFramwork}.json` : `${template.testingFramwork}.opts`;
+        copy(resolve(basicSampleTestsPluginFolderPath, settingsFile), resolve(sampleTestsProjectFolderPath, "config", settingsFile));
     }
 
     updatePackageJsonDependencies(packageJson, PROJECT_TYPE, TESTING_FRAMEWORK);
