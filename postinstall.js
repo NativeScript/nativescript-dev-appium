@@ -282,7 +282,8 @@ const run = async () => {
 
         const samplesFilePostfix = "sample.e2e-spec";
 
-        const includeMochawesomeReport = !isWin() && template.testingFramwork === mocha ? `${mochawesome}.` : "";
+        // const includeMochawesomeReport = !isWin() && template.testingFramwork === mocha ? `${mochawesome}.` : "";
+        const includeMochawesomeReport = `${mochawesome}.`;
         copy(resolve(e2eSamplesFolder, `${template.projectType}.${template.testingFramwork}.${samplesFilePostfix}.${includeMochawesomeReport}${template.fileExt}`), resolve(sampleTestsProjectFolderPath, `${samplesFilePostfix}.${template.fileExt}`));
         copy(resolve(e2eSamplesFolder, `${template.testingFramwork}.setup.${includeMochawesomeReport}${template.fileExt}`), resolve(sampleTestsProjectFolderPath, `setup.${template.fileExt}`));
 
