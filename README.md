@@ -38,7 +38,7 @@ A package to help with writing and executing e2e [Appium](http://appium.io) test
 1. Image comparison of: screen, rectangle; block out areas to ignore
 1. [WIP] Ability to verify animations/transitions through video/images; please refer to [frame-comparer](https://github.com/SvetoslavTsenov/frame-comparer)
 
-## Requirеments
+## Requirements
 
 The `nativescript-dev-appium` plugin requires:
 * latest version of [Appium](https://github.com/appium/appium/releases)
@@ -218,7 +218,7 @@ my-plugin
 ```
 Thus, the same configuration can be used by both apps without duplication of files.
 
-If you wish to use another location of the capapabilities file instead default ones, you can specify it with `--appiumCapsLocation` option. Remember that the path provided has to be relative to the root directory.
+If you wish to use another location of the capabilities file instead default ones, you can specify it with `--appiumCapsLocation` option. Remember that the path provided has to be relative to the root directory.
 
 Notice that once custom capabilities are provided you will be able to pick any of them using the `--runType` option (e.g. `--runType android25`). See sample content of `appium.capabilities.json` file below. For more details regarding the Appium Capabilities read [Appium documentation about Desired Capabilities](https://appium.io/docs/en/writing-running-appium/caps/):
 
@@ -257,7 +257,7 @@ As you can see, the `app` property can be left an empty string which will force 
 
 **It is important to build your app in advance as explained in [Usage](#usage) section, because the runner expects to provide app package to it or such to exists in the search location.**
 
-**For faster testsing when working on an app with livesync it would be better to use --devMode option or start a new session using --startSession option and run tests using --attachToDebug option and specify appium --port. Or simply start session with appium desktop application**
+**For faster testing when working on an app with livesync it would be better to use --devMode option or start a new session using --startSession option and run tests using --attachToDebug option and specify appium --port. Or simply start session with appium desktop application**
 
 ## Options
 
@@ -265,14 +265,14 @@ As you can see, the `app` property can be left an empty string which will force 
 |---|---|---|
 |runType| Select the capabilities from your config file `appium.capabilities.json`| Consider using `android`, `device`, `sim` strings as part of your `runType` option if you haven't provided `app` capability. Thus, the runner will look for app package in the right location for the current run. <br/> e.g. --runType ios-device10iPhone6|
 |appPath| Provide location of the app package to be tested. This will overwrite all provided capabilities for app| Possible values are:<br/> - app build package name (in case `--sauceLab` option is set it will prepend `sauce-storage:` in front of the app name so app has to be [uploaded to Sauce Labs](https://wiki.saucelabs.com/display/DOCS/Uploading+Mobile+Applications+to+Sauce+Storage+for+Testing) before execution starts)<br/> - path e.g. `platforms/android/build/outputs/apk/demo.apk`.<br/> Example: --appPath demo-debug.apk|
-| devMode | `devMode` capabilities. Skipping application instalation and will automatically reuse device. | e.g. --devMode |
+| devMode | `devMode` capabilities. Skipping application installation and will automatically reuse device. | e.g. --devMode |
 |sauceLab| Enable tests execution in [Sauce Labs](https://saucelabs.com/). As a prerequisite you will have to define `SAUCE_USER` and `SAUCE_KEY` as [environment variable](https://wiki.saucelabs.com/display/DOCS/Best+Practice%3A+Use+Environment+Variables+for+Authentication+Credentials)| e.g. --sauceLab|
 |appiumCapsLocation| Change the location where `appium.capabilities.json` config file can be. It should be relative to the root directory | e.g. --appiumCapsLocation /e2e-tests|
 |port| Appium server port|
 |storage| Specify remote image storage |
 |ignoreDeviceController| Setting this option you will use default appium device controller which is recommended when tests are executed on cloud based solutions |
-|sessionId| In oreder to attach to already started session|Option --port is mendatory in this case. It will automatically set --devMode to true. Provides ability nativescript-dev-appium to be used with [appium desktop client](https://github.com/appium/appium-desktop/releases)|
-|attachToDebug| Same as sessionId but no need to porvide session id.|Option --port is mendatory in this case. It will automatically resolve --sessionId. Provides ability nativescript-dev-appium to be used with [appium desktop client](https://github.com/appium/appium-desktop/releases)|
+|sessionId| In order to attach to already started session|Option --port is mandatory in this case. It will automatically set --devMode to true. Provides ability nativescript-dev-appium to be used with [appium desktop client](https://github.com/appium/appium-desktop/releases)|
+|attachToDebug| Same as sessionId but no need to provide session id.|Option --port is mandatory in this case. It will automatically resolve --sessionId. Provides ability nativescript-dev-appium to be used with [appium desktop client](https://github.com/appium/appium-desktop/releases)|
 |startSession|Start new appium server and initialize appium driver.|
 |cleanApp| Remove application from device on server quit.|
 
@@ -322,7 +322,7 @@ $ npm run e2e -- --runType android25 --verbose
 
 1. Missing installed appium
 2. Misleading appPath or capabilities location. Please make sure that the path to the app or capabilities location is correct.
-3. Misleading detials for device specified in appium config
+3. Misleading details for device specified in appium config
 
 ## Contribute
 We love PRs! Check out the [contributing guidelines](CONTRIBUTING.md). If you want to contribute, but you are not sure where to start - look for [issues labeled `help wanted`](https://github.com/NativeScript/nativescript-dev-appium/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22).

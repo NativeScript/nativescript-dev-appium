@@ -6,7 +6,7 @@
 
 * args ([#163](https://github.com/NativeScript/nativescript-dev-appium/issues/163)) ([db33521](https://github.com/NativeScript/nativescript-dev-appium/commit/db33521))
 * find element by automation name ([#206](https://github.com/NativeScript/nativescript-dev-appium/issues/206)) ([df9e6ed](https://github.com/NativeScript/nativescript-dev-appium/commit/df9e6ed))
-* skip propmting on post install when the console is not interactive ([1042328](https://github.com/NativeScript/nativescript-dev-appium/commit/1042328))
+* skip prompting on post install when the console is not interactive ([1042328](https://github.com/NativeScript/nativescript-dev-appium/commit/1042328))
 * **uielement:** isSelected and isChecked ([#203](https://github.com/NativeScript/nativescript-dev-appium/issues/203)) ([4e3e290](https://github.com/NativeScript/nativescript-dev-appium/commit/4e3e290))
 * check if storage is 'undefined' ([#99](https://github.com/NativeScript/nativescript-dev-appium/issues/99)) ([e2ca7cf](https://github.com/NativeScript/nativescript-dev-appium/commit/e2ca7cf))
 
@@ -93,11 +93,11 @@ $ npm run e2e android or ios
 # [4.0.1]() (2018-07-20)
 
 ### Features
-* **UIElement:** intorduce wd property
-* **AppiumDriver:** intorduce touchAction() 
-* **ElementHelper:** intorduce getXPathByTextAtributes() - returns element/s specific type or '//*' that meets all atrbutes for ios ["label", "value", "hint"] and for android ["content-desc", "resource-id", "text"]
+* **UIElement:** introduce wd property
+* **AppiumDriver:** introduce touchAction() 
+* **ElementHelper:** introduce getXPathByTextAtributes() - returns element/s specific type or '//*' that meets all attributes for ios ["label", "value", "hint"] and for android ["content-desc", "resource-id", "text"]
 * --attachToDebug option requires only --port option
-* --sessionId options requires only --port oprtion
+* --sessionId options requires only --port option
 
 
 <a name="4.0.0"></a>
@@ -141,7 +141,7 @@ For all api levels lower than api23 default automator is still 'Appium'
 
 ### Bug Fixes
 
-* **device-controller:** unintsall app ([#114](https://github.com/NativeScript/nativescript-dev-appium/issues/114)) ([53e615d](https://github.com/NativeScript/nativescript-dev-appium/commit/53e615d))
+* **device-controller:** uninstall app ([#114](https://github.com/NativeScript/nativescript-dev-appium/issues/114)) ([53e615d](https://github.com/NativeScript/nativescript-dev-appium/commit/53e615d))
 * **package.json:** Move TypeScript types dependencies to devDependencies ([#101](https://github.com/NativeScript/nativescript-dev-appium/issues/101)) ([5cc8dd3](https://github.com/NativeScript/nativescript-dev-appium/commit/5cc8dd3))
 * **postinstall:** install [@types](https://github.com/types) to project's devDependencies ([#103](https://github.com/NativeScript/nativescript-dev-appium/issues/103)) ([637d153](https://github.com/NativeScript/nativescript-dev-appium/commit/637d153))
 * resolve application path. Already compatible with nativescript@4.0.0  ([#97](https://github.com/NativeScript/nativescript-dev-appium/issues/97)) ([51446b1](https://github.com/NativeScript/nativescript-dev-appium/commit/51446b1))
@@ -154,7 +154,7 @@ For all api levels lower than api23 default automator is still 'Appium'
 * **AppiumDriver:** add findElementByAccessibilityIdIfExists ([#110](https://github.com/NativeScript/nativescript-dev-appium/issues/110)) ([38ec681](https://github.com/NativeScript/nativescript-dev-appium/commit/38ec681))
 * **AppiumDriver:** tap on point 
 * resolve automatically application package(android), activity(android) and bundleId(iOS) ([#109](https://github.com/NativeScript/nativescript-dev-appium/issues/109)) ([7497cd0](https://github.com/NativeScript/nativescript-dev-appium/commit/7497cd0))
-* devMode option to skip instalation of application
+* devMode option to skip installation of application
 * findElementByAccessibilityIdIfExists
 * expose get reportsPath/ storageByDeviceName/ storageByPlatform
 * **android:** resolve automatically application start activity.
@@ -255,7 +255,7 @@ After:
 
 # 0.1.0 (2016-12-20)
 - Introduce `--verbose` option for troubleshooting.
-- Simplify `package.json` scripts. Upgraders should delete any older `nativescript-dev-appium` scripts from the `package.json` file before installing 0.1.x.
+- Simplify `package.json` scripts. Upgrades should delete any older `nativescript-dev-appium` scripts from the `package.json` file before installing 0.1.x.
 
 # 0.0.19 (2016-08-02)
 
