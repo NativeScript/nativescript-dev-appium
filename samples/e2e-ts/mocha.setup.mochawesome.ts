@@ -1,7 +1,4 @@
 import { startServer, stopServer, ITestReporter, nsCapabilities, LogImageType } from "nativescript-dev-appium";
-
-// This fixes mochawesome report for windows. It is not necessary for other OS 
-const fakeM = require("mocha");
 const addContext = require('mochawesome/addContext');
 
 const testReporterContext = <ITestReporter>{};
