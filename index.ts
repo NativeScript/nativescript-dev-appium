@@ -138,9 +138,9 @@ const killProcesses = async (code) => {
     }
     process.removeAllListeners();
     try {
-        if (isWin() && process) {
-            process.exit(0);
-        }
+        //if (isWin() && process) {
+            // process.exit(0);
+        //}
     } catch (error) { }
 }
 
@@ -152,9 +152,9 @@ const attachToExitProcessHookup = (processToAttach, processName) => {
     }
     signals.forEach(function (sig) {
         processToAttach.once(sig, async function () {
-            await killProcesses(sig);
-            console.log(`Exited from ${processName}`);
-            processToAttach.removeListener(sig, killProcesses);
+           await killProcesses(sig);
+           console.log(`Exited from ${processName}`);
+           processToAttach.removeListener(sig, killProcesses);
         });
     });
 }
