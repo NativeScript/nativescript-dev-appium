@@ -37,6 +37,7 @@ A package to help with writing and executing e2e [Appium](http://appium.io) test
 1. Open source cloud builds integration, i. e. [Sauce Labs](https://saucelabs.com/)
 1. Image comparison of: screen, rectangle; block out areas to ignore
 1. [WIP] Ability to verify animations/transitions through video/images; please refer to [frame-comparer](https://github.com/SvetoslavTsenov/frame-comparer)
+1. Mochawesome HTML report - including screenshots in report
 
 ## Requirements
 

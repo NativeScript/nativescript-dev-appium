@@ -1,3 +1,24 @@
+<a name="5.3.0"></a>
+# [5.3.0](https://github.com/NativeScript/nativescript-dev-appium/compare/v5.2.0...v5.3.0) (2019-06-10)
+
+
+### Bug Fixes
+
+* mochawesome reporter for windows ([#222](https://github.com/NativeScript/nativescript-dev-appium/issues/222)) ([bd612a6](https://github.com/NativeScript/nativescript-dev-appium/commit/bd612a6))
+* skip propmting on post install when the console is not interactive ([1042328](https://github.com/NativeScript/nativescript-dev-appium/commit/1042328))
+* **device-controller:** token in server scenario ([c847536](https://github.com/NativeScript/nativescript-dev-appium/commit/c847536))
+* undifined token ([52ec166](https://github.com/NativeScript/nativescript-dev-appium/commit/52ec166))
+
+
+### Features
+
+* add support for mochawesome reporter ([#216](https://github.com/NativeScript/nativescript-dev-appium/issues/216)) ([7fcece6](https://github.com/NativeScript/nativescript-dev-appium/commit/7fcece6))
+* extend interaction with text ([#208](https://github.com/NativeScript/nativescript-dev-appium/issues/208)) ([45a8ff6](https://github.com/NativeScript/nativescript-dev-appium/commit/45a8ff6))
+* **ui-element:** selected ([#191](https://github.com/NativeScript/nativescript-dev-appium/issues/191)) ([0bf4e79](https://github.com/NativeScript/nativescript-dev-appium/commit/0bf4e79))
+* remoteAddress option ([#202](https://github.com/NativeScript/nativescript-dev-appium/issues/202)) ([efee24e](https://github.com/NativeScript/nativescript-dev-appium/commit/efee24e))
+* start session command. ([#207](https://github.com/NativeScript/nativescript-dev-appium/issues/207)) ([89ab7b0](https://github.com/NativeScript/nativescript-dev-appium/commit/89ab7b0))
+
+
 <a name="5.1.0"></a>
 # [5.1.0](https://github.com/NativeScript/nativescript-dev-appium/compare/5.0.0...5.1.0) (2019-03-07)
 
