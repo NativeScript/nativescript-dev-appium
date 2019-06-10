@@ -233,7 +233,7 @@ const run = async () => {
 
     const skipPostInstallOnPluginRoot = basename(appRootPath) === "nativescript-dev-appium"
     if ((!hasSetProjectTypeAndTestingFrameworkAsEnvSet && isDevAppiumAlreadyInstalled) || skipPostInstallOnPluginRoot) {
-        console.log("Skip instalation!!!!")
+        console.log("Skip installation!!!!")
         return false;
     }
 
