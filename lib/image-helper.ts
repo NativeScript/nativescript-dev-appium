@@ -10,8 +10,17 @@ export class ImageHelper {
 
     private _imageCropRect: IRectangle;
     private _blockOutAreas: IRectangle[];
+    private _waitOnCreatingInitialSnapshot: number;
 
     constructor(private _args: INsCapabilities) {
+    }
+
+    get waitOnCreatingInitialSnapshot() {
+        return this._waitOnCreatingInitialSnapshot;
+    }
+
+    set waitOnCreatingInitialSnapshot(waitOnCreatingInitialSnapshot: number) {
+        this._waitOnCreatingInitialSnapshot = waitOnCreatingInitialSnapshot;
     }
 
     get imageCropRect(): IRectangle {
@@ -103,9 +112,11 @@ export class ImageHelper {
 
         if (typeThreshold == ImageOptions.percent) {
             valueThreshold = Math.floor(valueThreshold * 100);
+            console.log(`Using ${valueThreshold}\ ${typeThreshold} tolerance`);
+        } else {
+            console.log(`Using ${valueThreshold} tolerance`);
         }
 
-        console.log(`Using ${valueThreshold}\ ${typeThreshold} tolerance`);
         const result = this.runDiff(diff, output);
         this._blockOutAreas = undefined;
         return result;

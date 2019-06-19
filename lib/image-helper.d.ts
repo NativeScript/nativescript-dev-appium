@@ -5,7 +5,9 @@ export declare class ImageHelper {
     private _args;
     private _imageCropRect;
     private _blockOutAreas;
+    private _waitOnCreatingInitialSnapshot;
     constructor(_args: INsCapabilities);
+    waitOnCreatingInitialSnapshot: number;
     imageCropRect: IRectangle;
     blockOutAreas: IRectangle[];
     imageOutputLimit(): ImageOptions;
