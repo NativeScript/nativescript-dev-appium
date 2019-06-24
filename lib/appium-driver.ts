@@ -591,7 +591,7 @@ export class AppiumDriver {
         if (!existsSync(pathExpectedImage)) {
             const pathActualImage = resolvePath(this._storageByDeviceName, imageName.replace(".", "_actual."));
             if (this.imageHelper.waitOnCreatingInitialSnapshot > 0) {
-                await this.driver.wait(this.imageHelper.waitOnCreatingInitialSnapshot);
+                await this.wait(this.imageHelper.waitOnCreatingInitialSnapshot);
             }
             await this.takeScreenshot(pathActualImage);
 
