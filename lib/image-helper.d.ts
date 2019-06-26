@@ -3,7 +3,7 @@ import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IRectangle } from "./interfaces/rectangle";
 import { UIElement } from "./ui-element";
 import { AppiumDriver } from "./appium-driver";
-interface IImageCompareOptions {
+export interface IImageCompareOptions {
     imageName?: string;
     timeOutSeconds?: number;
     tolerance?: number;
@@ -41,7 +41,7 @@ export declare class ImageHelper {
     blockOutAreas: IRectangle[];
     imageOutputLimit(): ImageOptions;
     thresholdType(): ImageOptions;
-    threshold(thresholdType: any): 0.01 | 10;
+    threshold(thresholdType: any): 10 | 0.01;
     delta(): number;
     static cropImageDefault(_args: INsCapabilities): {
         x: number;
@@ -55,4 +55,3 @@ export declare class ImageHelper {
     clipRectangleImage(rect: IRectangle, path: string): Promise<{}>;
     readImage(path: string): Promise<any>;
 }
-export {};
