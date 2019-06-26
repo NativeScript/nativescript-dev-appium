@@ -94,14 +94,14 @@ export class ImageHelper {
         return result;
     }
 
-    public hasImageComparissonPassed() {
+    public hasImageComparisonPassed() {
         let shouldFailTest = true;
         console.log();
         this._imagesResults.forEach((v, k, map) => {
             if (!this._imagesResults.get(k)) {
                 shouldFailTest = false;
-                this._driver.testReporterLog(`Image comparisson for image ${k} has failed!`);
-                logError(`Image comparisson for image ${k} has failed`);
+                this._driver.testReporterLog(`Image comparison for image ${k} has failed!`);
+                logError(`Image comparison for image ${k} has failed`);
             }
         });
 

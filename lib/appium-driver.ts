@@ -126,7 +126,7 @@ export class AppiumDriver {
     }
 
     /**
-    * Get the storage where test results from image comparisson is logged It will be reports/app nam/device name
+    * Get the storage where test results from image comparison is logged It will be reports/app nam/device name
     */
     get reportsPath() {
         return this._logPath;

@@ -40,7 +40,7 @@ export declare class AppiumDriver {
     readonly isIOS: boolean;
     readonly driver: any;
     /**
-    * Get the storage where test results from image comparisson is logged It will be reports/app nam/device name
+    * Get the storage where test results from image comparison is logged It will be reports/app nam/device name
     */
     readonly reportsPath: string;
     /**
