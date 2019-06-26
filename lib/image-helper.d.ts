@@ -22,7 +22,6 @@ export declare class ImageHelper {
     private _driver;
     private _imageCropRect;
     private _blockOutAreas;
-    private _imageComppareOptions?;
     private _imagesResults;
     private _testName;
     private _options;

@@ -28,19 +28,17 @@ export class ImageHelper {
 
     private _imageCropRect: IRectangle;
     private _blockOutAreas: IRectangle[];
-    private _imageComppareOptions?: IImageCompareOptions
     private _imagesResults = new Map<string, boolean>();
     private _testName: string;
-    private _options: IImageCompareOptions;
+    private _options: IImageCompareOptions = {
+        timeOutSeconds: 2,
+        tolerance: 0,
+        toleranceType: ImageOptions.pixel,
+        waitOnCreatingInitialSnapshot: 2000,
+        preserveImageName: false,
+    };
 
     constructor(private _args: INsCapabilities, private _driver: AppiumDriver) {
-        this._options = {
-            timeOutSeconds: 2,
-            tolerance: 0,
-            toleranceType: ImageOptions.pixel,
-            waitOnCreatingInitialSnapshot: 2000,
-            preserveImageName: false,
-        };
     }
 
     get options() {
@@ -60,13 +58,13 @@ export class ImageHelper {
     }
 
     get imageComppareOptions() {
-        this.extendOptions(this._imageComppareOptions);
+        this.extendOptions(this._options);
 
-        return this._imageComppareOptions;
+        return this._options;
     }
 
     set imageComppareOptions(imageComppareOptions: IImageCompareOptions) {
-        this._imageComppareOptions = imageComppareOptions;
+        this._options = this.extendOptions(imageComppareOptions);
     }
 
     public async compareScreen(options?: IImageCompareOptions) {
