@@ -13,7 +13,10 @@ import {
     mkdirSync,
     readdirSync,
     writeFileSync,
-    readFileSync
+    readFileSync,
+    readlinkSync,
+    lstatSync,
+    realpathSync
 } from "fs";
 import {
     extname,
@@ -440,6 +443,12 @@ export async function scroll(wd, driver, direction: Direction, isIOS: boolean, y
 
 function createStorageFolder(storage, directory) {
     storage = resolvePath(storage, directory);
+    try {
+        storage = readlinkSync(storage);
+    } catch (error) { }
+    try {
+        storage = realpathSync(storage);
+    } catch (error) { }
     if (!existsSync(storage)) {
         mkdirSync(storage);
     }
