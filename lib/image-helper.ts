@@ -1,26 +1,136 @@
+import { basename } from "path";
 import * as BlinkDiff from "blink-diff";
 import * as PngJsImage from "pngjs-image";
 import { ImageOptions } from "./image-options";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IRectangle } from "./interfaces/rectangle";
 import { LogImageType } from "./enums/log-image-type";
-import { basename } from "path";
+import { UIElement } from "./ui-element";
+import { AppiumDriver } from "./appium-driver";
+import { logError } from "./utils";
+
+export interface IImageCompareOptions {
+    imageName?: string;
+    timeOutSeconds?: number;
+    tolerance?: number;
+    toleranceType?: ImageOptions;
+    /**
+     * wait miliseconds before capture creating image
+     */
+    waitOnCreatingInitialSnapshot?: number;
+    /**
+     * This property will keep image name as it is and will not add _actual postfix on initial capture
+     */
+    preserveImageName?: boolean;
+}
 
 export class ImageHelper {
 
     private _imageCropRect: IRectangle;
     private _blockOutAreas: IRectangle[];
-    private _waitOnCreatingInitialSnapshot: number;
+    private _imagesResults = new Map<string, boolean>();
+    private _testName: string;
+    private _options: IImageCompareOptions = {
+        timeOutSeconds: 2,
+        tolerance: 0,
+        toleranceType: ImageOptions.pixel,
+        waitOnCreatingInitialSnapshot: 2000,
+        preserveImageName: false,
+    };
 
-    constructor(private _args: INsCapabilities) {
+    constructor(private _args: INsCapabilities, private _driver: AppiumDriver) {
     }
 
-    get waitOnCreatingInitialSnapshot() {
-        return this._waitOnCreatingInitialSnapshot;
+    get options() {
+        return this._options;
     }
 
-    set waitOnCreatingInitialSnapshot(waitOnCreatingInitialSnapshot: number) {
-        this._waitOnCreatingInitialSnapshot = waitOnCreatingInitialSnapshot;
+    set options(options: IImageCompareOptions) {
+        this._options = this.extendOptions(options);
+    }
+
+    set testName(testName: string) {
+        this._testName = testName;
+    }
+
+    get testName() {
+        return this._testName;
+    }
+
+    get imageComppareOptions() {
+        this.extendOptions(this._options);
+
+        return this._options;
+    }
+
+    set imageComppareOptions(imageComppareOptions: IImageCompareOptions) {
+        this._options = this.extendOptions(imageComppareOptions);
+    }
+
+    public async compareScreen(options?: IImageCompareOptions) {
+        options = this.extendOptions(options);
+        const imageName = this.increaseImageName(options.imageName || this._testName);
+        const result = await this._driver.compareScreen(imageName, options.timeOutSeconds, options.tolerance, options.toleranceType);
+        this._imagesResults.set(imageName, result);
+
+        return result;
+    }
+
+    public async compareElement(element: UIElement, options?: IImageCompareOptions) {
+        options = this.extendOptions(options);
+        const imageName = this.increaseImageName(options.imageName || this._testName);
+        const result = await this._driver.compareElement(element, imageName, options.tolerance, options.timeOutSeconds, options.toleranceType);
+        this._imagesResults.set(imageName, result);
+
+        return result;
+    }
+
+    public async compareRectangle(element: IRectangle, options?: IImageCompareOptions) {
+        options = this.extendOptions(options);
+        const imageName = this.increaseImageName(options.imageName || this._testName);
+        const result = await this._driver.compareRectangle(element, imageName, options.timeOutSeconds, options.tolerance, options.toleranceType);
+        this._imagesResults.set(imageName, result);
+
+        return result;
+    }
+
+    public hasImageComparisonPassed() {
+        let shouldFailTest = true;
+        console.log();
+        this._imagesResults.forEach((v, k, map) => {
+            if (!this._imagesResults.get(k)) {
+                shouldFailTest = false;
+                this._driver.testReporterLog(`Image comparison for image ${k} has failed!`);
+                logError(`Image comparison for image ${k} has failed`);
+            }
+        });
+
+        this.reset();
+        return shouldFailTest;
+    }
+
+    public reset() {
+        this._imagesResults.clear();
+    }
+
+    private increaseImageName(imageName: string) {
+        if (this._imagesResults.size > 1) {
+            const number = /\d+$/.test(imageName) ? +`${/\d+$/.exec(imageName)}` + 1 : `2`;
+            imageName = `${imageName}_${number}`;
+        }
+
+        return imageName;
+    }
+
+    private extendOptions(options: IImageCompareOptions) {
+        options = options || {};
+        Object.getOwnPropertyNames(this.options).forEach(prop => {
+            if (!options[prop]) {
+                options[prop] = this.options[prop];
+            }
+        });
+
+        return options;
     }
 
     get imageCropRect(): IRectangle {

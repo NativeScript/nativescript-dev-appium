@@ -67,7 +67,7 @@ export class AppiumDriver {
 
     private constructor(private _driver: any, private _wd, private _webio: any, private _driverConfig, private _args: INsCapabilities) {
         this._elementHelper = new ElementHelper(this._args);
-        this._imageHelper = new ImageHelper(this._args);
+        this._imageHelper = new ImageHelper(this._args, this);
         this._isAlive = true;
         this._locators = new Locator(this._args);
         this._webio.requestHandler.sessionID = this._driver.sessionID;
@@ -126,7 +126,7 @@ export class AppiumDriver {
     }
 
     /**
-    * Get the storage where test results from image comparisson is logged It will be reports/app nam/device name
+    * Get the storage where test results from image comparison is logged It will be reports/app nam/device name
     */
     get reportsPath() {
         return this._logPath;
@@ -239,7 +239,7 @@ export class AppiumDriver {
                         prepareApp(args);
                         if (!args.device) {
                             if (args.isAndroid) {
-                                args.device = DeviceManager.getDefaultDevice(args, sessionInfo.capabilities.deviceName, sessionInfo.capabilities.deviceUDID.replace("emulator-", ""), sessionInfo.capabilities.deviceUDID.includes("emulator") ? DeviceType.EMULATOR : DeviceType.SIMULATOR, sessionInfo.capabilities.desired.platformVersion || sessionInfo.capabilities.platformVersion);
+                                args.device = DeviceManager.getDefaultDevice(args, sessionInfo.capabilities.desired.deviceName, sessionInfo.capabilities.deviceUDID.replace("emulator-", ""), sessionInfo.capabilities.deviceUDID.includes("emulator") ? DeviceType.EMULATOR : DeviceType.SIMULATOR, sessionInfo.capabilities.desired.platformVersion || sessionInfo.capabilities.platformVersion);
                             } else {
                                 args.device = DeviceManager.getDefaultDevice(args);
                             }
@@ -589,9 +589,9 @@ export class AppiumDriver {
 
         // First time capture
         if (!existsSync(pathExpectedImage)) {
-            const pathActualImage = resolvePath(this._storageByDeviceName, imageName.replace(".", "_actual."));
-            if (this.imageHelper.waitOnCreatingInitialSnapshot > 0) {
-                await this.wait(this.imageHelper.waitOnCreatingInitialSnapshot);
+            const pathActualImage = resolvePath(this._storageByDeviceName, this.imageHelper.options.preserveImageName ? imageName : imageName.replace(".", "_actual."));
+            if (this.imageHelper.options.waitOnCreatingInitialSnapshot > 0) {
+                await this.wait(this.imageHelper.options.waitOnCreatingInitialSnapshot);
             }
             await this.takeScreenshot(pathActualImage);
 
