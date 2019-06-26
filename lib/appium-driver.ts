@@ -67,7 +67,7 @@ export class AppiumDriver {
 
     private constructor(private _driver: any, private _wd, private _webio: any, private _driverConfig, private _args: INsCapabilities) {
         this._elementHelper = new ElementHelper(this._args);
-        this._imageHelper = new ImageHelper(this._args);
+        this._imageHelper = new ImageHelper(this._args, this);
         this._isAlive = true;
         this._locators = new Locator(this._args);
         this._webio.requestHandler.sessionID = this._driver.sessionID;
@@ -589,9 +589,9 @@ export class AppiumDriver {
 
         // First time capture
         if (!existsSync(pathExpectedImage)) {
-            const pathActualImage = resolvePath(this._storageByDeviceName, imageName.replace(".", "_actual."));
-            if (this.imageHelper.waitOnCreatingInitialSnapshot > 0) {
-                await this.wait(this.imageHelper.waitOnCreatingInitialSnapshot);
+            const pathActualImage = resolvePath(this._storageByDeviceName, this.imageHelper.options.preserveImageName ? imageName : imageName.replace(".", "_actual."));
+            if (this.imageHelper.options.waitOnCreatingInitialSnapshot > 0) {
+                await this.wait(this.imageHelper.options.waitOnCreatingInitialSnapshot);
             }
             await this.takeScreenshot(pathActualImage);
 

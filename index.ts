@@ -32,6 +32,7 @@ export { logInfo, logError, logWarn } from "./lib/utils";
 export { ITestReporter } from "./lib/interfaces/test-reporter";
 export { screencapture } from "./lib/helpers/screenshot-manager";
 export { LogImageType } from "./lib/enums/log-image-type";
+export { ImageHelper, IImageCompareOptions } from "./lib/image-helper";
 
 export const nsCapabilities: INsCapabilities = new NsCapabilities(parser);
 
@@ -139,7 +140,7 @@ const killProcesses = async (code) => {
     process.removeAllListeners();
     try {
         //if (isWin() && process) {
-            // process.exit(0);
+        // process.exit(0);
         //}
     } catch (error) { }
 }
@@ -152,9 +153,9 @@ const attachToExitProcessHookup = (processToAttach, processName) => {
     }
     signals.forEach(function (sig) {
         processToAttach.once(sig, async function () {
-           await killProcesses(sig);
-           console.log(`Exited from ${processName}`);
-           processToAttach.removeListener(sig, killProcesses);
+            await killProcesses(sig);
+            console.log(`Exited from ${processName}`);
+            processToAttach.removeListener(sig, killProcesses);
         });
     });
 }

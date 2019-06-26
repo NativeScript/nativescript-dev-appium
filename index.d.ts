@@ -22,6 +22,7 @@ export { logInfo, logError, logWarn } from "./lib/utils";
 export { ITestReporter } from "./lib/interfaces/test-reporter";
 export { screencapture } from "./lib/helpers/screenshot-manager";
 export { LogImageType } from "./lib/enums/log-image-type";
+export { ImageHelper } from "./lib/image-helper";
 export declare const nsCapabilities: INsCapabilities;
 export declare function startServer(port?: number, deviceManager?: IDeviceManager): Promise<AppiumServer>;
 export declare function stopServer(): Promise<void>;
