@@ -111,12 +111,37 @@ export class ImageHelper {
 
     public reset() {
         this._imagesResults.clear();
+        this.testName = undefined;
     }
 
     private increaseImageName(imageName: string) {
-        if (this._imagesResults.size > 1) {
-            const number = /\d+$/.test(imageName) ? +`${/\d+$/.exec(imageName)}` + 1 : `2`;
-            imageName = `${imageName}_${number}`;
+        if (!imageName) {
+            logError(`Missing image name!`);
+            logError(`Consider to set
+            drive.imageHelper.testName
+            dirver.imageHelper.options.imageName
+    `);
+            throw new Error(`Missing image name!`)
+        }
+        if (this._imagesResults.size > 0) {
+            const images = new Array();
+            this._imagesResults.forEach((v, k, map) => {
+                if (k.includes(imageName)) {
+                    images.push(k);
+                }
+            });
+
+            images.sort((a, b) => {
+                const aNumber = +/\d+$/.exec(a);
+                const bNumber = +/\d+$/.exec(b);
+
+                return bNumber - aNumber;
+            });
+            if (images.length > 0) {
+                const lastImage = images[0];
+                const number = /\d+$/.test(lastImage) ? +`${/\d+$/.exec(lastImage)}` + 1 : `2`;
+                imageName = `${imageName}_${number}`;
+            }
         }
 
         return imageName;
