@@ -12,6 +12,7 @@ import {
     sortDescByApiLevelPredicate
 } from "mobile-devices-controller";
 import { isRegExp } from "util";
+import { NsCapabilities } from "./ns-capabilities";
 
 export class DeviceManager implements IDeviceManager {
     private static _emulators: Map<string, IDevice> = new Map();
@@ -181,6 +182,20 @@ export class DeviceManager implements IDeviceManager {
         return device;
     }
 
+    public static applyAppiumSessionInfoDetails(args: INsCapabilities, sessionInfoDetails: { sessionId: string, value: any }) {
+        if (args.isAndroid) {
+            args.device.apiLevel = sessionInfoDetails.value.deviceApiLevel,
+                args.device.config = { "density": sessionInfoDetails.value.deviceScreenDensity / 100, "offsetPixels": +sessionInfoDetails.value.statBarHeight }
+            args.device.config.viewportRect = sessionInfoDetails.value.viewportRect;
+        } else {
+            args.device.apiLevel = sessionInfoDetails.value.platformVersion,
+                args.device.config = { "density": sessionInfoDetails.value.pixelRatio, "offsetPixels": +sessionInfoDetails.value.viewportRect.top - +sessionInfoDetails.value.statBarHeight }
+            args.device.config.viewportRect = sessionInfoDetails.value.viewportRect;
+        }
+
+        return args.device;
+    }
+
     public static async setDontKeepActivities(args: INsCapabilities, driver, value) {
         const status = value ? 1 : 0;
         try {
@@ -236,27 +251,10 @@ export class DeviceManager implements IDeviceManager {
         }
     }
 
-    public static async applyDeviceAdditionsSettings(driver, args: INsCapabilities, sessionInfo: any) {
-        if (!args.device.config || !args.device.config.offsetPixels) {
-            args.device.config = {};
-            let density: number;
-            if (sessionInfo && sessionInfo.length >= 1) {
-                density = sessionInfo[1].deviceScreenDensity ? sessionInfo[1].deviceScreenDensity / 100 : undefined;
-            }
-
-            if (density) {
-                console.log(`Get density from appium session: ${density}`);
-                args.device.config['density'] = density;
-                args.device.config['offsetPixels'] = AndroidController.calculateScreenOffset(args.device.config.density);
-            }
-
-            if (!density) {
-                await DeviceManager.getDensity(args, driver);
-                density = args.device.config.density
-                args.device.config['offsetPixels'] = AndroidController.calculateScreenOffset(args.device.config.density);
-            }
-
-            density ? logInfo(`Device setting:`, args.device.config) : console.log(`Could not resolve device density. Please provide offset in appium config`);
+    public static async applyDeviceAdditionsSettings(driver, args: INsCapabilities, appiumCaps: any) {
+        if (appiumCaps) {
+            args.device.config.offsetPixels = appiumCaps.offsetPixels || args.device.config.offsetPixels;
+            args.device.config.density = appiumCaps.density || args.device.config.density;
         }
     }
 

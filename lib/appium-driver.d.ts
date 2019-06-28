@@ -10,6 +10,7 @@ import { Point } from "./point";
 import { ImageHelper } from "./image-helper";
 import { ImageOptions } from "./image-options";
 import { LogType } from "./log-types";
+import { DeviceOrientaion } from "./enums/device-orientatioin";
 export declare class AppiumDriver {
     private _driver;
     private _wd;
@@ -171,6 +172,8 @@ export declare class AppiumDriver {
     * @param y
     */
     clickPoint(xCoordinate: number, yCoordinate: number): Promise<void>;
+    getOrientation(): Promise<DeviceOrientaion>;
+    setOrientation(orientation: DeviceOrientaion): Promise<void>;
     source(): Promise<any>;
     sessionId(): Promise<any>;
     compareElement(element: UIElement, imageName: string, tolerance?: number, timeOutSeconds?: number, toleranceType?: ImageOptions): Promise<boolean>;
@@ -202,9 +205,9 @@ export declare class AppiumDriver {
     logTestArtifacts(logName: string): Promise<void>;
     /**
      * Send the currently active app to the background
-     * @param time in minutes
+     * @param time in seconds
      */
-    backgroundApp(minutes: number): Promise<void>;
+    backgroundApp(seconds: number): Promise<void>;
     /**
      * Hides device keyboard
      */

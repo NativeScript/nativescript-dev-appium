@@ -30,6 +30,7 @@ import {
     wait,
     copy,
     getSessions,
+    getSession,
     logError,
     prepareApp,
     logInfo,
@@ -51,6 +52,7 @@ import { extname, basename, join } from "path";
 import { LogType } from "./log-types";
 import { screencapture } from "./helpers/screenshot-manager";
 import { LogImageType } from "./enums/log-image-type";
+import { DeviceOrientaion } from "./enums/device-orientatioin";
 
 export class AppiumDriver {
     private static pngFileExt = '.png';
@@ -213,10 +215,11 @@ export class AppiumDriver {
 
         let hasStarted = false;
         let retries = 10;
+        const appiumCapsFromConfig = args.appiumCaps;
         while (retries > 0 && !hasStarted) {
             try {
                 let sessionInfo;
-
+                let sessionInfoDetails;
                 try {
                     if (args.sessionId || args.attachToDebug) {
                         const sessionInfos = JSON.parse(((await getSessions(args.port)) || "{}") + '');
@@ -225,13 +228,12 @@ export class AppiumDriver {
                         if (!sessionInfo || !sessionInfo.id) {
                             logError("No suitable session info found", sessionInfo);
                             process.exit(1);
+                        } else {
+                            sessionInfoDetails = JSON.parse(((await getSession(args.port, sessionInfo.id)) || "{}") + '');
                         }
 
                         args.sessionId = sessionInfo.id;
                         args.appiumCaps = sessionInfo.capabilities;
-                        // remove app to prevent appium from installing app again
-                        args.appiumCaps.app = "";
-
                         if (sessionInfo.capabilities.automationName) {
                             (<any>args).setAutomationNameFromString(sessionInfo.capabilities.automationName);
                         }
@@ -243,13 +245,18 @@ export class AppiumDriver {
                             } else {
                                 args.device = DeviceManager.getDefaultDevice(args);
                             }
+                            args.device = DeviceManager.applyAppiumSessionInfoDetails(args, sessionInfoDetails);
                         }
+
+                        // remove app to prevent appium from installing app again
+                        args.appiumCaps.app = "";
 
                         await driver.attach(args.sessionId);
                     } else {
                         sessionInfo = await driver.init(args.appiumCaps);
+                        sessionInfoDetails = JSON.parse(((await getSession(args.port, sessionInfo[0])) || "{}") + '');
+                        args.device = DeviceManager.applyAppiumSessionInfoDetails(args, sessionInfoDetails);
                     }
-
                 } catch (error) {
                     args.verbose = true;
                     if (!args.ignoreDeviceController && error && error.message && error.message.includes("Failure [INSTALL_FAILED_INSUFFICIENT_STORAGE]")) {
@@ -258,11 +265,11 @@ export class AppiumDriver {
                     }
                 }
                 if (args.verbose) {
-                    logInfo("Session info");
-                    console.info(sessionInfo);
+                    logInfo("Session info: ");
+                    console.info(sessionInfoDetails);
                 }
 
-                await DeviceManager.applyDeviceAdditionsSettings(driver, args, sessionInfo);
+                await DeviceManager.applyDeviceAdditionsSettings(driver, args, appiumCapsFromConfig);
 
                 hasStarted = true;
             } catch (error) {
@@ -276,6 +283,7 @@ export class AppiumDriver {
                     args.appiumCaps["wdaLocalPort"] = freePort;
                 }
             }
+
             if (hasStarted) {
                 console.log("Appium driver has started successfully!");
                 if (checkImageLogType(args.testReporter, LogImageType.screenshots)) {
@@ -514,6 +522,15 @@ export class AppiumDriver {
             .tap({ x: xCoordinate, y: yCoordinate });
         await action.perform();
         await this._driver.sleep(150);
+    }
+
+    async getOrientation(): Promise<DeviceOrientaion> {
+        return await this._driver.getOrientation();
+    }
+
+    public async setOrientation(orientation: DeviceOrientaion) {
+        logInfo(`Set device orientation: ${orientation}`)
+        await this._driver.setOrientation(orientation);
     }
 
     public async source() {
@@ -780,13 +797,13 @@ export class AppiumDriver {
 
     /**
      * Send the currently active app to the background
-     * @param time in minutes
+     * @param time in seconds
      */
-    public async backgroundApp(minutes: number) {
+    public async backgroundApp(seconds: number) {
         logInfo("Sending the currently active app to the background ...");
         this._args.testReporterLog("Sending the currently active app to the background ...");
 
-        await this._driver.backgroundApp(minutes);
+        await this._driver.backgroundApp(seconds);
     }
 
     /**

@@ -532,6 +532,38 @@ export function getSessions(port, host = `0.0.0.0`) {
     });
 }
 
+export function getSession(port: number, sessionId: any) {
+    return new Promise((resolve, reject) => {
+        http.get(`http://localhost:${port}/wd/hub/session/${sessionId}`, (resp) => {
+            let data = '';
+
+            // A chunk of data has been recieved.
+            resp.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            // The whole response has been received. Print out the result.
+            resp.on('end', () => {
+                let result = undefined;
+                console.log(data);
+
+                try {
+                    //result = JSON.parse(data);
+                    result = data;
+                } catch (error) {
+
+                }
+
+                resolve(result);
+            });
+
+        }).on("error", (err) => {
+            console.log("Error: " + err.message);
+            resolve(undefined);
+        });
+    });
+}
+
 export const prepareDevice = async (args: INsCapabilities, deviceManager: IDeviceManager) => {
     if (!args.device) {
         const device = await deviceManager.startDevice(args);
@@ -586,15 +618,14 @@ export const prepareApp = async (args: INsCapabilities) => {
     }
 
     if (!args.ignoreDeviceController
-        && !args.attachToDebug
-        && !args.sessionId
+        && (args.attachToDebug || args.sessionId)
         && !args.appiumCaps[appPackage]
         && args.isIOS
         && args.appiumCaps.app) {
-        IOSController.getIOSPackageId(undefined, args.appiumCaps.app);
+        args.appiumCaps[appPackage] = IOSController.getIOSPackageId(undefined, args.appiumCaps.app);
     }
 
-    if (args.appiumCaps[appPackage]) {
+    if (args.appiumCaps[appPackage] && !args.appName) {
         const groupings = getRegexResultsAsArray(/(\w+)/gi, args.appiumCaps[appPackage]);
         args.appName = groupings[groupings.length - 1];
     }
