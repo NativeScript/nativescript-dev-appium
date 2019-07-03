@@ -99,7 +99,7 @@ export class DeviceManager implements IDeviceManager {
                 logInfo("Device is connected:", device)
             }
             if (device.status === Status.SHUTDOWN) {
-                await DeviceController.startDevice(device, startDeviceOptions, shouldFullyResetDevice);
+                device = await DeviceController.startDevice(device, startDeviceOptions, shouldFullyResetDevice);
                 try {
                     delete device.process;
                 } catch (error) { }
@@ -182,16 +182,24 @@ export class DeviceManager implements IDeviceManager {
         return device;
     }
 
-    public static applyAppiumSessionInfoDetails(args: INsCapabilities, sessionInfoDetails: { sessionId: string, value: any }) {
+    public static applyAppiumSessionInfoDetails(args: INsCapabilities, sessionInfoDetails) {
         if (args.isAndroid) {
-            args.device.apiLevel = sessionInfoDetails.value.deviceApiLevel,
-                args.device.config = { "density": sessionInfoDetails.value.deviceScreenDensity / 100, "offsetPixels": +sessionInfoDetails.value.statBarHeight }
-            args.device.config.viewportRect = sessionInfoDetails.value.viewportRect;
+            const sizeArr = sessionInfoDetails.deviceScreenSize.split("x");
+            args.device.deviceScreenSize = { width: sizeArr[0], height: sizeArr[1] };
+
+            args.device.deviceScreenDensity = sessionInfoDetails.deviceScreenDensity / 100;
+            args.device.viewportRect = sessionInfoDetails.viewportRect;
+            args.device.apiLevel = sessionInfoDetails.deviceApiLevel;
+
+            args.device.config = { "density": sessionInfoDetails.deviceScreenDensity / 100, "offsetPixels": +sessionInfoDetails.statBarHeight }
         } else {
-            args.device.apiLevel = sessionInfoDetails.value.platformVersion,
-                args.device.config = { "density": sessionInfoDetails.value.pixelRatio, "offsetPixels": +sessionInfoDetails.value.viewportRect.top - +sessionInfoDetails.value.statBarHeight }
-            args.device.config.viewportRect = sessionInfoDetails.value.viewportRect;
+            args.device.apiLevel = sessionInfoDetails.platformVersion;
+            args.device.deviceScreenDensity = sessionInfoDetails.pixelRatio;
+            args.device.config = { "density": sessionInfoDetails.pixelRatio, "offsetPixels": +sessionInfoDetails.viewportRect.top - +sessionInfoDetails.statBarHeight }
         }
+
+        args.device.viewportRect = sessionInfoDetails.viewportRect;
+        args.device.statBarHeight = +sessionInfoDetails.statBarHeight;
 
         return args.device;
     }
@@ -251,7 +259,7 @@ export class DeviceManager implements IDeviceManager {
         }
     }
 
-    public static async applyDeviceAdditionsSettings(driver, args: INsCapabilities, appiumCaps: any) {
+    public static async applyDeviceAdditionsSettings(args: INsCapabilities, appiumCaps: any) {
         if (appiumCaps) {
             args.device.config.offsetPixels = appiumCaps.offsetPixels || args.device.config.offsetPixels;
             args.device.config.density = appiumCaps.density || args.device.config.density;

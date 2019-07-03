@@ -12,17 +12,14 @@ export declare class DeviceManager implements IDeviceManager {
     static kill(device: IDevice): Promise<void>;
     static getInstalledApps(device: IDevice): Promise<string[]>;
     static getDefaultDevice(args: INsCapabilities, deviceName?: string, token?: string, type?: DeviceType, platformVersion?: number): IDevice;
-    static applyAppiumSessionInfoDetails(args: INsCapabilities, sessionInfoDetails: {
-        sessionId: string;
-        value: any;
-    }): any;
+    static applyAppiumSessionInfoDetails(args: INsCapabilities, sessionInfoDetails: any): IDevice;
     static setDontKeepActivities(args: INsCapabilities, driver: any, value: any): Promise<void>;
     static executeShellCommand(driver: any, commandArgs: {
         command: string;
         "args": Array<any>;
     }): Promise<any>;
     static getDensity(args: INsCapabilities, driver: any): Promise<void>;
-    static applyDeviceAdditionsSettings(driver: any, args: INsCapabilities, appiumCaps: any): Promise<void>;
+    static applyDeviceAdditionsSettings(args: INsCapabilities, appiumCaps: any): Promise<void>;
     getPackageId(device: IDevice, appPath: string): string;
     private static cleanUnsetProperties;
 }

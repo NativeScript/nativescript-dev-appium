@@ -17,15 +17,11 @@ export declare class AppiumDriver {
     private _webio;
     private _driverConfig;
     private _args;
-    private static pngFileExt;
-    private static partialUrl;
     private _defaultWaitTime;
     private _elementHelper;
     private _imageHelper;
     private _isAlive;
     private _locators;
-    private _logPath;
-    private _storageByDeviceName;
     private _storageByPlatform;
     private constructor();
     readonly imageHelper: ImageHelper;
@@ -62,6 +58,7 @@ export declare class AppiumDriver {
     click(args: any): Promise<any>;
     navBack(): Promise<any>;
     static createAppiumDriver(args: INsCapabilities): Promise<AppiumDriver>;
+    updateSettings(settings: any): Promise<void>;
     /**
      *
      * @param xPath
@@ -190,11 +187,10 @@ export declare class AppiumDriver {
      */
     startRecordingVideo(videoName: any): any;
     stopRecordingVideo(): Promise<any>;
-    private compare;
-    prepareImageToCompare(filePath: string, rect: IRectangle): Promise<void>;
     takeScreenshot(fileName: string): Promise<string>;
+    saveScreenshot(fileName: string): Promise<any>;
     testReporterLog(log: any): any;
-    logScreenshot(fileName: string): Promise<string>;
+    logScreenshot(fileName: string): Promise<any>;
     getlog(logType: LogType): Promise<any>;
     logPageSource(fileName: string): Promise<void>;
     logDeviceLog(fileName: any, logType: LogType, filter?: string): Promise<void>;
@@ -219,7 +215,6 @@ export declare class AppiumDriver {
     private static applyAdditionalSettings;
     private convertArrayToUIElements;
     private static configureLogging;
-    private getExpectedImagePath;
     /**
     * Wait specific amount of time before continue execution
     * @param milliseconds

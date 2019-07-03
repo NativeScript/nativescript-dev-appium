@@ -10,8 +10,6 @@ import { logInfo, logError } from "./lib/utils";
 import { INsCapabilities } from "./lib/interfaces/ns-capabilities";
 import { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
 import * as parser from "./lib/parser"
-import { isWin } from "./lib/utils";
-import { LogImageType } from "./lib/enums/log-image-type";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { AppiumServer } from "./lib/appium-server";

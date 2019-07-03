@@ -43,4 +43,7 @@ export interface INsCapabilitiesArgs {
     driverConfig?: any;
     testReporter?: ITestReporter;
     logImageTypes?: Array<LogImageType>;
+    storageByDeviceName?: string;
+    storageByPlatform?: string;
+    reportsPath?: string;
 }

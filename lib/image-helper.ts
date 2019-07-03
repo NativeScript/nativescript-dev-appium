@@ -1,4 +1,3 @@
-import { basename } from "path";
 import * as BlinkDiff from "blink-diff";
 import * as PngJsImage from "pngjs-image";
 import { ImageOptions } from "./image-options";
@@ -7,7 +6,9 @@ import { IRectangle } from "./interfaces/rectangle";
 import { LogImageType } from "./enums/log-image-type";
 import { UIElement } from "./ui-element";
 import { AppiumDriver } from "./appium-driver";
-import { logError } from "./utils";
+import { logError, checkImageLogType, resolvePath, getStorageByDeviceName, getStorageByPlatform, getReportPath, copy, addExt, logWarn } from "./utils";
+import { unlinkSync, existsSync } from "fs";
+import { basename, join } from "path";
 
 export interface IImageCompareOptions {
     imageName?: string;
@@ -22,14 +23,20 @@ export interface IImageCompareOptions {
      * This property will keep image name as it is and will not add _actual postfix on initial capture
      */
     preserveImageName?: boolean;
+
+    /**
+     * Clip image before comapare. Default value excludes status bar(both android and ios) and softare buttons(android)
+     */
+    cropRectangele?: IRectangle;
 }
 
 export class ImageHelper {
 
-    private _imageCropRect: IRectangle;
     private _blockOutAreas: IRectangle[];
     private _imagesResults = new Map<string, boolean>();
     private _testName: string;
+    private _imageCropRect: IRectangle;
+
     private _options: IImageCompareOptions = {
         timeOutSeconds: 2,
         tolerance: 0,
@@ -38,7 +45,10 @@ export class ImageHelper {
         preserveImageName: false,
     };
 
+    public static readonly pngFileExt = '.png';
+
     constructor(private _args: INsCapabilities, private _driver: AppiumDriver) {
+        this.options.cropRectangele = (this._args.appiumCaps && this._args.appiumCaps.viewportRect) || this._args.device.viewportRect;
     }
 
     get options() {
@@ -69,27 +79,28 @@ export class ImageHelper {
 
     public async compareScreen(options?: IImageCompareOptions) {
         options = this.extendOptions(options);
-        const imageName = this.increaseImageName(options.imageName || this._testName);
-        const result = await this._driver.compareScreen(imageName, options.timeOutSeconds, options.tolerance, options.toleranceType);
-        this._imagesResults.set(imageName, result);
+        options.imageName = this.increaseImageName(options.imageName || this._testName);
+        const result = await this.compare(options);
+        this._imagesResults.set(options.imageName, result);
 
         return result;
     }
 
     public async compareElement(element: UIElement, options?: IImageCompareOptions) {
         options = this.extendOptions(options);
-        const imageName = this.increaseImageName(options.imageName || this._testName);
-        const result = await this._driver.compareElement(element, imageName, options.tolerance, options.timeOutSeconds, options.toleranceType);
-        this._imagesResults.set(imageName, result);
+        options.imageName = this.increaseImageName(options.imageName || this._testName);
+        const cropRectangele = await element.getRectangle();
+        const result = await this.compareRectangle(cropRectangele, options);
 
         return result;
     }
 
-    public async compareRectangle(element: IRectangle, options?: IImageCompareOptions) {
+    public async compareRectangle(cropRectangle: IRectangle, options?: IImageCompareOptions) {
         options = this.extendOptions(options);
-        const imageName = this.increaseImageName(options.imageName || this._testName);
-        const result = await this._driver.compareRectangle(element, imageName, options.timeOutSeconds, options.tolerance, options.toleranceType);
-        this._imagesResults.set(imageName, result);
+        options.imageName = this.increaseImageName(options.imageName || this._testName);
+        options.cropRectangele = cropRectangle;
+        const result = await this.compare(options);
+        this._imagesResults.set(options.imageName, result);
 
         return result;
     }
@@ -149,21 +160,30 @@ export class ImageHelper {
 
     private extendOptions(options: IImageCompareOptions) {
         options = options || {};
+        const clipRectangele = this.imageCropRect;
         Object.getOwnPropertyNames(this.options).forEach(prop => {
             if (!options[prop]) {
                 options[prop] = this.options[prop];
             }
         });
 
+        if (!options.cropRectangele) {
+            Object.getOwnPropertyNames(clipRectangele).forEach(prop => {
+                options.cropRectangele[prop] = clipRectangele[prop];
+            });
+
+            this.imageCropRect = options.cropRectangele;
+        }
+
         return options;
     }
 
     get imageCropRect(): IRectangle {
-        return this._imageCropRect;
+        return this._imageCropRect || this.options.cropRectangele;
     }
 
-    set imageCropRect(rect: IRectangle) {
-        this._imageCropRect = rect;
+    set imageCropRect(clipRectangele: IRectangle) {
+        this._imageCropRect = clipRectangele;
     }
 
     get blockOutAreas() {
@@ -194,13 +214,97 @@ export class ImageHelper {
         return 20;
     }
 
-    public static cropImageDefault(_args: INsCapabilities) {
-        return { x: 0, y: ImageHelper.getOffsetPixels(_args), width: undefined, height: undefined };
+    public getExpectedImagePath(imageName: string) {
+        let pathExpectedImage = resolvePath(this._args.storageByDeviceName, imageName);
+        return pathExpectedImage;
     }
 
-    private static getOffsetPixels(args: INsCapabilities) {
-        return args.device.config ? args.device.config.offsetPixels : 0
+    public async compare(options: IImageCompareOptions) {
+        let imageName = addExt(options.imageName, ImageHelper.pngFileExt);
+        const pathExpectedImage = this.getExpectedImagePath(imageName);
+
+        // First time capture
+        if (!existsSync(pathExpectedImage)) {
+            const pathActualImage = resolvePath(this._args.storageByDeviceName, this.options.preserveImageName ? imageName : imageName.replace(".", "_actual."));
+            if (this.options.waitOnCreatingInitialSnapshot > 0) {
+                await this._driver.wait(this.options.waitOnCreatingInitialSnapshot);
+            }
+            await this._driver.saveScreenshot(pathActualImage);
+
+            // if (options.cropRectangele) {
+            //     await this.clipRectangleImage(options.cropRectangele, pathActualImage);
+            // }
+
+            const pathActualImageToReportsFolder = resolvePath(this._args.reportsPath, basename(pathActualImage));
+            copy(pathActualImage, pathActualImageToReportsFolder, false);
+
+            if (this.options.preserveImageName) {
+                logWarn(`New image ${basename(pathActualImage)} is saved to storage ${this._args.storageByDeviceName}.`, pathExpectedImage);
+            } else {
+                logWarn("Remove the 'actual' suffix to continue using the image as expected one ", pathExpectedImage);
+            }
+            this._args.testReporterLog(basename(pathActualImage).replace(/\.\w{3,3}$/ig, ""));
+            this._args.testReporterLog(join(this._args.reportsPath, basename(pathActualImage)));
+            return false;
+        }
+
+        // Compare
+        let pathActualImage = await this._driver.saveScreenshot(resolvePath(this._args.reportsPath, imageName.replace(".", "_actual.")));
+        // if (options.cropRectangele) {
+        //     await this.clipRectangleImage(options.cropRectangele, pathActualImage);
+        // }
+        const pathDiffImage = pathActualImage.replace("actual", "diff");
+
+        // await this.prepareImageToCompare(pathActualImage, options.cropRectangele);
+        let result = await this.compareImages(pathActualImage, pathExpectedImage, pathDiffImage, options.tolerance, options.toleranceType);
+
+        // Iterate
+        if (!result) {
+            const eventStartTime = Date.now().valueOf();
+            let counter = 1;
+            options.timeOutSeconds *= 1000;
+            while ((Date.now().valueOf() - eventStartTime) <= options.timeOutSeconds && !result) {
+                const pathActualImageConter = resolvePath(this._args.reportsPath, imageName.replace(".", "_actual_" + counter + "."));
+                pathActualImage = await this._driver.saveScreenshot(pathActualImageConter);
+                // if (options.cropRectangele) {
+                //     await this.clipRectangleImage(options.cropRectangele, pathActualImage);
+                // }
+                // await this.prepareImageToCompare(pathActualImage, this.imageCropRect);
+                result = await this.compareImages(pathActualImage, pathExpectedImage, pathDiffImage, options.tolerance, options.toleranceType);
+                if (!result && checkImageLogType(this._args.testReporter, LogImageType.everyImage)) {
+                    this._args.testReporterLog(`Actual image: ${basename(pathActualImage).replace(/\.\w{3,3}$/ig, "")}`);
+                    this._args.testReporterLog(join(this._args.reportsPath, basename(pathActualImage)));
+                }
+                counter++;
+            }
+
+            if (!result && !checkImageLogType(this._args.testReporter, LogImageType.everyImage)) {
+                this._args.testReporterLog(`${basename(pathDiffImage).replace(/\.\w{3,3}$/ig, "")}`);
+                this._args.testReporterLog(join(this._args.reportsPath, basename(pathDiffImage)));
+                this._args.testReporterLog(`Actual image: ${basename(pathActualImage).replace(/\.\w{3,3}$/ig, "")}`);
+                this._args.testReporterLog(join(this._args.reportsPath, basename(pathActualImage)));
+            }
+        } else {
+            if (existsSync(pathDiffImage)) {
+                unlinkSync(pathDiffImage);
+            }
+            if (existsSync(pathActualImage)) {
+                unlinkSync(pathActualImage);
+            }
+        }
+
+        return result;
     }
+
+    // public async prepareImageToCompare(filePath: string, rect: IRectangle) {
+    //     if (rect) {
+    //         await this.clipRectangleImage(rect, filePath);
+    //         const rectToCrop = { left: 0, top: 0, width: undefined, height: undefined };
+    //         this.imageCropRect = rectToCrop;
+    //     } else {
+    //         this.imageCropRect = ImageHelper.cropImageDefault(this._args);
+    //     }
+    // }
 
     private runDiff(diffOptions: BlinkDiff, diffImage: string) {
         var that = this;
@@ -231,6 +335,13 @@ export class ImageHelper {
     }
 
     public compareImages(actual: string, expected: string, output: string, valueThreshold: number = this.threshold(this.thresholdType()), typeThreshold: any = this.thresholdType()) {
+        const clipRect = {
+            x: this.imageCropRect.left,
+            y: this.imageCropRect.top,
+            width: this.imageCropRect.width,
+            height: this.imageCropRect.height
+        };
+
         const diff = new BlinkDiff({
             imageAPath: actual,
             imageBPath: expected,
@@ -239,8 +350,8 @@ export class ImageHelper {
             thresholdType: typeThreshold,
             threshold: valueThreshold,
             delta: this.delta(),
-            cropImageA: this._imageCropRect,
-            cropImageB: this._imageCropRect,
+            cropImageA: clipRect,
+            cropImageB: clipRect,
             blockOut: this._blockOutAreas,
             verbose: this._args.verbose,
         });
@@ -260,7 +371,7 @@ export class ImageHelper {
     public async clipRectangleImage(rect: IRectangle, path: string) {
         let imageToClip: PngJsImage;
         imageToClip = await this.readImage(path);
-        imageToClip.clip(rect.x, rect.y, rect.width, rect.height);
+        imageToClip.clip(rect.left, rect.top, rect.width, rect.height);
         return new Promise((resolve, reject) => {
             imageToClip.writeImage(path, (err) => {
                 if (err) {

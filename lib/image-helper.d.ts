@@ -16,22 +16,27 @@ export interface IImageCompareOptions {
      * This property will keep image name as it is and will not add _actual postfix on initial capture
      */
     preserveImageName?: boolean;
+    /**
+     * Clip image before comapare. Default value excludes status bar(both android and ios) and softare buttons(android)
+     */
+    cropRectangele?: IRectangle;
 }
 export declare class ImageHelper {
     private _args;
     private _driver;
-    private _imageCropRect;
     private _blockOutAreas;
     private _imagesResults;
     private _testName;
+    private _imageCropRect;
     private _options;
+    static readonly pngFileExt = ".png";
     constructor(_args: INsCapabilities, _driver: AppiumDriver);
     options: IImageCompareOptions;
     testName: string;
     imageComppareOptions: IImageCompareOptions;
     compareScreen(options?: IImageCompareOptions): Promise<boolean>;
     compareElement(element: UIElement, options?: IImageCompareOptions): Promise<boolean>;
-    compareRectangle(element: IRectangle, options?: IImageCompareOptions): Promise<boolean>;
+    compareRectangle(cropRectangle: IRectangle, options?: IImageCompareOptions): Promise<boolean>;
     hasImageComparisonPassed(): boolean;
     reset(): void;
     private increaseImageName;
@@ -40,15 +45,10 @@ export declare class ImageHelper {
     blockOutAreas: IRectangle[];
     imageOutputLimit(): ImageOptions;
     thresholdType(): ImageOptions;
-    threshold(thresholdType: any): 10 | 0.01;
+    threshold(thresholdType: any): 0.01 | 10;
     delta(): number;
-    static cropImageDefault(_args: INsCapabilities): {
-        x: number;
-        y: any;
-        width: any;
-        height: any;
-    };
-    private static getOffsetPixels;
+    getExpectedImagePath(imageName: string): string;
+    compare(options: IImageCompareOptions): Promise<boolean>;
     private runDiff;
     compareImages(actual: string, expected: string, output: string, valueThreshold?: number, typeThreshold?: any): Promise<boolean>;
     clipRectangleImage(rect: IRectangle, path: string): Promise<{}>;

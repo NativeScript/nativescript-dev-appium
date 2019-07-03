@@ -91,6 +91,9 @@ As the `telnet` was removed from *macOS High Sierra*, it could be installed as f
 $ brew install telnet
 ```
 
+Polestar2Polestar2
+Porshe_Porshe
+
 ### Structure
 
         my-app

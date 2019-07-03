@@ -27,9 +27,9 @@ export class UIElement {
     public async tapCenter() {
         let action = new this._wd.TouchAction(this._driver);
         const rect = await this.getActualRectangle();
-        this._args.testReporterLog(`Tap on center element ${{ "x": rect.x + rect.width / 2, "y": rect.y + rect.height / 2 }}`);
+        this._args.testReporterLog(`Tap on center element ${{ "x": rect.left + rect.width / 2, "y": rect.top + rect.height / 2 }}`);
         action
-            .tap({ x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 });
+            .tap({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
         await action.perform();
         await this._driver.sleep(150);
     }
@@ -38,7 +38,7 @@ export class UIElement {
         let action = new this._wd.TouchAction(this._driver);
         const rect = await this.getActualRectangle();
         action
-            .tap({ x: (rect.x + rect.width) - 1, y: rect.y + rect.height / 2 });
+            .tap({ x: (rect.left + rect.width) - 1, y: rect.top + rect.height / 2 });
         await action.perform();
         await this._driver.sleep(150);
     }
@@ -229,7 +229,7 @@ export class UIElement {
     public async getRectangle() {
         const location = await this.location();
         const size = await this.size();
-        const rect = { x: location.x, y: location.y, width: size.y, height: size.x };
+        const rect = { left: location.x, top: location.y, width: size.y, height: size.x };
         return rect;
     }
 
@@ -241,8 +241,8 @@ export class UIElement {
         if (this._args.isIOS) {
             const density = this._args.device.config.density;
             if (density) {
-                actRect.x *= density;
-                actRect.y *= density;
+                actRect.left *= density;
+                actRect.top *= density;
                 actRect.width *= density;
                 actRect.height *= density;
             } else {
@@ -446,8 +446,8 @@ export class UIElement {
     */
     public async swipe(direction: Direction) {
         const rectangle = await this.getRectangle();
-        const centerX = rectangle.x + rectangle.width / 2;
-        const centerY = rectangle.y + rectangle.height / 2;
+        const centerX = rectangle.left + rectangle.width / 2;
+        const centerY = rectangle.top + rectangle.height / 2;
         let swipeX;
         if (direction == Direction.right) {
             const windowSize = await this._driver.getWindowSize();

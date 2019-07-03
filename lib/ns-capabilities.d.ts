@@ -9,6 +9,9 @@ export declare class NsCapabilities implements INsCapabilities {
     private _parser;
     private _automationName;
     private _testReporter;
+    private _storageByDeviceName;
+    private _storageByPlatform;
+    private _reportsPath;
     projectDir: string;
     projectBinary: string;
     pluginRoot: string;
@@ -60,6 +63,9 @@ export declare class NsCapabilities implements INsCapabilities {
     * @experimental
     */
     testReporter: ITestReporter;
+    storageByDeviceName: string;
+    storageByPlatform: string;
+    readonly reportsPath: string;
     private _imagesReportDir;
     /**
      * @exprimental
