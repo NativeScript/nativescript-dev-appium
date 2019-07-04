@@ -153,7 +153,7 @@ export declare class AppiumDriver {
      * @param xOffset
      * @param retryCount
      */
-    scrollTo(direction: Direction, element: any, startPoint: Point, yOffset: number, xOffset?: number, retryCount?: number): Promise<UIElement>;
+    scrollTo(direction: Direction, element: any, startPoint: Point, offsetPoint: Point, retryCount?: number): Promise<UIElement>;
     /**
      * Swipe from point with offset and inertia according to duatio
      * @param y
@@ -162,7 +162,13 @@ export declare class AppiumDriver {
      * @param inertia
      * @param xOffset
      */
-    swipe(y: number, x: number, yOffset: number, inertia?: number, xOffset?: number): Promise<void>;
+    swipe(initPoint: {
+        y: number;
+        x: number;
+    }, endPointOffset: {
+        yOffset: number;
+        xOffset: number;
+    }, inertia?: number): Promise<void>;
     /**
     * Click a point by providing coordinates
     * @param x

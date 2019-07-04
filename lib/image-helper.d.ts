@@ -11,15 +11,26 @@ export interface IImageCompareOptions {
     /**
      * wait miliseconds before capture creating image
      */
-    waitOnCreatingInitialSnapshot?: number;
+    waitOnCreatingInitialImageCapture?: number;
     /**
-     * This property will keep image name as it is and will not add _actual postfix on initial capture
+     * This property not add _actual postfix on initial image capture
+     */
+    donNotAppendActualSuffixOnIntialImageCapture?: boolean;
+    /**
+     * This property will ensure that the image name will not be manipulated with count postfix.
+     * This is very convinient in order to resuse image.
+     * Default value is false.
      */
     preserveImageName?: boolean;
     /**
-     * Clip image before comapare. Default value excludes status bar(both android and ios) and softare buttons(android)
+     * Clip image before comapare. Default value excludes status bar(both android and ios) and softare buttons(android).
      */
     cropRectangele?: IRectangle;
+    /**
+     * Default value is set to true which means that nativescript-dev-appium will save the original image and compare only the part which cropRectangele specifies.
+     * If false, the image size will be reduced and saved as cropRectangele dimensions.
+     */
+    preserveActualImageSize?: boolean;
 }
 export declare class ImageHelper {
     private _args;
@@ -28,8 +39,8 @@ export declare class ImageHelper {
     private _imagesResults;
     private _testName;
     private _imageCropRect;
-    private _options;
     static readonly pngFileExt = ".png";
+    private _options;
     constructor(_args: INsCapabilities, _driver: AppiumDriver);
     options: IImageCompareOptions;
     testName: string;
@@ -45,7 +56,7 @@ export declare class ImageHelper {
     blockOutAreas: IRectangle[];
     imageOutputLimit(): ImageOptions;
     thresholdType(): ImageOptions;
-    threshold(thresholdType: any): 0.01 | 10;
+    threshold(thresholdType: any): 10 | 0.01;
     delta(): number;
     getExpectedImagePath(imageName: string): string;
     compare(options: IImageCompareOptions): Promise<boolean>;

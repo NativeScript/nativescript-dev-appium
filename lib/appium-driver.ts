@@ -476,7 +476,7 @@ export class AppiumDriver {
      * @param xOffset
      * @param retryCount
      */
-    public async scrollTo(direction: Direction, element: any, startPoint: Point, yOffset: number, xOffset: number = 0, retryCount: number = 7) {
+    public async scrollTo(direction: Direction, element: any, startPoint: Point, offsetPoint: Point, retryCount: number = 7) {
         let el: UIElement = null;
         let isDisplayed: boolean = false;
         while ((el === null || !isDisplayed) && retryCount > 0) {
@@ -484,7 +484,7 @@ export class AppiumDriver {
                 el = await element();
                 isDisplayed = await el.isDisplayed();
                 if (!isDisplayed) {
-                    await scroll(this._wd, this._driver, direction, this._webio.isIOS, startPoint.y, startPoint.x, yOffset, xOffset, this._args.verbose);
+                    await scroll(this._wd, this._driver, direction, this._webio.isIOS, startPoint.y, startPoint.x, offsetPoint.x, offsetPoint.y, this._args.verbose);
                     el = null;
                 }
             } catch (error) {
@@ -505,7 +505,7 @@ export class AppiumDriver {
      * @param inertia
      * @param xOffset
      */
-    public async swipe(y: number, x: number, yOffset: number, inertia: number = 250, xOffset: number = 0) {
+    public async swipe(initPoint: { y: number, x: number }, endPointOffset: { yOffset: number, xOffset: number }, inertia: number = 250) {
         let direction = 1;
         if (this._webio.isIOS) {
             direction = -1;
@@ -513,9 +513,9 @@ export class AppiumDriver {
 
         const action = new this._wd.TouchAction(this._driver);
         action
-            .press({ x: x, y: y })
+            .press({ x: initPoint.x, y: initPoint.y })
             .wait(inertia)
-            .moveTo({ x: xOffset, y: direction * yOffset })
+            .moveTo({ x: endPointOffset.xOffset * direction, y: direction * endPointOffset.yOffset })
             .release();
         await action.perform();
         await this._driver.sleep(150);

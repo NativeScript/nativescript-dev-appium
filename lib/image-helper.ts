@@ -18,34 +18,49 @@ export interface IImageCompareOptions {
     /**
      * wait miliseconds before capture creating image
      */
-    waitOnCreatingInitialSnapshot?: number;
+    waitOnCreatingInitialImageCapture?: number;
+
     /**
-     * This property will keep image name as it is and will not add _actual postfix on initial capture
+     * This property not add _actual postfix on initial image capture
+     */
+    donNotAppendActualSuffixOnIntialImageCapture?: boolean;
+
+    /**
+     * This property will ensure that the image name will not be manipulated with count postfix.
+     * This is very convinient in order to resuse image.
+     * Default value is false.
      */
     preserveImageName?: boolean;
 
     /**
-     * Clip image before comapare. Default value excludes status bar(both android and ios) and softare buttons(android)
+     * Clip image before comapare. Default value excludes status bar(both android and ios) and softare buttons(android).
      */
     cropRectangele?: IRectangle;
+
+    /**
+     * Default value is set to true which means that nativescript-dev-appium will save the original image and compare only the part which cropRectangele specifies. 
+     * If false, the image size will be reduced and saved as cropRectangele dimensions.
+     */
+    preserveActualImageSize?: boolean;
 }
 
 export class ImageHelper {
-
     private _blockOutAreas: IRectangle[];
     private _imagesResults = new Map<string, boolean>();
     private _testName: string;
     private _imageCropRect: IRectangle;
 
+    public static readonly pngFileExt = '.png';
+
     private _options: IImageCompareOptions = {
         timeOutSeconds: 2,
         tolerance: 0,
         toleranceType: ImageOptions.pixel,
-        waitOnCreatingInitialSnapshot: 2000,
-        preserveImageName: false,
+        waitOnCreatingInitialImageCapture: 2000,
+        donNotAppendActualSuffixOnIntialImageCapture: false,
+        preserveActualImageSize: true,
+        preserveImageName: false
     };
-
-    public static readonly pngFileExt = '.png';
 
     constructor(private _args: INsCapabilities, private _driver: AppiumDriver) {
         this.options.cropRectangele = (this._args.appiumCaps && this._args.appiumCaps.viewportRect) || this._args.device.viewportRect;
@@ -126,12 +141,14 @@ export class ImageHelper {
     }
 
     private increaseImageName(imageName: string) {
+        if (this.options.preserveImageName) {
+            return imageName;
+        }
         if (!imageName) {
             logError(`Missing image name!`);
             logError(`Consider to set
             drive.imageHelper.testName
-            dirver.imageHelper.options.imageName
-    `);
+            dirver.imageHelper.options.imageName`);
             throw new Error(`Missing image name!`)
         }
         if (this._imagesResults.size > 0) {
@@ -225,20 +242,20 @@ export class ImageHelper {
 
         // First time capture
         if (!existsSync(pathExpectedImage)) {
-            const pathActualImage = resolvePath(this._args.storageByDeviceName, this.options.preserveImageName ? imageName : imageName.replace(".", "_actual."));
-            if (this.options.waitOnCreatingInitialSnapshot > 0) {
-                await this._driver.wait(this.options.waitOnCreatingInitialSnapshot);
+            const pathActualImage = resolvePath(this._args.storageByDeviceName, this.options.donNotAppendActualSuffixOnIntialImageCapture ? imageName : imageName.replace(".", "_actual."));
+            if (this.options.waitOnCreatingInitialImageCapture > 0) {
+                await this._driver.wait(this.options.waitOnCreatingInitialImageCapture);
             }
             await this._driver.saveScreenshot(pathActualImage);
 
-            // if (options.cropRectangele) {
-            //     await this.clipRectangleImage(options.cropRectangele, pathActualImage);
-            // }
+            if (!options.preserveActualImageSize) {
+                await this.clipRectangleImage(options.cropRectangele, pathActualImage);
+            }
 
             const pathActualImageToReportsFolder = resolvePath(this._args.reportsPath, basename(pathActualImage));
             copy(pathActualImage, pathActualImageToReportsFolder, false);
 
-            if (this.options.preserveImageName) {
+            if (this.options.donNotAppendActualSuffixOnIntialImageCapture) {
                 logWarn(`New image ${basename(pathActualImage)} is saved to storage ${this._args.storageByDeviceName}.`, pathExpectedImage);
             } else {
                 logWarn("Remove the 'actual' suffix to continue using the image as expected one ", pathExpectedImage);
@@ -250,9 +267,9 @@ export class ImageHelper {
 
         // Compare
         let pathActualImage = await this._driver.saveScreenshot(resolvePath(this._args.reportsPath, imageName.replace(".", "_actual.")));
-        // if (options.cropRectangele) {
-        //     await this.clipRectangleImage(options.cropRectangele, pathActualImage);
-        // }
+        if (!options.preserveActualImageSize) {
+            await this.clipRectangleImage(options.cropRectangele, pathActualImage);
+        }
         const pathDiffImage = pathActualImage.replace("actual", "diff");
 
         // await this.prepareImageToCompare(pathActualImage, options.cropRectangele);
@@ -266,9 +283,9 @@ export class ImageHelper {
             while ((Date.now().valueOf() - eventStartTime) <= options.timeOutSeconds && !result) {
                 const pathActualImageConter = resolvePath(this._args.reportsPath, imageName.replace(".", "_actual_" + counter + "."));
                 pathActualImage = await this._driver.saveScreenshot(pathActualImageConter);
-                // if (options.cropRectangele) {
-                //     await this.clipRectangleImage(options.cropRectangele, pathActualImage);
-                // }
+                if (!options.preserveActualImageSize) {
+                    await this.clipRectangleImage(options.cropRectangele, pathActualImage);
+                }
                 // await this.prepareImageToCompare(pathActualImage, this.imageCropRect);
                 result = await this.compareImages(pathActualImage, pathExpectedImage, pathDiffImage, options.tolerance, options.toleranceType);
                 if (!result && checkImageLogType(this._args.testReporter, LogImageType.everyImage)) {
@@ -340,7 +357,14 @@ export class ImageHelper {
             y: this.imageCropRect.top,
             width: this.imageCropRect.width,
             height: this.imageCropRect.height
-        };
+        }
+
+        if (!this.options.preserveActualImageSize) {
+            clipRect.x = 0;
+            clipRect.y = 0;
+            clipRect.width = undefined;
+            clipRect.height = undefined;
+        }
 
         const diff = new BlinkDiff({
             imageAPath: actual,

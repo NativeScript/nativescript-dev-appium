@@ -237,12 +237,12 @@ export class NsCapabilities implements INsCapabilities {
                 this.appiumCaps.deviceName = d.name;
                 this.appiumCaps.platformVersion = d.apiLevel;
                 this.appiumCaps.udid = d.token;
+                this.appiumCaps["newCommandTimeout"] = 999999;
 
                 if (this.deviceTypeOrPlatform === "android") {
                     this.appiumCaps["lt"] = 60000;
-                    this.appiumCaps["newCommandTimeout"] = 720;
                 } else {
-                    this.appiumCaps["wdaConnectionTimeout"] = 999999999;
+                    this.appiumCaps["wdaConnectionTimeout"] = 999999;
                 }
 
                 this.device = d;
