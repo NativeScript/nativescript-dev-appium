@@ -182,13 +182,21 @@ export class DeviceManager implements IDeviceManager {
         return device;
     }
 
+    private static convertViewportRectToIRectangle(sessionInfoDetails) {
+        return {
+            x: sessionInfoDetails.viewportRect.x,
+            y: sessionInfoDetails.viewportRect.y,
+            width: sessionInfoDetails.viewportRect.width,
+            height: sessionInfoDetails.viewportRect.height,
+        };
+    }
+
     public static applyAppiumSessionInfoDetails(args: INsCapabilities, sessionInfoDetails) {
         if (args.isAndroid) {
             const sizeArr = sessionInfoDetails.deviceScreenSize.split("x");
             args.device.deviceScreenSize = { width: sizeArr[0], height: sizeArr[1] };
 
             args.device.deviceScreenDensity = sessionInfoDetails.deviceScreenDensity / 100;
-            args.device.viewportRect = sessionInfoDetails.viewportRect;
             args.device.apiLevel = sessionInfoDetails.deviceApiLevel;
 
             args.device.config = { "density": sessionInfoDetails.deviceScreenDensity / 100, "offsetPixels": +sessionInfoDetails.statBarHeight }
@@ -198,7 +206,7 @@ export class DeviceManager implements IDeviceManager {
             args.device.config = { "density": sessionInfoDetails.pixelRatio, "offsetPixels": +sessionInfoDetails.viewportRect.top - +sessionInfoDetails.statBarHeight }
         }
 
-        args.device.viewportRect = sessionInfoDetails.viewportRect;
+        args.device.viewportRect = DeviceManager.convertViewportRectToIRectangle(sessionInfoDetails.viewportRect);
         args.device.statBarHeight = +sessionInfoDetails.statBarHeight;
 
         return args.device;
@@ -259,10 +267,34 @@ export class DeviceManager implements IDeviceManager {
         }
     }
 
-    public static async applyDeviceAdditionsSettings(args: INsCapabilities, appiumCaps: any) {
-        if (appiumCaps) {
-            args.device.config.offsetPixels = appiumCaps.offsetPixels || args.device.config.offsetPixels;
-            args.device.config.density = appiumCaps.density || args.device.config.density;
+    // public static async applyDeviceAdditionsSettings(args: INsCapabilities, appiumCaps: any) {
+    //     if (appiumCaps) {
+    //         args.device.config.offsetPixels = appiumCaps.offsetPixels || args.device.config.offsetPixels;
+    //         args.device.config.density = appiumCaps.density || args.device.config.density;
+    //     }
+    // }
+
+    public static async applyDeviceAdditionsSettings(driver, args: INsCapabilities, sessionInfo: any) {
+        if ((!args.device.viewportRect || !args.device.viewportRect.x) && (!args.device.config || !args.device.config.offsetPixels)) {
+            args.device.config = {};
+            let density: number;
+            if (sessionInfo && sessionInfo.length >= 1) {
+                density = sessionInfo[1].deviceScreenDensity ? sessionInfo[1].deviceScreenDensity / 100 : undefined;
+            }
+
+            if (density) {
+                console.log(`Get density from appium session: ${density}`);
+                args.device.config['density'] = density;
+                args.device.config['offsetPixels'] = AndroidController.calculateScreenOffset(args.device.config.density);
+            }
+
+            if (!density) {
+                await DeviceManager.getDensity(args, driver);
+                density = args.device.config.density
+                args.device.config['offsetPixels'] = AndroidController.calculateScreenOffset(args.device.config.density);
+            }
+
+            density ? logInfo(`Device setting:`, args.device.config) : console.log(`Could not resolve device density. Please provide offset in appium config`);
         }
     }
 

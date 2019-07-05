@@ -35,7 +35,7 @@ export interface IImageCompareOptions {
     /**
      * Clip image before comapare. Default value excludes status bar(both android and ios) and softare buttons(android).
      */
-    cropRectangele?: IRectangle;
+    cropRectangle?: IRectangle;
 
     /**
      * Default value is set to true which means that nativescript-dev-appium will save the original image and compare only the part which cropRectangele specifies. 
@@ -63,7 +63,12 @@ export class ImageHelper {
     };
 
     constructor(private _args: INsCapabilities, private _driver: AppiumDriver) {
-        this.options.cropRectangele = (this._args.appiumCaps && this._args.appiumCaps.viewportRect) || this._args.device.viewportRect;
+        this.options.cropRectangle = (this._args.appiumCaps && this._args.appiumCaps.viewportRect) || this._args.device.viewportRect;
+        if (!this.options.cropRectangle || !this.options.cropRectangle.x) {
+            this.options.cropRectangle = this.options.cropRectangle || {};
+            this.options.cropRectangle.y = this._args.device.config.offsetPixels;
+            this.options.cropRectangle.x = 0;
+        }
     }
 
     get options() {
@@ -113,7 +118,7 @@ export class ImageHelper {
     public async compareRectangle(cropRectangle: IRectangle, options?: IImageCompareOptions) {
         options = this.extendOptions(options);
         options.imageName = this.increaseImageName(options.imageName || this._testName);
-        options.cropRectangele = cropRectangle;
+        options.cropRectangle = cropRectangle;
         const result = await this.compare(options);
         this._imagesResults.set(options.imageName, result);
 
@@ -184,19 +189,19 @@ export class ImageHelper {
             }
         });
 
-        if (!options.cropRectangele) {
+        if (!options.cropRectangle) {
             Object.getOwnPropertyNames(clipRectangele).forEach(prop => {
-                options.cropRectangele[prop] = clipRectangele[prop];
+                options.cropRectangle[prop] = clipRectangele[prop];
             });
 
-            this.imageCropRect = options.cropRectangele;
+            this.imageCropRect = options.cropRectangle;
         }
 
         return options;
     }
 
     get imageCropRect(): IRectangle {
-        return this._imageCropRect || this.options.cropRectangele;
+        return this._imageCropRect || this.options.cropRectangle;
     }
 
     set imageCropRect(clipRectangele: IRectangle) {
@@ -249,7 +254,7 @@ export class ImageHelper {
             await this._driver.saveScreenshot(pathActualImage);
 
             if (!options.preserveActualImageSize) {
-                await this.clipRectangleImage(options.cropRectangele, pathActualImage);
+                await this.clipRectangleImage(options.cropRectangle, pathActualImage);
             }
 
             const pathActualImageToReportsFolder = resolvePath(this._args.reportsPath, basename(pathActualImage));
@@ -268,7 +273,7 @@ export class ImageHelper {
         // Compare
         let pathActualImage = await this._driver.saveScreenshot(resolvePath(this._args.reportsPath, imageName.replace(".", "_actual.")));
         if (!options.preserveActualImageSize) {
-            await this.clipRectangleImage(options.cropRectangele, pathActualImage);
+            await this.clipRectangleImage(options.cropRectangle, pathActualImage);
         }
         const pathDiffImage = pathActualImage.replace("actual", "diff");
 
@@ -284,7 +289,7 @@ export class ImageHelper {
                 const pathActualImageConter = resolvePath(this._args.reportsPath, imageName.replace(".", "_actual_" + counter + "."));
                 pathActualImage = await this._driver.saveScreenshot(pathActualImageConter);
                 if (!options.preserveActualImageSize) {
-                    await this.clipRectangleImage(options.cropRectangele, pathActualImage);
+                    await this.clipRectangleImage(options.cropRectangle, pathActualImage);
                 }
                 // await this.prepareImageToCompare(pathActualImage, this.imageCropRect);
                 result = await this.compareImages(pathActualImage, pathExpectedImage, pathDiffImage, options.tolerance, options.toleranceType);
@@ -353,8 +358,8 @@ export class ImageHelper {
 
     public compareImages(actual: string, expected: string, output: string, valueThreshold: number = this.threshold(this.thresholdType()), typeThreshold: any = this.thresholdType()) {
         const clipRect = {
-            x: this.imageCropRect.left,
-            y: this.imageCropRect.top,
+            x: this.imageCropRect.x,
+            y: this.imageCropRect.y,
             width: this.imageCropRect.width,
             height: this.imageCropRect.height
         }
@@ -395,7 +400,7 @@ export class ImageHelper {
     public async clipRectangleImage(rect: IRectangle, path: string) {
         let imageToClip: PngJsImage;
         imageToClip = await this.readImage(path);
-        imageToClip.clip(rect.left, rect.top, rect.width, rect.height);
+        imageToClip.clip(rect.x, rect.y, rect.width, rect.height);
         return new Promise((resolve, reject) => {
             imageToClip.writeImage(path, (err) => {
                 if (err) {

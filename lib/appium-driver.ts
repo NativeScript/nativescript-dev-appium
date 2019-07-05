@@ -263,10 +263,15 @@ export class AppiumDriver {
                 }
                 logInfo("Session info: ");
                 console.info(sessionInfoDetails);
-                logInfo("Appium settings: ");
-                console.log(await driver.settings());
+                try {
+                    logInfo("Appium settings: ");
+                    console.log(await driver.settings());
 
-                await DeviceManager.applyDeviceAdditionsSettings(args, appiumCapsFromConfig);
+                } catch (error) {
+                    logInfo("Current version of appium doensn't support appium settings!");
+                }
+
+                await DeviceManager.applyDeviceAdditionsSettings(driver, args, appiumCapsFromConfig);
 
                 hasStarted = true;
             } catch (error) {
@@ -543,10 +548,10 @@ export class AppiumDriver {
         await this._driver.setOrientation(orientation);
 
         if (orientation === DeviceOrientaion.LANDSCAPE) {
-            this.imageHelper.imageCropRect.left = this._imageHelper.options.cropRectangele.left;
-            this.imageHelper.imageCropRect.top = this._imageHelper.options.cropRectangele.top;
-            this.imageHelper.imageCropRect.width = this._imageHelper.options.cropRectangele.height;
-            this.imageHelper.imageCropRect.height = this._imageHelper.options.cropRectangele.width;
+            this.imageHelper.imageCropRect.x = this._imageHelper.options.cropRectangle.x;
+            this.imageHelper.imageCropRect.y = this._imageHelper.options.cropRectangle.y;
+            this.imageHelper.imageCropRect.width = this._imageHelper.options.cropRectangle.height;
+            this.imageHelper.imageCropRect.height = this._imageHelper.options.cropRectangle.width;
         } else {
             this.imageHelper.imageCropRect = undefined;
         }
@@ -565,7 +570,7 @@ export class AppiumDriver {
     }
 
     public async compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds: number = 3, tolerance: number = 0.01, toleranceType?: ImageOptions) {
-        return await this.imageHelper.compare({ imageName: imageName, timeOutSeconds: timeOutSeconds, tolerance: tolerance, cropRectangele: rect, toleranceType: toleranceType });
+        return await this.imageHelper.compare({ imageName: imageName, timeOutSeconds: timeOutSeconds, tolerance: tolerance, cropRectangle: rect, toleranceType: toleranceType });
     }
 
     public async compareScreen(imageName: string, timeOutSeconds: number = 3, tolerance: number = 0.01, toleranceType?: ImageOptions) {
@@ -746,6 +751,22 @@ export class AppiumDriver {
 
     public async resetApp() {
         await this._driver.resetApp();
+    }
+
+    // restart app
+    public async restartApp() {
+        try {
+            await this._driver.closeApp();
+        } catch (error) {
+            logError("Current appium version doesn't support closeApp()!");
+            logError("Consider to use resetApp()! Reset app will preinstall the application");
+        }
+        try {
+            await this._driver.launchApp();
+        } catch (error) {
+            logError("Current appium version doesn't support launchApp()!");
+            logError("Consider to use resetApp()! Reset app will preinstall the application");
+        }
     }
 
     public async init() {

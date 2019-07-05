@@ -27,7 +27,7 @@ export class UIElement {
     public async tapCenter() {
         let action = new this._wd.TouchAction(this._driver);
         const rect = await this.getActualRectangle();
-        this._args.testReporterLog(`Tap on center element ${{ "x": rect.left + rect.width / 2, "y": rect.top + rect.height / 2 }}`);
+        this._args.testReporterLog(`Tap on center element ${{ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }}`);
         action
             .tap({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
         await action.perform();

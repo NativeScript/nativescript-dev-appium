@@ -1,6 +1,6 @@
 export interface IRectangle {
-    left?: number;
-    top?: number;
+    x?: number;
+    y?: number;
     width?: number;
     height?: number;
 }

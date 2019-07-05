@@ -25,7 +25,7 @@ export interface IImageCompareOptions {
     /**
      * Clip image before comapare. Default value excludes status bar(both android and ios) and softare buttons(android).
      */
-    cropRectangele?: IRectangle;
+    cropRectangle?: IRectangle;
     /**
      * Default value is set to true which means that nativescript-dev-appium will save the original image and compare only the part which cropRectangele specifies.
      * If false, the image size will be reduced and saved as cropRectangele dimensions.

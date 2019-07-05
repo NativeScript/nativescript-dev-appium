@@ -216,6 +216,7 @@ export declare class AppiumDriver {
     hideDeviceKeyboard(): Promise<void>;
     isKeyboardShown(): Promise<any>;
     resetApp(): Promise<void>;
+    restartApp(): Promise<void>;
     init(): Promise<void>;
     quit(): Promise<void>;
     private static applyAdditionalSettings;
