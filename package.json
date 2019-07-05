@@ -55,7 +55,7 @@
     "postinstall": "node ./postinstall.js",
     "prepare": "tsc",
     "watch": "tsc --watch",
-    "test": "mocha --opts ../cons",
+    "test": "mocha --timeout 999999",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
   }
 }
