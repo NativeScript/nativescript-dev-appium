@@ -9,6 +9,7 @@ import { AppiumDriver } from "./appium-driver";
 import { logError, checkImageLogType, resolvePath, getStorageByDeviceName, getStorageByPlatform, getReportPath, copy, addExt, logWarn } from "./utils";
 import { unlinkSync, existsSync } from "fs";
 import { basename, join } from "path";
+import { isObject } from "util";
 
 export interface IImageCompareOptions {
     imageName?: string;
@@ -16,12 +17,13 @@ export interface IImageCompareOptions {
     tolerance?: number;
     toleranceType?: ImageOptions;
     /**
-     * wait miliseconds before capture creating image
+     * Wait miliseconds before capture creating image
+     * Default value is 2000
      */
     waitOnCreatingInitialImageCapture?: number;
 
     /**
-     * This property not add _actual postfix on initial image capture
+     * This property will preserve not to add be added _actual postfix on initial image capture
      */
     donNotAppendActualSuffixOnIntialImageCapture?: boolean;
 
@@ -38,10 +40,18 @@ export interface IImageCompareOptions {
     cropRectangle?: IRectangle;
 
     /**
-     * Default value is set to true which means that nativescript-dev-appium will save the original image and compare only the part which cropRectangele specifies. 
-     * If false, the image size will be reduced and saved as cropRectangele dimensions.
+     * Default value is set to true which means that nativescript-dev-appium will save the image
+     * in original size and compare only the part which cropRectangele specifies. 
+     * If false, the image size will be reduced and saved by the dimensions of cropRectangele.
      */
-    preserveActualImageSize?: boolean;
+    shouldPreserveActualImageSize?: boolean;
+
+    /**
+     * Defines if an image is device specific or only by platform.
+     * Default value is true and the image will be saved in device specific directory.
+     * If value is set to false, image will be saved under ios or android folder.
+     */
+    isDeviceSpecific?: boolean;
 }
 
 export class ImageHelper {
@@ -52,23 +62,27 @@ export class ImageHelper {
 
     public static readonly pngFileExt = '.png';
 
-    private _options: IImageCompareOptions = {
+    private _options: IImageCompareOptions = {};
+
+    private _defaultOptions: IImageCompareOptions = {
         timeOutSeconds: 2,
         tolerance: 0,
         toleranceType: ImageOptions.pixel,
         waitOnCreatingInitialImageCapture: 2000,
         donNotAppendActualSuffixOnIntialImageCapture: false,
-        preserveActualImageSize: true,
-        preserveImageName: false
+        shouldPreserveActualImageSize: true,
+        preserveImageName: false,
+        isDeviceSpecific: true,
+        cropRectangle: {}
     };
 
     constructor(private _args: INsCapabilities, private _driver: AppiumDriver) {
-        this.options.cropRectangle = (this._args.appiumCaps && this._args.appiumCaps.viewportRect) || this._args.device.viewportRect;
-        if (!this.options.cropRectangle || !this.options.cropRectangle.y) {
-            this.options.cropRectangle = this.options.cropRectangle || {};
-            this.options.cropRectangle.y = this._args.device.config.offsetPixels || 0;
-            this.options.cropRectangle.x = 0;
+        this._defaultOptions.cropRectangle = (this._args.appiumCaps && this._args.appiumCaps.viewportRect) || this._args.device.viewportRect;
+        if (!this._defaultOptions.cropRectangle || !this._defaultOptions.cropRectangle.y) {
+            this._defaultOptions.cropRectangle.y = this._args.device.config.offsetPixels || 0;
+            this._defaultOptions.cropRectangle.x = 0;
         }
+        ImageHelper.fullClone(this._defaultOptions, this._options);
     }
 
     get options() {
@@ -140,9 +154,16 @@ export class ImageHelper {
         return shouldFailTest;
     }
 
+    /**
+     * Reset image comparison results
+     */
     public reset() {
         this._imagesResults.clear();
         this.testName = undefined;
+    }
+
+    public resetDefaultOptions() {
+        ImageHelper.fullClone(this._defaultOptions, this._options);
     }
 
     private increaseImageName(imageName: string) {
@@ -184,7 +205,7 @@ export class ImageHelper {
         options = options || {};
         const clipRectangele = this.imageCropRect;
         Object.getOwnPropertyNames(this.options).forEach(prop => {
-            if (!options[prop]) {
+            if (options[prop] === undefined || options[prop] === null) {
                 options[prop] = this.options[prop];
             }
         });
@@ -236,24 +257,30 @@ export class ImageHelper {
         return 20;
     }
 
-    public getExpectedImagePath(imageName: string) {
+    public getExpectedImagePathByDevice(imageName: string) {
         let pathExpectedImage = resolvePath(this._args.storageByDeviceName, imageName);
+        return pathExpectedImage;
+    }
+
+    public getExpectedImagePathByPlatform(imageName: string) {
+        let pathExpectedImage = resolvePath(this._args.storageByPlatform, imageName);
         return pathExpectedImage;
     }
 
     public async compare(options: IImageCompareOptions) {
         let imageName = addExt(options.imageName, ImageHelper.pngFileExt);
-        const pathExpectedImage = this.getExpectedImagePath(imageName);
+        const storageLocal = options.isDeviceSpecific ? this._args.storageByDeviceName : this._args.storageByPlatform;
+        const pathExpectedImage = options.isDeviceSpecific ? this.getExpectedImagePathByDevice(imageName) : this.getExpectedImagePathByPlatform(imageName);
 
         // First time capture
         if (!existsSync(pathExpectedImage)) {
-            const pathActualImage = resolvePath(this._args.storageByDeviceName, this.options.donNotAppendActualSuffixOnIntialImageCapture ? imageName : imageName.replace(".", "_actual."));
+            const pathActualImage = resolvePath(storageLocal, this.options.donNotAppendActualSuffixOnIntialImageCapture ? imageName : imageName.replace(".", "_actual."));
             if (this.options.waitOnCreatingInitialImageCapture > 0) {
                 await this._driver.wait(this.options.waitOnCreatingInitialImageCapture);
             }
             await this._driver.saveScreenshot(pathActualImage);
 
-            if (!options.preserveActualImageSize) {
+            if (!options.shouldPreserveActualImageSize) {
                 await this.clipRectangleImage(options.cropRectangle, pathActualImage);
             }
 
@@ -261,7 +288,7 @@ export class ImageHelper {
             copy(pathActualImage, pathActualImageToReportsFolder, false);
 
             if (this.options.donNotAppendActualSuffixOnIntialImageCapture) {
-                logWarn(`New image ${basename(pathActualImage)} is saved to storage ${this._args.storageByDeviceName}.`, pathExpectedImage);
+                logWarn(`New image ${basename(pathActualImage)} is saved to storage ${storageLocal}.`, pathExpectedImage);
             } else {
                 logWarn("Remove the 'actual' suffix to continue using the image as expected one ", pathExpectedImage);
             }
@@ -272,7 +299,7 @@ export class ImageHelper {
 
         // Compare
         let pathActualImage = await this._driver.saveScreenshot(resolvePath(this._args.reportsPath, imageName.replace(".", "_actual.")));
-        if (!options.preserveActualImageSize) {
+        if (!options.shouldPreserveActualImageSize) {
             await this.clipRectangleImage(options.cropRectangle, pathActualImage);
         }
         const pathDiffImage = pathActualImage.replace("actual", "diff");
@@ -288,7 +315,7 @@ export class ImageHelper {
             while ((Date.now().valueOf() - eventStartTime) <= options.timeOutSeconds && !result) {
                 const pathActualImageConter = resolvePath(this._args.reportsPath, imageName.replace(".", "_actual_" + counter + "."));
                 pathActualImage = await this._driver.saveScreenshot(pathActualImageConter);
-                if (!options.preserveActualImageSize) {
+                if (!options.shouldPreserveActualImageSize) {
                     await this.clipRectangleImage(options.cropRectangle, pathActualImage);
                 }
                 // await this.prepareImageToCompare(pathActualImage, this.imageCropRect);
@@ -364,7 +391,7 @@ export class ImageHelper {
             height: this.imageCropRect.height
         }
 
-        if (!this.options.preserveActualImageSize) {
+        if (!this.options.shouldPreserveActualImageSize) {
             clipRect.x = 0;
             clipRect.y = 0;
             clipRect.width = undefined;
@@ -432,5 +459,17 @@ export class ImageHelper {
                 return resolve(image);
             });
         })
+    }
+
+    private static fullClone(src, target) {
+        Object.getOwnPropertyNames(src)
+            .forEach(prop => {
+                if (isObject(src[prop])) {
+                    target[prop] = {};
+                    ImageHelper.fullClone(src[prop], target[prop]);
+                } else {
+                    target[prop] = src[prop];
+                }
+            });
     }
 }

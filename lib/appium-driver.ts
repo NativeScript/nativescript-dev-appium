@@ -570,11 +570,25 @@ export class AppiumDriver {
     }
 
     public async compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds: number = 3, tolerance: number = 0.01, toleranceType?: ImageOptions) {
-        return await this.imageHelper.compare({ imageName: imageName, timeOutSeconds: timeOutSeconds, tolerance: tolerance, cropRectangle: rect, toleranceType: toleranceType });
+        return await this.imageHelper.compare({
+            imageName: imageName,
+            timeOutSeconds: timeOutSeconds,
+            tolerance: tolerance,
+            cropRectangle: rect,
+            toleranceType: toleranceType,
+            preserveImageName: true,
+            shouldPreserveActualImageSize: false
+        });
     }
 
     public async compareScreen(imageName: string, timeOutSeconds: number = 3, tolerance: number = 0.01, toleranceType?: ImageOptions) {
-        return await this.imageHelper.compare({ imageName: imageName, timeOutSeconds: timeOutSeconds, tolerance: tolerance, toleranceType: toleranceType });
+        return await this.imageHelper.compare({
+            imageName: imageName,
+            timeOutSeconds: timeOutSeconds,
+            tolerance: tolerance,
+            toleranceType: toleranceType,
+            preserveImageName: true
+        });
     }
 
     /**
@@ -940,7 +954,7 @@ export class AppiumDriver {
     public async findElementByImage(image: string, imageThreshold = 0.4) {
         await this._driver.updateSettings({ imageMatchThreshold: imageThreshold });
         const imageName = addExt(image, ImageHelper.pngFileExt);
-        const pathExpectedImage = this._imageHelper.getExpectedImagePath(imageName);
+        const pathExpectedImage = this._imageHelper.getExpectedImagePathByDevice(imageName);
 
         if (!existsSync(pathExpectedImage)) {
             throw new Error("The provided image does not exist!!!");

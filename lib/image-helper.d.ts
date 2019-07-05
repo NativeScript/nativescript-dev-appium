@@ -9,11 +9,12 @@ export interface IImageCompareOptions {
     tolerance?: number;
     toleranceType?: ImageOptions;
     /**
-     * wait miliseconds before capture creating image
+     * Wait miliseconds before capture of first image
+     * Default value is 2000
      */
     waitOnCreatingInitialImageCapture?: number;
     /**
-     * This property not add _actual postfix on initial image capture
+     * This property will preserve not to add be added _actual postfix on initial image capture
      */
     donNotAppendActualSuffixOnIntialImageCapture?: boolean;
     /**
@@ -27,10 +28,17 @@ export interface IImageCompareOptions {
      */
     cropRectangle?: IRectangle;
     /**
-     * Default value is set to true which means that nativescript-dev-appium will save the original image and compare only the part which cropRectangele specifies.
-     * If false, the image size will be reduced and saved as cropRectangele dimensions.
+     * Default value is set to true which means that nativescript-dev-appium will save the image
+     * in original size and compare only the part which cropRectangele specifies.
+     * If false, the image size will be reduced and saved by the dimensions of cropRectangele.
      */
-    preserveActualImageSize?: boolean;
+    shouldPreserveActualImageSize?: boolean;
+    /**
+     * Defines if an image is device specific or only by platform.
+     * Default value is true and the image will be saved in device specific directory.
+     * If value is set to false, image will be saved under ios or android folder.
+     */
+    isDeviceSpecific?: boolean;
 }
 export declare class ImageHelper {
     private _args;
@@ -41,6 +49,7 @@ export declare class ImageHelper {
     private _imageCropRect;
     static readonly pngFileExt = ".png";
     private _options;
+    private _defaultOptions;
     constructor(_args: INsCapabilities, _driver: AppiumDriver);
     options: IImageCompareOptions;
     testName: string;
@@ -49,19 +58,25 @@ export declare class ImageHelper {
     compareElement(element: UIElement, options?: IImageCompareOptions): Promise<boolean>;
     compareRectangle(cropRectangle: IRectangle, options?: IImageCompareOptions): Promise<boolean>;
     hasImageComparisonPassed(): boolean;
+    /**
+     * Reset image comparison results
+     */
     reset(): void;
+    resetDefaultOptions(): void;
     private increaseImageName;
     private extendOptions;
     imageCropRect: IRectangle;
     blockOutAreas: IRectangle[];
     imageOutputLimit(): ImageOptions;
     thresholdType(): ImageOptions;
-    threshold(thresholdType: any): 10 | 0.01;
+    threshold(thresholdType: any): 0.01 | 10;
     delta(): number;
-    getExpectedImagePath(imageName: string): string;
+    getExpectedImagePathByDevice(imageName: string): string;
+    getExpectedImagePathByPlatform(imageName: string): string;
     compare(options: IImageCompareOptions): Promise<boolean>;
     private runDiff;
     compareImages(actual: string, expected: string, output: string, valueThreshold?: number, typeThreshold?: any): Promise<boolean>;
     clipRectangleImage(rect: IRectangle, path: string): Promise<{}>;
     readImage(path: string): Promise<any>;
+    private static fullClone;
 }
