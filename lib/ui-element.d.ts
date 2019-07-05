@@ -81,8 +81,8 @@ export declare class UIElement {
      * Get rectangle of element
      */
     getRectangle(): Promise<{
-        left: number;
-        top: number;
+        x: number;
+        y: number;
         width: number;
         height: number;
     }>;
@@ -90,8 +90,8 @@ export declare class UIElement {
      * Get rectangle of element in actual dimensions
      */
     getActualRectangle(): Promise<{
-        left: number;
-        top: number;
+        x: number;
+        y: number;
         width: number;
         height: number;
     }>;
