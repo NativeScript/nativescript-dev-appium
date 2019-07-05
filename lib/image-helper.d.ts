@@ -9,10 +9,10 @@ export interface IImageCompareOptions {
     tolerance?: number;
     toleranceType?: ImageOptions;
     /**
-     * Wait miliseconds before capture of first image
+     * Wait miliseconds before capture creating image
      * Default value is 2000
      */
-    waitOnCreatingInitialImageCapture?: number;
+    waitBeforeCreatingInitialImageCapture?: number;
     /**
      * This property will preserve not to add be added _actual postfix on initial image capture
      */
@@ -22,7 +22,7 @@ export interface IImageCompareOptions {
      * This is very convinient in order to resuse image.
      * Default value is false.
      */
-    preserveImageName?: boolean;
+    keepOriginalImageName?: boolean;
     /**
      * Clip image before comapare. Default value excludes status bar(both android and ios) and softare buttons(android).
      */
@@ -32,7 +32,7 @@ export interface IImageCompareOptions {
      * in original size and compare only the part which cropRectangele specifies.
      * If false, the image size will be reduced and saved by the dimensions of cropRectangele.
      */
-    shouldPreserveActualImageSize?: boolean;
+    keepOriginalImageSize?: boolean;
     /**
      * Defines if an image is device specific or only by platform.
      * Default value is true and the image will be saved in device specific directory.

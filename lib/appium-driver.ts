@@ -576,8 +576,8 @@ export class AppiumDriver {
             tolerance: tolerance,
             cropRectangle: rect,
             toleranceType: toleranceType,
-            preserveImageName: true,
-            shouldPreserveActualImageSize: false
+            keepOriginalImageName: true,
+            keepOriginalImageSize: false
         });
     }
 
@@ -587,7 +587,7 @@ export class AppiumDriver {
             timeOutSeconds: timeOutSeconds,
             tolerance: tolerance,
             toleranceType: toleranceType,
-            preserveImageName: true
+            keepOriginalImageName: true
         });
     }
 

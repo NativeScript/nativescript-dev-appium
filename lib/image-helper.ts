@@ -20,7 +20,7 @@ export interface IImageCompareOptions {
      * Wait miliseconds before capture creating image
      * Default value is 2000
      */
-    waitOnCreatingInitialImageCapture?: number;
+    waitBeforeCreatingInitialImageCapture?: number;
 
     /**
      * This property will preserve not to add be added _actual postfix on initial image capture
@@ -32,7 +32,7 @@ export interface IImageCompareOptions {
      * This is very convinient in order to resuse image.
      * Default value is false.
      */
-    preserveImageName?: boolean;
+    keepOriginalImageName?: boolean;
 
     /**
      * Clip image before comapare. Default value excludes status bar(both android and ios) and softare buttons(android).
@@ -44,7 +44,7 @@ export interface IImageCompareOptions {
      * in original size and compare only the part which cropRectangele specifies. 
      * If false, the image size will be reduced and saved by the dimensions of cropRectangele.
      */
-    shouldPreserveActualImageSize?: boolean;
+    keepOriginalImageSize?: boolean;
 
     /**
      * Defines if an image is device specific or only by platform.
@@ -68,10 +68,10 @@ export class ImageHelper {
         timeOutSeconds: 2,
         tolerance: 0,
         toleranceType: ImageOptions.pixel,
-        waitOnCreatingInitialImageCapture: 2000,
+        waitBeforeCreatingInitialImageCapture: 2000,
         donNotAppendActualSuffixOnIntialImageCapture: false,
-        shouldPreserveActualImageSize: true,
-        preserveImageName: false,
+        keepOriginalImageSize: true,
+        keepOriginalImageName: false,
         isDeviceSpecific: true,
         cropRectangle: {}
     };
@@ -113,7 +113,7 @@ export class ImageHelper {
 
     public async compareScreen(options?: IImageCompareOptions) {
         options = this.extendOptions(options);
-        options.imageName = this.increaseImageName(options.imageName || this._testName);
+        options.imageName = this.increaseImageName(options.imageName || this._testName, options);
         const result = await this.compare(options);
         this._imagesResults.set(options.imageName, result);
 
@@ -122,7 +122,7 @@ export class ImageHelper {
 
     public async compareElement(element: UIElement, options?: IImageCompareOptions) {
         options = this.extendOptions(options);
-        options.imageName = this.increaseImageName(options.imageName || this._testName);
+        options.imageName = this.increaseImageName(options.imageName || this._testName, options);
         const cropRectangele = await element.getRectangle();
         const result = await this.compareRectangle(cropRectangele, options);
 
@@ -131,7 +131,7 @@ export class ImageHelper {
 
     public async compareRectangle(cropRectangle: IRectangle, options?: IImageCompareOptions) {
         options = this.extendOptions(options);
-        options.imageName = this.increaseImageName(options.imageName || this._testName);
+        options.imageName = this.increaseImageName(options.imageName || this._testName, options);
         options.cropRectangle = cropRectangle;
         const result = await this.compare(options);
         this._imagesResults.set(options.imageName, result);
@@ -166,8 +166,8 @@ export class ImageHelper {
         ImageHelper.fullClone(this._defaultOptions, this._options);
     }
 
-    private increaseImageName(imageName: string) {
-        if (this.options.preserveImageName) {
+    private increaseImageName(imageName: string, options: IImageCompareOptions) {
+        if (options.keepOriginalImageName) {
             return imageName;
         }
         if (!imageName) {
@@ -203,19 +203,19 @@ export class ImageHelper {
 
     private extendOptions(options: IImageCompareOptions) {
         options = options || {};
-        const clipRectangele = this.imageCropRect;
         Object.getOwnPropertyNames(this.options).forEach(prop => {
             if (options[prop] === undefined || options[prop] === null) {
-                options[prop] = this.options[prop];
+                if (isObject(this.options[prop])) {
+                    options[prop] = {};
+                    ImageHelper.fullClone(this.options[prop], options[prop]);
+                } else {
+                    options[prop] = this.options[prop];
+                }
             }
         });
 
         if (!options.cropRectangle) {
-            Object.getOwnPropertyNames(clipRectangele).forEach(prop => {
-                options.cropRectangle[prop] = clipRectangele[prop];
-            });
-
-            this.imageCropRect = options.cropRectangle;
+            ImageHelper.fullClone(this.imageCropRect, this.imageCropRect);
         }
 
         return options;
@@ -275,12 +275,12 @@ export class ImageHelper {
         // First time capture
         if (!existsSync(pathExpectedImage)) {
             const pathActualImage = resolvePath(storageLocal, this.options.donNotAppendActualSuffixOnIntialImageCapture ? imageName : imageName.replace(".", "_actual."));
-            if (this.options.waitOnCreatingInitialImageCapture > 0) {
-                await this._driver.wait(this.options.waitOnCreatingInitialImageCapture);
+            if (this.options.waitBeforeCreatingInitialImageCapture > 0) {
+                await this._driver.wait(this.options.waitBeforeCreatingInitialImageCapture);
             }
             await this._driver.saveScreenshot(pathActualImage);
 
-            if (!options.shouldPreserveActualImageSize) {
+            if (!options.keepOriginalImageSize) {
                 await this.clipRectangleImage(options.cropRectangle, pathActualImage);
             }
 
@@ -299,7 +299,7 @@ export class ImageHelper {
 
         // Compare
         let pathActualImage = await this._driver.saveScreenshot(resolvePath(this._args.reportsPath, imageName.replace(".", "_actual.")));
-        if (!options.shouldPreserveActualImageSize) {
+        if (!options.keepOriginalImageSize) {
             await this.clipRectangleImage(options.cropRectangle, pathActualImage);
         }
         const pathDiffImage = pathActualImage.replace("actual", "diff");
@@ -315,7 +315,7 @@ export class ImageHelper {
             while ((Date.now().valueOf() - eventStartTime) <= options.timeOutSeconds && !result) {
                 const pathActualImageConter = resolvePath(this._args.reportsPath, imageName.replace(".", "_actual_" + counter + "."));
                 pathActualImage = await this._driver.saveScreenshot(pathActualImageConter);
-                if (!options.shouldPreserveActualImageSize) {
+                if (!options.keepOriginalImageSize) {
                     await this.clipRectangleImage(options.cropRectangle, pathActualImage);
                 }
                 // await this.prepareImageToCompare(pathActualImage, this.imageCropRect);
@@ -391,7 +391,7 @@ export class ImageHelper {
             height: this.imageCropRect.height
         }
 
-        if (!this.options.shouldPreserveActualImageSize) {
+        if (!this.options.keepOriginalImageSize) {
             clipRect.x = 0;
             clipRect.y = 0;
             clipRect.width = undefined;
