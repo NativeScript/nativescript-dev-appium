@@ -64,9 +64,9 @@ export class ImageHelper {
 
     constructor(private _args: INsCapabilities, private _driver: AppiumDriver) {
         this.options.cropRectangle = (this._args.appiumCaps && this._args.appiumCaps.viewportRect) || this._args.device.viewportRect;
-        if (!this.options.cropRectangle || !this.options.cropRectangle.x) {
+        if (!this.options.cropRectangle || !this.options.cropRectangle.y) {
             this.options.cropRectangle = this.options.cropRectangle || {};
-            this.options.cropRectangle.y = this._args.device.config.offsetPixels;
+            this.options.cropRectangle.y = this._args.device.config.offsetPixels || 0;
             this.options.cropRectangle.x = 0;
         }
     }
@@ -400,6 +400,17 @@ export class ImageHelper {
     public async clipRectangleImage(rect: IRectangle, path: string) {
         let imageToClip: PngJsImage;
         imageToClip = await this.readImage(path);
+        let shouldExit = false;
+        Object.getOwnPropertyNames(rect).forEach(prop => {
+            if (rect[prop] === undefined || rect[prop] === null) {
+                shouldExit = true;
+                return;
+            }
+        });
+        if (shouldExit) {
+            logError(`Could not crop the image. Not enough data`, rect);
+            return
+        }
         imageToClip.clip(rect.x, rect.y, rect.width, rect.height);
         return new Promise((resolve, reject) => {
             imageToClip.writeImage(path, (err) => {

@@ -56,7 +56,7 @@ export declare class ImageHelper {
     blockOutAreas: IRectangle[];
     imageOutputLimit(): ImageOptions;
     thresholdType(): ImageOptions;
-    threshold(thresholdType: any): 10 | 0.01;
+    threshold(thresholdType: any): 0.01 | 10;
     delta(): number;
     getExpectedImagePath(imageName: string): string;
     compare(options: IImageCompareOptions): Promise<boolean>;

@@ -182,12 +182,15 @@ export class DeviceManager implements IDeviceManager {
         return device;
     }
 
-    private static convertViewportRectToIRectangle(sessionInfoDetails) {
+    private static convertViewportRectToIRectangle(viewportRect) {
+        if (!viewportRect) {
+            return viewportRect;
+        }
         return {
-            x: sessionInfoDetails.viewportRect.x,
-            y: sessionInfoDetails.viewportRect.y,
-            width: sessionInfoDetails.viewportRect.width,
-            height: sessionInfoDetails.viewportRect.height,
+            x: viewportRect.left,
+            y: viewportRect.top,
+            width: viewportRect.width,
+            height: viewportRect.height,
         };
     }
 
