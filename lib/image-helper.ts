@@ -57,13 +57,8 @@ export interface IImageCompareOptions {
 export class ImageHelper {
     private _blockOutAreas: IRectangle[];
     private _imagesResults = new Map<string, boolean>();
-    private _testName: string;
     private _imageCropRect: IRectangle;
-
-    public static readonly pngFileExt = '.png';
-
     private _options: IImageCompareOptions = {};
-
     private _defaultOptions: IImageCompareOptions = {
         timeOutSeconds: 2,
         tolerance: 0,
@@ -73,17 +68,34 @@ export class ImageHelper {
         keepOriginalImageSize: true,
         keepOriginalImageName: false,
         isDeviceSpecific: true,
-        cropRectangle: {}
+        cropRectangle : {}
     };
 
     constructor(private _args: INsCapabilities, private _driver: AppiumDriver) {
         this._defaultOptions.cropRectangle = (this._args.appiumCaps && this._args.appiumCaps.viewportRect) || this._args.device.viewportRect;
         if (!this._defaultOptions.cropRectangle || !this._defaultOptions.cropRectangle.y) {
+            this._defaultOptions.cropRectangle = this._defaultOptions.cropRectangle || {};
             this._defaultOptions.cropRectangle.y = this._args.device.config.offsetPixels || 0;
             this._defaultOptions.cropRectangle.x = 0;
         }
         ImageHelper.fullClone(this._defaultOptions, this._options);
     }
+
+    public static readonly pngFileExt = '.png';
+
+    public testName: string;
+
+    /**
+     * Defines when an image output should be created. 
+     * This can be for different images, similar or different images, or all comparisons. 
+     * (default: BlinkDiff.OUTPUT_ALL)
+     */
+    public imageOutputLimit = ImageOptions.outputAll;
+
+    /**
+     * Max. distance colors in the 4 dimensional color-space without triggering a difference. (default: 20)
+     */
+    public delta: number = 20;
 
     get options() {
         return this._options;
@@ -93,27 +105,25 @@ export class ImageHelper {
         this._options = this.extendOptions(options);
     }
 
-    set testName(testName: string) {
-        this._testName = testName;
+    get imageCropRect(): IRectangle {
+        return this._imageCropRect || this.options.cropRectangle;
     }
 
-    get testName() {
-        return this._testName;
+    set imageCropRect(clipRectangele: IRectangle) {
+        this._imageCropRect = clipRectangele;
     }
 
-    get imageComppareOptions() {
-        this.extendOptions(this._options);
-
-        return this._options;
+    get blockOutAreas() {
+        return this._blockOutAreas;
     }
 
-    set imageComppareOptions(imageComppareOptions: IImageCompareOptions) {
-        this._options = this.extendOptions(imageComppareOptions);
+    set blockOutAreas(rectangles: IRectangle[]) {
+        this._blockOutAreas = rectangles;
     }
 
     public async compareScreen(options?: IImageCompareOptions) {
         options = this.extendOptions(options);
-        options.imageName = this.increaseImageName(options.imageName || this._testName, options);
+        options.imageName = this.increaseImageName(options.imageName || this.testName, options);
         const result = await this.compare(options);
         this._imagesResults.set(options.imageName, result);
 
@@ -122,7 +132,7 @@ export class ImageHelper {
 
     public async compareElement(element: UIElement, options?: IImageCompareOptions) {
         options = this.extendOptions(options);
-        options.imageName = this.increaseImageName(options.imageName || this._testName, options);
+        options.imageName = this.increaseImageName(options.imageName || this.testName, options);
         const cropRectangele = await element.getRectangle();
         const result = await this.compareRectangle(cropRectangele, options);
 
@@ -131,7 +141,7 @@ export class ImageHelper {
 
     public async compareRectangle(cropRectangle: IRectangle, options?: IImageCompareOptions) {
         options = this.extendOptions(options);
-        options.imageName = this.increaseImageName(options.imageName || this._testName, options);
+        options.imageName = this.increaseImageName(options.imageName || this.testName, options);
         options.cropRectangle = cropRectangle;
         const result = await this.compare(options);
         this._imagesResults.set(options.imageName, result);
@@ -162,99 +172,11 @@ export class ImageHelper {
         this.testName = undefined;
     }
 
+    /**
+     * Set coparison option to default
+     */
     public resetDefaultOptions() {
         ImageHelper.fullClone(this._defaultOptions, this._options);
-    }
-
-    private increaseImageName(imageName: string, options: IImageCompareOptions) {
-        if (options.keepOriginalImageName) {
-            return imageName;
-        }
-        if (!imageName) {
-            logError(`Missing image name!`);
-            logError(`Consider to set
-            drive.imageHelper.testName
-            dirver.imageHelper.options.imageName`);
-            throw new Error(`Missing image name!`)
-        }
-        if (this._imagesResults.size > 0) {
-            const images = new Array();
-            this._imagesResults.forEach((v, k, map) => {
-                if (k.includes(imageName)) {
-                    images.push(k);
-                }
-            });
-
-            images.sort((a, b) => {
-                const aNumber = +/\d+$/.exec(a);
-                const bNumber = +/\d+$/.exec(b);
-
-                return bNumber - aNumber;
-            });
-            if (images.length > 0) {
-                const lastImage = images[0];
-                const number = /\d+$/.test(lastImage) ? +`${/\d+$/.exec(lastImage)}` + 1 : `2`;
-                imageName = `${imageName}_${number}`;
-            }
-        }
-
-        return imageName;
-    }
-
-    private extendOptions(options: IImageCompareOptions) {
-        options = options || {};
-        Object.getOwnPropertyNames(this.options).forEach(prop => {
-            if (options[prop] === undefined || options[prop] === null) {
-                if (isObject(this.options[prop])) {
-                    options[prop] = {};
-                    ImageHelper.fullClone(this.options[prop], options[prop]);
-                } else {
-                    options[prop] = this.options[prop];
-                }
-            }
-        });
-
-        if (!options.cropRectangle) {
-            ImageHelper.fullClone(this.imageCropRect, this.imageCropRect);
-        }
-
-        return options;
-    }
-
-    get imageCropRect(): IRectangle {
-        return this._imageCropRect || this.options.cropRectangle;
-    }
-
-    set imageCropRect(clipRectangele: IRectangle) {
-        this._imageCropRect = clipRectangele;
-    }
-
-    get blockOutAreas() {
-        return this._blockOutAreas;
-    }
-
-    set blockOutAreas(rectangles: IRectangle[]) {
-        this._blockOutAreas = rectangles;
-    }
-
-    public imageOutputLimit() {
-        return ImageOptions.outputAll;
-    }
-
-    public thresholdType() {
-        return ImageOptions.percent;
-    }
-
-    public threshold(thresholdType) {
-        if (thresholdType == ImageOptions.percent) {
-            return 0.01; // 0.01 = 1 percent; 500 percent
-        } else {
-            return 10; // 10 pixels
-        }
-    }
-
-    public delta() {
-        return 20;
     }
 
     public getExpectedImagePathByDevice(imageName: string) {
@@ -345,45 +267,7 @@ export class ImageHelper {
         return result;
     }
 
-    // public async prepareImageToCompare(filePath: string, rect: IRectangle) {
-    //     if (rect) {
-    //         await this.clipRectangleImage(rect, filePath);
-    //         const rectToCrop = { left: 0, top: 0, width: undefined, height: undefined };
-    //         this.imageCropRect = rectToCrop;
-    //     } else {
-    //         this.imageCropRect = ImageHelper.cropImageDefault(this._args);
-    //     }
-    // }
-
-    private runDiff(diffOptions: BlinkDiff, diffImage: string) {
-        var that = this;
-        return new Promise<boolean>((resolve, reject) => {
-            diffOptions.run(function (error, result) {
-                if (error) {
-                    throw error;
-                } else {
-                    let message: string;
-                    let resultCode = diffOptions.hasPassed(result.code);
-                    if (resultCode) {
-                        message = "Screen compare passed!";
-                        console.log(message);
-                        console.log('Found ' + result.differences + ' differences.');
-                        return resolve(true);
-                    } else {
-                        message = `Screen compare failed! Found ${result.differences} differences.\n`;
-                        console.log(message);
-                        if (Object.getOwnPropertyNames(that._args.testReporter).length > 0 && that._args.testReporter.logImageTypes && that._args.testReporter.logImageTypes.indexOf(LogImageType.everyImage) > -1) {
-                            that._args.testReporterLog(`${basename(diffImage)}\n\r${message}`);
-                            that._args.testReporterLog(diffImage);
-                        }
-                        return resolve(false);
-                    }
-                }
-            });
-        });
-    }
-
-    public compareImages(actual: string, expected: string, output: string, valueThreshold: number = this.threshold(this.thresholdType()), typeThreshold: any = this.thresholdType()) {
+    public compareImages(actual: string, expected: string, output: string, tolerance: number, toleranceType: ImageOptions) {
         const clipRect = {
             x: this.imageCropRect.x,
             y: this.imageCropRect.y,
@@ -402,21 +286,21 @@ export class ImageHelper {
             imageAPath: actual,
             imageBPath: expected,
             imageOutputPath: output,
-            imageOutputLimit: this.imageOutputLimit(),
-            thresholdType: typeThreshold,
-            threshold: valueThreshold,
-            delta: this.delta(),
+            imageOutputLimit: this.imageOutputLimit,
+            thresholdType: toleranceType,
+            threshold: tolerance,
+            delta: this.delta,
             cropImageA: clipRect,
             cropImageB: clipRect,
             blockOut: this._blockOutAreas,
             verbose: this._args.verbose,
         });
 
-        if (typeThreshold == ImageOptions.percent) {
-            valueThreshold = Math.floor(valueThreshold * 100);
-            console.log(`Using ${valueThreshold}\ ${typeThreshold} tolerance`);
+        if (toleranceType == ImageOptions.percent) {
+            tolerance = Math.floor(tolerance * 100);
+            console.log(`Using ${tolerance}% tolerance`);
         } else {
-            console.log(`Using ${valueThreshold} tolerance`);
+            console.log(`Using ${tolerance}px tolerance`);
         }
 
         const result = this.runDiff(diff, output);
@@ -459,6 +343,89 @@ export class ImageHelper {
                 return resolve(image);
             });
         })
+    }
+
+    private runDiff(diffOptions: BlinkDiff, diffImage: string) {
+        var that = this;
+        return new Promise<boolean>((resolve, reject) => {
+            diffOptions.run(function (error, result) {
+                if (error) {
+                    throw error;
+                } else {
+                    let message: string;
+                    let resultCode = diffOptions.hasPassed(result.code);
+                    if (resultCode) {
+                        message = "Screen compare passed!";
+                        console.log(message);
+                        console.log('Found ' + result.differences + ' differences.');
+                        return resolve(true);
+                    } else {
+                        message = `Screen compare failed! Found ${result.differences} differences.\n`;
+                        console.log(message);
+                        if (Object.getOwnPropertyNames(that._args.testReporter).length > 0 && that._args.testReporter.logImageTypes && that._args.testReporter.logImageTypes.indexOf(LogImageType.everyImage) > -1) {
+                            that._args.testReporterLog(`${basename(diffImage)}\n\r${message}`);
+                            that._args.testReporterLog(diffImage);
+                        }
+                        return resolve(false);
+                    }
+                }
+            });
+        });
+    }
+
+    private increaseImageName(imageName: string, options: IImageCompareOptions) {
+        if (options.keepOriginalImageName) {
+            return imageName;
+        }
+        if (!imageName) {
+            logError(`Missing image name!`);
+            logError(`Consider to set
+            drive.imageHelper.testName
+            dirver.imageHelper.options.imageName`);
+            throw new Error(`Missing image name!`)
+        }
+        if (this._imagesResults.size > 0) {
+            const images = new Array();
+            this._imagesResults.forEach((v, k, map) => {
+                if (k.includes(imageName)) {
+                    images.push(k);
+                }
+            });
+
+            images.sort((a, b) => {
+                const aNumber = +/\d+$/.exec(a);
+                const bNumber = +/\d+$/.exec(b);
+
+                return bNumber - aNumber;
+            });
+            if (images.length > 0) {
+                const lastImage = images[0];
+                const number = /\d+$/.test(lastImage) ? +`${/\d+$/.exec(lastImage)}` + 1 : `2`;
+                imageName = `${imageName}_${number}`;
+            }
+        }
+
+        return imageName;
+    }
+
+    private extendOptions(options: IImageCompareOptions) {
+        options = options || {};
+        Object.getOwnPropertyNames(this.options).forEach(prop => {
+            if (options[prop] === undefined || options[prop] === null) {
+                if (isObject(this.options[prop])) {
+                    options[prop] = {};
+                    ImageHelper.fullClone(this.options[prop], options[prop]);
+                } else {
+                    options[prop] = this.options[prop];
+                }
+            }
+        });
+
+        if (!options.cropRectangle) {
+            ImageHelper.fullClone(this.imageCropRect, this.imageCropRect);
+        }
+
+        return options;
     }
 
     private static fullClone(src, target) {

@@ -45,15 +45,25 @@ export declare class ImageHelper {
     private _driver;
     private _blockOutAreas;
     private _imagesResults;
-    private _testName;
     private _imageCropRect;
-    static readonly pngFileExt = ".png";
     private _options;
     private _defaultOptions;
     constructor(_args: INsCapabilities, _driver: AppiumDriver);
-    options: IImageCompareOptions;
+    static readonly pngFileExt = ".png";
     testName: string;
-    imageComppareOptions: IImageCompareOptions;
+    /**
+     * Defines when an image output should be created.
+     * This can be for different images, similar or different images, or all comparisons.
+     * (default: BlinkDiff.OUTPUT_ALL)
+     */
+    imageOutputLimit: ImageOptions;
+    /**
+     * Max. distance colors in the 4 dimensional color-space without triggering a difference. (default: 20)
+     */
+    delta: number;
+    options: IImageCompareOptions;
+    imageCropRect: IRectangle;
+    blockOutAreas: IRectangle[];
     compareScreen(options?: IImageCompareOptions): Promise<boolean>;
     compareElement(element: UIElement, options?: IImageCompareOptions): Promise<boolean>;
     compareRectangle(cropRectangle: IRectangle, options?: IImageCompareOptions): Promise<boolean>;
@@ -62,21 +72,18 @@ export declare class ImageHelper {
      * Reset image comparison results
      */
     reset(): void;
+    /**
+     * Set coparison option to default
+     */
     resetDefaultOptions(): void;
-    private increaseImageName;
-    private extendOptions;
-    imageCropRect: IRectangle;
-    blockOutAreas: IRectangle[];
-    imageOutputLimit(): ImageOptions;
-    thresholdType(): ImageOptions;
-    threshold(thresholdType: any): 0.01 | 10;
-    delta(): number;
     getExpectedImagePathByDevice(imageName: string): string;
     getExpectedImagePathByPlatform(imageName: string): string;
     compare(options: IImageCompareOptions): Promise<boolean>;
-    private runDiff;
-    compareImages(actual: string, expected: string, output: string, valueThreshold?: number, typeThreshold?: any): Promise<boolean>;
+    compareImages(actual: string, expected: string, output: string, tolerance: number, toleranceType: ImageOptions): Promise<boolean>;
     clipRectangleImage(rect: IRectangle, path: string): Promise<{}>;
     readImage(path: string): Promise<any>;
+    private runDiff;
+    private increaseImageName;
+    private extendOptions;
     private static fullClone;
 }

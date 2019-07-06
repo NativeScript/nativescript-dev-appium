@@ -565,11 +565,11 @@ export class AppiumDriver {
         return await this.driver.getSessionId();
     }
 
-    public async compareElement(element: UIElement, imageName: string, tolerance: number = 0.01, timeOutSeconds: number = 3, toleranceType?: ImageOptions) {
+    public async compareElement(element: UIElement, imageName: string, tolerance: number = 0.01, timeOutSeconds: number = 3, toleranceType: ImageOptions = ImageOptions.percent) {
         return await this.compareRectangle(await element.getActualRectangle(), imageName, timeOutSeconds, tolerance, toleranceType);
     }
 
-    public async compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds: number = 3, tolerance: number = 0.01, toleranceType?: ImageOptions) {
+    public async compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds: number = 3, tolerance: number = 0.01, toleranceType: ImageOptions = ImageOptions.percent) {
         return await this.imageHelper.compare({
             imageName: imageName,
             timeOutSeconds: timeOutSeconds,
@@ -581,7 +581,7 @@ export class AppiumDriver {
         });
     }
 
-    public async compareScreen(imageName: string, timeOutSeconds: number = 3, tolerance: number = 0.01, toleranceType?: ImageOptions) {
+    public async compareScreen(imageName: string, timeOutSeconds: number = 3, tolerance: number = 0.01, toleranceType: ImageOptions = ImageOptions.percent) {
         return await this.imageHelper.compare({
             imageName: imageName,
             timeOutSeconds: timeOutSeconds,
