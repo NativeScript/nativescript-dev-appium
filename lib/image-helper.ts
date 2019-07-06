@@ -14,7 +14,17 @@ import { isObject } from "util";
 export interface IImageCompareOptions {
     imageName?: string;
     timeOutSeconds?: number;
+
+    /**
+     * pixel
+     * percentage thresholds: 1 = 100%, 0.2 = 20%"
+     */
     tolerance?: number;
+
+    /**
+     * pixel
+     * percentage thresholds: 1 = 100%, 0.2 = 20%"
+    */
     toleranceType?: ImageOptions;
     /**
      * Wait miliseconds before capture creating image
@@ -68,7 +78,7 @@ export class ImageHelper {
         keepOriginalImageSize: true,
         keepOriginalImageName: false,
         isDeviceSpecific: true,
-        cropRectangle : {}
+        cropRectangle: {}
     };
 
     constructor(private _args: INsCapabilities, private _driver: AppiumDriver) {
@@ -297,8 +307,10 @@ export class ImageHelper {
         });
 
         if (toleranceType == ImageOptions.percent) {
-            tolerance = Math.floor(tolerance * 100);
-            console.log(`Using ${tolerance}% tolerance`);
+            if (tolerance >= 1) {
+                logError("Tolerance range is from 0 to 1 -> percentage thresholds: 1 = 100%, 0.2 = 20%");
+            }
+            console.log(`Using ${tolerance * 100}% tolerance`);
         } else {
             console.log(`Using ${tolerance}px tolerance`);
         }
@@ -408,7 +420,7 @@ export class ImageHelper {
         return imageName;
     }
 
-    private extendOptions(options: IImageCompareOptions) {
+    public extendOptions(options: IImageCompareOptions) {
         options = options || {};
         Object.getOwnPropertyNames(this.options).forEach(prop => {
             if (options[prop] === undefined || options[prop] === null) {

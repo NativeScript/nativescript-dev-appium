@@ -6,7 +6,15 @@ import { AppiumDriver } from "./appium-driver";
 export interface IImageCompareOptions {
     imageName?: string;
     timeOutSeconds?: number;
+    /**
+     * pixel
+     * percentage thresholds: 1 = 100%, 0.2 = 20%"
+     */
     tolerance?: number;
+    /**
+     * pixel
+     * percentage thresholds: 1 = 100%, 0.2 = 20%"
+    */
     toleranceType?: ImageOptions;
     /**
      * Wait miliseconds before capture creating image
@@ -84,6 +92,6 @@ export declare class ImageHelper {
     readImage(path: string): Promise<any>;
     private runDiff;
     private increaseImageName;
-    private extendOptions;
+    extendOptions(options: IImageCompareOptions): IImageCompareOptions;
     private static fullClone;
 }

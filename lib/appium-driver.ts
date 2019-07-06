@@ -570,7 +570,7 @@ export class AppiumDriver {
     }
 
     public async compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds: number = 3, tolerance: number = 0.01, toleranceType: ImageOptions = ImageOptions.percent) {
-        return await this.imageHelper.compare({
+        const options = this.imageHelper.extendOptions({
             imageName: imageName,
             timeOutSeconds: timeOutSeconds,
             tolerance: tolerance,
@@ -579,16 +579,19 @@ export class AppiumDriver {
             keepOriginalImageName: true,
             keepOriginalImageSize: false
         });
+        return await this.imageHelper.compare(options);
     }
 
     public async compareScreen(imageName: string, timeOutSeconds: number = 3, tolerance: number = 0.01, toleranceType: ImageOptions = ImageOptions.percent) {
-        return await this.imageHelper.compare({
+        const options = this.imageHelper.extendOptions({
             imageName: imageName,
             timeOutSeconds: timeOutSeconds,
             tolerance: tolerance,
             toleranceType: toleranceType,
             keepOriginalImageName: true
         });
+        
+        return await this.imageHelper.compare(options);
     }
 
     /**
