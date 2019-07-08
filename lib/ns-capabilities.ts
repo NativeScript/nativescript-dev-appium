@@ -310,12 +310,6 @@ export class NsCapabilities implements INsCapabilities {
                 case AutomationName.XCUITest.toString().toLowerCase():
                     this.automationName = AutomationName.XCUITest; break;
             }
-        } else {
-            if (this.isAndroid) {
-                if (this.tryGetAndroidApiLevel() >= 6 || (this.appiumCaps["apiLevel"] && +this.appiumCaps["apiLevel"]) >= 23) {
-                    this.automationName = AutomationName.UiAutomator2;
-                }
-            }
         }
 
         if (this.automationName) {
@@ -325,16 +319,6 @@ export class NsCapabilities implements INsCapabilities {
         } else {
             console.log(`Appium will use default automation name`);
         }
-    }
-
-    tryGetAndroidApiLevel() {
-        try {
-            if (this.appiumCaps["platformVersion"]) {
-                const apiLevel = this.appiumCaps["platformVersion"].split(".").splice(0, 2).join('.');
-                return +apiLevel;
-            }
-        } catch (error) { }
-        return undefined;
     }
 
     private resolveApplication() {

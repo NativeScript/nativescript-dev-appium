@@ -38,7 +38,6 @@ export declare const isPortAvailable: (port: any) => Promise<{}>;
 export declare const findFreePort: (retries?: number, port?: number) => Promise<number>;
 export declare function wait(milliseconds: any): void;
 export declare function getSessions(port: any, host?: string): Promise<{}>;
-export declare function getSession(port: number, sessionId: any): Promise<{}>;
 export declare const prepareDevice: (args: INsCapabilities, deviceManager: IDeviceManager) => Promise<INsCapabilities>;
 export declare const prepareApp: (args: INsCapabilities) => Promise<INsCapabilities>;
 export declare const ensureReportsDirExists: (nsCapabilities: any) => void;

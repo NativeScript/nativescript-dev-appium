@@ -26,7 +26,6 @@ import {
     findFreePort,
     wait,
     getSessions,
-    getSession,
     logError,
     prepareApp,
     logInfo,
