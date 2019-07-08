@@ -73,7 +73,7 @@ export class ImageHelper {
         timeOutSeconds: 2,
         tolerance: 0,
         toleranceType: ImageOptions.pixel,
-        waitBeforeCreatingInitialImageCapture: 2000,
+        waitBeforeCreatingInitialImageCapture: 4000,
         donNotAppendActualSuffixOnIntialImageCapture: false,
         keepOriginalImageSize: true,
         keepOriginalImageName: false,

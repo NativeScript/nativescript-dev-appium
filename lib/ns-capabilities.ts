@@ -312,7 +312,7 @@ export class NsCapabilities implements INsCapabilities {
             }
         } else {
             if (this.isAndroid) {
-                if (this.tryGetAndroidApiLevel() > 6 || (this.appiumCaps["apiLevel"] && this.appiumCaps["apiLevel"].toLowerCase().includes("p"))) {
+                if (this.tryGetAndroidApiLevel() >= 6 || (this.appiumCaps["apiLevel"] && +this.appiumCaps["apiLevel"]) >= 23) {
                     this.automationName = AutomationName.UiAutomator2;
                 }
             }
@@ -331,7 +331,7 @@ export class NsCapabilities implements INsCapabilities {
         try {
             if (this.appiumCaps["platformVersion"]) {
                 const apiLevel = this.appiumCaps["platformVersion"].split(".").splice(0, 2).join('.');
-                return parseFloat(apiLevel);
+                return +apiLevel;
             }
         } catch (error) { }
         return undefined;
