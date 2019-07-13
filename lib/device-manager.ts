@@ -199,18 +199,17 @@ export class DeviceManager implements IDeviceManager {
             const sizeArr = sessionInfoDetails.deviceScreenSize.split("x");
             args.device.deviceScreenSize = { width: sizeArr[0], height: sizeArr[1] };
 
-            args.device.deviceScreenDensity = sessionInfoDetails.deviceScreenDensity / 100;
             args.device.apiLevel = sessionInfoDetails.deviceApiLevel;
-
-            args.device.config = { "density": sessionInfoDetails.deviceScreenDensity / 100, "offsetPixels": +sessionInfoDetails.statBarHeight }
+            args.device.deviceScreenDensity = sessionInfoDetails.deviceScreenDensity / 100;
+            args.device.config = { "density": args.device.deviceScreenDensity, "offsetPixels": +sessionInfoDetails.statBarHeight };
         } else {
             args.device.apiLevel = sessionInfoDetails.platformVersion;
             args.device.deviceScreenDensity = sessionInfoDetails.pixelRatio;
-            args.device.config = { "density": sessionInfoDetails.pixelRatio, "offsetPixels": +sessionInfoDetails.viewportRect.top - +sessionInfoDetails.statBarHeight }
+            args.device.config = { "density": sessionInfoDetails.pixelRatio, "offsetPixels": +sessionInfoDetails.viewportRect.top - +sessionInfoDetails.statBarHeight };
         }
-
+        
+        args.device.statBarHeight = sessionInfoDetails.statBarHeight;
         args.device.viewportRect = DeviceManager.convertViewportRectToIRectangle(sessionInfoDetails.viewportRect);
-        args.device.statBarHeight = +sessionInfoDetails.statBarHeight;
 
         return args.device;
     }

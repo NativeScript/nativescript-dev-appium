@@ -509,19 +509,19 @@ export class AppiumDriver {
      * @param inertia
      * @param xOffset
      */
-    public async swipe(initPoint: { y: number, x: number }, endPointOffset: { yOffset: number, xOffset: number }, inertia: number = 250) {
-        let direction = 1;
-        if (this._webio.isIOS) {
-            direction = -1;
+    public async swipe(startPoint: { y: number, x: number }, endPoint: { y: number, x: number }, inertia?: number) {
+        if (!inertia) {
+            inertia = (Math.abs(startPoint.x - endPoint.x) > Math.abs(endPoint.y - startPoint.y)
+                ? Math.abs(startPoint.x - endPoint.x) : Math.abs(endPoint.y - startPoint.y))
+                * 10;
         }
-
-        const action = new this._wd.TouchAction(this._driver);
-        action
-            .press({ x: initPoint.x, y: initPoint.y })
+        new this._wd.TouchAction(this._driver)
+            .press({ x: startPoint.x, y: startPoint.y })
             .wait(inertia)
-            .moveTo({ x: endPointOffset.xOffset * direction, y: direction * endPointOffset.yOffset })
-            .release();
-        await action.perform();
+            .moveTo({ x: endPoint.x, y: endPoint.y })
+            .release()
+            .perform();
+
         await this._driver.sleep(150);
     }
 
@@ -564,11 +564,12 @@ export class AppiumDriver {
         return await this.driver.getSessionId();
     }
 
-    public async compareElement(element: UIElement, imageName: string, tolerance: number = 0.01, timeOutSeconds: number = 3, toleranceType: ImageOptions = ImageOptions.percent) {
+    public async compareElement(element: UIElement, imageName?: string, tolerance: number = 0.01, timeOutSeconds: number = 3, toleranceType: ImageOptions = ImageOptions.percent) {
         return await this.compareRectangle(await element.getActualRectangle(), imageName, timeOutSeconds, tolerance, toleranceType);
     }
 
-    public async compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds: number = 3, tolerance: number = 0.01, toleranceType: ImageOptions = ImageOptions.percent) {
+    public async compareRectangle(rect: IRectangle, imageName?: string, timeOutSeconds: number = 3, tolerance: number = 0.01, toleranceType: ImageOptions = ImageOptions.percent) {
+        imageName = imageName || this.imageHelper.testName;
         const options = this.imageHelper.extendOptions({
             imageName: imageName,
             timeOutSeconds: timeOutSeconds,
@@ -581,7 +582,8 @@ export class AppiumDriver {
         return await this.imageHelper.compare(options);
     }
 
-    public async compareScreen(imageName: string, timeOutSeconds: number = 3, tolerance: number = 0.01, toleranceType: ImageOptions = ImageOptions.percent) {
+    public async compareScreen(imageName?: string, timeOutSeconds: number = 3, tolerance: number = 0.01, toleranceType: ImageOptions = ImageOptions.percent) {
+        imageName = imageName || this.imageHelper.testName;
         const options = this.imageHelper.extendOptions({
             imageName: imageName,
             timeOutSeconds: timeOutSeconds,
@@ -589,7 +591,7 @@ export class AppiumDriver {
             toleranceType: toleranceType,
             keepOriginalImageName: true
         });
-        
+
         return await this.imageHelper.compare(options);
     }
 

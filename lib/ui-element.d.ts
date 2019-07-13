@@ -20,6 +20,8 @@ export declare class UIElement {
     tapAtTheEnd(): Promise<void>;
     /**
      * Tap on element
+     * This method is not working very good with UiAutomator2
+     * It is better to use click instead.
      */
     tap(): Promise<any>;
     /**

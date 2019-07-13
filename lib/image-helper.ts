@@ -6,10 +6,11 @@ import { IRectangle } from "./interfaces/rectangle";
 import { LogImageType } from "./enums/log-image-type";
 import { UIElement } from "./ui-element";
 import { AppiumDriver } from "./appium-driver";
-import { logError, checkImageLogType, resolvePath, getStorageByDeviceName, getStorageByPlatform, getReportPath, copy, addExt, logWarn } from "./utils";
-import { unlinkSync, existsSync } from "fs";
+import { logError, checkImageLogType, resolvePath, copy, addExt, logWarn } from "./utils";
+import { unlinkSync, existsSync, mkdirSync } from "fs";
 import { basename, join } from "path";
 import { isObject } from "util";
+import { logInfo } from "../../mobile-devices-controller/lib/utils";
 
 export interface IImageCompareOptions {
     imageName?: string;
@@ -56,6 +57,14 @@ export interface IImageCompareOptions {
      */
     keepOriginalImageSize?: boolean;
 
+
+    /**
+     * Default value is set to false. nativescript-dev-appium will recalculate view port for iOS
+     * so that the top/y will start from the end of status bar
+     * So far appium calcuates it even more and some part of safe areas are missed
+     */
+    keepAppiumViewportRect?: boolean;
+
     /**
      * Defines if an image is device specific or only by platform.
      * Default value is true and the image will be saved in device specific directory.
@@ -78,17 +87,23 @@ export class ImageHelper {
         keepOriginalImageSize: true,
         keepOriginalImageName: false,
         isDeviceSpecific: true,
-        cropRectangle: {}
+        cropRectangle: {},
+        imageName: undefined,
     };
 
     constructor(private _args: INsCapabilities, private _driver: AppiumDriver) {
         this._defaultOptions.cropRectangle = (this._args.appiumCaps && this._args.appiumCaps.viewportRect) || this._args.device.viewportRect;
-        if (!this._defaultOptions.cropRectangle || !this._defaultOptions.cropRectangle.y) {
+        if (!this._defaultOptions.cropRectangle
+            || this._defaultOptions.cropRectangle.y === undefined
+            || this._defaultOptions.cropRectangle.y === null
+            || this._defaultOptions.cropRectangle.y === NaN) {
             this._defaultOptions.cropRectangle = this._defaultOptions.cropRectangle || {};
             this._defaultOptions.cropRectangle.y = this._args.device.config.offsetPixels || 0;
             this._defaultOptions.cropRectangle.x = 0;
         }
         ImageHelper.fullClone(this._defaultOptions, this._options);
+
+        logInfo(`Actual view port:`, this._options);
     }
 
     public static readonly pngFileExt = '.png';
@@ -204,6 +219,9 @@ export class ImageHelper {
         const storageLocal = options.isDeviceSpecific ? this._args.storageByDeviceName : this._args.storageByPlatform;
         const pathExpectedImage = options.isDeviceSpecific ? this.getExpectedImagePathByDevice(imageName) : this.getExpectedImagePathByPlatform(imageName);
 
+        if (!existsSync(this._args.reportsPath)) {
+            mkdirSync(this._args.reportsPath);
+        }
         // First time capture
         if (!existsSync(pathExpectedImage)) {
             const pathActualImage = resolvePath(storageLocal, this.options.donNotAppendActualSuffixOnIntialImageCapture ? imageName : imageName.replace(".", "_actual."));
@@ -364,19 +382,20 @@ export class ImageHelper {
                 if (error) {
                     throw error;
                 } else {
-                    let message: string;
-                    let resultCode = diffOptions.hasPassed(result.code);
+                    const resultCode = diffOptions.hasPassed(result.code);
                     if (resultCode) {
-                        message = "Screen compare passed!";
-                        console.log(message);
-                        console.log('Found ' + result.differences + ' differences.');
+                        console.log('Screen compare passed! Found ' + result.differences + ' differences.');
                         return resolve(true);
                     } else {
-                        message = `Screen compare failed! Found ${result.differences} differences.\n`;
+                        const message = `Screen compare failed! Found ${result.differences} differences.\n`;
                         console.log(message);
-                        if (Object.getOwnPropertyNames(that._args.testReporter).length > 0 && that._args.testReporter.logImageTypes && that._args.testReporter.logImageTypes.indexOf(LogImageType.everyImage) > -1) {
-                            that._args.testReporterLog(`${basename(diffImage)}\n\r${message}`);
-                            that._args.testReporterLog(diffImage);
+                        if (Object.getOwnPropertyNames(that._args.testReporter).length > 0) {
+                            that._args.testReporterLog(message);
+                            if (that._args.testReporter.logImageTypes
+                                && that._args.testReporter.logImageTypes.indexOf(LogImageType.everyImage) > -1) {
+                                that._args.testReporterLog(`${basename(diffImage)} - ${message}`);
+                                that._args.testReporterLog(diffImage);
+                            }
                         }
                         return resolve(false);
                     }
@@ -447,7 +466,9 @@ export class ImageHelper {
                     target[prop] = {};
                     ImageHelper.fullClone(src[prop], target[prop]);
                 } else {
-                    target[prop] = src[prop];
+                    if (target[prop] === undefined || target[prop] === null) {
+                        target[prop] = src[prop];
+                    }
                 }
             });
     }

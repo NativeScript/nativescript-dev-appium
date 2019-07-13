@@ -162,12 +162,12 @@ export declare class AppiumDriver {
      * @param inertia
      * @param xOffset
      */
-    swipe(initPoint: {
+    swipe(startPoint: {
         y: number;
         x: number;
-    }, endPointOffset: {
-        yOffset: number;
-        xOffset: number;
+    }, endPoint: {
+        y: number;
+        x: number;
     }, inertia?: number): Promise<void>;
     /**
     * Click a point by providing coordinates
@@ -179,9 +179,9 @@ export declare class AppiumDriver {
     setOrientation(orientation: DeviceOrientaion): Promise<void>;
     source(): Promise<any>;
     sessionId(): Promise<any>;
-    compareElement(element: UIElement, imageName: string, tolerance?: number, timeOutSeconds?: number, toleranceType?: ImageOptions): Promise<boolean>;
-    compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds?: number, tolerance?: number, toleranceType?: ImageOptions): Promise<boolean>;
-    compareScreen(imageName: string, timeOutSeconds?: number, tolerance?: number, toleranceType?: ImageOptions): Promise<boolean>;
+    compareElement(element: UIElement, imageName?: string, tolerance?: number, timeOutSeconds?: number, toleranceType?: ImageOptions): Promise<boolean>;
+    compareRectangle(rect: IRectangle, imageName?: string, timeOutSeconds?: number, tolerance?: number, toleranceType?: ImageOptions): Promise<boolean>;
+    compareScreen(imageName?: string, timeOutSeconds?: number, tolerance?: number, toleranceType?: ImageOptions): Promise<boolean>;
     /**
      * @param videoName
      * @param callback when to stop video recording. In order an element is found. Should return true to exit

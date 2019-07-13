@@ -42,6 +42,12 @@ export interface IImageCompareOptions {
      */
     keepOriginalImageSize?: boolean;
     /**
+     * Default value is set to false. nativescript-dev-appium will recalculate view port for iOS
+     * so that the top/y will start from the end of status bar
+     * So far appium calcuates it even more and some part of safe areas are missed
+     */
+    keepAppiumViewportRect?: boolean;
+    /**
      * Defines if an image is device specific or only by platform.
      * Default value is true and the image will be saved in device specific directory.
      * If value is set to false, image will be saved under ios or android folder.
