@@ -10,7 +10,7 @@ import { logError, checkImageLogType, resolvePath, copy, addExt, logWarn } from 
 import { unlinkSync, existsSync, mkdirSync } from "fs";
 import { basename, join } from "path";
 import { isObject } from "util";
-import { logInfo } from "../../mobile-devices-controller/lib/utils";
+import { logInfo } from "mobile-devices-controller/lib/utils";
 
 export interface IImageCompareOptions {
     imageName?: string;
