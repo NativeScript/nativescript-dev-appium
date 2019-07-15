@@ -227,6 +227,7 @@ export function getStorageByDeviceName(args: INsCapabilities) {
         const segments = args.imagesPath.split(/[\/\\]+/);
         storage = join(storage, segments.join(sep));
         if (existsSync(storage)) {
+            logInfo(`Images storage set to: ${storage}!`);
             return storage;
         } else {
             const error = `Current imagesPath (${args.imagesPath}) does not exist !!!`;
@@ -238,6 +239,8 @@ export function getStorageByDeviceName(args: INsCapabilities) {
     storage = createStorageFolder(storage, appName);
     storage = createStorageFolder(storage, getDeviceName(args));
 
+    logInfo(`Images storage set to: ${storage}!`);
+    
     return storage;
 }
 
@@ -246,6 +249,8 @@ export function getStorageByPlatform(args: INsCapabilities) {
     const appName = resolveSauceLabAppName(getAppName(args));
     storage = createStorageFolder(storage, appName);
     storage = createStorageFolder(storage, args.appiumCaps.platformName.toLowerCase());
+
+    logInfo(`Images storage set to: ${storage}!`);
 
     return storage;
 }
