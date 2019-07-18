@@ -219,16 +219,11 @@ export function isLinux() {
 const getDeviceName = (args) => {
     const deviceName = (args.attachToDebug || args.sessionId) ? args.device.name : args.appiumCaps.deviceName;
 
-    logWarn(`4. Images storage set to: ${deviceName}!`);
-
     return deviceName;
 }
 
 export function getStorageByDeviceName(args: INsCapabilities) {
     let storage = getStorage(args);
-
-    logWarn(`1. Images storage set to: ${storage}!`);
-
     if (args.imagesPath) {
         const segments = args.imagesPath.split(/[\/\\]+/);
         storage = join(storage, segments.join(sep));
@@ -242,12 +237,7 @@ export function getStorageByDeviceName(args: INsCapabilities) {
         }
     }
     const appName = resolveSauceLabAppName(getAppName(args));
-
-    logWarn(`2. Images storage set to: ${appName}!`);
-
     storage = createStorageFolder(storage, appName);
-
-    logWarn(`3. Images storage set to: ${storage}!`);
 
     storage = createStorageFolder(storage, getDeviceName(args));
 

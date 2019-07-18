@@ -27,6 +27,7 @@ export interface IImageCompareOptions {
      * percentage thresholds: 1 = 100%, 0.2 = 20%"
     */
     toleranceType?: ImageOptions;
+
     /**
      * Wait miliseconds before capture creating image
      * Default value is 2000
@@ -71,6 +72,11 @@ export interface IImageCompareOptions {
      * If value is set to false, image will be saved under ios or android folder.
      */
     isDeviceSpecific?: boolean;
+
+    /**
+     * Overwrite actual image if doesn't match. Default value is false.
+     */
+    overwriteActualImage?: boolean;
 }
 
 export class ImageHelper {
@@ -82,13 +88,14 @@ export class ImageHelper {
         timeOutSeconds: 2,
         tolerance: 0,
         toleranceType: ImageOptions.pixel,
-        waitBeforeCreatingInitialImageCapture: 4000,
+        waitBeforeCreatingInitialImageCapture: 5000,
         donNotAppendActualSuffixOnIntialImageCapture: false,
         keepOriginalImageSize: true,
         keepOriginalImageName: false,
         isDeviceSpecific: true,
         cropRectangle: {},
         imageName: undefined,
+        overwriteActualImage: false,
     };
 
     constructor(private _args: INsCapabilities, private _driver: AppiumDriver) {
@@ -206,6 +213,7 @@ export class ImageHelper {
 
     public getExpectedImagePathByDevice(imageName: string) {
         let pathExpectedImage = resolvePath(this._args.storageByDeviceName, imageName);
+
         return pathExpectedImage;
     }
 
@@ -222,9 +230,9 @@ export class ImageHelper {
         if (!existsSync(this._args.reportsPath)) {
             mkdirSync(this._args.reportsPath);
         }
-        // First time capture
-        if (!existsSync(pathExpectedImage)) {
-            const pathActualImage = resolvePath(storageLocal, this.options.donNotAppendActualSuffixOnIntialImageCapture ? imageName : imageName.replace(".", "_actual."));
+
+        const captureFirstImage = async () => {
+            const pathActualImage = resolvePath(storageLocal, (this.options.donNotAppendActualSuffixOnIntialImageCapture || this.options.overwriteActualImage) ? imageName : imageName.replace(".", "_actual."));
             if (this.options.waitBeforeCreatingInitialImageCapture > 0) {
                 await this._driver.wait(this.options.waitBeforeCreatingInitialImageCapture);
             }
@@ -237,13 +245,19 @@ export class ImageHelper {
             const pathActualImageToReportsFolder = resolvePath(this._args.reportsPath, basename(pathActualImage));
             copy(pathActualImage, pathActualImageToReportsFolder, false);
 
-            if (this.options.donNotAppendActualSuffixOnIntialImageCapture) {
+            if (this.options.donNotAppendActualSuffixOnIntialImageCapture || this.options.overwriteActualImage) {
                 logWarn(`New image ${basename(pathActualImage)} is saved to storage ${storageLocal}.`, pathExpectedImage);
-            } else {
+            } else if (this.options.donNotAppendActualSuffixOnIntialImageCapture === false && this.options.overwriteActualImage === false) {
                 logWarn("Remove the 'actual' suffix to continue using the image as expected one ", pathExpectedImage);
             }
             this._args.testReporterLog(basename(pathActualImage).replace(/\.\w{3,3}$/ig, ""));
             this._args.testReporterLog(join(this._args.reportsPath, basename(pathActualImage)));
+            return false;
+        }
+        // First time capture
+        if (!existsSync(pathExpectedImage)) {
+            await captureFirstImage();
+
             return false;
         }
 
@@ -275,6 +289,11 @@ export class ImageHelper {
                     this._args.testReporterLog(join(this._args.reportsPath, basename(pathActualImage)));
                 }
                 counter++;
+            }
+
+            if (options.overwriteActualImage === true && !result) {
+                logError(`Overwrite image ${pathExpectedImage}, since overwriteActualImage option is set to true!`);
+                await captureFirstImage();
             }
 
             if (!result && !checkImageLogType(this._args.testReporter, LogImageType.everyImage)) {

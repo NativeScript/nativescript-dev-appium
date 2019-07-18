@@ -53,6 +53,10 @@ export interface IImageCompareOptions {
      * If value is set to false, image will be saved under ios or android folder.
      */
     isDeviceSpecific?: boolean;
+    /**
+     * Overwrite actual image if doesn't match. Default value is false.
+     */
+    overwriteActualImage?: boolean;
 }
 export declare class ImageHelper {
     private _args;
