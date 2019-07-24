@@ -564,11 +564,11 @@ export class AppiumDriver {
         return await this.driver.getSessionId();
     }
 
-    public async compareElement(element: UIElement, imageName?: string, tolerance: number = 0.01, timeOutSeconds: number = 3, toleranceType: ImageOptions = ImageOptions.percent) {
+    public async compareElement(element: UIElement, imageName?: string, tolerance: number = 0, timeOutSeconds: number = 3, toleranceType: ImageOptions = ImageOptions.percent) {
         return await this.compareRectangle(await element.getActualRectangle(), imageName, timeOutSeconds, tolerance, toleranceType);
     }
 
-    public async compareRectangle(rect: IRectangle, imageName?: string, timeOutSeconds: number = 3, tolerance: number = 0.01, toleranceType: ImageOptions = ImageOptions.percent) {
+    public async compareRectangle(rect: IRectangle, imageName?: string, timeOutSeconds: number = 3, tolerance: number = 0, toleranceType: ImageOptions = ImageOptions.percent) {
         imageName = imageName || this.imageHelper.testName;
         const options = this.imageHelper.extendOptions({
             imageName: imageName,
@@ -582,7 +582,7 @@ export class AppiumDriver {
         return await this.imageHelper.compare(options);
     }
 
-    public async compareScreen(imageName?: string, timeOutSeconds: number = 3, tolerance: number = 0.01, toleranceType: ImageOptions = ImageOptions.percent) {
+    public async compareScreen(imageName?: string, timeOutSeconds: number = 3, tolerance: number = 0, toleranceType: ImageOptions = ImageOptions.percent) {
         imageName = imageName || this.imageHelper.testName;
         const options = this.imageHelper.extendOptions({
             imageName: imageName,
@@ -975,5 +975,29 @@ export class AppiumDriver {
         }
 
         return new UIElement(searchResult, this._driver, this._wd, this._webio, this._args, "elementByImage", imageAsBase64);
+    }
+
+    /**
+    * Get screen actual view port
+    * Usefull for image comparison
+    */
+    public getScreenActualViewPort() {
+        return <IRectangle>(this._args.appiumCaps && this._args.appiumCaps.viewportRect) || this._args.device.viewportRect;
+    }
+
+    /**
+    * Get screen view port
+    * This is convinient to use for some gestures on the screen
+    */
+    public getScreenViewPort() {
+        const rect = (this._args.appiumCaps && this._args.appiumCaps.viewportRect) || this._args.device.viewportRect;
+        if (rect && Object.getOwnPropertyNames(rect).length > 0) {
+            return <IRectangle>{
+                x: rect.x / this._args.appiumCaps.device.deviceScreenDensity,
+                y: rect.y / this._args.appiumCaps.device.deviceScreenDensity,
+                width: rect.x / this._args.appiumCaps.device.deviceScreenDensity,
+                height: rect.x / this._args.appiumCaps.device.deviceScreenDensity,
+            }
+        }
     }
 }

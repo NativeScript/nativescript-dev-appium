@@ -186,9 +186,7 @@ const config = (() => {
         appiumCaps: options.appiumCaps
     };
 
-    logWarn(`STORAGE set to: ${storage}!`);
-
-    logWarn(`Parsed args: `, options);
+    logWarn(`Parsed args: `, config);
 
     return config;
 })();

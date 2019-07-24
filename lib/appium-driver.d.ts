@@ -259,4 +259,14 @@ export declare class AppiumDriver {
      * @param imageThreshold The degree of match for current search, on the scale between 0 and 1. Default 0.4
      */
     findElementByImage(image: string, imageThreshold?: number): Promise<UIElement>;
+    /**
+    * Get screen actual view port
+    * Usefull for image comparison
+    */
+    getScreenActualViewPort(): any;
+    /**
+    * Get screen view port
+    * This is convinient to use for some gestures on the screen
+    */
+    getScreenViewPort(): IRectangle;
 }
