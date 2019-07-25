@@ -242,6 +242,7 @@ export class NsCapabilities implements INsCapabilities {
 
                 if (this.deviceTypeOrPlatform === "android") {
                     this.appiumCaps["lt"] = 60000;
+                    this.appiumCaps["adbExecTimeout"] = 20000;
                 } else {
                     this.appiumCaps["wdaConnectionTimeout"] = 999999;
                 }

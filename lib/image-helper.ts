@@ -165,7 +165,7 @@ export class ImageHelper {
     public async compareElement(element: UIElement, options?: IImageCompareOptions) {
         options = this.extendOptions(options);
         options.imageName = this.increaseImageName(options.imageName || this.testName, options);
-        const cropRectangele = await element.getRectangle();
+        const cropRectangele = await element.getActualRectangle();
         const result = await this.compareRectangle(cropRectangele, options);
 
         return result;
