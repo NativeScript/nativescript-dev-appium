@@ -157,6 +157,11 @@ $ npm run e2e -- --device.name=/iPhone X/ --device.apiLevel=/12.1/
 
 Generated tests are standard [Mocha](http://mochajs.org) tests.
 
+NOTE: When using Jasmine instead of Mocha, additional npm params (like `runType`) must have an equal sign (=) instead of a space.
+```
+npm run e2e -- --runType=sim.iPhoneX
+```
+
 ## Blogs
 
 2018, March 6th: [Start Testing Your NativeScript Apps Properly](https://www.nativescript.org/blog/start-testing-your-nativescript-apps-properly)
