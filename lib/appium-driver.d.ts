@@ -10,7 +10,7 @@ import { Point } from "./point";
 import { ImageHelper } from "./image-helper";
 import { ImageOptions } from "./image-options";
 import { LogType } from "./log-types";
-import { DeviceOrientation } from "./enums/device-orientatioin";
+import { DeviceOrientation } from "./enums/device-orientation";
 export declare class AppiumDriver {
     private _driver;
     private _wd;
