@@ -10,7 +10,7 @@ import { Point } from "./point";
 import { ImageHelper } from "./image-helper";
 import { ImageOptions } from "./image-options";
 import { LogType } from "./log-types";
-import { DeviceOrientaion } from "./enums/device-orientatioin";
+import { DeviceOrientation } from "./enums/device-orientatioin";
 export declare class AppiumDriver {
     private _driver;
     private _wd;
@@ -163,11 +163,11 @@ export declare class AppiumDriver {
      * @param xOffset
      */
     swipe(startPoint: {
-        y: number;
         x: number;
+        y: number;
     }, endPoint: {
-        y: number;
         x: number;
+        y: number;
     }, inertia?: number): Promise<void>;
     /**
     * Click a point by providing coordinates
@@ -175,8 +175,8 @@ export declare class AppiumDriver {
     * @param y
     */
     clickPoint(xCoordinate: number, yCoordinate: number): Promise<void>;
-    getOrientation(): Promise<DeviceOrientaion>;
-    setOrientation(orientation: DeviceOrientaion): Promise<void>;
+    getOrientation(): Promise<DeviceOrientation>;
+    setOrientation(orientation: DeviceOrientation): Promise<void>;
     source(): Promise<any>;
     sessionId(): Promise<any>;
     compareElement(element: UIElement, imageName?: string, tolerance?: number, timeOutSeconds?: number, toleranceType?: ImageOptions): Promise<boolean>;

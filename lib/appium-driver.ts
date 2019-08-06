@@ -47,7 +47,7 @@ import { extname, join } from "path";
 import { LogType } from "./log-types";
 import { screencapture } from "./helpers/screenshot-manager";
 import { LogImageType } from "./enums/log-image-type";
-import { DeviceOrientaion } from "./enums/device-orientatioin";
+import { DeviceOrientation } from "./enums/device-orientatioin";
 
 export class AppiumDriver {
     private _defaultWaitTime: number = 5000;
@@ -509,7 +509,7 @@ export class AppiumDriver {
      * @param inertia
      * @param xOffset
      */
-    public async swipe(startPoint: { y: number, x: number }, endPoint: { y: number, x: number }, inertia?: number) {
+    public async swipe(startPoint: { x: number, y: number }, endPoint: { x: number, y: number }, inertia?: number) {
         if (!inertia) {
             inertia = (Math.abs(startPoint.x - endPoint.x) > Math.abs(endPoint.y - startPoint.y)
                 ? Math.abs(startPoint.x - endPoint.x) : Math.abs(endPoint.y - startPoint.y))
@@ -538,15 +538,15 @@ export class AppiumDriver {
         await this._driver.sleep(150);
     }
 
-    async getOrientation(): Promise<DeviceOrientaion> {
+    async getOrientation(): Promise<DeviceOrientation> {
         return await this._driver.getOrientation();
     }
 
-    public async setOrientation(orientation: DeviceOrientaion) {
+    public async setOrientation(orientation: DeviceOrientation) {
         logInfo(`Set device orientation: ${orientation}`)
         await this._driver.setOrientation(orientation);
 
-        if (orientation === DeviceOrientaion.LANDSCAPE) {
+        if (orientation === DeviceOrientation.LANDSCAPE) {
             this.imageHelper.imageCropRect.x = this._imageHelper.options.cropRectangle.x;
             this.imageHelper.imageCropRect.y = this._imageHelper.options.cropRectangle.y;
             this.imageHelper.imageCropRect.width = this._imageHelper.options.cropRectangle.height;

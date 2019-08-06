@@ -1,4 +1,4 @@
-export enum DeviceOrientaion {
+export enum DeviceOrientation {
     LANDSCAPE = "LANDSCAPE",
     PORTRAIT = "PORTRAIT",
 }

@@ -31,7 +31,7 @@ export { ITestReporter } from "./lib/interfaces/test-reporter";
 export { screencapture } from "./lib/helpers/screenshot-manager";
 export { LogImageType } from "./lib/enums/log-image-type";
 export { ImageHelper, IImageCompareOptions } from "./lib/image-helper";
-export { DeviceOrientaion } from "./lib/enums/device-orientatioin";
+export { DeviceOrientation } from "./lib/enums/device-orientation";
 
 export const nsCapabilities: INsCapabilities = new NsCapabilities(parser);
 
