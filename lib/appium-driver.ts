@@ -981,7 +981,7 @@ export class AppiumDriver {
     * Get screen actual view port
     * Usefull for image comparison
     */
-    public getScreenActualViewPort() {
+    public getScreenActualViewPort(): IRectangle {
         return <IRectangle>(this._args.appiumCaps && this._args.appiumCaps.viewportRect) || this._args.device.viewportRect;
     }
 
@@ -989,7 +989,7 @@ export class AppiumDriver {
     * Get screen view port
     * This is convinient to use for some gestures on the screen
     */
-    public getScreenViewPort() {
+    public getScreenViewPort(): IRectangle {
         const rect = (this._args.appiumCaps && this._args.appiumCaps.viewportRect) || this._args.device.viewportRect;
         if (rect && Object.getOwnPropertyNames(rect).length > 0) {
             return <IRectangle>{

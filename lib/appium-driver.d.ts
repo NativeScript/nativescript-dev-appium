@@ -263,7 +263,7 @@ export declare class AppiumDriver {
     * Get screen actual view port
     * Usefull for image comparison
     */
-    getScreenActualViewPort(): any;
+    getScreenActualViewPort(): IRectangle;
     /**
     * Get screen view port
     * This is convinient to use for some gestures on the screen
