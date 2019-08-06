@@ -28,28 +28,28 @@ export class ElementHelper {
     }
 
     public findByTextLocator(controlType, value, exactMatch) {
-        const result = this.getXPathByTextAtributes(`//${controlType}`, value, exactMatch);
+        const result = this.getXPathByTextAttributes(`//${controlType}`, value, exactMatch);
         return result;
     }
 
-    public getXPathByTextAtributes(controlType, textValue, exactMatch) {
-        let artbutes = ["label", "value", "hint"];
+    public getXPathByTextAttributes(controlType, textValue, exactMatch) {
+        let attributes = ["label", "value", "hint"];
         if (this._args.isAndroid) {
-            artbutes = ["content-desc", "resource-id", "text"];
+            attributes = ["content-desc", "resource-id", "text"];
         }
 
         let searchedString = "";
         if (exactMatch) {
             if (this._args.isAndroid) {
-                artbutes.forEach((atr) => { searchedString += "translate(@" + atr + ",'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='" + textValue.toLowerCase() + "'" + " or " });
+                attributes.forEach((atr) => { searchedString += "translate(@" + atr + ",'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='" + textValue.toLowerCase() + "'" + " or " });
             } else {
-                artbutes.forEach((atr) => { searchedString += "@" + atr + "='" + textValue + "'" + " or " });
+                attributes.forEach((atr) => { searchedString += "@" + atr + "='" + textValue + "'" + " or " });
             }
         } else {
             if (this._args.isAndroid) {
-                artbutes.forEach((atr) => { searchedString += "contains(translate(@" + atr + ",'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'" + textValue.toLowerCase() + "')" + " or " });
+                attributes.forEach((atr) => { searchedString += "contains(translate(@" + atr + ",'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'" + textValue.toLowerCase() + "')" + " or " });
             } else {
-                artbutes.forEach((atr) => { searchedString += "contains(@" + atr + ",'" + textValue + "')" + " or " });
+                attributes.forEach((atr) => { searchedString += "contains(@" + atr + ",'" + textValue + "')" + " or " });
             }
         }
 

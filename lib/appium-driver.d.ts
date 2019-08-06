@@ -155,7 +155,7 @@ export declare class AppiumDriver {
      */
     scrollTo(direction: Direction, element: any, startPoint: Point, offsetPoint: Point, retryCount?: number): Promise<UIElement>;
     /**
-     * Swipe from point with offset and inertia according to duatio
+     * Swipe from point with offset and inertia according to duration
      * @param y
      * @param x
      * @param yOffset
@@ -261,12 +261,12 @@ export declare class AppiumDriver {
     findElementByImage(image: string, imageThreshold?: number): Promise<UIElement>;
     /**
     * Get screen actual view port
-    * Usefull for image comparison
+    * Useful for image comparison
     */
     getScreenActualViewPort(): IRectangle;
     /**
     * Get screen view port
-    * This is convinient to use for some gestures on the screen
+    * This is convenient to use for some gestures on the screen
     */
     getScreenViewPort(): IRectangle;
 }

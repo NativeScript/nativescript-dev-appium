@@ -8,5 +8,5 @@ export declare class ElementHelper {
     getXPathWithExactText(text: any): string;
     getXPathContainingText(text: any): string;
     findByTextLocator(controlType: any, value: any, exactMatch: any): string;
-    getXPathByTextAtributes(controlType: any, textValue: any, exactMatch: any): string;
+    getXPathByTextAttributes(controlType: any, textValue: any, exactMatch: any): string;
 }

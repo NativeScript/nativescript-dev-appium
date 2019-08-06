@@ -2,7 +2,6 @@ import * as frComparer from "frame-comparer";
 import { resolvePath, getStorageByDeviceName, getReportPath } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IRectangle } from "..";
-import { ImageHelper } from "./image-helper";
 
 export function loadFrameComparer(nsCapabilities: INsCapabilities) {
     try {

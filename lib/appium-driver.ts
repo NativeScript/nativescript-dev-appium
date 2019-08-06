@@ -267,7 +267,7 @@ export class AppiumDriver {
                     console.log(await driver.settings());
 
                 } catch (error) {
-                    logInfo("Current version of appium doensn't support appium settings!");
+                    logInfo("Current version of appium doesn't support appium settings!");
                 }
 
                 await DeviceManager.applyDeviceAdditionsSettings(driver, args, appiumCapsFromConfig);
@@ -502,7 +502,7 @@ export class AppiumDriver {
     }
 
     /**
-     * Swipe from point with offset and inertia according to duatio
+     * Swipe from point with offset and inertia according to duration
      * @param y
      * @param x
      * @param yOffset
@@ -616,7 +616,7 @@ export class AppiumDriver {
     }
 
     public stopRecordingVideo(): Promise<any> {
-        this._recordVideoInfo['videoRecoringProcess'].kill("SIGINT");
+        this._recordVideoInfo['videoRecordingProcess'].kill("SIGINT");
         wait(this.isIOS ? 100 : 10000);
         if (this._args.device.type === DeviceType.EMULATOR || this._args.device.platform === Platform.ANDROID) {
             AndroidController.pullFile(
@@ -704,9 +704,9 @@ export class AppiumDriver {
         }
         let deviceLog = ""
         logs.forEach(log => {
-            const curruntLog = `\n${JSON.stringify(log)}`;
+            const currentLog = `\n${JSON.stringify(log)}`;
             if (filter) {
-                if (curruntLog.includes(filter)) {
+                if (currentLog.includes(filter)) {
                     deviceLog += `\n${JSON.stringify(log)}`;
                 }
             } else {
@@ -777,13 +777,13 @@ export class AppiumDriver {
             await this._driver.closeApp();
         } catch (error) {
             logError("Current appium version doesn't support closeApp()!");
-            logError("Consider to use resetApp()! Reset app will preinstall the application");
+            logError("Consider to use resetApp()! Reset app will reinstall the application");
         }
         try {
             await this._driver.launchApp();
         } catch (error) {
             logError("Current appium version doesn't support launchApp()!");
-            logError("Consider to use resetApp()! Reset app will preinstall the application");
+            logError("Consider to use resetApp()! Reset app will reinstall the application");
         }
     }
 
@@ -979,7 +979,7 @@ export class AppiumDriver {
 
     /**
     * Get screen actual view port
-    * Usefull for image comparison
+    * Useful for image comparison
     */
     public getScreenActualViewPort(): IRectangle {
         return <IRectangle>(this._args.appiumCaps && this._args.appiumCaps.viewportRect) || this._args.device.viewportRect;
@@ -987,7 +987,7 @@ export class AppiumDriver {
 
     /**
     * Get screen view port
-    * This is convinient to use for some gestures on the screen
+    * This is convenient to use for some gestures on the screen
     */
     public getScreenViewPort(): IRectangle {
         const rect = (this._args.appiumCaps && this._args.appiumCaps.viewportRect) || this._args.device.viewportRect;

@@ -99,7 +99,7 @@ export class NsCapabilities implements INsCapabilities {
     }
 
     /**
-     * Set testRoprter
+     * Set testReporter
      * @experimental
      */
     public get testReporter() {
@@ -107,9 +107,9 @@ export class NsCapabilities implements INsCapabilities {
     }
 
     /**
-     * Set testRoprter name like mochawesome
-     * Set testRoprter context usually this
-     * Set testRoprter log method like addContext in mochawesome
+     * Set testReporter name like mochawesome
+     * Set testReporter context usually this
+     * Set testReporter log method like addContext in mochawesome
      * @experimental
      */
     public set testReporter(testReporter: ITestReporter) {
@@ -150,7 +150,6 @@ export class NsCapabilities implements INsCapabilities {
 
     private _imagesReportDir: string;
     /**
-     * @exprimental
      * @param text to log in test report
      */
     public testReporterLog(text: any) {
@@ -221,16 +220,16 @@ export class NsCapabilities implements INsCapabilities {
                 this.appiumCaps = this.appiumCaps || {};
                 const d = runningDevices[0];
 
-                const manadatoryAppiumCaps = {
+                const mandatoryAppiumCaps = {
                     "platformName": d.platform,
                     "noReset": true,
                     "fullReset": false,
                     "app": ""
                 }
 
-                Object.getOwnPropertyNames(manadatoryAppiumCaps).forEach(prop => {
+                Object.getOwnPropertyNames(mandatoryAppiumCaps).forEach(prop => {
                     if (!this.appiumCaps[prop]) {
-                        this.appiumCaps[prop] = manadatoryAppiumCaps[prop];
+                        this.appiumCaps[prop] = mandatoryAppiumCaps[prop];
                     }
                 });
 

@@ -27,24 +27,24 @@ export interface IImageCompareOptions {
     donNotAppendActualSuffixOnIntialImageCapture?: boolean;
     /**
      * This property will ensure that the image name will not be manipulated with count postfix.
-     * This is very convinient in order to resuse image.
+     * This is very convenient in order to reuses image.
      * Default value is false.
      */
     keepOriginalImageName?: boolean;
     /**
-     * Clip image before comapare. Default value excludes status bar(both android and ios) and softare buttons(android).
+     * Clip image before compare. Default value excludes status bar(both android and ios) and software buttons(android).
      */
     cropRectangle?: IRectangle;
     /**
      * Default value is set to true which means that nativescript-dev-appium will save the image
-     * in original size and compare only the part which cropRectangele specifies.
-     * If false, the image size will be reduced and saved by the dimensions of cropRectangele.
+     * in original size and compare only the part which cropRectangle specifies.
+     * If false, the image size will be reduced and saved by the dimensions of cropRectangle.
      */
     keepOriginalImageSize?: boolean;
     /**
      * Default value is set to false. nativescript-dev-appium will recalculate view port for iOS
      * so that the top/y will start from the end of status bar
-     * So far appium calcuates it even more and some part of safe areas are missed
+     * So far appium calculates it even more and some part of safe areas are missed
      */
     keepAppiumViewportRect?: boolean;
     /**
@@ -91,7 +91,7 @@ export declare class ImageHelper {
      */
     reset(): void;
     /**
-     * Set coparison option to default
+     * Set comparison option to default
      */
     resetDefaultOptions(): void;
     getExpectedImagePathByDevice(imageName: string): string;

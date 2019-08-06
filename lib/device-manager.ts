@@ -251,7 +251,7 @@ export class DeviceManager implements IDeviceManager {
             if (args.relaxedSecurity && !args.device.config.density) {
                 const d = await DeviceManager.executeShellCommand(driver, { command: "wm", args: ["density"] });
                 args.device.config.density = /\d+/ig.test(d) ? parseInt(/\d+/ig.exec(d)[0]) / 100 : NaN;
-                console.log(`Device density recieved from adb shell command ${args.device.config.density}`);
+                console.log(`Device density received from adb shell command ${args.device.config.density}`);
             }
 
             if (args.device.config.density) {

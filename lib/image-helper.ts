@@ -41,20 +41,20 @@ export interface IImageCompareOptions {
 
     /**
      * This property will ensure that the image name will not be manipulated with count postfix.
-     * This is very convinient in order to resuse image.
+     * This is very convenient in order to reuses image.
      * Default value is false.
      */
     keepOriginalImageName?: boolean;
 
     /**
-     * Clip image before comapare. Default value excludes status bar(both android and ios) and softare buttons(android).
+     * Clip image before compare. Default value excludes status bar(both android and ios) and software buttons(android).
      */
     cropRectangle?: IRectangle;
 
     /**
      * Default value is set to true which means that nativescript-dev-appium will save the image
-     * in original size and compare only the part which cropRectangele specifies. 
-     * If false, the image size will be reduced and saved by the dimensions of cropRectangele.
+     * in original size and compare only the part which cropRectangle specifies. 
+     * If false, the image size will be reduced and saved by the dimensions of cropRectangle.
      */
     keepOriginalImageSize?: boolean;
 
@@ -62,7 +62,7 @@ export interface IImageCompareOptions {
     /**
      * Default value is set to false. nativescript-dev-appium will recalculate view port for iOS
      * so that the top/y will start from the end of status bar
-     * So far appium calcuates it even more and some part of safe areas are missed
+     * So far appium calculates it even more and some part of safe areas are missed
      */
     keepAppiumViewportRect?: boolean;
 
@@ -141,8 +141,8 @@ export class ImageHelper {
         return this._imageCropRect || this.options.cropRectangle;
     }
 
-    set imageCropRect(clipRectangele: IRectangle) {
-        this._imageCropRect = clipRectangele;
+    set imageCropRect(clipRectangle: IRectangle) {
+        this._imageCropRect = clipRectangle;
     }
 
     get blockOutAreas() {
@@ -165,8 +165,8 @@ export class ImageHelper {
     public async compareElement(element: UIElement, options?: IImageCompareOptions) {
         options = this.extendOptions(options);
         options.imageName = this.increaseImageName(options.imageName || this.testName, options);
-        const cropRectangele = await element.getActualRectangle();
-        const result = await this.compareRectangle(cropRectangele, options);
+        const cropRectangle = await element.getActualRectangle();
+        const result = await this.compareRectangle(cropRectangle, options);
 
         return result;
     }
@@ -205,7 +205,7 @@ export class ImageHelper {
     }
 
     /**
-     * Set coparison option to default
+     * Set comparison option to default
      */
     public resetDefaultOptions() {
         ImageHelper.fullClone(this._defaultOptions, this._options);
@@ -268,7 +268,7 @@ export class ImageHelper {
         }
         const pathDiffImage = pathActualImage.replace("actual", "diff");
 
-        // await this.prepareImageToCompare(pathActualImage, options.cropRectangele);
+        // await this.prepareImageToCompare(pathActualImage, options.cropRectangle);
         let result = await this.compareImages(pathActualImage, pathExpectedImage, pathDiffImage, options.tolerance, options.toleranceType);
 
         // Iterate
@@ -277,8 +277,8 @@ export class ImageHelper {
             let counter = 1;
             options.timeOutSeconds *= 1000;
             while ((Date.now().valueOf() - eventStartTime) <= options.timeOutSeconds && !result) {
-                const pathActualImageConter = resolvePath(this._args.reportsPath, imageName.replace(".", "_actual_" + counter + "."));
-                pathActualImage = await this._driver.saveScreenshot(pathActualImageConter);
+                const pathActualImageCounter = resolvePath(this._args.reportsPath, imageName.replace(".", "_actual_" + counter + "."));
+                pathActualImage = await this._driver.saveScreenshot(pathActualImageCounter);
                 if (!options.keepOriginalImageSize) {
                     await this.clipRectangleImage(options.cropRectangle, pathActualImage);
                 }
@@ -431,7 +431,7 @@ export class ImageHelper {
             logError(`Missing image name!`);
             logError(`Consider to set
             drive.imageHelper.testName
-            dirver.imageHelper.options.imageName`);
+            driver.imageHelper.options.imageName`);
             throw new Error(`Missing image name!`)
         }
         if (this._imagesResults.size > 0) {
