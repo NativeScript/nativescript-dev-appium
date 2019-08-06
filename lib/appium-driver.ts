@@ -47,7 +47,7 @@ import { extname, join } from "path";
 import { LogType } from "./log-types";
 import { screencapture } from "./helpers/screenshot-manager";
 import { LogImageType } from "./enums/log-image-type";
-import { DeviceOrientation } from "./enums/device-orientatioin";
+import { DeviceOrientation } from "./enums/device-orientation";
 
 export class AppiumDriver {
     private _defaultWaitTime: number = 5000;
