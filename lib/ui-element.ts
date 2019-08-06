@@ -44,10 +44,12 @@ export class UIElement {
     }
 
     /**
+     * @deprecated
      * Tap on element
      * This method is not working very good with UiAutomator2
      * It is better to use click instead.
      */
+    
     public async tap() {
         if (this._args.automationName == AutomationName.UiAutomator2) {
             return await this.tapCenter();

@@ -472,7 +472,7 @@ export class ImageHelper {
         });
 
         if (!options.cropRectangle) {
-            ImageHelper.fullClone(this.imageCropRect, this.imageCropRect);
+            ImageHelper.fullClone(this.imageCropRect, options.cropRectangle);
         }
 
         return options;
