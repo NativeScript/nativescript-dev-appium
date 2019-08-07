@@ -12,6 +12,7 @@ import {
     sortDescByApiLevelPredicate
 } from "mobile-devices-controller";
 import { isRegExp } from "util";
+import { NsCapabilities } from "./ns-capabilities";
 
 export class DeviceManager implements IDeviceManager {
     private static _emulators: Map<string, IDevice> = new Map();
@@ -98,7 +99,7 @@ export class DeviceManager implements IDeviceManager {
                 logInfo("Device is connected:", device)
             }
             if (device.status === Status.SHUTDOWN) {
-                await DeviceController.startDevice(device, startDeviceOptions, shouldFullyResetDevice);
+                device = await DeviceController.startDevice(device, startDeviceOptions, shouldFullyResetDevice);
                 try {
                     delete device.process;
                 } catch (error) { }
@@ -181,6 +182,38 @@ export class DeviceManager implements IDeviceManager {
         return device;
     }
 
+    private static convertViewportRectToIRectangle(viewportRect) {
+        if (!viewportRect) {
+            return viewportRect;
+        }
+        return {
+            x: viewportRect.left,
+            y: viewportRect.top,
+            width: viewportRect.width,
+            height: viewportRect.height,
+        };
+    }
+
+    public static applyAppiumSessionInfoDetails(args: INsCapabilities, sessionInfoDetails) {
+        if (args.isAndroid) {
+            const sizeArr = sessionInfoDetails.deviceScreenSize.split("x");
+            args.device.deviceScreenSize = { width: sizeArr[0], height: sizeArr[1] };
+
+            args.device.apiLevel = sessionInfoDetails.deviceApiLevel;
+            args.device.deviceScreenDensity = sessionInfoDetails.deviceScreenDensity / 100;
+            args.device.config = { "density": args.device.deviceScreenDensity, "offsetPixels": +sessionInfoDetails.statBarHeight };
+        } else {
+            args.device.apiLevel = sessionInfoDetails.platformVersion;
+            args.device.deviceScreenDensity = sessionInfoDetails.pixelRatio;
+            args.device.config = { "density": sessionInfoDetails.pixelRatio, "offsetPixels": +sessionInfoDetails.viewportRect.top - +sessionInfoDetails.statBarHeight };
+        }
+        
+        args.device.statBarHeight = sessionInfoDetails.statBarHeight;
+        args.device.viewportRect = DeviceManager.convertViewportRectToIRectangle(sessionInfoDetails.viewportRect);
+
+        return args.device;
+    }
+
     public static async setDontKeepActivities(args: INsCapabilities, driver, value) {
         const status = value ? 1 : 0;
         try {
@@ -218,7 +251,7 @@ export class DeviceManager implements IDeviceManager {
             if (args.relaxedSecurity && !args.device.config.density) {
                 const d = await DeviceManager.executeShellCommand(driver, { command: "wm", args: ["density"] });
                 args.device.config.density = /\d+/ig.test(d) ? parseInt(/\d+/ig.exec(d)[0]) / 100 : NaN;
-                console.log(`Device density recieved from adb shell command ${args.device.config.density}`);
+                console.log(`Device density received from adb shell command ${args.device.config.density}`);
             }
 
             if (args.device.config.density) {
@@ -236,8 +269,15 @@ export class DeviceManager implements IDeviceManager {
         }
     }
 
+    // public static async applyDeviceAdditionsSettings(args: INsCapabilities, appiumCaps: any) {
+    //     if (appiumCaps) {
+    //         args.device.config.offsetPixels = appiumCaps.offsetPixels || args.device.config.offsetPixels;
+    //         args.device.config.density = appiumCaps.density || args.device.config.density;
+    //     }
+    // }
+
     public static async applyDeviceAdditionsSettings(driver, args: INsCapabilities, sessionInfo: any) {
-        if (!args.device.config || !args.device.config.offsetPixels) {
+        if ((!args.device.viewportRect || !args.device.viewportRect.x) && (!args.device.config || !args.device.config.offsetPixels)) {
             args.device.config = {};
             let density: number;
             if (sessionInfo && sessionInfo.length >= 1) {

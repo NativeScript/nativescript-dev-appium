@@ -218,6 +218,7 @@ export function isLinux() {
 
 const getDeviceName = (args) => {
     const deviceName = (args.attachToDebug || args.sessionId) ? args.device.name : args.appiumCaps.deviceName;
+
     return deviceName;
 }
 
@@ -227,6 +228,7 @@ export function getStorageByDeviceName(args: INsCapabilities) {
         const segments = args.imagesPath.split(/[\/\\]+/);
         storage = join(storage, segments.join(sep));
         if (existsSync(storage)) {
+            logInfo(`Images storage set to: ${storage}!`);
             return storage;
         } else {
             const error = `Current imagesPath (${args.imagesPath}) does not exist !!!`;
@@ -236,8 +238,11 @@ export function getStorageByDeviceName(args: INsCapabilities) {
     }
     const appName = resolveSauceLabAppName(getAppName(args));
     storage = createStorageFolder(storage, appName);
+
     storage = createStorageFolder(storage, getDeviceName(args));
 
+    logWarn(`Images storage set to: ${storage}!`);
+    
     return storage;
 }
 
@@ -246,6 +251,8 @@ export function getStorageByPlatform(args: INsCapabilities) {
     const appName = resolveSauceLabAppName(getAppName(args));
     storage = createStorageFolder(storage, appName);
     storage = createStorageFolder(storage, args.appiumCaps.platformName.toLowerCase());
+
+    logWarn(`Images storage set to: ${storage}!`);
 
     return storage;
 }
@@ -258,6 +265,8 @@ export const getStorage = (args: INsCapabilities) => {
         storage = createStorageFolder(resolvePath(args.projectDir, args.testFolder), "resources");
         storage = createStorageFolder(storage, "images");
     }
+
+    logWarn(`STORAGE: ${storage}`);
 
     return storage;
 }
@@ -505,7 +514,7 @@ export function getSessions(port, host = `0.0.0.0`) {
         http.get(`http://localhost:${port}/wd/hub/sessions`, (resp) => {
             let data = '';
 
-            // A chunk of data has been recieved.
+            // A chunk of data has been received.
             resp.on('data', (chunk) => {
                 data += chunk;
             });
@@ -586,15 +595,14 @@ export const prepareApp = async (args: INsCapabilities) => {
     }
 
     if (!args.ignoreDeviceController
-        && !args.attachToDebug
-        && !args.sessionId
+        && (args.attachToDebug || args.sessionId)
         && !args.appiumCaps[appPackage]
         && args.isIOS
         && args.appiumCaps.app) {
-        IOSController.getIOSPackageId(undefined, args.appiumCaps.app);
+        args.appiumCaps[appPackage] = IOSController.getIOSPackageId(undefined, args.appiumCaps.app);
     }
 
-    if (args.appiumCaps[appPackage]) {
+    if (args.appiumCaps[appPackage] && !args.appName) {
         const groupings = getRegexResultsAsArray(/(\w+)/gi, args.appiumCaps[appPackage]);
         args.appName = groupings[groupings.length - 1];
     }

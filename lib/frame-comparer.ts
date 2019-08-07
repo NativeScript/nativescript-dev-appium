@@ -2,7 +2,6 @@ import * as frComparer from "frame-comparer";
 import { resolvePath, getStorageByDeviceName, getReportPath } from "./utils";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { IRectangle } from "..";
-import { ImageHelper } from "./image-helper";
 
 export function loadFrameComparer(nsCapabilities: INsCapabilities) {
     try {
@@ -19,7 +18,7 @@ export class FrameComparer {
     private _cropImageRect: IRectangle;
 
     constructor(private _nsCapabilities: INsCapabilities, private _storage: string, private _logPath: string) {
-        this._cropImageRect = ImageHelper.cropImageDefault(this._nsCapabilities);
+        this._cropImageRect = this._nsCapabilities.appiumCaps.viewportRect || this._nsCapabilities.device.viewportRect;
     }
 
     async processVideo(videoFullName, framesGeneralName?: string, videoTempStorage = "tempFramesFolder") {

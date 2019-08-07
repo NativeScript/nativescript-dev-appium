@@ -10,8 +10,6 @@ import { logInfo, logError } from "./lib/utils";
 import { INsCapabilities } from "./lib/interfaces/ns-capabilities";
 import { INsCapabilitiesArgs } from "./lib/interfaces/ns-capabilities-args";
 import * as parser from "./lib/parser"
-import { isWin } from "./lib/utils";
-import { LogImageType } from "./lib/enums/log-image-type";
 
 export { AppiumDriver } from "./lib/appium-driver";
 export { AppiumServer } from "./lib/appium-server";
@@ -33,6 +31,7 @@ export { ITestReporter } from "./lib/interfaces/test-reporter";
 export { screencapture } from "./lib/helpers/screenshot-manager";
 export { LogImageType } from "./lib/enums/log-image-type";
 export { ImageHelper, IImageCompareOptions } from "./lib/image-helper";
+export { DeviceOrientation } from "./lib/enums/device-orientation";
 
 export const nsCapabilities: INsCapabilities = new NsCapabilities(parser);
 

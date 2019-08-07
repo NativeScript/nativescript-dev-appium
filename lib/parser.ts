@@ -25,6 +25,7 @@ const config = (() => {
                 describe: "Custom capabilities location `/some-path/appium.capabilities.json`",
                 type: "string"
             })
+        .option("appiumCaps", { alias: "caps", describe: "Apply additional appium capabilites" })
         .option("capabilitiesName",
             {
                 describe: "Capabilities file name",
@@ -181,8 +182,11 @@ const config = (() => {
         deviceTypeOrPlatform: deviceTypeOrPlatform,
         device: options.device || process.env.npm_config_device,
         driverConfig: options.driverConfig,
-        logImageTypes: <Array<LogImageType>>options.logImageTypes
+        logImageTypes: <Array<LogImageType>>options.logImageTypes,
+        appiumCaps: options.appiumCaps
     };
+
+    logWarn(`Parsed args: `, config);
 
     return config;
 })();
@@ -216,5 +220,6 @@ export const {
     deviceTypeOrPlatform,
     device,
     driverConfig,
-    logImageTypes
+    logImageTypes,
+    appiumCaps
 }: INsCapabilitiesArgs = config;

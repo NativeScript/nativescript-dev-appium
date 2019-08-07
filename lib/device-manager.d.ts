@@ -12,6 +12,8 @@ export declare class DeviceManager implements IDeviceManager {
     static kill(device: IDevice): Promise<void>;
     static getInstalledApps(device: IDevice): Promise<string[]>;
     static getDefaultDevice(args: INsCapabilities, deviceName?: string, token?: string, type?: DeviceType, platformVersion?: number): IDevice;
+    private static convertViewportRectToIRectangle;
+    static applyAppiumSessionInfoDetails(args: INsCapabilities, sessionInfoDetails: any): any;
     static setDontKeepActivities(args: INsCapabilities, driver: any, value: any): Promise<void>;
     static executeShellCommand(driver: any, commandArgs: {
         command: string;

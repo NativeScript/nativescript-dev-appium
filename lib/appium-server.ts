@@ -225,7 +225,7 @@ export class AppiumServer {
             logWarn("Using global Appium binary.");
             //    console.log('Please, make sure it is installed globally.');
             //} else if (result.includes("appium")) {
-            //    const msg = "Appium not found. Please install appium before runnig tests!";
+            //    const msg = "Appium not found. Please install appium before running tests!";
             //    log(msg, this._args.verbose);
             //    new Error(msg);
             // }

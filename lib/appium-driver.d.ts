@@ -10,21 +10,18 @@ import { Point } from "./point";
 import { ImageHelper } from "./image-helper";
 import { ImageOptions } from "./image-options";
 import { LogType } from "./log-types";
+import { DeviceOrientation } from "./enums/device-orientation";
 export declare class AppiumDriver {
     private _driver;
     private _wd;
     private _webio;
     private _driverConfig;
     private _args;
-    private static pngFileExt;
-    private static partialUrl;
     private _defaultWaitTime;
     private _elementHelper;
     private _imageHelper;
     private _isAlive;
     private _locators;
-    private _logPath;
-    private _storageByDeviceName;
     private _storageByPlatform;
     private constructor();
     readonly imageHelper: ImageHelper;
@@ -61,6 +58,7 @@ export declare class AppiumDriver {
     click(args: any): Promise<any>;
     navBack(): Promise<any>;
     static createAppiumDriver(args: INsCapabilities): Promise<AppiumDriver>;
+    updateSettings(settings: any): Promise<void>;
     /**
      *
      * @param xPath
@@ -155,27 +153,35 @@ export declare class AppiumDriver {
      * @param xOffset
      * @param retryCount
      */
-    scrollTo(direction: Direction, element: any, startPoint: Point, yOffset: number, xOffset?: number, retryCount?: number): Promise<UIElement>;
+    scrollTo(direction: Direction, element: any, startPoint: Point, offsetPoint: Point, retryCount?: number): Promise<UIElement>;
     /**
-     * Swipe from point with offset and inertia according to duatio
+     * Swipe from point with offset and inertia according to duration
      * @param y
      * @param x
      * @param yOffset
      * @param inertia
      * @param xOffset
      */
-    swipe(y: number, x: number, yOffset: number, inertia?: number, xOffset?: number): Promise<void>;
+    swipe(startPoint: {
+        x: number;
+        y: number;
+    }, endPoint: {
+        x: number;
+        y: number;
+    }, inertia?: number): Promise<void>;
     /**
     * Click a point by providing coordinates
     * @param x
     * @param y
     */
     clickPoint(xCoordinate: number, yCoordinate: number): Promise<void>;
+    getOrientation(): Promise<DeviceOrientation>;
+    setOrientation(orientation: DeviceOrientation): Promise<void>;
     source(): Promise<any>;
     sessionId(): Promise<any>;
-    compareElement(element: UIElement, imageName: string, tolerance?: number, timeOutSeconds?: number, toleranceType?: ImageOptions): Promise<boolean>;
-    compareRectangle(rect: IRectangle, imageName: string, timeOutSeconds?: number, tolerance?: number, toleranceType?: ImageOptions): Promise<boolean>;
-    compareScreen(imageName: string, timeOutSeconds?: number, tolerance?: number, toleranceType?: ImageOptions): Promise<boolean>;
+    compareElement(element: UIElement, imageName?: string, tolerance?: number, timeOutSeconds?: number, toleranceType?: ImageOptions): Promise<boolean>;
+    compareRectangle(rect: IRectangle, imageName?: string, timeOutSeconds?: number, tolerance?: number, toleranceType?: ImageOptions): Promise<boolean>;
+    compareScreen(imageName?: string, timeOutSeconds?: number, tolerance?: number, toleranceType?: ImageOptions): Promise<boolean>;
     /**
      * @param videoName
      * @param callback when to stop video recording. In order an element is found. Should return true to exit
@@ -187,11 +193,10 @@ export declare class AppiumDriver {
      */
     startRecordingVideo(videoName: any): any;
     stopRecordingVideo(): Promise<any>;
-    private compare;
-    prepareImageToCompare(filePath: string, rect: IRectangle): Promise<void>;
     takeScreenshot(fileName: string): Promise<string>;
+    saveScreenshot(fileName: string): Promise<any>;
     testReporterLog(log: any): any;
-    logScreenshot(fileName: string): Promise<string>;
+    logScreenshot(fileName: string): Promise<any>;
     getlog(logType: LogType): Promise<any>;
     logPageSource(fileName: string): Promise<void>;
     logDeviceLog(fileName: any, logType: LogType, filter?: string): Promise<void>;
@@ -202,21 +207,21 @@ export declare class AppiumDriver {
     logTestArtifacts(logName: string): Promise<void>;
     /**
      * Send the currently active app to the background
-     * @param time in minutes
+     * @param time in seconds
      */
-    backgroundApp(minutes: number): Promise<void>;
+    backgroundApp(seconds: number): Promise<void>;
     /**
      * Hides device keyboard
      */
     hideDeviceKeyboard(): Promise<void>;
     isKeyboardShown(): Promise<any>;
     resetApp(): Promise<void>;
+    restartApp(): Promise<void>;
     init(): Promise<void>;
     quit(): Promise<void>;
     private static applyAdditionalSettings;
     private convertArrayToUIElements;
     private static configureLogging;
-    private getExpectedImagePath;
     /**
     * Wait specific amount of time before continue execution
     * @param milliseconds
@@ -254,4 +259,14 @@ export declare class AppiumDriver {
      * @param imageThreshold The degree of match for current search, on the scale between 0 and 1. Default 0.4
      */
     findElementByImage(image: string, imageThreshold?: number): Promise<UIElement>;
+    /**
+    * Get screen actual view port
+    * Useful for image comparison
+    */
+    getScreenActualViewPort(): IRectangle;
+    /**
+    * Get screen view port
+    * This is convenient to use for some gestures on the screen
+    */
+    getScreenViewPort(): IRectangle;
 }

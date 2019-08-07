@@ -9,6 +9,9 @@ export declare class NsCapabilities implements INsCapabilities {
     private _parser;
     private _automationName;
     private _testReporter;
+    private _storageByDeviceName;
+    private _storageByPlatform;
+    private _reportsPath;
     projectDir: string;
     projectBinary: string;
     pluginRoot: string;
@@ -50,19 +53,21 @@ export declare class NsCapabilities implements INsCapabilities {
     automationName: AutomationName;
     setAutomationNameFromString(automationName: String): void;
     /**
-     * Set testRoprter
+     * Set testReporter
      * @experimental
      */
     /**
-    * Set testRoprter name like mochawesome
-    * Set testRoprter context usually this
-    * Set testRoprter log method like addContext in mochawesome
+    * Set testReporter name like mochawesome
+    * Set testReporter context usually this
+    * Set testReporter log method like addContext in mochawesome
     * @experimental
     */
     testReporter: ITestReporter;
+    storageByDeviceName: string;
+    storageByPlatform: string;
+    readonly reportsPath: string;
     private _imagesReportDir;
     /**
-     * @exprimental
      * @param text to log in test report
      */
     testReporterLog(text: any): any;

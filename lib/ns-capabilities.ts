@@ -2,7 +2,7 @@ import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { INsCapabilitiesArgs } from "./interfaces/ns-capabilities-args";
 import { AutomationName } from "./automation-name";
 import { resolveCapabilities } from "./capabilities-helper";
-import { getAppPath, logInfo, logError, logWarn } from "./utils";
+import { getAppPath, logInfo, logError, logWarn, getStorageByDeviceName, getStorageByPlatform, getReportPath } from "./utils";
 import { IDevice, Platform, Status, DeviceType } from "mobile-devices-controller";
 import { IDeviceManager } from "./interfaces/device-manager";
 import { existsSync, mkdirSync } from "fs";
@@ -14,6 +14,9 @@ import { LogImageType } from "./enums/log-image-type";
 export class NsCapabilities implements INsCapabilities {
     private _automationName: AutomationName;
     private _testReporter: ITestReporter = <ITestReporter>{};
+    private _storageByDeviceName: string;
+    private _storageByPlatform: string;
+    private _reportsPath: string;
 
     public projectDir: string;
     public projectBinary: string;
@@ -96,7 +99,7 @@ export class NsCapabilities implements INsCapabilities {
     }
 
     /**
-     * Set testRoprter
+     * Set testReporter
      * @experimental
      */
     public get testReporter() {
@@ -104,9 +107,9 @@ export class NsCapabilities implements INsCapabilities {
     }
 
     /**
-     * Set testRoprter name like mochawesome
-     * Set testRoprter context usually this
-     * Set testRoprter log method like addContext in mochawesome
+     * Set testReporter name like mochawesome
+     * Set testReporter context usually this
+     * Set testReporter log method like addContext in mochawesome
      * @experimental
      */
     public set testReporter(testReporter: ITestReporter) {
@@ -116,9 +119,37 @@ export class NsCapabilities implements INsCapabilities {
         }
     }
 
+    get storageByDeviceName() {
+        if (!this._storageByDeviceName) {
+            this._storageByDeviceName = getStorageByDeviceName(this);
+        }
+        return this._storageByDeviceName;
+    }
+
+    set storageByDeviceName(storageFullPath: string) {
+        this._storageByDeviceName = storageFullPath;
+    }
+
+    get storageByPlatform() {
+        if (!this._storageByPlatform) {
+            this._storageByPlatform = getStorageByPlatform(this);
+        }
+        return this._storageByPlatform;
+    }
+
+    set storageByPlatform(storageFullPath: string) {
+        this._storageByPlatform = storageFullPath;
+    }
+
+    get reportsPath() {
+        if (!this._reportsPath) {
+            this._reportsPath = getReportPath(this);
+        }
+        return this._reportsPath;
+    }
+
     private _imagesReportDir: string;
     /**
-     * @exprimental
      * @param text to log in test report
      */
     public testReporterLog(text: any) {
@@ -184,27 +215,40 @@ export class NsCapabilities implements INsCapabilities {
             searchQuery.status = Status.BOOTED;
 
             const runningDevices = await DeviceManager.getDevices(searchQuery);
+
             if (runningDevices && runningDevices.length > 0) {
+                this.appiumCaps = this.appiumCaps || {};
                 const d = runningDevices[0];
 
-                this.appiumCaps = {
+                const mandatoryAppiumCaps = {
                     "platformName": d.platform,
                     "noReset": true,
                     "fullReset": false,
                     "app": ""
                 }
 
+                Object.getOwnPropertyNames(mandatoryAppiumCaps).forEach(prop => {
+                    if (!this.appiumCaps[prop]) {
+                        this.appiumCaps[prop] = mandatoryAppiumCaps[prop];
+                    }
+                });
+
                 this.appiumCaps.deviceName = d.name;
                 this.appiumCaps.platformVersion = d.apiLevel;
                 this.appiumCaps.udid = d.token;
 
+                this.appiumCaps["newCommandTimeout"] = 999999;
+
                 if (this.deviceTypeOrPlatform === "android") {
                     this.appiumCaps["lt"] = 60000;
-                    this.appiumCaps["newCommandTimeout"] = 720;
+                    this.appiumCaps["adbExecTimeout"] = 20000;
+                } else {
+                    this.appiumCaps["wdaConnectionTimeout"] = 999999;
                 }
 
                 this.device = d;
                 logInfo("Using device: ", d);
+                logInfo("appiumCaps: ", this.appiumCaps);
             } else {
                 logError(`There is no running device of type:${this.deviceTypeOrPlatform}`);
                 logInfo(`Use tns run ios/ android to install app on device!`)
@@ -268,7 +312,7 @@ export class NsCapabilities implements INsCapabilities {
             }
         } else {
             if (this.isAndroid) {
-                if (this.tryGetAndroidApiLevel() > 6 || (this.appiumCaps["apiLevel"] && this.appiumCaps["apiLevel"].toLowerCase().includes("p"))) {
+                if (this.tryGetAndroidApiLevel() >= 6 || (this.appiumCaps["apiLevel"] && +this.appiumCaps["apiLevel"]) >= 23) {
                     this.automationName = AutomationName.UiAutomator2;
                 }
             }
@@ -287,7 +331,7 @@ export class NsCapabilities implements INsCapabilities {
         try {
             if (this.appiumCaps["platformVersion"]) {
                 const apiLevel = this.appiumCaps["platformVersion"].split(".").splice(0, 2).join('.');
-                return parseFloat(apiLevel);
+                return +apiLevel;
             }
         } catch (error) { }
         return undefined;

@@ -27,7 +27,7 @@ export class UIElement {
     public async tapCenter() {
         let action = new this._wd.TouchAction(this._driver);
         const rect = await this.getActualRectangle();
-        this._args.testReporterLog(`Tap on center element ${{ "x": rect.x + rect.width / 2, "y": rect.y + rect.height / 2 }}`);
+        this._args.testReporterLog(`Tap on center element ${{ x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 }}`);
         action
             .tap({ x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 });
         await action.perform();
@@ -44,8 +44,12 @@ export class UIElement {
     }
 
     /**
+     * @deprecated
      * Tap on element
+     * This method is not working very good with UiAutomator2
+     * It is better to use click instead.
      */
+    
     public async tap() {
         if (this._args.automationName == AutomationName.UiAutomator2) {
             return await this.tapCenter();
