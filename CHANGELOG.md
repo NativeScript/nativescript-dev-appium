@@ -1,25 +1,16 @@
 <a name="6.0.0"></a>
-# [6.0.0](https://github.com/NativeScript/nativescript-dev-appium/compare/5.3.0...6.0.0) (2019-08-15)
+# [6.0.0](https://github.com/NativeScript/nativescript-dev-appium/compare/5.3.0...6.0.0) (2019-08-08)
 
 
 ### Bug Fixes
 
-* **image-helper:** increase image name ([#237](https://github.com/NativeScript/nativescript-dev-appium/issues/237)) ([c075af8](https://github.com/NativeScript/nativescript-dev-appium/commit/c075af8))
+* **image-helper:** set image name counter ([#237](https://github.com/NativeScript/nativescript-dev-appium/issues/237)) ([c075af8](https://github.com/NativeScript/nativescript-dev-appium/commit/c075af8))
 * provide mandatory automation name for Android ([#242](https://github.com/NativeScript/nativescript-dev-appium/issues/242)) ([032229f](https://github.com/NativeScript/nativescript-dev-appium/commit/032229f))
 * remove duplicated property ([#243](https://github.com/NativeScript/nativescript-dev-appium/issues/243)) ([ec2c558](https://github.com/NativeScript/nativescript-dev-appium/commit/ec2c558))
 * typos ([65c6aa3](https://github.com/NativeScript/nativescript-dev-appium/commit/65c6aa3))
 * **setOrientation:** calc view port according to automation name ([#244](https://github.com/NativeScript/nativescript-dev-appium/issues/244)) ([620a9e8](https://github.com/NativeScript/nativescript-dev-appium/commit/620a9e8))
 
 
-### Features
-
-* image-helper ([#236](https://github.com/NativeScript/nativescript-dev-appium/issues/236)) ([0d2c9fd](https://github.com/NativeScript/nativescript-dev-appium/commit/0d2c9fd))
-* resolve symlinked storages ([#235](https://github.com/NativeScript/nativescript-dev-appium/issues/235)) ([ef270c9](https://github.com/NativeScript/nativescript-dev-appium/commit/ef270c9))
-
-
-
-<a name="6.0.0"></a>
-# [6.0.0](https://github.com/NativeScript/nativescript-dev-appium/compare/5.3.0...6.0.0) (2019-08-08)
 
 
 ### Features
@@ -63,7 +54,6 @@ automatically
 Now:
 
 `driver.imageHelper.options.isDeviceSpecific = false;`
-
 
 
 <a name="5.3.0"></a>
