@@ -2,7 +2,7 @@
 # [6.0.0](https://github.com/NativeScript/nativescript-dev-appium/compare/5.3.0...6.0.0) (2019-08-08)
 
 
-### Bug Fixes
+### Features
 
 * **image-helper:** set image name counter ([#237](https://github.com/NativeScript/nativescript-dev-appium/issues/237)) ([c075af8](https://github.com/NativeScript/nativescript-dev-appium/commit/c075af8))
 * provide mandatory automation name for Android ([#242](https://github.com/NativeScript/nativescript-dev-appium/issues/242)) ([032229f](https://github.com/NativeScript/nativescript-dev-appium/commit/032229f))
@@ -13,7 +13,7 @@
 
 
 
-### Features
+### BREAKING CHANGES:
 
 * driver.getOrientation()
 * driver.setOrientation(orientation: DeviceOrientation)
