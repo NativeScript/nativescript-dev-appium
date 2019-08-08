@@ -2,17 +2,47 @@
 # [6.0.0](https://github.com/NativeScript/nativescript-dev-appium/compare/5.3.0...6.0.0) (2019-08-08)
 
 
-### Bug Fixes
-
-* typos ([65c6aa3](https://github.com/NativeScript/nativescript-dev-appium/commit/65c6aa3))
-* **image-helper:** increase image name ([#237](https://github.com/NativeScript/nativescript-dev-appium/issues/237)) ([c075af8](https://github.com/NativeScript/nativescript-dev-appium/commit/c075af8))
-
-
 ### Features
 
+* driver.getOrientation()
+* driver.setOrientation(orientation: DeviceOrientation)
+* restartApp()
 * image-helper ([#236](https://github.com/NativeScript/nativescript-dev-appium/issues/236)) ([0d2c9fd](https://github.com/NativeScript/nativescript-dev-appium/commit/0d2c9fd))
-* resolve symlinked storages ([#235](https://github.com/NativeScript/nativescript-dev-appium/issues/235)) ([ef270c9](https://github.com/NativeScript/nativescript-dev-appium/commit/ef270c9))
+* image-helper set counter to images ([#237](https://github.com/NativeScript/nativescript-dev-appium/issues/237)) ([c075af8](https://github.com/NativeScript/nativescript-dev-appium/commit/c075af8))
+* resolve sym-linked storages ([#235](https://github.com/NativeScript/nativescript-dev-appium/issues/235)) ([ef270c9](https://github.com/NativeScript/nativescript-dev-appium/commit/ef270c9)
 
+
+### BREAKING CHANGES:
+
+nativescript-dev-appium already takes in account viewportRect which is provided by appium(1.10.0 and above). The view port rectangle will be used when the images are compared. Custom view port could be provided using:
+
+`appium capabilities : "viewportRect": {}`
+
+`driver.imageHelper.options.cropRectangle`
+
+`imageHelper.compareScreen({cropRectangle : {x, y, wight, height}});`
+
+#### Default image comparison tolerance
+Before:
+`1%`
+Now:
+`0%`
+
+driver.scrollTo() accepts IRectangle
+Before:
+
+`scrollTo(direction: Direction, element: any, startPoint: Point, yOffset: number, xOffset?: number, retryCount?: number)`
+Now:
+
+`scrollTo(direction: Direction, element: any, startPoint: Point, offsetPoint: Point, retryCount?: number): Promise<UIElement>;`
+
+#### In order to use platform specific images:
+Before:
+
+automatically
+Now:
+
+`driver.imageHelper.options.isDeviceSpecific = false;`
 
 
 <a name="5.3.0"></a>
@@ -22,9 +52,9 @@
 ### Bug Fixes
 
 * mochawesome reporter for windows ([#222](https://github.com/NativeScript/nativescript-dev-appium/issues/222)) ([bd612a6](https://github.com/NativeScript/nativescript-dev-appium/commit/bd612a6))
-* skip propmting on post install when the console is not interactive ([1042328](https://github.com/NativeScript/nativescript-dev-appium/commit/1042328))
+* skip prompting on post install when the console is not interactive ([1042328](https://github.com/NativeScript/nativescript-dev-appium/commit/1042328))
 * **device-controller:** token in server scenario ([c847536](https://github.com/NativeScript/nativescript-dev-appium/commit/c847536))
-* undifined token ([52ec166](https://github.com/NativeScript/nativescript-dev-appium/commit/52ec166))
+* undefined token ([52ec166](https://github.com/NativeScript/nativescript-dev-appium/commit/52ec166))
 
 
 ### Features
