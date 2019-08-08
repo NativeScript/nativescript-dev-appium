@@ -309,11 +309,25 @@ export class NsCapabilities implements INsCapabilities {
                     this.automationName = AutomationName.Appium; break;
                 case AutomationName.XCUITest.toString().toLowerCase():
                     this.automationName = AutomationName.XCUITest; break;
+                case AutomationName.UiAutomator1.toString().toLowerCase():
+                    this.automationName = AutomationName.UiAutomator1; break;
             }
         } else {
+            const apiLevel = this.tryGetApiLevel();
             if (this.isAndroid) {
-                if (this.tryGetAndroidApiLevel() >= 6 || (this.appiumCaps["apiLevel"] && +this.appiumCaps["apiLevel"]) >= 23) {
+                if ((apiLevel >= 6 && apiLevel <= 17)
+                    || apiLevel >= 23) {
                     this.automationName = AutomationName.UiAutomator2;
+                } else {
+                    this.automationName = AutomationName.UiAutomator1;
+                }
+            }
+
+            if (this.isIOS) {
+                if (apiLevel < 10) {
+                    logWarn("Provide automationName")
+                } else {
+                    this.automationName = AutomationName.XCUITest;
                 }
             }
         }
@@ -327,13 +341,15 @@ export class NsCapabilities implements INsCapabilities {
         }
     }
 
-    tryGetAndroidApiLevel() {
+    tryGetApiLevel() {
         try {
-            if (this.appiumCaps["platformVersion"]) {
-                const apiLevel = this.appiumCaps["platformVersion"].split(".").splice(0, 2).join('.');
-                return +apiLevel;
+            const apiLevel = this.appiumCaps["platformVersion"] || this.appiumCaps["apiLevel"];
+            if (this.isAndroid && apiLevel) {
+                return apiLevel.split(".").splice(0, 2).join('.');
             }
+            return apiLevel;
         } catch (error) { }
+
         return undefined;
     }
 

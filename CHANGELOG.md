@@ -1,3 +1,20 @@
+<a name="6.0.0"></a>
+# [6.0.0](https://github.com/NativeScript/nativescript-dev-appium/compare/5.3.0...6.0.0) (2019-08-08)
+
+
+### Bug Fixes
+
+* typos ([65c6aa3](https://github.com/NativeScript/nativescript-dev-appium/commit/65c6aa3))
+* **image-helper:** increase image name ([#237](https://github.com/NativeScript/nativescript-dev-appium/issues/237)) ([c075af8](https://github.com/NativeScript/nativescript-dev-appium/commit/c075af8))
+
+
+### Features
+
+* image-helper ([#236](https://github.com/NativeScript/nativescript-dev-appium/issues/236)) ([0d2c9fd](https://github.com/NativeScript/nativescript-dev-appium/commit/0d2c9fd))
+* resolve symlinked storages ([#235](https://github.com/NativeScript/nativescript-dev-appium/issues/235)) ([ef270c9](https://github.com/NativeScript/nativescript-dev-appium/commit/ef270c9))
+
+
+
 <a name="5.3.0"></a>
 # [5.3.0](https://github.com/NativeScript/nativescript-dev-appium/compare/v5.2.0...v5.3.0) (2019-06-10)
 
