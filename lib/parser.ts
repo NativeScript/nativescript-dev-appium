@@ -25,7 +25,7 @@ const config = (() => {
                 describe: "Custom capabilities location `/some-path/appium.capabilities.json`",
                 type: "string"
             })
-        .option("appiumCaps", { alias: "caps", describe: "Apply additional appium capabilites" })
+        .option("appiumCaps", { alias: "caps", describe: "Apply additional appium capabilities" })
         .option("capabilitiesName",
             {
                 describe: "Capabilities file name",
