@@ -547,26 +547,31 @@ export class AppiumDriver {
         logInfo(`Set device orientation: ${orientation}`)
         await this._driver.setOrientation(orientation);
 
-        // if ((<NsCapabilities>this.nsCapabilities).tryGetApiLevel() < 6.0 && orientation === DeviceOrientation.LANDSCAPE) {
-        if (orientation === DeviceOrientation.LANDSCAPE) {
-            if (this.isAndroid) {
-                this.imageHelper.options.cropRectangle.x = 0;
+        if (orientation === DeviceOrientation.LANDSCAPE && this.isAndroid) {
+            if ((<NsCapabilities>this.nsCapabilities).tryGetApiLevel() < 6.0) {
+                // HACK since the image is rotated and action bar is on the bottom of the image, it is needed to exclude action bar from bottom.
                 const height = this._imageHelper.options.cropRectangle.width - this._imageHelper.options.cropRectangle.y;
                 const width = this._imageHelper.options.cropRectangle.height + this._imageHelper.options.cropRectangle.y;
                 this.imageHelper.options.cropRectangle.y = 0;
-
                 this.imageHelper.options.cropRectangle.width = width;
                 this.imageHelper.options.cropRectangle.height = height;
-            } else {
-                this.imageHelper.options.cropRectangle.x = 0;
-                const height = this._imageHelper.options.cropRectangle.width;
-                const width = this._imageHelper.options.cropRectangle.height + this._imageHelper.options.cropRectangle.y;
-                this.imageHelper.options.cropRectangle.y = 0;
-
+            } else if ((<NsCapabilities>this.nsCapabilities).tryGetApiLevel() >= 6.0) {
+                const height = this._imageHelper.options.cropRectangle.width - this.imageHelper.options.cropRectangle.y;
+                const width = this._imageHelper.options.cropRectangle.height + this.imageHelper.options.cropRectangle.y;
                 this.imageHelper.options.cropRectangle.width = width;
                 this.imageHelper.options.cropRectangle.height = height;
             }
-        } else {
+        }
+        else if (orientation === DeviceOrientation.LANDSCAPE && this.isIOS) {
+            this.imageHelper.options.cropRectangle.x = 0;
+            const height = this._imageHelper.options.cropRectangle.width;
+            const width = this._imageHelper.options.cropRectangle.height + this._imageHelper.options.cropRectangle.y;
+            this.imageHelper.options.cropRectangle.y = 0;
+
+            this.imageHelper.options.cropRectangle.width = width;
+            this.imageHelper.options.cropRectangle.height = height;
+        }
+        else {
             this.imageHelper.resetDefaultOptions();
         }
     }
