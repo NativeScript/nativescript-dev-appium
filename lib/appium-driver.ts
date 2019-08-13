@@ -49,6 +49,7 @@ import { screencapture } from "./helpers/screenshot-manager";
 import { LogImageType } from "./enums/log-image-type";
 import { DeviceOrientation } from "./enums/device-orientation";
 import { NsCapabilities } from "./ns-capabilities";
+import { AutomationName } from "./automation-name";
 
 export class AppiumDriver {
     private _defaultWaitTime: number = 5000;
@@ -548,14 +549,15 @@ export class AppiumDriver {
         await this._driver.setOrientation(orientation);
 
         if (orientation === DeviceOrientation.LANDSCAPE && this.isAndroid) {
-            if ((<NsCapabilities>this.nsCapabilities).tryGetApiLevel() < 6.0) {
+            if ((<NsCapabilities>this.nsCapabilities).automationName === AutomationName.UiAutomator1
+                || (<NsCapabilities>this.nsCapabilities).automationName === AutomationName.Appium) {
                 // HACK since the image is rotated and action bar is on the bottom of the image, it is needed to exclude action bar from bottom.
                 const height = this._imageHelper.options.cropRectangle.width - this._imageHelper.options.cropRectangle.y;
                 const width = this._imageHelper.options.cropRectangle.height + this._imageHelper.options.cropRectangle.y;
                 this.imageHelper.options.cropRectangle.y = 0;
                 this.imageHelper.options.cropRectangle.width = width;
                 this.imageHelper.options.cropRectangle.height = height;
-            } else if ((<NsCapabilities>this.nsCapabilities).tryGetApiLevel() >= 6.0) {
+            } else if ((<NsCapabilities>this.nsCapabilities).automationName === AutomationName.UiAutomator2) {
                 const height = this._imageHelper.options.cropRectangle.width - this.imageHelper.options.cropRectangle.y;
                 const width = this._imageHelper.options.cropRectangle.height + this.imageHelper.options.cropRectangle.y;
                 this.imageHelper.options.cropRectangle.width = width;
