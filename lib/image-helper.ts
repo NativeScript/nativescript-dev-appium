@@ -9,7 +9,7 @@ import { AppiumDriver } from "./appium-driver";
 import { logError, checkImageLogType, resolvePath, copy, addExt, logWarn } from "./utils";
 import { unlinkSync, existsSync, mkdirSync } from "fs";
 import { basename, join } from "path";
-import { isObject } from "util";
+import { isObject, isNumber } from "util";
 import { logInfo } from "mobile-devices-controller/lib/utils";
 
 export interface IImageCompareOptions {
@@ -82,7 +82,6 @@ export interface IImageCompareOptions {
 export class ImageHelper {
     private _blockOutAreas: IRectangle[];
     private _imagesResults = new Map<string, boolean>();
-    private _imageCropRect: IRectangle;
     private _options: IImageCompareOptions = {};
     private _defaultOptions: IImageCompareOptions = {
         timeOutSeconds: 2,
@@ -101,12 +100,14 @@ export class ImageHelper {
     constructor(private _args: INsCapabilities, private _driver: AppiumDriver) {
         this._defaultOptions.cropRectangle = (this._args.appiumCaps && this._args.appiumCaps.viewportRect) || this._args.device.viewportRect;
         if (!this._defaultOptions.cropRectangle
-            || this._defaultOptions.cropRectangle.y === undefined
-            || this._defaultOptions.cropRectangle.y === null
-            || this._defaultOptions.cropRectangle.y === NaN) {
+            || !isNumber(this._defaultOptions.cropRectangle.y)) {
             this._defaultOptions.cropRectangle = this._defaultOptions.cropRectangle || {};
             this._defaultOptions.cropRectangle.y = this._args.device.config.offsetPixels || 0;
             this._defaultOptions.cropRectangle.x = 0;
+            if (this._args.device.deviceScreenSize && this._args.device.deviceScreenSize.width && this._args.device.deviceScreenSize.height) {
+                this._defaultOptions.cropRectangle.height = this._args.device.deviceScreenSize.height - this._defaultOptions.cropRectangle.y;
+                this._defaultOptions.cropRectangle.width = this._args.device.deviceScreenSize.width - this._defaultOptions.cropRectangle.x;
+            }
         }
         ImageHelper.fullClone(this._defaultOptions, this._options);
 
@@ -135,14 +136,6 @@ export class ImageHelper {
 
     set options(options: IImageCompareOptions) {
         this._options = this.extendOptions(options);
-    }
-
-    get imageCropRect(): IRectangle {
-        return this._imageCropRect || this.options.cropRectangle;
-    }
-
-    set imageCropRect(clipRectangle: IRectangle) {
-        this._imageCropRect = clipRectangle;
     }
 
     get blockOutAreas() {
@@ -257,7 +250,6 @@ export class ImageHelper {
         // First time capture
         if (!existsSync(pathExpectedImage)) {
             await captureFirstImage();
-
             return false;
         }
 
@@ -269,7 +261,7 @@ export class ImageHelper {
         const pathDiffImage = pathActualImage.replace("actual", "diff");
 
         // await this.prepareImageToCompare(pathActualImage, options.cropRectangle);
-        let result = await this.compareImages(pathActualImage, pathExpectedImage, pathDiffImage, options.tolerance, options.toleranceType);
+        let result = await this.compareImages(options, pathActualImage, pathExpectedImage, pathDiffImage);
 
         // Iterate
         if (!result) {
@@ -283,7 +275,7 @@ export class ImageHelper {
                     await this.clipRectangleImage(options.cropRectangle, pathActualImage);
                 }
                 // await this.prepareImageToCompare(pathActualImage, this.imageCropRect);
-                result = await this.compareImages(pathActualImage, pathExpectedImage, pathDiffImage, options.tolerance, options.toleranceType);
+                result = await this.compareImages(options, pathActualImage, pathExpectedImage, pathDiffImage);
                 if (!result && checkImageLogType(this._args.testReporter, LogImageType.everyImage)) {
                     this._args.testReporterLog(`Actual image: ${basename(pathActualImage).replace(/\.\w{3,3}$/ig, "")}`);
                     this._args.testReporterLog(join(this._args.reportsPath, basename(pathActualImage)));
@@ -314,12 +306,12 @@ export class ImageHelper {
         return result;
     }
 
-    public compareImages(actual: string, expected: string, output: string, tolerance: number, toleranceType: ImageOptions) {
+    public compareImages(options: IImageCompareOptions, actual: string, expected: string, output: string) {
         const clipRect = {
-            x: this.imageCropRect.x,
-            y: this.imageCropRect.y,
-            width: this.imageCropRect.width,
-            height: this.imageCropRect.height
+            x: this.options.cropRectangle.x,
+            y: this.options.cropRectangle.y,
+            width: this.options.cropRectangle.width,
+            height: this.options.cropRectangle.height
         }
 
         if (!this.options.keepOriginalImageSize) {
@@ -334,8 +326,8 @@ export class ImageHelper {
             imageBPath: expected,
             imageOutputPath: output,
             imageOutputLimit: this.imageOutputLimit,
-            thresholdType: toleranceType,
-            threshold: tolerance,
+            thresholdType: options.toleranceType,
+            threshold: options.tolerance,
             delta: this.delta,
             cropImageA: clipRect,
             cropImageB: clipRect,
@@ -343,13 +335,13 @@ export class ImageHelper {
             verbose: this._args.verbose,
         });
 
-        if (toleranceType == ImageOptions.percent) {
-            if (tolerance >= 1) {
+        if (options.toleranceType == ImageOptions.percent) {
+            if (options.tolerance >= 1) {
                 logError("Tolerance range is from 0 to 1 -> percentage thresholds: 1 = 100%, 0.2 = 20%");
             }
-            console.log(`Using ${tolerance * 100}% tolerance`);
+            console.log(`Using ${options.tolerance * 100}% tolerance`);
         } else {
-            console.log(`Using ${tolerance}px tolerance`);
+            console.log(`Using ${options.tolerance}px tolerance`);
         }
 
         const result = this.runDiff(diff, output);
@@ -361,26 +353,34 @@ export class ImageHelper {
         let imageToClip: PngJsImage;
         imageToClip = await this.readImage(path);
         let shouldExit = false;
-        Object.getOwnPropertyNames(rect).forEach(prop => {
-            if (rect[prop] === undefined || rect[prop] === null) {
-                shouldExit = true;
-                return;
+        if (!isNumber(rect["x"])
+            || !isNumber(rect["y"])
+            || !isNumber(rect["width"])
+            || !isNumber(rect["height"])) {
+            shouldExit = true;
+        }
+        if (shouldExit) {
+            logError(`Could not crop the image. Not enough data {x: ${rect["x"]}, y: ${rect["y"]}, width: ${rect["width"]}, height: ${rect["height"]}}`);
+        }
+
+        if (!shouldExit) {
+            imageToClip.clip(rect.x, rect.y, rect.width, rect.height);
+        } else {
+            logWarn("Image will not be cropped!")
+            return true;
+        }
+        return new Promise((resolve, reject) => {
+            try {
+                imageToClip.writeImage(path, (err) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve();
+                });
+            } catch (error) {
+                logError(error);
             }
         });
-        if (shouldExit) {
-            logError(`Could not crop the image. Not enough data`, rect);
-            return
-        }
-        imageToClip.clip(rect.x, rect.y, rect.width, rect.height);
-        return new Promise((resolve, reject) => {
-            imageToClip.writeImage(path, (err) => {
-                if (err) {
-                    return reject(err);
-                }
-                return resolve();
-            });
-
-        })
     }
 
     public readImage(path: string): Promise<any> {
@@ -470,10 +470,6 @@ export class ImageHelper {
                 }
             }
         });
-
-        if (!options.cropRectangle) {
-            ImageHelper.fullClone(this.imageCropRect, options.cropRectangle);
-        }
 
         return options;
     }

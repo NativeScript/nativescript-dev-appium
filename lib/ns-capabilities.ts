@@ -263,7 +263,7 @@ export class NsCapabilities implements INsCapabilities {
             this.resolveApplication();
             this.checkMandatoryCapabilities();
             this.throwExceptions();
-            this.shouldSetFullResetOption();
+            this.setResetOption();
 
             this.isValidated = true;
         } else {
@@ -275,7 +275,7 @@ export class NsCapabilities implements INsCapabilities {
         return this.appiumCaps && this.appiumCaps ? this.appiumCaps.platformName.toLowerCase().includes("android") : undefined;
     }
 
-    public shouldSetFullResetOption() {
+    public setResetOption() {
         if (this.attachToDebug || this.devMode) {
             this.appiumCaps["fullReset"] = false;
             this.appiumCaps["noReset"] = true;
@@ -300,6 +300,18 @@ export class NsCapabilities implements INsCapabilities {
         }
     }
 
+    public tryGetApiLevel() {
+        try {
+            const apiLevel = this.appiumCaps["platformVersion"] || this.appiumCaps["apiLevel"];
+            if (this.isAndroid && apiLevel) {
+                return +apiLevel.split(".").splice(0, 2).join('.');
+            }
+            return +apiLevel;
+        } catch (error) { }
+
+        return undefined;
+    }
+
     private setAutomationName() {
         if (this.appiumCaps["automationName"]) {
             switch (this.appiumCaps["automationName"].toLowerCase()) {
@@ -313,7 +325,7 @@ export class NsCapabilities implements INsCapabilities {
                     this.automationName = AutomationName.UiAutomator1; break;
             }
         } else {
-            const apiLevel = this.tryGetApiLevel();
+            const apiLevel = +this.tryGetApiLevel();
             if (this.isAndroid) {
                 if ((apiLevel >= 6 && apiLevel <= 17)
                     || apiLevel >= 23) {
@@ -339,18 +351,6 @@ export class NsCapabilities implements INsCapabilities {
         } else {
             console.log(`Appium will use default automation name`);
         }
-    }
-
-    tryGetApiLevel() {
-        try {
-            const apiLevel = this.appiumCaps["platformVersion"] || this.appiumCaps["apiLevel"];
-            if (this.isAndroid && apiLevel) {
-                return apiLevel.split(".").splice(0, 2).join('.');
-            }
-            return apiLevel;
-        } catch (error) { }
-
-        return undefined;
     }
 
     private resolveApplication() {

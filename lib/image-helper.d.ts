@@ -63,7 +63,6 @@ export declare class ImageHelper {
     private _driver;
     private _blockOutAreas;
     private _imagesResults;
-    private _imageCropRect;
     private _options;
     private _defaultOptions;
     constructor(_args: INsCapabilities, _driver: AppiumDriver);
@@ -80,7 +79,6 @@ export declare class ImageHelper {
      */
     delta: number;
     options: IImageCompareOptions;
-    imageCropRect: IRectangle;
     blockOutAreas: IRectangle[];
     compareScreen(options?: IImageCompareOptions): Promise<boolean>;
     compareElement(element: UIElement, options?: IImageCompareOptions): Promise<boolean>;
@@ -97,7 +95,7 @@ export declare class ImageHelper {
     getExpectedImagePathByDevice(imageName: string): string;
     getExpectedImagePathByPlatform(imageName: string): string;
     compare(options: IImageCompareOptions): Promise<boolean>;
-    compareImages(actual: string, expected: string, output: string, tolerance: number, toleranceType: ImageOptions): Promise<boolean>;
+    compareImages(options: IImageCompareOptions, actual: string, expected: string, output: string): Promise<boolean>;
     clipRectangleImage(rect: IRectangle, path: string): Promise<{}>;
     readImage(path: string): Promise<any>;
     private runDiff;
