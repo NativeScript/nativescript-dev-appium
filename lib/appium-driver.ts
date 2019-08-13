@@ -48,6 +48,7 @@ import { LogType } from "./log-types";
 import { screencapture } from "./helpers/screenshot-manager";
 import { LogImageType } from "./enums/log-image-type";
 import { DeviceOrientation } from "./enums/device-orientation";
+import { NsCapabilities } from "./ns-capabilities";
 
 export class AppiumDriver {
     private _defaultWaitTime: number = 5000;
@@ -546,13 +547,27 @@ export class AppiumDriver {
         logInfo(`Set device orientation: ${orientation}`)
         await this._driver.setOrientation(orientation);
 
+        // if ((<NsCapabilities>this.nsCapabilities).tryGetApiLevel() < 6.0 && orientation === DeviceOrientation.LANDSCAPE) {
         if (orientation === DeviceOrientation.LANDSCAPE) {
-            this.imageHelper.imageCropRect.x = this._imageHelper.options.cropRectangle.x;
-            this.imageHelper.imageCropRect.y = this._imageHelper.options.cropRectangle.y;
-            this.imageHelper.imageCropRect.width = this._imageHelper.options.cropRectangle.height;
-            this.imageHelper.imageCropRect.height = this._imageHelper.options.cropRectangle.width;
+            if (this.isAndroid) {
+                this.imageHelper.options.cropRectangle.x = 0;
+                const height = this._imageHelper.options.cropRectangle.width - this._imageHelper.options.cropRectangle.y;
+                const width = this._imageHelper.options.cropRectangle.height + this._imageHelper.options.cropRectangle.y;
+                this.imageHelper.options.cropRectangle.y = 0;
+
+                this.imageHelper.options.cropRectangle.width = width;
+                this.imageHelper.options.cropRectangle.height = height;
+            } else {
+                this.imageHelper.options.cropRectangle.x = 0;
+                const height = this._imageHelper.options.cropRectangle.width;
+                const width = this._imageHelper.options.cropRectangle.height + this._imageHelper.options.cropRectangle.y;
+                this.imageHelper.options.cropRectangle.y = 0;
+
+                this.imageHelper.options.cropRectangle.width = width;
+                this.imageHelper.options.cropRectangle.height = height;
+            }
         } else {
-            this.imageHelper.imageCropRect = undefined;
+            this.imageHelper.resetDefaultOptions();
         }
     }
 

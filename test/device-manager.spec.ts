@@ -83,7 +83,7 @@ describe("ios-devices", () => {
         deviceManager = new DeviceManager();
         appiumArgs = new NsCapabilities(<any>{});
         appiumArgs.extend(<any>{ appiumCaps: { platformName: Platform.IOS, fullReset: false, deviceName: /iPhone X/ } })
-        appiumArgs.shouldSetFullResetOption();
+        appiumArgs.setResetOption();
     });
 
     after("Kill all simulators", () => {
@@ -101,7 +101,7 @@ describe("ios-devices", () => {
 
     it("Start simulator fullReset: true, should kill device", async () => {
         appiumArgs.extend(<any>{ appiumCaps: { platformName: Platform.IOS, fullReset: true, deviceName: /iPhone X/ } });
-        appiumArgs.shouldSetFullResetOption();
+        appiumArgs.setResetOption();
         const device = await deviceManager.startDevice(appiumArgs);
         let foundBootedDevices = await DeviceController.getDevices({ platform: Platform.IOS, status: Status.BOOTED });
         assert.isTrue(foundBootedDevices.some(d => d.token === device.token));

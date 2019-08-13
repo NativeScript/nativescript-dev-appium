@@ -74,10 +74,9 @@ export declare class NsCapabilities implements INsCapabilities {
     extend(args: INsCapabilities): this;
     validateArgs(): Promise<void>;
     private isAndroidPlatform;
-    shouldSetFullResetOption(): void;
+    setResetOption(): void;
+    tryGetApiLevel(): number;
     private setAutomationName;
-    tryGetAndroidApiLevel(): number;
-    tryGetIOSApiLevel(): number;
     private resolveApplication;
     private checkMandatoryCapabilities;
     private throwExceptions;
