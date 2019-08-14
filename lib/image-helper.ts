@@ -259,7 +259,7 @@ export class ImageHelper {
             await this.clipRectangleImage(options.cropRectangle, pathActualImage);
         }
         const pathDiffImage = pathActualImage.replace("actual", "diff");
-
+        console.log(`\n Comparing ${pathExpectedImage}`);
         // await this.prepareImageToCompare(pathActualImage, options.cropRectangle);
         let result = await this.compareImages(options, pathActualImage, pathExpectedImage, pathDiffImage);
 
