@@ -75,7 +75,7 @@ export async function stopServer() {
     }
 
     if (nsCapabilities.cleanApp && !nsCapabilities.ignoreDeviceController) {
-        await DeviceController.uninstallApp(nsCapabilities.device, nsCapabilities.appPath);
+        await DeviceController.uninstallApplication(nsCapabilities.device, nsCapabilities.appPath);
         logInfo("Application from device is uninstalled.")
     }
 };

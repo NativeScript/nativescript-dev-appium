@@ -140,18 +140,18 @@ export class DeviceManager implements IDeviceManager {
 
     public async installApp(args: INsCapabilities): Promise<any> {
         if (args.isIOS) {
-            IOSController.installApp(args.device, args.appiumCaps.app);
+            IOSController.uninstallApplication(args.device, args.appiumCaps.app);
             console.log(`Application is successfully installed!`)
         } else {
-            AndroidController.installApp(args.device, args.appiumCaps.app)
+            AndroidController.uninstallApplication(args.device, args.appiumCaps.app)
         }
     }
 
     public async uninstallApp(args: INsCapabilities): Promise<any> {
         if (args.isIOS) {
-            await IOSController.uninstallApp(args.device, args.appPath, args.appiumCaps["bundleId"]);
+            await IOSController.uninstallApplication(args.device, args.appPath, args.appiumCaps["bundleId"]);
         } else {
-            await Promise.resolve(AndroidController.uninstallApp(args.device, args.appiumCaps["appPackage"]));
+            await Promise.resolve(AndroidController.uninstallApplication(args.device, args.appiumCaps["appPackage"]));
         }
     }
 
@@ -301,7 +301,7 @@ export class DeviceManager implements IDeviceManager {
     }
 
     public getPackageId(device: IDevice, appPath: string): string {
-        const appActivity = (device.type === DeviceType.EMULATOR || device.platform === Platform.ANDROID) ? AndroidController.getPackageId(appPath) : IOSController.getIOSPackageId(device.type, appPath);
+        const appActivity = (device.type === DeviceType.EMULATOR || device.platform === Platform.ANDROID) ? AndroidController.getPackageId(appPath) : IOSController.getBundleId(device.type, appPath);
         return appActivity;
     }
 

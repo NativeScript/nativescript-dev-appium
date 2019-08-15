@@ -599,7 +599,7 @@ export const prepareApp = async (args: INsCapabilities) => {
         && !args.appiumCaps[appPackage]
         && args.isIOS
         && args.appiumCaps.app) {
-        args.appiumCaps[appPackage] = IOSController.getIOSPackageId(undefined, args.appiumCaps.app);
+        args.appiumCaps[appPackage] = IOSController.getBundleId(undefined, args.appiumCaps.app);
     }
 
     if (args.appiumCaps[appPackage] && !args.appName) {
