@@ -260,7 +260,7 @@ describe("start-device-by-apiLevel", async () => {
         await server.start(nsCaps.port);
         const driver = await AppiumDriver.createAppiumDriver(nsCaps);
 
-        const apps = IOSController.getInstalledApps(nsCaps.device);
+        const apps = IOSController.getInstalledApplications(nsCaps.device);
 
         const isInstalled = apps.some(app => app.includes(nsCaps.appiumCaps.bundleId));
         assert.isTrue(isInstalled);
