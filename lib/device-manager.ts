@@ -11,7 +11,7 @@ import {
     DeviceType,
     sortDescByApiLevelPredicate
 } from "mobile-devices-controller";
-import { isRegExp } from "util";
+import { isRegExp, isNumber } from "util";
 import { NsCapabilities } from "./ns-capabilities";
 
 export class DeviceManager implements IDeviceManager {
@@ -201,13 +201,14 @@ export class DeviceManager implements IDeviceManager {
 
             args.device.apiLevel = sessionInfoDetails.deviceApiLevel;
             args.device.deviceScreenDensity = sessionInfoDetails.deviceScreenDensity / 100;
-            args.device.config = { "density": args.device.deviceScreenDensity, "offsetPixels": +sessionInfoDetails.statBarHeight };
+            args.device.config = { "density": args.device.deviceScreenDensity || args.device.config.density, "offsetPixels": +sessionInfoDetails.statBarHeight || args.device.config.offsetPixels };
         } else {
             args.device.apiLevel = sessionInfoDetails.platformVersion;
             args.device.deviceScreenDensity = sessionInfoDetails.pixelRatio;
-            args.device.config = { "density": sessionInfoDetails.pixelRatio, "offsetPixels": +sessionInfoDetails.viewportRect.top - +sessionInfoDetails.statBarHeight };
+            const offsetPixels = +sessionInfoDetails.viewportRect.top - +sessionInfoDetails.statBarHeight;
+            args.device.config = { "density": sessionInfoDetails.pixelRatio || args.device.config.density, "offsetPixels": isNumber(offsetPixels) ? offsetPixels : args.device.config.offsetPixels };
         }
-        
+
         args.device.statBarHeight = sessionInfoDetails.statBarHeight;
         args.device.viewportRect = DeviceManager.convertViewportRectToIRectangle(sessionInfoDetails.viewportRect);
 
