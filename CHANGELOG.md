@@ -10,9 +10,7 @@
 * **setOrientation:** calc view port according to automation name ([#244](https://github.com/NativeScript/nativescript-dev-appium/issues/244)) ([620a9e8](https://github.com/NativeScript/nativescript-dev-appium/commit/620a9e8))
 
 
-
-
-### BREAKING CHANGES:
+### Features
 
 * driver.getOrientation()
 * driver.setOrientation(orientation: DeviceOrientation)
