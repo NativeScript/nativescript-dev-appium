@@ -579,7 +579,7 @@ export class AppiumDriver {
     }
 
     public async source() {
-        return await this._webio.source();
+        return await this._driver.source();
     }
 
     public async sessionId() {
@@ -714,7 +714,7 @@ export class AppiumDriver {
 
         const path = resolvePath(this._args.reportsPath, fileName);
         const xml = await this.source();
-        writeFileSync(path, xml.value, 'utf8');
+        writeFileSync(path, xml, 'utf8');
     }
 
     public async logDeviceLog(fileName, logType: LogType, filter: string = undefined) {
