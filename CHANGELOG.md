@@ -2,6 +2,14 @@
 # [6.0.0](https://github.com/NativeScript/nativescript-dev-appium/compare/5.3.0...6.0.0) (2019-08-08)
 
 
+### Bug Fixes
+
+* **image-helper:** set image name counter ([#237](https://github.com/NativeScript/nativescript-dev-appium/issues/237)) ([c075af8](https://github.com/NativeScript/nativescript-dev-appium/commit/c075af8))
+* provide mandatory automation name for Android ([#242](https://github.com/NativeScript/nativescript-dev-appium/issues/242)) ([032229f](https://github.com/NativeScript/nativescript-dev-appium/commit/032229f))
+* remove duplicated property ([#243](https://github.com/NativeScript/nativescript-dev-appium/issues/243)) ([ec2c558](https://github.com/NativeScript/nativescript-dev-appium/commit/ec2c558))
+* **setOrientation:** calc view port according to automation name ([#244](https://github.com/NativeScript/nativescript-dev-appium/issues/244)) ([620a9e8](https://github.com/NativeScript/nativescript-dev-appium/commit/620a9e8))
+
+
 ### Features
 
 * driver.getOrientation()
@@ -43,7 +51,6 @@ automatically
 Now:
 
 `driver.imageHelper.options.isDeviceSpecific = false;`
-
 
 
 <a name="5.3.0"></a>
