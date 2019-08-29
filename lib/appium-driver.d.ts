@@ -269,4 +269,20 @@ export declare class AppiumDriver {
     * This is convenient to use for some gestures on the screen
     */
     getScreenViewPort(): IRectangle;
+    /**
+    * Android ONLY! Input key event via ADB.
+    * @param keyEvent The event number
+    */
+    adbKeyEvent(keyEvent: number): Promise<void>;
+    /**
+    * Android ONLY! Send text via ADB.
+    * @param text The string to send
+    */
+    adbSendText(text: string): Promise<void>;
+    /**
+    * Android ONLY! Execute shell command via ADB.
+    * @param command The command name
+    * @param args Additional arguments
+    */
+    adbShellCommand(command: string, args: Array<any>): Promise<void>;
 }

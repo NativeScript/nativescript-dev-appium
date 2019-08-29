@@ -128,8 +128,9 @@ export declare class UIElement {
      * Send keys to field or other UI component
      * @param text
      * @param shouldClearText, default value is true
+     * @param useAdb, default value is false. Usable for Android ONLY !
      */
-    sendKeys(text: string, shouldClearText?: boolean): Promise<void>;
+    sendKeys(text: string, shouldClearText?: boolean, useAdb?: boolean): Promise<void>;
     /**
     * Type text to field or other UI component
     * @param text
@@ -142,9 +143,14 @@ export declare class UIElement {
     */
     pressKeycode(keyCode: number): Promise<void>;
     /**
-    * Clears text form ui element
+    * Clears text from ui element
     */
     clearText(): Promise<void>;
+    /**
+    * Clears text from ui element with ADB. Android ONLY !
+    * @param charactersCount Characters count to delete. (Optional - default value 10)
+    */
+    adbDeleteText(charactersCount?: number): Promise<void>;
     log(): Promise<void>;
     refetch(): Promise<any>;
     /**

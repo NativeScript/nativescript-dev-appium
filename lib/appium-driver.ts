@@ -33,7 +33,8 @@ import {
     getStorage,
     encodeImageToBase64,
     ensureReportsDirExists,
-    checkImageLogType
+    checkImageLogType,
+    adbShellCommand
 } from "./utils";
 
 import { INsCapabilities } from "./interfaces/ns-capabilities";
@@ -1021,5 +1022,30 @@ export class AppiumDriver {
                 height: rect.x / this._args.appiumCaps.device.deviceScreenDensity,
             }
         }
+    }
+
+    /**
+    * Android ONLY! Input key event via ADB.
+    * @param keyEvent The event number
+    */
+    public async adbKeyEvent(keyEvent: number) {
+        await this.adbShellCommand("input", ["keyevent", keyEvent]);
+    }
+
+    /**
+    * Android ONLY! Send text via ADB.
+    * @param text The string to send
+    */
+    public async adbSendText(text: string) {
+        await this.adbShellCommand("input", ["text", text]);
+    }
+
+    /**
+    * Android ONLY! Execute shell command via ADB.
+    * @param command The command name
+    * @param args Additional arguments
+    */
+    public async adbShellCommand(command: string, args: Array<any>) {
+        await adbShellCommand(this._driver, command, args);
     }
 }

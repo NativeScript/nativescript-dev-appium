@@ -687,6 +687,11 @@ export const logColorized = (bgColor: ConsoleColor, frontColor: ConsoleColor, in
     console.log(`${ConsoleColor.BgYellow}${ConsoleColor.FgBlack}%s${ConsoleColor.Reset}`, info);
 }
 
+
+export async function adbShellCommand(wd: any, command: string, args: Array<any>) {
+    await wd.execute('mobile: shell', {"command": command, "args": args});
+}
+
 enum ConsoleColor {
     Reset = "\x1b[0m",
     Bright = "\x1b[1m",

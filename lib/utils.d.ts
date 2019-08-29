@@ -51,6 +51,7 @@ export declare function logWarn(info: any, obj?: any): void;
 export declare function logError(info: any, obj?: any): void;
 export declare function log(message: any, verbose: any): void;
 export declare const logColorized: (bgColor: ConsoleColor, frontColor: ConsoleColor, info: any) => void;
+export declare function adbShellCommand(wd: any, command: string, args: Array<any>): Promise<void>;
 declare enum ConsoleColor {
     Reset = "\u001B[0m",
     Bright = "\u001B[1m",
