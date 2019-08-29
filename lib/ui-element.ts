@@ -435,7 +435,7 @@ export class UIElement {
         await this.click();
         for (let index = 0; index < charactersCount; index++) {
             // Keyevent 67 Delete (backspace)
-            await adbShellCommand(this._driver, "input", ["keyevent", 67]);
+            await adbShellCommand(this._driver, "input", ["keyevent", AndroidKeyEvent.KEYCODE_DEL]);
         }
     }
 
