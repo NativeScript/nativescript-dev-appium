@@ -51,6 +51,7 @@ import { LogImageType } from "./enums/log-image-type";
 import { DeviceOrientation } from "./enums/device-orientation";
 import { NsCapabilities } from "./ns-capabilities";
 import { AutomationName } from "./automation-name";
+import { AndroidKeyEvent } from "mobile-devices-controller";
 
 export class AppiumDriver {
     private _defaultWaitTime: number = 5000;
@@ -1028,7 +1029,7 @@ export class AppiumDriver {
     * Android ONLY! Input key event via ADB.
     * @param keyEvent The event number
     */
-    public async adbKeyEvent(keyEvent: number) {
+    public async adbKeyEvent(keyEvent: number | AndroidKeyEvent) {
         await this.adbShellCommand("input", ["keyevent", keyEvent]);
     }
 

@@ -11,6 +11,7 @@ import { ImageHelper } from "./image-helper";
 import { ImageOptions } from "./image-options";
 import { LogType } from "./log-types";
 import { DeviceOrientation } from "./enums/device-orientation";
+import { AndroidKeyEvent } from "mobile-devices-controller";
 export declare class AppiumDriver {
     private _driver;
     private _wd;
@@ -273,7 +274,7 @@ export declare class AppiumDriver {
     * Android ONLY! Input key event via ADB.
     * @param keyEvent The event number
     */
-    adbKeyEvent(keyEvent: number): Promise<void>;
+    adbKeyEvent(keyEvent: number | AndroidKeyEvent): Promise<void>;
     /**
     * Android ONLY! Send text via ADB.
     * @param text The string to send
