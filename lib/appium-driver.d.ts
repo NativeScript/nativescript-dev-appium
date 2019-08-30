@@ -11,6 +11,7 @@ import { ImageHelper } from "./image-helper";
 import { ImageOptions } from "./image-options";
 import { LogType } from "./log-types";
 import { DeviceOrientation } from "./enums/device-orientation";
+import { AndroidKeyEvent } from "mobile-devices-controller";
 export declare class AppiumDriver {
     private _driver;
     private _wd;
@@ -269,4 +270,20 @@ export declare class AppiumDriver {
     * This is convenient to use for some gestures on the screen
     */
     getScreenViewPort(): IRectangle;
+    /**
+    * Android ONLY! Input key event via ADB.
+    * @param keyEvent The event number
+    */
+    adbKeyEvent(keyEvent: number | AndroidKeyEvent): Promise<void>;
+    /**
+    * Android ONLY! Send text via ADB.
+    * @param text The string to send
+    */
+    adbSendText(text: string): Promise<void>;
+    /**
+    * Android ONLY! Execute shell command via ADB.
+    * @param command The command name
+    * @param args Additional arguments
+    */
+    adbShellCommand(command: string, args: Array<any>): Promise<void>;
 }

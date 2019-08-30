@@ -2,7 +2,7 @@ import { Point } from "./point";
 import { Direction } from "./direction";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { AutomationName } from "./automation-name";
-import { calculateOffset } from "./utils";
+import { calculateOffset, adbShellCommand } from "./utils";
 import { AndroidKeyEvent } from "mobile-devices-controller";
 
 export class UIElement {
@@ -382,12 +382,21 @@ export class UIElement {
      * Send keys to field or other UI component
      * @param text
      * @param shouldClearText, default value is true
+     * @param useAdb, default value is false. Usable for Android ONLY !
      */
-    public async sendKeys(text: string, shouldClearText: boolean = true) {
-        if (shouldClearText) {
-            await this.clearText();
+    public async sendKeys(text: string, shouldClearText: boolean = true, useAdb: boolean = false) {
+        if (useAdb && this._args.isAndroid) {
+            if (shouldClearText) {
+                await this.adbDeleteText();
+            }
+            await this.click();
+            await adbShellCommand(this._driver, "input", ["text", text]);
+        } else {
+            if (shouldClearText) {
+                await this.clearText();
+            }
+            await this._element.sendKeys(text);
         }
-        await this._element.sendKeys(text);
     }
 
     /**
@@ -407,15 +416,27 @@ export class UIElement {
     * @param key code
     */
     public async pressKeycode(keyCode: number) {
-        await this._driver.pressKeycode(keyCode);
+        await this._driver.pressKeyCode(keyCode);
     }
 
     /**
-    * Clears text form ui element
+    * Clears text from ui element
     */
     public async clearText() {
         await this.click();
         await this._element.clear();
+    }
+
+    /**
+    * Clears text from ui element with ADB. Android ONLY !
+    * @param charactersCount Characters count to delete. (Optional - default value 10)
+    */
+    public async adbDeleteText(charactersCount: number = 10) {
+        await this.click();
+        for (let index = 0; index < charactersCount; index++) {
+            // Keyevent 67 Delete (backspace)
+            await adbShellCommand(this._driver, "input", ["keyevent", AndroidKeyEvent.KEYCODE_DEL]);
+        }
     }
 
     public async log() {

@@ -33,7 +33,8 @@ import {
     getStorage,
     encodeImageToBase64,
     ensureReportsDirExists,
-    checkImageLogType
+    checkImageLogType,
+    adbShellCommand
 } from "./utils";
 
 import { INsCapabilities } from "./interfaces/ns-capabilities";
@@ -50,6 +51,7 @@ import { LogImageType } from "./enums/log-image-type";
 import { DeviceOrientation } from "./enums/device-orientation";
 import { NsCapabilities } from "./ns-capabilities";
 import { AutomationName } from "./automation-name";
+import { AndroidKeyEvent } from "mobile-devices-controller";
 
 export class AppiumDriver {
     private _defaultWaitTime: number = 5000;
@@ -1021,5 +1023,30 @@ export class AppiumDriver {
                 height: rect.x / this._args.appiumCaps.device.deviceScreenDensity,
             }
         }
+    }
+
+    /**
+    * Android ONLY! Input key event via ADB.
+    * @param keyEvent The event number
+    */
+    public async adbKeyEvent(keyEvent: number | AndroidKeyEvent) {
+        await this.adbShellCommand("input", ["keyevent", keyEvent]);
+    }
+
+    /**
+    * Android ONLY! Send text via ADB.
+    * @param text The string to send
+    */
+    public async adbSendText(text: string) {
+        await this.adbShellCommand("input", ["text", text]);
+    }
+
+    /**
+    * Android ONLY! Execute shell command via ADB.
+    * @param command The command name
+    * @param args Additional arguments
+    */
+    public async adbShellCommand(command: string, args: Array<any>) {
+        await adbShellCommand(this._driver, command, args);
     }
 }
