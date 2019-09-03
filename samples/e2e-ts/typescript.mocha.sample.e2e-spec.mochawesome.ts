@@ -2,7 +2,7 @@ import { AppiumDriver, createDriver, SearchOptions, nsCapabilities } from "nativ
 import { assert } from "chai";
 const addContext = require('mochawesome/addContext');
 
-describe("sample scenario", () => {
+describe("sample scenario", async function(){
     let driver: AppiumDriver;
 
     before(async function(){
