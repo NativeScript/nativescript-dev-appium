@@ -29,8 +29,8 @@ export interface IImageCompareOptions {
     toleranceType?: ImageOptions;
 
     /**
-     * Wait miliseconds before capture creating image
-     * Default value is 2000
+     * Wait milliseconds before capture creating image
+     * Default value is 5000
      */
     waitBeforeCreatingInitialImageCapture?: number;
 
@@ -53,7 +53,7 @@ export interface IImageCompareOptions {
 
     /**
      * Default value is set to true which means that nativescript-dev-appium will save the image
-     * in original size and compare only the part which cropRectangle specifies. 
+     * in original size and compare only the part which cropRectangle specifies.
      * If false, the image size will be reduced and saved by the dimensions of cropRectangle.
      */
     keepOriginalImageSize?: boolean;
@@ -61,15 +61,15 @@ export interface IImageCompareOptions {
 
     /**
      * Default value is set to false. nativescript-dev-appium will recalculate view port for iOS
-     * so that the top/y will start from the end of status bar
+     * so that the top/y will start from the end of the status bar
      * So far appium calculates it even more and some part of safe areas are missed
      */
     keepAppiumViewportRect?: boolean;
 
     /**
-     * Defines if an image is device specific or only by platform.
-     * Default value is true and the image will be saved in device specific directory.
-     * If value is set to false, image will be saved under ios or android folder.
+     * Defines if an image is device-specific or only by the platform.
+     * Default value is true and the image will be saved in device-specific directory.
+     * If the value is set to false, the image will be saved under ios or android folder.
      */
     isDeviceSpecific?: boolean;
 
@@ -98,7 +98,9 @@ export class ImageHelper {
     };
 
     constructor(private _args: INsCapabilities, private _driver: AppiumDriver) {
-        this._defaultOptions.cropRectangle = (this._args.appiumCaps && this._args.appiumCaps.viewportRect) || this._args.device.viewportRect;
+        if (this._args.device.viewportRect) {
+            ImageHelper.fullClone(this._args.device.viewportRect, this._defaultOptions.cropRectangle)
+        }
         if (!this._defaultOptions.cropRectangle
             || !isNumber(this._defaultOptions.cropRectangle.y)) {
             this._defaultOptions.cropRectangle = this._defaultOptions.cropRectangle || {};
