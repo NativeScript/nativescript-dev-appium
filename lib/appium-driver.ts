@@ -1,10 +1,5 @@
 import * as wd from "wd";
 import * as webdriverio from "webdriverio";
-const chai = require("chai");
-const chaiAsPromised = require("chai-as-promised");
-chai.use(chaiAsPromised);
-export const should = chai.should();
-chaiAsPromised.transferPromiseness = wd.transferPromiseness;
 
 import { ElementHelper } from "./element-helper";
 import { SearchOptions } from "./search-options";

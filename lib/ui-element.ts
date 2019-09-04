@@ -49,7 +49,7 @@ export class UIElement {
      * This method is not working very good with UiAutomator2
      * It is better to use click instead.
      */
-    
+
     public async tap() {
         if (this._args.automationName == AutomationName.UiAutomator2) {
             return await this.tapCenter();
@@ -242,16 +242,14 @@ export class UIElement {
      */
     public async getActualRectangle() {
         const actRect = await this.getRectangle();
-        if (this._args.isIOS) {
-            const density = this._args.device.config.density;
-            if (density) {
-                actRect.x *= density;
-                actRect.y *= density;
-                actRect.width *= density;
-                actRect.height *= density;
-            } else {
-                throw new Error("Device's density is undefined!");
-            }
+        const density = this._args.device.config.density;
+        if (density) {
+            actRect.x *= density;
+            actRect.y *= density;
+            actRect.width *= density;
+            actRect.height *= density;
+        } else {
+            throw new Error("Device's density is undefined!");
         }
         return actRect;
     }
