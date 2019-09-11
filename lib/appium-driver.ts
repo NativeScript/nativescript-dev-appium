@@ -1001,22 +1001,27 @@ export class AppiumDriver {
     * Useful for image comparison
     */
     public getScreenActualViewPort(): IRectangle {
-        return <IRectangle>(this._args.appiumCaps && this._args.appiumCaps.viewportRect) || this._args.device.viewportRect;
+        return <IRectangle>(this._args.device.viewportRect || this.imageHelper.options.cropRectangle);
     }
 
     /**
-    * Get screen view port
-    * This is convenient to use for some gestures on the screen
+    * Get screen view port. 
+    * Provides the view port that is needed for some gestures like swipe etc.
     */
     public getScreenViewPort(): IRectangle {
-        const rect = (this._args.appiumCaps && this._args.appiumCaps.viewportRect) || this._args.device.viewportRect;
-        if (rect && Object.getOwnPropertyNames(rect).length > 0) {
+        const rect = this.getScreenActualViewPort();
+        if (rect
+            && Object.getOwnPropertyNames(rect).length > 0
+            && this._args.appiumCaps.device.deviceScreenDensity) {
             return <IRectangle>{
                 x: rect.x / this._args.appiumCaps.device.deviceScreenDensity,
                 y: rect.y / this._args.appiumCaps.device.deviceScreenDensity,
-                width: rect.x / this._args.appiumCaps.device.deviceScreenDensity,
-                height: rect.x / this._args.appiumCaps.device.deviceScreenDensity,
+                width: rect.width / this._args.appiumCaps.device.deviceScreenDensity,
+                height: rect.height / this._args.appiumCaps.device.deviceScreenDensity,
             }
+        } else {
+            logError("Device's density is undefined!");
+            return rect;
         }
     }
 
