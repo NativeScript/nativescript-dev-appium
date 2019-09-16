@@ -265,8 +265,8 @@ export declare class AppiumDriver {
     */
     getScreenActualViewPort(): IRectangle;
     /**
-    * Get screen view port
-    * This is convenient to use for some gestures on the screen
+    * Get screen view port.
+    * Provides the view port that is needed for some gestures like swipe etc.
     */
     getScreenViewPort(): IRectangle;
     /**
