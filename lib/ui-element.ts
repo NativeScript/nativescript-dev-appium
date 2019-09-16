@@ -243,13 +243,15 @@ export class UIElement {
     public async getActualRectangle() {
         const actRect = await this.getRectangle();
         const density = this._args.device.config.density;
-        if (density) {
-            actRect.x *= density;
-            actRect.y *= density;
-            actRect.width *= density;
-            actRect.height *= density;
-        } else {
-            logError("Device's density is undefined!");
+        if (this._args.isIOS) {
+            if (density) {
+                actRect.x *= density;
+                actRect.y *= density;
+                actRect.width *= density;
+                actRect.height *= density;
+            } else {
+                logError("Device's density is undefined!");
+            }
         }
         return actRect;
     }
