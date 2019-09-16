@@ -2,7 +2,7 @@ import { Point } from "./point";
 import { Direction } from "./direction";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { AutomationName } from "./automation-name";
-import { calculateOffset, adbShellCommand } from "./utils";
+import { calculateOffset, adbShellCommand, logError } from "./utils";
 import { AndroidKeyEvent } from "mobile-devices-controller";
 
 export class UIElement {
@@ -249,7 +249,7 @@ export class UIElement {
             actRect.width *= density;
             actRect.height *= density;
         } else {
-            throw new Error("Device's density is undefined!");
+            logError("Device's density is undefined!");
         }
         return actRect;
     }
