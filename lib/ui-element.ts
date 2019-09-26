@@ -2,7 +2,7 @@ import { Point } from "./point";
 import { Direction } from "./direction";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { AutomationName } from "./automation-name";
-import { calculateOffset, adbShellCommand, logError } from "./utils";
+import { calculateOffset, adbShellCommand, logError, wait, logInfo } from "./utils";
 import { AndroidKeyEvent } from "mobile-devices-controller";
 
 export class UIElement {
@@ -24,12 +24,17 @@ export class UIElement {
         return await (await this.element()).click();
     }
 
+    public async getCenter() {
+        const rect = await this.getRectangle();
+        return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+    }
+
     public async tapCenter() {
         let action = new this._wd.TouchAction(this._driver);
-        const rect = await this.getActualRectangle();
-        this._args.testReporterLog(`Tap on center element ${{ x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 }}`);
+        const centerRect = await this.getCenter();
+        this._args.testReporterLog(`Tap on center element x: ${centerRect.x}  y: ${centerRect.y}`);
         action
-            .tap({ x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 });
+            .tap(centerRect);
         await action.perform();
         await this._driver.sleep(150);
     }
@@ -59,10 +64,32 @@ export class UIElement {
     }
 
     /**
+     * @experimental
      * Double tap on element
      */
     public async doubleTap() {
-        return await this._driver.execute('mobile: doubleTap', { element: (await this.element()).value.ELEMENT });
+        if (this._args.isAndroid) {
+            // hack double tap for android
+            let action = new this._wd.TouchAction(this._driver);
+            const rect = await this.getRectangle();
+            action.press({ x: rect.x, y: rect.y }).release().perform();
+            action.press({ x: rect.x, y: rect.y }).release().perform();
+            await action.perform();
+        } else {
+            // this works only for ios, otherwise it throws error
+            return await this._driver.execute('mobile: doubleTap', { element: this._element.value });
+        }
+    }
+
+    public async longPress(duration: number) {
+        const rect = await this.getCenter();
+        console.log("LongPress at ", rect);
+        const action = new this._wd.TouchAction(this._driver);
+        action
+            .press({ x: rect.x, y: rect.y })
+            .wait(duration)
+            .release();
+        await action.perform();
     }
 
     /**
@@ -77,10 +104,9 @@ export class UIElement {
     /**
      * Get size of element
      */
-    public async size() {
+    public async size(): Promise<{ width: number, height: number }> {
         const size = await (await this.element()).getSize();
-        const point = new Point(size.height, size.width);
-        return point;
+        return size;
     }
 
     /**
@@ -233,7 +259,7 @@ export class UIElement {
     public async getRectangle() {
         const location = await this.location();
         const size = await this.size();
-        const rect = { x: location.x, y: location.y, width: size.y, height: size.x };
+        const rect = { x: location.x, y: location.y, width: size.width, height: size.height };
         return rect;
     }
 
@@ -263,40 +289,28 @@ export class UIElement {
      * @param xOffset 
      */
     public async scroll(direction: Direction, yOffset: number = 0, xOffset: number = 0) {
-        //await this._driver.execute("mobile: scroll", [{direction: 'up'}])
-        //await this._driver.execute('mobile: scroll', { direction: direction === 0 ? "down" : "up", element: this._element.ELEMENT });
         const location = await this.location();
         const size = await this.size();
-        const x = location.x === 0 ? 10 : location.x;
-        let y = (location.y + 15);
-        if (yOffset === 0) {
-            yOffset = location.y + size.y - 15;
-        }
 
-        if (direction === Direction.down) {
-            y = (location.y + size.y) - 15;
-
-            if (!this._webio.isIOS) {
-                if (yOffset === 0) {
-                    yOffset = location.y + size.y - 15;
-                }
-            }
-        }
-        if (direction === Direction.up) {
+        if (direction === Direction.down || direction === Direction.up) {
             if (yOffset === 0) {
-                yOffset = size.y - 15;
+                yOffset = location.y + size.height - 5;
             }
         }
 
-        const endPoint = calculateOffset(direction, y, yOffset, x, xOffset, this._webio.isIOS, false);
-        if (direction === Direction.down) {
-            //endPoint.point.y += location.y;
+        if (direction === Direction.left || direction === Direction.right) {
+            if (xOffset === 0) {
+                xOffset = location.x + size.width - 5;
+            }
         }
-        let action = new this._wd.TouchAction(this._driver);
+
+        const endPoint = calculateOffset(direction, location.y, yOffset, location.x, xOffset, this._args.isIOS);
+
+        const action = new this._wd.TouchAction(this._driver);
         action
-            .press({ x: x, y: y })
+            .press({ x: endPoint.startPoint.x, y: endPoint.startPoint.y })
             .wait(endPoint.duration)
-            .moveTo({ x: endPoint.point.x, y: endPoint.point.y })
+            .moveTo({ x: endPoint.endPoint.x, y: endPoint.endPoint.y })
             .release();
         await action.perform();
         await this._driver.sleep(150);
@@ -327,41 +341,6 @@ export class UIElement {
             retries--;
         }
         return el;
-    }
-
-    /**
- * Drag element with specific offset
- * @param direction
- * @param yOffset 
- * @param xOffset - default value 0
- */
-    public async drag(direction: Direction, yOffset: number, xOffset: number = 0) {
-        const location = await this.location();
-
-        const x = location.x === 0 ? 10 : location.x;
-        const y = location.y === 0 ? 10 : location.y;
-
-        const endPoint = calculateOffset(direction, y, yOffset, x, xOffset, this._webio.isIOS, false);
-
-        if (this._args.isAndroid) {
-            let action = new this._wd.TouchAction(this._driver);
-            action
-                .longPress({ x: x, y: y })
-                .wait(endPoint.duration)
-                .moveTo({ x: yOffset, y: yOffset })
-                .release();
-            await action.perform();
-        } else {
-            await this._wd.execute(`mobile: dragFromToForDuration`, {
-                duration: endPoint.duration,
-                fromX: x,
-                fromY: y,
-                toX: xOffset,
-                toY: yOffset
-            });
-        }
-
-        await this._driver.sleep(150);
     }
 
     /**
@@ -473,36 +452,168 @@ export class UIElement {
     * Swipe element left/right
     * @param direction
     */
-    public async swipe(direction: Direction) {
-        const rectangle = await this.getRectangle();
-        const centerX = rectangle.x + rectangle.width / 2;
-        const centerY = rectangle.y + rectangle.height / 2;
-        let swipeX;
-        if (direction == Direction.right) {
-            const windowSize = await this._driver.getWindowSize();
-            swipeX = windowSize.width - 10;
-        } else if (direction == Direction.left) {
-            swipeX = 10;
+    public async swipe(direction: "up" | "down" | "left" | "right") {
+        logInfo(`Swipe direction: `, direction);
+        if (this._args.isIOS) {
+            await this._driver
+                .execute('mobile: scroll', {
+                    element: <any>this._element.value,
+                    direction: direction
+                });
         } else {
-            console.log("Provided direction must be left or right !");
+            try {
+                let scrollDirection = Direction.up;
+                switch (direction) {
+                    case "down": scrollDirection = Direction.down;
+                        break;
+                    case "left": scrollDirection = Direction.left;
+                        break;
+                    case "right": scrollDirection = Direction.right;
+                        break;
+                }
+                await this.scroll(scrollDirection);
+            } catch (error) {
+                console.log("", error);
+            }
         }
+        logInfo(`End swipe`);
+    }
+
+    /**
+    * Drag element with specific offset
+    * @experimental
+    * @param direction
+    * @param yOffset 
+    * @param xOffset - default value 0
+    */
+    public async drag(direction: Direction, yOffset: number, xOffset: number = 0) {
+        const location = await this.location();
+
+        const x = location.x === 0 ? 10 : location.x;
+        const y = location.y === 0 ? 10 : location.y;
+
+        const endPoint = calculateOffset(direction, y, yOffset, x, xOffset, this._args.isIOS);
 
         if (this._args.isAndroid) {
-            const action = new this._wd.TouchAction(this._driver);
-            action.press({ x: centerX, y: centerY })
-                .wait(200)
-                .moveTo({ x: swipeX, y: centerY })
+            let action = new this._wd.TouchAction(this._driver);
+            action
+                .longPress({ x: x, y: y })
+                .wait(endPoint.duration)
+                .moveTo({ x: yOffset, y: yOffset })
                 .release();
             await action.perform();
-        }
-        else {
-            await this._driver.execute('mobile: dragFromToForDuration', {
-                duration: 2.0,
-                fromX: centerX,
-                fromY: centerY,
-                toX: swipeX,
-                toY: centerY
+        } else {
+            await this._driver.execute(`mobile: dragFromToForDuration`, {
+                duration: endPoint.duration,
+                fromX: x,
+                fromY: y,
+                toX: xOffset,
+                toY: yOffset
             });
         }
+
+        await this._driver.sleep(150);
+    }
+
+    /**
+    *@experimental
+    * Pan element with specific offset
+    * @param points where the finger should move to.
+    * @param initPointOffset element.getRectangle() is used as start point. In case some additional offset should be provided use this param.
+    */
+    public async pan(points: { x: number, y: number }[], initPointOffset: { x: number, y: number } = { x: 0, y: 0 }) {
+        logInfo("Start pan gesture!");
+        const rect = await this.getRectangle();
+        const action = new this._wd.TouchAction(this._driver);
+        await action.press({ x: rect.x + initPointOffset.x, y: rect.y + initPointOffset.y }).wait(100)
+        if (points.length > 1) {
+            for (let index = 1; index < points.length; index++) {
+                const element = points[index];
+                action.moveTo({ x: element.x, y: element.y });
+            }
+        }
+
+        await action.release().perform();
+        logInfo("End pan gesture!");
+    }
+
+    /**
+     * @experimental
+     * This method will try to move two fingers from opposite corners.
+     * One finger starts from 
+     * { x: elementRect.x + offset.x, y: elementRect.y + offset.y } 
+     * and ends to 
+     * { x: elementRect.x + elementRect.width - offset.x, y: elementRect.height + elementRect.y - offset.y }
+     * and the other finger starts from 
+     * { x: elementRect.width + elementRect.x - offset.x, y: elementRect.height + elementRect.y - offset.y } 
+     * and ends to
+     * { x: elementRect.x + offset.x, y: elementRect.y + offset.y }
+     */
+    public async rotate(offset: { x: number, y: number } = { x: 10, y: 10 }) {
+        logInfo("Start rotate gesture!");
+        const elementRect = await this.getRectangle();
+
+        const startPoint = { x: elementRect.x + offset.x, y: elementRect.y + offset.y };
+        const endPoint = { x: elementRect.x + elementRect.width - offset.x, y: elementRect.height + elementRect.y - offset.y };
+
+        const multiAction = new this._wd.MultiAction(this._driver);
+        const action1 = new this._wd.TouchAction(this._driver);
+        action1
+            .press(startPoint)
+            .wait(100)
+            .moveTo(endPoint)
+            .wait(1000)
+            .release();
+        multiAction.add(action1);
+
+        const action2 = new this._wd.TouchAction(this._driver);
+        action2
+            .press(endPoint)
+            .wait(100)
+            .moveTo({ x: startPoint.x, y: startPoint.y - 1 })
+            .wait(1000)
+            .release();
+        multiAction.add(action2);
+
+        await multiAction.perform();
+        logInfo("End rotate gesture!");
+    }
+
+    /**
+     * @experimental
+     * @param zoomFactory - zoomIn or zoomOut. Only zoomIn action is implemented
+     * @param offset 
+     */
+    public async pinch(zoomType: "in" | "out", offset?: { x: number, y: number }) {
+        logInfo("Start pinch gesture!");
+        const elementRect = await this.getRectangle();
+
+        offset = offset || { x: elementRect.width / 2, y: elementRect.height / 2 };
+        elementRect.y = elementRect.y + elementRect.height / 2;
+
+        const endPoint = { x: offset.x, y: offset.y };
+
+        const startPointOne = { x: elementRect.x + 20, y: elementRect.y };
+        const action1 = new this._wd.TouchAction(this._driver);
+        action1
+            .press(startPointOne)
+            .wait(100)
+            .moveTo(endPoint)
+            .release()
+
+        const multiAction = new this._wd.MultiAction(this._driver);
+        multiAction.add(action1);
+
+        const startPointTwo = { x: elementRect.x + elementRect.width, y: elementRect.y };
+        const action2 = new this._wd.TouchAction(this._driver);
+        action2
+            .press(startPointTwo)
+            .wait(500)
+            .moveTo(endPoint)
+            .release()
+        multiAction.add(action2);
+
+        await multiAction.perform();
+        logInfo("End pinch gesture!");
     }
 }
