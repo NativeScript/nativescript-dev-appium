@@ -268,10 +268,9 @@ export class ImageHelper {
         // Iterate
         if (!result) {
             const eventStartTime = Date.now().valueOf();
-            let counter = 1;
             options.timeOutSeconds *= 1000;
             while ((Date.now().valueOf() - eventStartTime) <= options.timeOutSeconds && !result) {
-                const pathActualImageCounter = resolvePath(this._args.reportsPath, imageName.replace(".", "_actual_" + counter + "."));
+                const pathActualImageCounter = resolvePath(this._args.reportsPath, imageName.replace(".", "_actual."));
                 pathActualImage = await this._driver.saveScreenshot(pathActualImageCounter);
                 if (!options.keepOriginalImageSize) {
                     await this.clipRectangleImage(options.cropRectangle, pathActualImage);
@@ -279,10 +278,9 @@ export class ImageHelper {
                 // await this.prepareImageToCompare(pathActualImage, this.imageCropRect);
                 result = await this.compareImages(options, pathActualImage, pathExpectedImage, pathDiffImage);
                 if (!result && checkImageLogType(this._args.testReporter, LogImageType.everyImage)) {
-                    this._args.testReporterLog(`Actual image: ${basename(pathActualImage).replace(/\.\w{3,3}$/ig, "")}`);
+                    this._args.testReporterLog(`Actual image: ${basename(pathActualImage)}`);
                     this._args.testReporterLog(join(this._args.reportsPath, basename(pathActualImage)));
                 }
-                counter++;
             }
 
             if (options.overwriteActualImage === true && !result) {
