@@ -102,9 +102,9 @@ export class ImageHelper {
             ImageHelper.fullClone(this._args.device.viewportRect, this._defaultOptions.cropRectangle)
         }
         if (!this._defaultOptions.cropRectangle
-            || !isNumber(this._defaultOptions.cropRectangle.y)) {
+            || !isNumber(this._defaultOptions.cropRectangle.y) || this._args.appiumCaps.offsetPixels > 0) {
             this._defaultOptions.cropRectangle = this._defaultOptions.cropRectangle || {};
-            this._defaultOptions.cropRectangle.y = this._args.device.config.offsetPixels || 0;
+            this._defaultOptions.cropRectangle.y = this._args.appiumCaps.offsetPixels || this._args.device.config.offsetPixels || 0;
             this._defaultOptions.cropRectangle.x = 0;
             if (this._args.device.deviceScreenSize && this._args.device.deviceScreenSize.width && this._args.device.deviceScreenSize.height) {
                 this._defaultOptions.cropRectangle.height = this._args.device.deviceScreenSize.height - this._defaultOptions.cropRectangle.y;
