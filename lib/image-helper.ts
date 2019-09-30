@@ -270,8 +270,12 @@ export class ImageHelper {
             const eventStartTime = Date.now().valueOf();
             let counter = 1;
             options.timeOutSeconds *= 1000;
+            let pathActualImageCounter = resolvePath(this._args.reportsPath, imageName.replace(".", "_actual."));
+            const shouldLogEveryImage = checkImageLogType(this._args.testReporter, LogImageType.everyImage);
             while ((Date.now().valueOf() - eventStartTime) <= options.timeOutSeconds && !result) {
-                const pathActualImageCounter = resolvePath(this._args.reportsPath, imageName.replace(".", "_actual_" + counter + "."));
+                if (shouldLogEveryImage) {
+                    pathActualImageCounter = resolvePath(this._args.reportsPath, imageName.replace(".", "_actual_" + counter + "."));
+                }
                 pathActualImage = await this._driver.saveScreenshot(pathActualImageCounter);
                 if (!options.keepOriginalImageSize) {
                     await this.clipRectangleImage(options.cropRectangle, pathActualImage);
