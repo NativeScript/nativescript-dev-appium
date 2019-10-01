@@ -174,9 +174,7 @@ export class DeviceManager implements IDeviceManager {
             apiLevel: platformVersion || args.appiumCaps.platformVersion,
             config: { "density": args.appiumCaps.density, "offsetPixels": args.appiumCaps.offsetPixels }
         }
-
-        delete args.appiumCaps.density;
-        delete args.appiumCaps.offsetPixels;
+        
         DeviceManager.cleanUnsetProperties(device);
 
         return device;
