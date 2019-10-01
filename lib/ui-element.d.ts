@@ -126,11 +126,13 @@ export declare class UIElement {
     hold(time?: number): Promise<void>;
     /**
      * Send keys to field or other UI component
-     * @param text
-     * @param shouldClearText, default value is true
-     * @param useAdb, default value is false. Usable for Android ONLY !
+     * @param text The string to input
+     * @param shouldClearText Clears existing input before send new one - default value is 'true'
+     * @param useAdb default value is false. Usable for Android ONLY !
+     * Must be combined with '--relaxed-security' appium flag. When not running in sauceLabs '--ignoreDeviceController' should be added too.
+     * @param adbDeleteCharsCount default value is 10. Usable for Android ONLY when 'useAdb' and 'shouldClearText' are True!
      */
-    sendKeys(text: string, shouldClearText?: boolean, useAdb?: boolean): Promise<void>;
+    sendKeys(text: string, shouldClearText?: boolean, useAdb?: boolean, adbDeleteCharsCount?: number): Promise<void>;
     /**
     * Type text to field or other UI component
     * @param text
@@ -148,6 +150,7 @@ export declare class UIElement {
     clearText(): Promise<void>;
     /**
     * Clears text from ui element with ADB. Android ONLY !
+    * Must be combined with '--relaxed-security' appium flag. When not running in sauceLabs '--ignoreDeviceController' should be added too.
     * @param charactersCount Characters count to delete. (Optional - default value 10)
     */
     adbDeleteText(charactersCount?: number): Promise<void>;

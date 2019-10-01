@@ -380,15 +380,18 @@ export class UIElement {
 
     /**
      * Send keys to field or other UI component
-     * @param text
-     * @param shouldClearText, default value is true
-     * @param useAdb, default value is false. Usable for Android ONLY !
+     * @param text The string to input
+     * @param shouldClearText Clears existing input before send new one - default value is 'true'
+     * @param useAdb default value is false. Usable for Android ONLY !
+     * Must be combined with '--relaxed-security' appium flag. When not running in sauceLabs '--ignoreDeviceController' should be added too.
+     * @param adbDeleteCharsCount default value is 10. Usable for Android ONLY when 'useAdb' and 'shouldClearText' are True!
      */
-    public async sendKeys(text: string, shouldClearText: boolean = true, useAdb: boolean = false) {
+    public async sendKeys(text: string, shouldClearText: boolean = true, useAdb: boolean = false, adbDeleteCharsCount: number = 10) {
         if (useAdb && this._args.isAndroid) {
             if (shouldClearText) {
-                await this.adbDeleteText();
+                await this.adbDeleteText(adbDeleteCharsCount);
             }
+            text = text.replace(" ","%s");
             await this.click();
             await adbShellCommand(this._driver, "input", ["text", text]);
         } else {
@@ -429,6 +432,7 @@ export class UIElement {
 
     /**
     * Clears text from ui element with ADB. Android ONLY !
+    * Must be combined with '--relaxed-security' appium flag. When not running in sauceLabs '--ignoreDeviceController' should be added too.
     * @param charactersCount Characters count to delete. (Optional - default value 10)
     */
     public async adbDeleteText(charactersCount: number = 10) {
