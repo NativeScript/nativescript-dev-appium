@@ -420,10 +420,10 @@ export function calculateOffset(direction, y: number, yOffset: number, x: number
     if (yOffset < xOffset) {
         duration = Math.abs(xOffset) * speed;
     }
-    // }
-    logInfo("Start point point: ", new Point(x, y));
+
+    logInfo("Start point: ", new Point(x, y));
     logInfo("End point: ", new Point(xEnd, yEnd));
-    logInfo("Scrolling speed point: ", duration);
+    logInfo("Scrolling speed: ", duration);
 
     return {
         startPoint: new Point(x, y),

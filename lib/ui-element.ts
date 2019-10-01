@@ -452,26 +452,17 @@ export class UIElement {
     * Swipe element left/right
     * @param direction
     */
-    public async swipe(direction: "up" | "down" | "left" | "right") {
-        logInfo(`Swipe direction: `, direction);
+    public async swipe(direction: Direction) {
+        logInfo(`Swipe direction: `, Direction[direction]);
         if (this._args.isIOS) {
             await this._driver
                 .execute('mobile: scroll', {
                     element: <any>this._element.value,
-                    direction: direction
+                    direction: Direction[direction]
                 });
         } else {
             try {
-                let scrollDirection = Direction.up;
-                switch (direction) {
-                    case "down": scrollDirection = Direction.down;
-                        break;
-                    case "left": scrollDirection = Direction.left;
-                        break;
-                    case "right": scrollDirection = Direction.right;
-                        break;
-                }
-                await this.scroll(scrollDirection);
+                await this.scroll(direction);
             } catch (error) {
                 console.log("", error);
             }
@@ -486,13 +477,16 @@ export class UIElement {
     * @param yOffset 
     * @param xOffset - default value 0
     */
-    public async drag(direction: Direction, yOffset: number, xOffset: number = 0) {
+    public async drag(direction: Direction, yOffset: number, xOffset: number = 0, duration?: number) {
+        direction = direction === Direction.up ? Direction.down : Direction.up;
+
         const location = await this.location();
 
         const x = location.x === 0 ? 10 : location.x;
         const y = location.y === 0 ? 10 : location.y;
 
         const endPoint = calculateOffset(direction, y, yOffset, x, xOffset, this._args.isIOS);
+        duration = duration || endPoint.duration;
 
         if (this._args.isAndroid) {
             let action = new this._wd.TouchAction(this._driver);

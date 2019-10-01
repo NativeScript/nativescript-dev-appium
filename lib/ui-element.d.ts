@@ -166,7 +166,7 @@ export declare class UIElement {
     * Swipe element left/right
     * @param direction
     */
-    swipe(direction: "up" | "down" | "left" | "right"): Promise<void>;
+    swipe(direction: Direction): Promise<void>;
     /**
     * Drag element with specific offset
     * @experimental
@@ -174,7 +174,7 @@ export declare class UIElement {
     * @param yOffset
     * @param xOffset - default value 0
     */
-    drag(direction: Direction, yOffset: number, xOffset?: number): Promise<void>;
+    drag(direction: Direction, yOffset: number, xOffset?: number, duration?: number): Promise<void>;
     /**
     *@experimental
     * Pan element with specific offset
