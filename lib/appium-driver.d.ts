@@ -271,7 +271,6 @@ export declare class AppiumDriver {
     getScreenViewPort(): IRectangle;
     /**
     * Android ONLY! Input key event via ADB.
-    * Must be combined with '--relaxed-security' appium flag. When not running in sauceLabs '--ignoreDeviceController' should be added too.
     * @param keyEvent The event number
     */
     adbKeyEvent(keyEvent: number | AndroidKeyEvent): Promise<void>;

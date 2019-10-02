@@ -261,7 +261,7 @@ export class DeviceManager implements IDeviceManager {
                 if (args.device.name.includes(k)) {
                     args.device.config = {
                         density: args.device.config['density'] || v.density,
-                        offsetPixels: v.actionBarHeight
+                        offsetPixels: v.actionBarHeight * (args.device.config['density'] || v.density)
                     };
                 }
             });
@@ -289,7 +289,7 @@ export class DeviceManager implements IDeviceManager {
                 args.device.config['offsetPixels'] = AndroidController.calculateScreenOffset(args.device.config.density);
             }
 
-            if (!density) {
+            if (!density && !args.isIOS) {
                 await DeviceManager.getDensity(args, driver);
                 density = args.device.config.density
                 args.device.config['offsetPixels'] = AndroidController.calculateScreenOffset(args.device.config.density);
