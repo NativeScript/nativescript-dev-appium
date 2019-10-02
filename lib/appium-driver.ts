@@ -1027,6 +1027,7 @@ export class AppiumDriver {
 
     /**
     * Android ONLY! Input key event via ADB.
+    * Must be combined with '--relaxed-security' appium flag. When not running in sauceLabs '--ignoreDeviceController' should be added too.
     * @param keyEvent The event number
     */
     public async adbKeyEvent(keyEvent: number | AndroidKeyEvent) {
@@ -1035,6 +1036,7 @@ export class AppiumDriver {
 
     /**
     * Android ONLY! Send text via ADB.
+    * Must be combined with '--relaxed-security' appium flag. When not running in sauceLabs '--ignoreDeviceController' should be added too.
     * @param text The string to send
     */
     public async adbSendText(text: string) {
@@ -1043,6 +1045,7 @@ export class AppiumDriver {
 
     /**
     * Android ONLY! Execute shell command via ADB.
+    * Must be combined with '--relaxed-security' appium flag. When not running in sauceLabs '--ignoreDeviceController' should be added too.
     * @param command The command name
     * @param args Additional arguments
     */

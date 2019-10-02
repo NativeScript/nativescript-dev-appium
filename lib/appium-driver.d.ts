@@ -271,16 +271,19 @@ export declare class AppiumDriver {
     getScreenViewPort(): IRectangle;
     /**
     * Android ONLY! Input key event via ADB.
+    * Must be combined with '--relaxed-security' appium flag. When not running in sauceLabs '--ignoreDeviceController' should be added too.
     * @param keyEvent The event number
     */
     adbKeyEvent(keyEvent: number | AndroidKeyEvent): Promise<void>;
     /**
     * Android ONLY! Send text via ADB.
+    * Must be combined with '--relaxed-security' appium flag. When not running in sauceLabs '--ignoreDeviceController' should be added too.
     * @param text The string to send
     */
     adbSendText(text: string): Promise<void>;
     /**
     * Android ONLY! Execute shell command via ADB.
+    * Must be combined with '--relaxed-security' appium flag. When not running in sauceLabs '--ignoreDeviceController' should be added too.
     * @param command The command name
     * @param args Additional arguments
     */
