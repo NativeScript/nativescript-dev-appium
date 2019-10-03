@@ -19,7 +19,12 @@ export declare class DeviceManager implements IDeviceManager {
         command: string;
         "args": Array<any>;
     }): Promise<any>;
-    static getDensity(args: INsCapabilities, driver: any): Promise<void>;
+    /**
+     * Android only
+     * @param args
+     * @param driver
+     */
+    static setDensity(args: INsCapabilities, driver: any): Promise<void>;
     static applyDeviceAdditionsSettings(driver: any, args: INsCapabilities, sessionInfo: any): Promise<void>;
     getPackageId(device: IDevice, appPath: string): string;
     private static cleanUnsetProperties;
