@@ -11,7 +11,8 @@ import {
     DeviceController,
     IDevice,
     DeviceType,
-    AndroidController
+    AndroidController,
+    IOSController
 } from "mobile-devices-controller";
 import {
     addExt,
@@ -47,6 +48,7 @@ import { DeviceOrientation } from "./enums/device-orientation";
 import { NsCapabilities } from "./ns-capabilities";
 import { AutomationName } from "./automation-name";
 import { AndroidKeyEvent } from "mobile-devices-controller";
+import { setInterval } from "timers";
 
 export class AppiumDriver {
     private _defaultWaitTime: number = 5000;
@@ -117,7 +119,7 @@ export class AppiumDriver {
     }
 
     /**
-    * Get the storage where test results from image comparison is logged It will be reports/app nam/device name
+    * Get the storage where test results from image comparison is logged. The path should be reports/app nam/device name
     */
     get reportsPath() {
         return this._args.reportsPath;
@@ -215,10 +217,11 @@ export class AppiumDriver {
 
         let hasStarted = false;
         let retries = 10;
+        let sessionInfoDetails;
+
         while (retries > 0 && !hasStarted) {
             try {
                 let sessionInfo;
-                let sessionInfoDetails;
                 try {
                     if (args.sessionId || args.attachToDebug) {
                         const sessionInfos = JSON.parse(((await getSessions(args.port)) || "{}") + '');
@@ -311,7 +314,19 @@ export class AppiumDriver {
             await driver.updateSettings(appiumCapsFromConfig.settings);
         }
 
-        return new AppiumDriver(driver, wd, webio, args.driverConfig, args);
+        if (+sessionInfoDetails.statBarHeight === 0
+            && sessionInfoDetails.platformName.toLowerCase() === "ios"
+            && sessionInfoDetails.platformVersion.startsWith("13")) {
+            try {
+                const devicesInfos = IOSController.devicesDisplaysInfos();
+                const matches = devicesInfos.filter(d => sessionInfoDetails.deviceName.includes(d.deviceType));
+                const deviceType = matches[matches.length - 1];
+                args.device.viewportRect.y += deviceType.statBarHeight * deviceType.density;
+            } catch (error) { }
+        }
+
+        const appiumDriver = new AppiumDriver(driver, wd, webio, args.driverConfig, args);
+        return appiumDriver;
     }
 
     public async updateSettings(settings: any) {
@@ -1011,16 +1026,16 @@ export class AppiumDriver {
     public getScreenViewPort(): IRectangle {
         const rect = this.getScreenActualViewPort();
         if (rect
+            && this.isIOS
             && Object.getOwnPropertyNames(rect).length > 0
-            && this._args.appiumCaps.device.deviceScreenDensity) {
+            && this._args.device.deviceScreenDensity) {
             return <IRectangle>{
-                x: rect.x / this._args.appiumCaps.device.deviceScreenDensity,
-                y: rect.y / this._args.appiumCaps.device.deviceScreenDensity,
-                width: rect.width / this._args.appiumCaps.device.deviceScreenDensity,
-                height: rect.height / this._args.appiumCaps.device.deviceScreenDensity,
+                x: rect.x / this._args.device.deviceScreenDensity,
+                y: rect.y / this._args.device.deviceScreenDensity,
+                width: rect.width / this._args.device.deviceScreenDensity,
+                height: rect.height / this._args.device.deviceScreenDensity,
             }
         } else {
-            logError("Device's density is undefined!");
             return rect;
         }
     }

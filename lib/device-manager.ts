@@ -174,7 +174,7 @@ export class DeviceManager implements IDeviceManager {
             apiLevel: platformVersion || args.appiumCaps.platformVersion,
             config: { "density": args.appiumCaps.density, "offsetPixels": args.appiumCaps.offsetPixels }
         }
-        
+
         DeviceManager.cleanUnsetProperties(device);
 
         return device;
@@ -240,7 +240,12 @@ export class DeviceManager implements IDeviceManager {
         return output;
     }
 
-    public static async getDensity(args: INsCapabilities, driver) {
+    /**
+     * Android only
+     * @param args 
+     * @param driver 
+     */
+    public static async setDensity(args: INsCapabilities, driver) {
         args.device.config = args.device.config || {};
         if (args.appiumCaps.platformName.toLowerCase() === "android") {
             if (!args.ignoreDeviceController) {
@@ -256,15 +261,6 @@ export class DeviceManager implements IDeviceManager {
             if (args.device.config.density) {
                 args.device.config['offsetPixels'] = AndroidController.calculateScreenOffset(args.device.config.density);
             }
-        } else {
-            IOSController.getDevicesScreenInfo().forEach((v, k, m) => {
-                if (args.device.name.includes(k)) {
-                    args.device.config = {
-                        density: args.device.config['density'] || v.density,
-                        offsetPixels: v.actionBarHeight
-                    };
-                }
-            });
         }
     }
 
@@ -289,8 +285,8 @@ export class DeviceManager implements IDeviceManager {
                 args.device.config['offsetPixels'] = AndroidController.calculateScreenOffset(args.device.config.density);
             }
 
-            if (!density) {
-                await DeviceManager.getDensity(args, driver);
+            if (!density && !args.isIOS) {
+                await DeviceManager.setDensity(args, driver);
                 density = args.device.config.density
                 args.device.config['offsetPixels'] = AndroidController.calculateScreenOffset(args.device.config.density);
             }
