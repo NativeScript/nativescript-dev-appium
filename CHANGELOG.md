@@ -1,3 +1,29 @@
+<a name="6.1.0"></a>
+# [6.1.0](https://github.com/NativeScript/nativescript-dev-appium/compare/6.0.0...6.1.0) (2019-10-03)
+
+
+### Bug Fixes
+
+* deep clone of cropRect from options ([a10689e](https://github.com/NativeScript/nativescript-dev-appium/commit/a10689e))
+* prevent crashing in case device density is missing ([#256](https://github.com/NativeScript/nativescript-dev-appium/issues/256)) ([0d7d101](https://github.com/NativeScript/nativescript-dev-appium/commit/0d7d101))
+* respect appium capabilities provided by the user in the json file ([9485d32](https://github.com/NativeScript/nativescript-dev-appium/commit/9485d32))
+* saving every image when LogImageType.everyImage is provided ([0147399](https://github.com/NativeScript/nativescript-dev-appium/commit/0147399))
+* sendKeys command to input properly string with intervals. Add parameter for chars count to be deleted ([efc0932](https://github.com/NativeScript/nativescript-dev-appium/commit/efc0932))
+* **ios:** ios13 statusbar height ([#265](https://github.com/NativeScript/nativescript-dev-appium/issues/265)) ([5844f86](https://github.com/NativeScript/nativescript-dev-appium/commit/5844f86))
+* **ui-element:**  getActualRectangle for Android. ([c5aa24e](https://github.com/NativeScript/nativescript-dev-appium/commit/c5aa24e))
+
+
+### Features
+
+* add the ability to run adb shell commands ([#251](https://github.com/NativeScript/nativescript-dev-appium/issues/251)) ([7246bce](https://github.com/NativeScript/nativescript-dev-appium/commit/7246bce))
+
+
+### Reverts
+
+* **getActualRectangle:** don't cinclude density for android ([#258](https://github.com/NativeScript/nativescript-dev-appium/issues/258)) ([6f91d58](https://github.com/NativeScript/nativescript-dev-appium/commit/6f91d58))
+
+
+
 <a name="6.0.0"></a>
 # [6.0.0](https://github.com/NativeScript/nativescript-dev-appium/compare/5.3.0...6.0.0) (2019-08-08)
 
