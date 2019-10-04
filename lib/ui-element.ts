@@ -242,7 +242,7 @@ export class UIElement {
      */
     public async getActualRectangle() {
         const actRect = await this.getRectangle();
-        const density = this._args.device.config.density;
+        const density = this._args.device.deviceScreenDensity;
         if (this._args.isIOS) {
             if (density) {
                 actRect.x *= density;
