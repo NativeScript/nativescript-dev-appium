@@ -320,8 +320,10 @@ export class AppiumDriver {
             try {
                 const devicesInfos = IOSController.devicesDisplaysInfos();
                 const matches = devicesInfos.filter(d => sessionInfoDetails.deviceName.includes(d.deviceType));
-                const deviceType = matches[matches.length - 1];
-                args.device.viewportRect.y += deviceType.statBarHeight * deviceType.density;
+                if (matches && matches.length > 0) {
+                    const deviceType = matches[matches.length - 1];
+                    args.device.viewportRect.y += deviceType.actionBarHeight * deviceType.density;
+                }
             } catch (error) { }
         }
 
