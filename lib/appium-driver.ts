@@ -322,7 +322,8 @@ export class AppiumDriver {
                 const matches = devicesInfos.filter(d => sessionInfoDetails.deviceName.includes(d.deviceType));
                 if (matches && matches.length > 0) {
                     const deviceType = matches[matches.length - 1];
-                    args.device.viewportRect.y += deviceType.actionBarHeight * deviceType.density;
+                    args.device.viewportRect.y += deviceType.actionBarHeight;
+                    args.device.viewportRect.height -= deviceType.actionBarHeight;
                 }
             } catch (error) { }
         }
