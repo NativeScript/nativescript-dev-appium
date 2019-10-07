@@ -202,7 +202,7 @@ export class DeviceManager implements IDeviceManager {
             args.device.config = { "density": args.device.deviceScreenDensity || args.device.config.density, "offsetPixels": +sessionInfoDetails.statBarHeight || args.device.config.offsetPixels };
         } else {
             args.device.apiLevel = sessionInfoDetails.platformVersion;
-            args.device.deviceScreenDensity = sessionInfoDetails.pixelRatio;
+            args.device.deviceScreenDensity = sessionInfoDetails.pixelRatio || args.device.config.density;
             const offsetPixels = +sessionInfoDetails.viewportRect.top - +sessionInfoDetails.statBarHeight;
             args.device.config = { "density": sessionInfoDetails.pixelRatio || args.device.config.density, "offsetPixels": isNumber(offsetPixels) ? offsetPixels : args.device.config.offsetPixels };
         }
@@ -272,11 +272,11 @@ export class DeviceManager implements IDeviceManager {
     // }
 
     public static async applyDeviceAdditionsSettings(driver, args: INsCapabilities, sessionInfo: any) {
-        if ((!args.device.viewportRect || !args.device.viewportRect.x) && (!args.device.config || !args.device.config.offsetPixels)) {
+        if ((!args.device.viewportRect || !args.device.viewportRect.x) && (!args.device.config || !isNumber(args.device.config.offsetPixels))) {
             args.device.config = {};
             let density: number;
-            if (sessionInfo && sessionInfo.length >= 1) {
-                density = sessionInfo[1].deviceScreenDensity ? sessionInfo[1].deviceScreenDensity / 100 : undefined;
+            if (sessionInfo && Object.getOwnPropertyNames(sessionInfo).length >= 1) {
+                density = sessionInfo.pixelRatio ? sessionInfo.pixelRatio : undefined;
             }
 
             if (density) {

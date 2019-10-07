@@ -272,7 +272,7 @@ export class AppiumDriver {
                     logInfo("Current version of appium doesn't support appium settings!");
                 }
 
-                await DeviceManager.applyDeviceAdditionsSettings(driver, args, appiumCapsFromConfig);
+                await DeviceManager.applyDeviceAdditionsSettings(driver, args, sessionInfoDetails);
 
                 hasStarted = true;
             } catch (error) {
