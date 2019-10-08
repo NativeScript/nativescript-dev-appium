@@ -521,13 +521,15 @@ export class AppiumDriver {
         while ((el === null || !isDisplayed) && retryCount > 0) {
             try {
                 el = await element();
-                isDisplayed = await el.isDisplayed();
+                isDisplayed = el && await el.isDisplayed();
                 if (!isDisplayed) {
-                    await scroll(this._wd, this._driver, direction, this._webio.isIOS, startPoint.y, startPoint.x, offsetPoint.x, offsetPoint.y);
+                    await scroll(this._wd, this._driver, direction, this._webio.isIOS, startPoint.y, startPoint.x, offsetPoint.y, offsetPoint.x);
                     el = null;
                 }
             } catch (error) {
                 console.log("scrollTo Error: " + error);
+                await scroll(this._wd, this._driver, direction, this._webio.isIOS, startPoint.y, startPoint.x, offsetPoint.y, offsetPoint.x);
+                el = null;
             }
 
             retryCount--;

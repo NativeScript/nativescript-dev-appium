@@ -393,7 +393,7 @@ export function calculateOffset(direction, y: number, yOffset: number, x: number
         duration = Math.abs(yOffset) * speed;
     }
     if (direction === Direction.up) {
-        yEnd = direction * Math.abs((Math.abs(yOffset) + y));
+        yEnd = Math.abs((Math.abs(y - yOffset)));
         duration = Math.abs(yOffset) * speed;
     }
 
