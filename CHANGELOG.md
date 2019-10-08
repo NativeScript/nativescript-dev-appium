@@ -1,3 +1,13 @@
+<a name="6.1.2"></a>
+## [6.1.2](https://github.com/NativeScript/nativescript-dev-appium/compare/6.1.0...6.1.2) (2019-10-04)
+
+
+### Bug Fixes
+
+* **ios-13:** remove statusbar height from viewportRect ([c1a993c](https://github.com/NativeScript/nativescript-dev-appium/commit/c1a993c))
+
+
+
 <a name="6.1.0"></a>
 # [6.1.0](https://github.com/NativeScript/nativescript-dev-appium/compare/6.0.0...6.1.0) (2019-10-03)
 

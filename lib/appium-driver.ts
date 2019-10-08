@@ -272,7 +272,7 @@ export class AppiumDriver {
                     logInfo("Current version of appium doesn't support appium settings!");
                 }
 
-                await DeviceManager.applyDeviceAdditionsSettings(driver, args, appiumCapsFromConfig);
+                await DeviceManager.applyDeviceAdditionsSettings(driver, args, sessionInfoDetails);
 
                 hasStarted = true;
             } catch (error) {
@@ -322,7 +322,8 @@ export class AppiumDriver {
                 const matches = devicesInfos.filter(d => sessionInfoDetails.deviceName.includes(d.deviceType));
                 if (matches && matches.length > 0) {
                     const deviceType = matches[matches.length - 1];
-                    args.device.viewportRect.y += deviceType.actionBarHeight * deviceType.density;
+                    args.device.viewportRect.y += deviceType.actionBarHeight;
+                    args.device.viewportRect.height -= deviceType.actionBarHeight;
                 }
             } catch (error) { }
         }
