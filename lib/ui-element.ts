@@ -293,12 +293,18 @@ export class UIElement {
         const size = await this.size();
 
         if (direction === Direction.down || direction === Direction.up) {
+            if (xOffset > 0) {
+                location.x += xOffset;
+            }
             if (yOffset === 0) {
                 yOffset = location.y + size.height - 5;
             }
         }
 
         if (direction === Direction.left || direction === Direction.right) {
+            if (yOffset > 0) {
+                location.y += yOffset;
+            }
             if (xOffset === 0) {
                 xOffset = location.x + size.width - 5;
             }
@@ -330,7 +336,7 @@ export class UIElement {
         while (el === null && retries >= 0) {
             try {
                 el = await elementToSearch();
-                if (!el || el === null || !(await el.isDisplayed())) {
+                if (!el || el === null || !(el && await el.isDisplayed())) {
                     el = null;
                     await this.scroll(direction, yOffset, xOffset);
                 }
@@ -370,7 +376,7 @@ export class UIElement {
             if (shouldClearText) {
                 await this.adbDeleteText(adbDeleteCharsCount);
             }
-            text = text.replace(" ","%s");
+            text = text.replace(" ", "%s");
             await this.click();
             await adbShellCommand(this._driver, "input", ["text", text]);
         } else {
