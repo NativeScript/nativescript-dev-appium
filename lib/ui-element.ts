@@ -2,8 +2,9 @@ import { Point } from "./point";
 import { Direction } from "./direction";
 import { INsCapabilities } from "./interfaces/ns-capabilities";
 import { AutomationName } from "./automation-name";
-import { calculateOffset, adbShellCommand, logError, wait, logInfo } from "./utils";
+import { calculateOffset, adbShellCommand, logError, wait, logInfo, hasNotch } from "./utils";
 import { AndroidKeyEvent } from "mobile-devices-controller";
+import { isNumber } from "util";
 
 export class UIElement {
     private static readonly DEFAULT_REFETCH_TIME = 1000;
@@ -297,7 +298,18 @@ export class UIElement {
                 location.x += xOffset;
             }
             if (yOffset === 0) {
-                yOffset = location.y + size.height - 5;
+                const verticalEnd = location.y + size.height;
+                yOffset = verticalEnd - 5;
+                if (hasNotch(this._args.device.name) && isNumber(this._args.device.viewportRect.height) && (verticalEnd * this._args.device.deviceScreenDensity >= this._args.device.viewportRect.height)) {
+                    const notchHeight = 35
+                    if (size.height > notchHeight) {
+                        yOffset = yOffset - 30; // 30 is enough to skip the bottom notch
+                    }
+                    
+                    if (direction === Direction.down && xOffset < 50 && (location.x + size.width) > 50) { // If on the bottom on device with notch 'x' should be >=50. Otherwise the app is minimized 
+                        location.x += 50 - xOffset;
+                    }
+                }
             }
         }
 
@@ -310,7 +322,7 @@ export class UIElement {
             }
         }
 
-        const endPoint = calculateOffset(direction, location.y, yOffset, location.x, xOffset, this._args.isIOS);
+        const endPoint = calculateOffset(direction, location.y, yOffset, location.x, xOffset, this._args);
 
         const action = new this._wd.TouchAction(this._driver);
         action
@@ -491,7 +503,7 @@ export class UIElement {
         const x = location.x === 0 ? 10 : location.x;
         const y = location.y === 0 ? 10 : location.y;
 
-        const endPoint = calculateOffset(direction, y, yOffset, x, xOffset, this._args.isIOS);
+        const endPoint = calculateOffset(direction, y, yOffset, x, xOffset, this._args);
         duration = duration || endPoint.duration;
 
         if (this._args.isAndroid) {
