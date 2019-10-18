@@ -67,14 +67,22 @@ export class UIElement {
      * @experimental
      * Double tap on element
      */
-    public async doubleTap() {
+    public async doubleTap(offset: { x: number, y: number } = { x: 0, y: 0 }) {
         if (this._args.isAndroid) {
             // hack double tap for android
-            let action = new this._wd.TouchAction(this._driver);
             const rect = await this.getRectangle();
-            action.press({ x: rect.x, y: rect.y }).release().perform();
-            action.press({ x: rect.x, y: rect.y }).release().perform();
-            await action.perform();
+
+            if (`${this._args.device.apiLevel}`.startsWith("29")
+                || `${this._args.device.apiLevel}`.startsWith("9.")) {
+                const offsetPoint = { x: (rect.x + offset.x), y: (rect.y + offset.y) };
+                await adbShellCommand(this._driver, "input", ["tap", `${offsetPoint.x} ${offsetPoint.y}`]);
+                await adbShellCommand(this._driver, "input", ["tap", `${offsetPoint.x} ${offsetPoint.y}`]);
+            } else {
+                let action = new this._wd.TouchAction(this._driver);
+                action.press({ x: rect.x, y: rect.y }).release().perform();
+                action.press({ x: rect.x, y: rect.y }).release().perform();
+                await action.perform();
+            }
         } else {
             // this works only for ios, otherwise it throws error
             return await this._driver.execute('mobile: doubleTap', { element: this._element.value });
@@ -518,18 +526,19 @@ export class UIElement {
     /**
     *@experimental
     * Pan element with specific offset
-    * @param points where the finger should move to.
+    * @param offsets where the finger should move to.
     * @param initPointOffset element.getRectangle() is used as start point. In case some additional offset should be provided use this param.
     */
-    public async pan(points: { x: number, y: number }[], initPointOffset: { x: number, y: number } = { x: 0, y: 0 }) {
+    public async pan(offsets: { x: number, y: number }[], initPointOffset: { x: number, y: number } = { x: 0, y: 0 }) {
         logInfo("Start pan gesture!");
         const rect = await this.getRectangle();
         const action = new this._wd.TouchAction(this._driver);
-        await action.press({ x: rect.x + initPointOffset.x, y: rect.y + initPointOffset.y }).wait(100)
-        if (points.length > 1) {
-            for (let index = 1; index < points.length; index++) {
-                const element = points[index];
-                action.moveTo({ x: element.x, y: element.y });
+        await action.press({ x: rect.x + initPointOffset.x, y: rect.y + initPointOffset.y });
+        await this.doubleTap();
+        if (offsets.length > 1) {
+            for (let index = 1; index < offsets.length; index++) {
+                const p = offsets[index];
+                action.moveTo({ x: rect.x + p.x, y: rect.y + p.y });
             }
         }
 

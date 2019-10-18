@@ -171,7 +171,7 @@ export class DeviceManager implements IDeviceManager {
             type: type,
             platform: args.appiumCaps.platformName.toLowerCase(),
             token: token,
-            apiLevel: platformVersion || args.appiumCaps.platformVersion,
+            apiLevel: platformVersion || args.appiumCaps.deviceApiLevel || args.appiumCaps.platformVersion,
             config: { "density": args.appiumCaps.density, "offsetPixels": args.appiumCaps.offsetPixels }
         }
 
