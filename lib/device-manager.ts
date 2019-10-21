@@ -209,6 +209,7 @@ export class DeviceManager implements IDeviceManager {
 
         args.device.statBarHeight = sessionInfoDetails.statBarHeight;
         args.device.viewportRect = DeviceManager.convertViewportRectToIRectangle(sessionInfoDetails.viewportRect);
+        args.device.token = args.device.token || sessionInfoDetails.udid;
 
         return args.device;
     }

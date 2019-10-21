@@ -533,8 +533,7 @@ export class UIElement {
         logInfo("Start pan gesture!");
         const rect = await this.getRectangle();
         const action = new this._wd.TouchAction(this._driver);
-        await action.press({ x: rect.x + initPointOffset.x, y: rect.y + initPointOffset.y });
-        await this.doubleTap();
+        await action.press({ x: rect.x + initPointOffset.x, y: rect.y + initPointOffset.y }).wait(200);
         if (offsets.length > 1) {
             for (let index = 1; index < offsets.length; index++) {
                 const p = offsets[index];
