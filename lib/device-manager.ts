@@ -197,7 +197,7 @@ export class DeviceManager implements IDeviceManager {
             const sizeArr = sessionInfoDetails.deviceScreenSize.split("x");
             args.device.deviceScreenSize = { width: sizeArr[0], height: sizeArr[1] };
 
-            args.device.apiLevel = sessionInfoDetails.deviceApiLevel;
+            args.device.apiLevel = sessionInfoDetails.deviceApiLevel || args.device.apiLevel;
             args.device.deviceScreenDensity = sessionInfoDetails.deviceScreenDensity / 100;
             args.device.config = { "density": args.device.deviceScreenDensity || args.device.config.density, "offsetPixels": +sessionInfoDetails.statBarHeight || args.device.config.offsetPixels };
         } else {
@@ -218,14 +218,14 @@ export class DeviceManager implements IDeviceManager {
         const status = value ? 1 : 0;
         try {
             if (args.isAndroid) {
-                if (!args.ignoreDeviceController) {
-                    AndroidController.setDontKeepActivities(value, args.device);
-                } else if (args.relaxedSecurity) {
+                if (args.relaxedSecurity) {
                     const output = await DeviceManager.executeShellCommand(driver, { command: "settings", args: ['put', 'global', 'always_finish_activities', status] });
                     console.log(`Output from setting always_finish_activities to ${status}: ${output}`);
                     //check if set 
                     const check = await DeviceManager.executeShellCommand(driver, { command: "settings", args: ['get', 'global', 'always_finish_activities'] });
                     console.info(`Check if always_finish_activities is set correctly: ${check}`);
+                } else if (!args.ignoreDeviceController) {
+                    AndroidController.setDontKeepActivities(value, args.device);
                 }
             } else {
                 // Do nothing for iOS ...

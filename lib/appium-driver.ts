@@ -185,6 +185,11 @@ export class AppiumDriver {
     }
 
     public async navBack() {
+        if (this.isAndroid) {
+            logInfo("=== Navigate back with hardware button!");
+        } else {
+            logInfo("=== Navigate back.");
+        }
         return await this._driver.back();
     }
 
