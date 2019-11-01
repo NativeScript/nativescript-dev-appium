@@ -53,6 +53,7 @@ export class NsCapabilities implements INsCapabilities {
     public deviceTypeOrPlatform: string;
     public driverConfig: any;
     public logImageTypes: Array<LogImageType>;
+    public derivedDataPath: string;
 
     constructor(private _parser: INsCapabilitiesArgs) {
         this.projectDir = this._parser.projectDir;
@@ -76,6 +77,7 @@ export class NsCapabilities implements INsCapabilities {
         this.isSauceLab = this._parser.isSauceLab;
         this.ignoreDeviceController = this._parser.ignoreDeviceController;
         this.wdaLocalPort = this._parser.wdaLocalPort;
+        this.derivedDataPath = this._parser.derivedDataPath;
         this.path = this._parser.path;
         this.capabilitiesName = this._parser.capabilitiesName;
         this.imagesPath = this._parser.imagesPath;

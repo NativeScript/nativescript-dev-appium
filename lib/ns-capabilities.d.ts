@@ -47,6 +47,7 @@ export declare class NsCapabilities implements INsCapabilities {
     deviceTypeOrPlatform: string;
     driverConfig: any;
     logImageTypes: Array<LogImageType>;
+    derivedDataPath: string;
     constructor(_parser: INsCapabilitiesArgs);
     readonly isAndroid: any;
     readonly isIOS: boolean;

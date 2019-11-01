@@ -30,7 +30,8 @@ import {
     encodeImageToBase64,
     ensureReportsDirExists,
     checkImageLogType,
-    adbShellCommand
+    adbShellCommand,
+    logWarn
 } from "./utils";
 
 import { INsCapabilities } from "./interfaces/ns-capabilities";
@@ -280,6 +281,8 @@ export class AppiumDriver {
                     }
                 } catch (error) {
                     args.verbose = true;
+                    console.log("===============================");
+                    console.log("", error)
                     if (!args.ignoreDeviceController && error && error.message && error.message.includes("Failure [INSTALL_FAILED_INSUFFICIENT_STORAGE]")) {
                         await DeviceManager.kill(args.device);
                         await DeviceController.startDevice(args.device);
@@ -303,11 +306,11 @@ export class AppiumDriver {
                 console.log("Retry launching appium driver!");
                 hasStarted = false;
 
-                if (error && error.message && error.message.includes("WebDriverAgent")) {
-                    const freePort = await findFreePort(100, args.wdaLocalPort);
-                    console.log("args.appiumCaps['wdaLocalPort']", freePort);
-                    args.appiumCaps["wdaLocalPort"] = freePort;
-                }
+                // if (error && error.message && error.message.includes("WebDriverAgent")) {
+                //     const freePort = await findFreePort(100, args.wdaLocalPort);
+                //     console.log("args.appiumCaps['wdaLocalPort']", freePort);
+                //     args.appiumCaps["wdaLocalPort"] = freePort;
+                // }
             }
 
             if (hasStarted) {
@@ -883,7 +886,7 @@ export class AppiumDriver {
         }
     }
 
-    private static async applyAdditionalSettings(args) {
+    private static async applyAdditionalSettings(args: INsCapabilities) {
         if (args.isSauceLab) return;
 
         args.appiumCaps['udid'] = args.appiumCaps['udid'] || args.device.token;
@@ -899,6 +902,11 @@ export class AppiumDriver {
             args.appiumCaps["useNewWDA"] = args.appiumCaps.useNewWDA;
             args.appiumCaps["wdaStartupRetries"] = 5;
             args.appiumCaps["shouldUseSingletonTestManager"] = args.appiumCaps.shouldUseSingletonTestManager;
+
+            if (args.derivedDataPath) {
+                args.appiumCaps["derivedDataPath"] = `${args.derivedDataPath}/${args.device.token}`;
+                logWarn('Changed derivedDataPath to: ', args.appiumCaps["derivedDataPath"]);
+            }
 
             // It looks we need it for XCTest (iOS 10+ automation)
             if (args.appiumCaps.platformVersion >= 10 && args.wdaLocalPort) {

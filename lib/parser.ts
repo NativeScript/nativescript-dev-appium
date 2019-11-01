@@ -64,6 +64,9 @@ const config = (() => {
             type: "string"
         })
         .option("wdaLocalPort", { alias: "wda", describe: "WDA port", type: "number" })
+        .options("derivedDataPath", { 
+            describe: "set the unique derived data path root for each driver instance. This will help to avoid possible conflicts and to speed up the parallel execution", 
+            type: "string" })
         .option("verbose", { alias: "v", describe: "Log actions", type: "boolean" })
         .option("path", { describe: "Execution path", default: process.cwd(), type: "string" })
         .option("relaxedSecurity", { describe: "appium relaxedSecurity", default: false, type: "boolean" })
@@ -160,6 +163,7 @@ const config = (() => {
         pluginRoot: pluginRoot,
         pluginBinary: pluginBinary,
         wdaLocalPort: options.wdaLocalPort || process.env.npm_config_wdaLocalPort || process.env["WDA_LOCAL_PORT"] || 8410,
+        derivedDataPath: options.derivedDataPath || process.env.npm_config_derivedDataPath || process.env["DERIVED_DATA_PATH"],
         testFolder: options.testFolder || process.env.npm_config_testFolder || "e2e",
         runType: options.runType || process.env.npm_config_runType,
         appiumCapsLocation: options.appiumCapsLocation || process.env.npm_config_appiumCapsLocation || join(projectDir, options.testFolder, "config", options.capabilitiesName),
@@ -208,6 +212,7 @@ export const {
     devMode,
     ignoreDeviceController,
     wdaLocalPort,
+    derivedDataPath,
     path,
     relaxedSecurity,
     cleanApp,
