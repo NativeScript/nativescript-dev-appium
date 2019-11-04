@@ -506,13 +506,13 @@ export class UIElement {
             let action = new this._wd.TouchAction(this._driver);
             action
                 .longPress({ x: x, y: y })
-                .wait(endPoint.duration)
+                .wait(duration)
                 .moveTo({ x: yOffset, y: yOffset })
                 .release();
             await action.perform();
         } else {
             await this._driver.execute(`mobile: dragFromToForDuration`, {
-                duration: endPoint.duration,
+                duration: duration,
                 fromX: x,
                 fromY: y,
                 toX: xOffset,
