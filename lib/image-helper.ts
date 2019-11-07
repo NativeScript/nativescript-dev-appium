@@ -314,13 +314,13 @@ export class ImageHelper {
 
     public compareImages(options: IImageCompareOptions, actual: string, expected: string, output: string) {
         const clipRect = {
-            x: this.options.cropRectangle.x,
-            y: this.options.cropRectangle.y,
-            width: this.options.cropRectangle.width,
-            height: this.options.cropRectangle.height
+            x: options.cropRectangle.x,
+            y: options.cropRectangle.y,
+            width: options.cropRectangle.width,
+            height: options.cropRectangle.height
         }
 
-        if (!this.options.keepOriginalImageSize) {
+        if (!options.keepOriginalImageSize) {
             clipRect.x = 0;
             clipRect.y = 0;
             clipRect.width = undefined;
