@@ -83,6 +83,8 @@ export class ImageHelper {
     private _blockOutAreas: IRectangle[];
     private _imagesResults = new Map<string, boolean>();
     private _options: IImageCompareOptions = {};
+    private _defaultToleranceType: ImageOptions = ImageOptions.percent;
+    private _defaultTolerance: number = 0;
     private _defaultOptions: IImageCompareOptions = {
         timeOutSeconds: 2,
         tolerance: 0,
@@ -146,6 +148,22 @@ export class ImageHelper {
 
     set blockOutAreas(rectangles: IRectangle[]) {
         this._blockOutAreas = rectangles;
+    }
+
+    get defaultToleranceType(): ImageOptions {
+        return this._defaultToleranceType;
+    }
+
+    set defaultToleranceType(toleranceType: ImageOptions) {
+        this._defaultToleranceType = toleranceType;
+    }
+
+    get defaultTolerance(): number {
+        return this._defaultTolerance;
+    }
+
+    set defaultTolerance(tolerance: number) {
+        this._defaultTolerance = tolerance;
     }
 
     public async compareScreen(options?: IImageCompareOptions) {
