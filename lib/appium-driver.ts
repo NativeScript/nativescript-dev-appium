@@ -57,8 +57,6 @@ export class AppiumDriver {
     private _isAlive: boolean = false;
     private _locators: Locator;
     private _storageByPlatform: string;
-    private _defaultToleranceType: ImageOptions = ImageOptions.percent;
-    private _defaultTolerance: number = 0;
 
     private constructor(private _driver: any, private _wd, private _webio: any, private _driverConfig, private _args: INsCapabilities) {
         this._elementHelper = new ElementHelper(this._args);
@@ -118,22 +116,6 @@ export class AppiumDriver {
 
     get driver() {
         return this._driver;
-    }
-
-    get defaultToleranceType(): ImageOptions {
-        return this._defaultToleranceType;
-    }
-
-    set defaultToleranceType(toleranceType: ImageOptions) {
-        this._defaultToleranceType = toleranceType;
-    }
-
-    get defaultTolerance(): number {
-        return this._defaultTolerance;
-    }
-
-    set defaultTolerance(tolerance: number) {
-        this._defaultTolerance = tolerance;
     }
 
     /**
@@ -619,11 +601,11 @@ export class AppiumDriver {
         return await this.driver.getSessionId();
     }
 
-    public async compareElement(element: UIElement, imageName?: string, tolerance: number = this._defaultTolerance, timeOutSeconds: number = 3, toleranceType: ImageOptions = this._defaultToleranceType) {
+    public async compareElement(element: UIElement, imageName?: string, tolerance: number = this.imageHelper.defaultTolerance, timeOutSeconds: number = 3, toleranceType: ImageOptions = this.imageHelper.defaultToleranceType) {
         return await this.compareRectangle(await element.getActualRectangle(), imageName, timeOutSeconds, tolerance, toleranceType);
     }
 
-    public async compareRectangle(rect: IRectangle, imageName?: string, timeOutSeconds: number = 3, tolerance: number = this._defaultTolerance, toleranceType: ImageOptions = this._defaultToleranceType) {
+    public async compareRectangle(rect: IRectangle, imageName?: string, timeOutSeconds: number = 3, tolerance: number = this.imageHelper.defaultTolerance, toleranceType: ImageOptions = this.imageHelper.defaultToleranceType) {
         imageName = imageName || this.imageHelper.testName;
         const options = this.imageHelper.extendOptions({
             imageName: imageName,
@@ -637,7 +619,7 @@ export class AppiumDriver {
         return await this.imageHelper.compare(options);
     }
 
-    public async compareScreen(imageName?: string, timeOutSeconds: number = 3, tolerance: number = this._defaultTolerance, toleranceType: ImageOptions = this._defaultToleranceType) {
+    public async compareScreen(imageName?: string, timeOutSeconds: number = 3, tolerance: number = this.imageHelper.defaultTolerance, toleranceType: ImageOptions = this.imageHelper.defaultToleranceType) {
         imageName = imageName || this.imageHelper.testName;
         const options = this.imageHelper.extendOptions({
             imageName: imageName,

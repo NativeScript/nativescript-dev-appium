@@ -64,6 +64,8 @@ export declare class ImageHelper {
     private _blockOutAreas;
     private _imagesResults;
     private _options;
+    private _defaultToleranceType;
+    private _defaultTolerance;
     private _defaultOptions;
     constructor(_args: INsCapabilities, _driver: AppiumDriver);
     static readonly pngFileExt = ".png";
@@ -80,6 +82,8 @@ export declare class ImageHelper {
     delta: number;
     options: IImageCompareOptions;
     blockOutAreas: IRectangle[];
+    defaultToleranceType: ImageOptions;
+    defaultTolerance: number;
     compareScreen(options?: IImageCompareOptions): Promise<boolean>;
     compareElement(element: UIElement, options?: IImageCompareOptions): Promise<boolean>;
     compareRectangle(cropRectangle: IRectangle, options?: IImageCompareOptions): Promise<boolean>;
