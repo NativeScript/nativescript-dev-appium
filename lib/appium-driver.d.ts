@@ -23,8 +23,6 @@ export declare class AppiumDriver {
     private _isAlive;
     private _locators;
     private _storageByPlatform;
-    private _defaultToleranceType;
-    private _defaultTolerance;
     private constructor();
     readonly imageHelper: ImageHelper;
     defaultWaitTime: number;
@@ -38,8 +36,6 @@ export declare class AppiumDriver {
     readonly isAndroid: boolean;
     readonly isIOS: boolean;
     readonly driver: any;
-    defaultToleranceType: ImageOptions;
-    defaultTolerance: number;
     /**
     * Get the storage where test results from image comparison is logged. The path should be reports/app nam/device name
     */
