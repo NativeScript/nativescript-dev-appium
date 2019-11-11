@@ -318,10 +318,16 @@ export class AppiumDriver {
             && sessionInfoDetails.platformName.toLowerCase() === "ios"
             && sessionInfoDetails.platformVersion.startsWith("13")) {
             try {
-                const devicesInfos = IOSController.devicesDisplaysInfos();
-                const matches = devicesInfos.filter(d => sessionInfoDetails.deviceName.includes(d.deviceType));
-                if (matches && matches.length > 0) {
-                    const deviceType = matches[matches.length - 1];
+                const devicesInfos = IOSController.devicesDisplaysInfos()
+                    .filter(d => sessionInfoDetails.deviceName.includes(d.deviceType));
+
+                if (devicesInfos.length > 0) {
+                    // sort devices by best match - in case we have iPhone XR 13 -> it will match device type 'iPhone X' and 'iPhone XR' -> after sort we will pick first longest match
+                    devicesInfos
+                        .sort((a, b) => {
+                            return sessionInfoDetails.deviceName.replace(a.deviceType, "").length - sessionInfoDetails.deviceName.replace(b.deviceType, "").length
+                        });
+                    const deviceType = devicesInfos[0];
                     args.device.viewportRect.y += deviceType.actionBarHeight;
                     args.device.viewportRect.height -= deviceType.actionBarHeight;
                 }
