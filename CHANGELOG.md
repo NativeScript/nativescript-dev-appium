@@ -1,3 +1,14 @@
+## [6.1.3](https://github.com/NativeScript/nativescript-dev-appium/compare/6.1.2...6.1.3) (2019-11-12)
+
+
+### Bug Fixes
+
+* **ios:** apply getActualRectangle ([#267](https://github.com/NativeScript/nativescript-dev-appium/issues/267)) ([ebe92e0](https://github.com/NativeScript/nativescript-dev-appium/commit/ebe92e0))
+* compareElement to use proper rectangle and generate proper diff image. ([cd76798](https://github.com/NativeScript/nativescript-dev-appium/commit/cd76798))
+* resolve device type by device name ([#277](https://github.com/NativeScript/nativescript-dev-appium/issues/277)) ([e7d7345](https://github.com/NativeScript/nativescript-dev-appium/commit/e7d7345))
+
+
+
 <a name="6.1.2"></a>
 ## [6.1.2](https://github.com/NativeScript/nativescript-dev-appium/compare/6.1.0...6.1.2) (2019-10-04)
 
