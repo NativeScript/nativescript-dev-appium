@@ -206,8 +206,8 @@ describe("start-appium-server-ios", async () => {
             appPath: iosApp,
             appiumCaps: {
                 platformName: Platform.IOS,
-                deviceName: /^iPhone XR$/,
-                platformVersion: /12/,
+                deviceName: /^iPhone XR 12$/,
+                platformVersion: "12.2",
                 fullReset: true
             },
             verbose: false
@@ -275,7 +275,7 @@ describe("dev-mode-options", async () => {
 
     before("start devices", async () => {
         await DeviceController.startDevice({ platform: Platform.ANDROID, apiLevel: "23" });
-        await DeviceController.startDevice({ platform: Platform.IOS, apiLevel: <any>/12./, name: "iPhone XR" });
+        await DeviceController.startDevice({ platform: Platform.IOS, apiLevel: "12.2", name: "iPhone XR 12" });
         appiumServer = new AppiumServer({});
         await appiumServer.start(8399);
     });
