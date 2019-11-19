@@ -21,8 +21,9 @@ export declare const getStorage: (args: INsCapabilities) => string;
 export declare function getReportPath(args: INsCapabilities): string;
 export declare const getRegexResultsAsArray: (regex: any, str: any) => any[];
 export declare function getAppPath(caps: INsCapabilities): string;
-export declare function calculateOffset(direction: any, y: number, yOffset: number, x: number, xOffset: number, isIOS: boolean, verbose: any): {
-    point: Point;
+export declare function calculateOffset(direction: any, y: number, yOffset: number, x: number, xOffset: number, isIOS: boolean): {
+    startPoint: Point;
+    endPoint: Point;
     duration: number;
 };
 /**
@@ -32,7 +33,7 @@ export declare function calculateOffset(direction: any, y: number, yOffset: numb
  * @param yOffset
  * @param xOffset
  */
-export declare function scroll(wd: any, driver: any, direction: Direction, isIOS: boolean, y: number, x: number, yOffset: number, xOffset: number, verbose: any): Promise<void>;
+export declare function scroll(wd: any, driver: any, direction: Direction, isIOS: boolean, y: number, x: number, yOffset: number, xOffset: number): Promise<void>;
 export declare const addExt: (fileName: string, ext: string) => string;
 export declare const isPortAvailable: (port: any) => Promise<{}>;
 export declare const findFreePort: (retries?: number, port?: number) => Promise<number>;

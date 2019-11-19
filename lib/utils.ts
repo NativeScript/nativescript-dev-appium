@@ -242,7 +242,7 @@ export function getStorageByDeviceName(args: INsCapabilities) {
     storage = createStorageFolder(storage, getDeviceName(args));
 
     logWarn(`Images storage set to: ${storage}!`);
-    
+
     return storage;
 }
 
@@ -381,48 +381,55 @@ export function getAppPath(caps: INsCapabilities) {
     return appFullPath;
 }
 
-export function calculateOffset(direction, y: number, yOffset: number, x: number, xOffset: number, isIOS: boolean, verbose) {
+export function calculateOffset(direction, y: number, yOffset: number, x: number, xOffset: number, isIOS: boolean) {
     let speed = 10;
-    let yEnd = Math.abs(yOffset);
-    let xEnd = Math.abs(xOffset);
+    let yEnd = y;
+    let xEnd = x;
     let duration = Math.abs(yEnd) * speed;
 
-    if (isIOS) {
-        speed = 100;
-        if (direction === Direction.down) {
-            direction = -1;
-            yEnd = direction * yEnd;
-        }
-        if (direction === Direction.right) {
-            direction = -1;
-            xEnd = direction * xEnd;
-        }
-    } else {
-        if (direction === Direction.down) {
-            yEnd = Math.abs(yOffset - y);
-        }
-        if (direction === Direction.up) {
-            yEnd = direction * Math.abs((Math.abs(yOffset) + y));
-        }
-
+    if (direction === Direction.down) {
+        yEnd = Math.abs(y);
+        y = Math.abs(yOffset - y);
         duration = Math.abs(yOffset) * speed;
-
-        if (direction === Direction.right) {
-            xEnd = Math.abs(xOffset - x);
-        }
-
-        if (direction === Direction.left) {
-            xEnd = Math.abs(xOffset + x);
-        }
-
-        if (yOffset < xOffset && x) {
-            duration = Math.abs(xOffset) * speed;
-        }
-
     }
-    log({ point: new Point(xEnd, yEnd), duration: duration }, verbose);
+    if (direction === Direction.up) {
+        yEnd = Math.abs((Math.abs(y - yOffset)));
+        duration = Math.abs(yOffset) * speed;
+    }
 
-    return { point: new Point(xEnd, yEnd), duration: duration };
+    if (direction === Direction.right) {
+        xEnd = Math.abs(x);
+        x = Math.abs(xOffset - x);
+        duration = Math.abs(xOffset) * speed;
+    }
+
+    if (direction === Direction.left) {
+        xEnd = Math.abs(xOffset + x);
+        duration = Math.abs(xOffset) * speed;
+        const addToX = isIOS ? 50 : 5;
+        if (isIOS) {
+            x = x === 0 ? 50 : x;
+        } else {
+            x = x === 0 ? 5 : x;
+        }
+        if (x === 0) {
+            logInfo(`Changing x to x + ${addToX}, since this will perform navigate back for ios or rise exception in android!`);
+        }
+    }
+
+    if (yOffset < xOffset) {
+        duration = Math.abs(xOffset) * speed;
+    }
+
+    logInfo("Start point: ", new Point(x, y));
+    logInfo("End point: ", new Point(xEnd, yEnd));
+    logInfo("Scrolling speed: ", duration);
+
+    return {
+        startPoint: new Point(x, y),
+        endPoint: new Point(xEnd, yEnd),
+        duration: duration
+    };
 }
 
 /**
@@ -432,19 +439,19 @@ export function calculateOffset(direction, y: number, yOffset: number, x: number
  * @param yOffset
  * @param xOffset 
  */
-export async function scroll(wd, driver, direction: Direction, isIOS: boolean, y: number, x: number, yOffset: number, xOffset: number, verbose) {
+export async function scroll(wd, driver, direction: Direction, isIOS: boolean, y: number, x: number, yOffset: number, xOffset: number) {
     if (x === 0) {
         x = 20;
     }
     if (y === 0) {
         y = 20;
     }
-    const endPoint = calculateOffset(direction, y, yOffset, x, xOffset, isIOS, verbose);
+    const endPoint = calculateOffset(direction, y, yOffset, x, xOffset, isIOS);
     const action = new wd.TouchAction(driver);
     action
         .press({ x: x, y: y })
         .wait(endPoint.duration)
-        .moveTo({ x: endPoint.point.x, y: endPoint.point.y })
+        .moveTo({ x: endPoint.endPoint.x, y: endPoint.endPoint.y })
         .release();
     await action.perform();
     await driver.sleep(150);
@@ -689,7 +696,7 @@ export const logColorized = (bgColor: ConsoleColor, frontColor: ConsoleColor, in
 
 
 export async function adbShellCommand(wd: any, command: string, args: Array<any>) {
-    await wd.execute('mobile: shell', {"command": command, "args": args});
+    await wd.execute('mobile: shell', { "command": command, "args": args });
 }
 
 enum ConsoleColor {

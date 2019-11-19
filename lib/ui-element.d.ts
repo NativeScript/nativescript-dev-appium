@@ -16,6 +16,10 @@ export declare class UIElement {
      * Click on element
      */
     click(): Promise<any>;
+    getCenter(): Promise<{
+        x: number;
+        y: number;
+    }>;
     tapCenter(): Promise<void>;
     tapAtTheEnd(): Promise<void>;
     /**
@@ -26,9 +30,14 @@ export declare class UIElement {
      */
     tap(): Promise<any>;
     /**
+     * @experimental
      * Double tap on element
      */
-    doubleTap(): Promise<any>;
+    doubleTap(offset?: {
+        x: number;
+        y: number;
+    }): Promise<any>;
+    longPress(duration: number): Promise<void>;
     /**
      * Get location of element
      */
@@ -36,7 +45,10 @@ export declare class UIElement {
     /**
      * Get size of element
      */
-    size(): Promise<Point>;
+    size(): Promise<{
+        width: number;
+        height: number;
+    }>;
     /**
      * Get text of element
      */
@@ -113,13 +125,6 @@ export declare class UIElement {
      */
     scrollTo(direction: Direction, elementToSearch: () => Promise<UIElement>, yOffset?: number, xOffset?: number, retries?: number): Promise<UIElement>;
     /**
- * Drag element with specific offset
- * @param direction
- * @param yOffset
- * @param xOffset - default value 0
- */
-    drag(direction: Direction, yOffset: number, xOffset?: number): Promise<void>;
-    /**
      * Click and hold over an element
      * @param time in milliseconds to increase the default press period.
      */
@@ -165,4 +170,50 @@ export declare class UIElement {
     * @param direction
     */
     swipe(direction: Direction): Promise<void>;
+    /**
+    * Drag element with specific offset
+    * @experimental
+    * @param direction
+    * @param yOffset
+    * @param xOffset - default value 0
+    */
+    drag(direction: Direction, yOffset: number, xOffset?: number, duration?: number): Promise<void>;
+    /**
+    *@experimental
+    * Pan element with specific offset
+    * @param offsets where the finger should move to.
+    * @param initPointOffset element.getRectangle() is used as start point. In case some additional offset should be provided use this param.
+    */
+    pan(offsets: {
+        x: number;
+        y: number;
+    }[], initPointOffset?: {
+        x: number;
+        y: number;
+    }): Promise<void>;
+    /**
+     * @experimental
+     * This method will try to move two fingers from opposite corners.
+     * One finger starts from
+     * { x: elementRect.x + offset.x, y: elementRect.y + offset.y }
+     * and ends to
+     * { x: elementRect.x + elementRect.width - offset.x, y: elementRect.height + elementRect.y - offset.y }
+     * and the other finger starts from
+     * { x: elementRect.width + elementRect.x - offset.x, y: elementRect.height + elementRect.y - offset.y }
+     * and ends to
+     * { x: elementRect.x + offset.x, y: elementRect.y + offset.y }
+     */
+    rotate(offset?: {
+        x: number;
+        y: number;
+    }): Promise<void>;
+    /**
+     * @experimental
+     * @param zoomFactory - zoomIn or zoomOut. Only zoomIn action is implemented
+     * @param offset
+     */
+    pinch(zoomType: "in" | "out", offset?: {
+        x: number;
+        y: number;
+    }): Promise<void>;
 }

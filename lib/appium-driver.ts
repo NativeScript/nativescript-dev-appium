@@ -30,7 +30,8 @@ import {
     encodeImageToBase64,
     ensureReportsDirExists,
     checkImageLogType,
-    adbShellCommand
+    adbShellCommand,
+    logWarn
 } from "./utils";
 
 import { INsCapabilities } from "./interfaces/ns-capabilities";
@@ -167,6 +168,11 @@ export class AppiumDriver {
     }
 
     public async navBack() {
+        if (this.isAndroid) {
+            logInfo("=== Navigate back with hardware button!");
+        } else {
+            logInfo("=== Navigate back.");
+        }
         return await this._driver.back();
     }
 
@@ -244,7 +250,7 @@ export class AppiumDriver {
                         prepareApp(args);
                         if (!args.device) {
                             if (args.isAndroid) {
-                                args.device = DeviceManager.getDefaultDevice(args, sessionInfo.capabilities.desired.deviceName, sessionInfo.capabilities.deviceUDID.replace("emulator-", ""), sessionInfo.capabilities.deviceUDID.includes("emulator") ? DeviceType.EMULATOR : DeviceType.SIMULATOR, sessionInfo.capabilities.desired.platformVersion || sessionInfo.capabilities.platformVersion);
+                                args.device = DeviceManager.getDefaultDevice(args, sessionInfo.capabilities.desired.deviceName, sessionInfo.capabilities.deviceUDID.replace("emulator-", ""), sessionInfo.capabilities.deviceUDID.includes("emulator") ? DeviceType.EMULATOR : DeviceType.SIMULATOR, sessionInfo.capabilities.deviceApiLevel || sessionInfo.capabilities.platformVersion);
                             } else {
                                 args.device = DeviceManager.getDefaultDevice(args);
                             }
@@ -257,6 +263,8 @@ export class AppiumDriver {
                     }
                 } catch (error) {
                     args.verbose = true;
+                    console.log("===============================");
+                    console.log("", error)
                     if (!args.ignoreDeviceController && error && error.message && error.message.includes("Failure [INSTALL_FAILED_INSUFFICIENT_STORAGE]")) {
                         await DeviceManager.kill(args.device);
                         await DeviceController.startDevice(args.device);
@@ -280,11 +288,11 @@ export class AppiumDriver {
                 console.log("Retry launching appium driver!");
                 hasStarted = false;
 
-                if (error && error.message && error.message.includes("WebDriverAgent")) {
-                    const freePort = await findFreePort(100, args.wdaLocalPort);
-                    console.log("args.appiumCaps['wdaLocalPort']", freePort);
-                    args.appiumCaps["wdaLocalPort"] = freePort;
-                }
+                // if (error && error.message && error.message.includes("WebDriverAgent")) {
+                //     const freePort = await findFreePort(100, args.wdaLocalPort);
+                //     console.log("args.appiumCaps['wdaLocalPort']", freePort);
+                //     args.appiumCaps["wdaLocalPort"] = freePort;
+                // }
             }
 
             if (hasStarted) {
@@ -491,7 +499,7 @@ export class AppiumDriver {
      * @param xOffset
      */
     public async scroll(direction: Direction, y: number, x: number, yOffset: number, xOffset: number = 0) {
-        await scroll(this._wd, this._driver, direction, this._webio.isIOS, y, x, yOffset, xOffset, this._args.verbose);
+        await scroll(this._wd, this._driver, direction, this._webio.isIOS, y, x, yOffset, xOffset);
     }
 
     /**
@@ -509,13 +517,15 @@ export class AppiumDriver {
         while ((el === null || !isDisplayed) && retryCount > 0) {
             try {
                 el = await element();
-                isDisplayed = await el.isDisplayed();
+                isDisplayed = el && await el.isDisplayed();
                 if (!isDisplayed) {
-                    await scroll(this._wd, this._driver, direction, this._webio.isIOS, startPoint.y, startPoint.x, offsetPoint.x, offsetPoint.y, this._args.verbose);
+                    await scroll(this._wd, this._driver, direction, this._webio.isIOS, startPoint.y, startPoint.x, offsetPoint.y, offsetPoint.x);
                     el = null;
                 }
             } catch (error) {
                 console.log("scrollTo Error: " + error);
+                await scroll(this._wd, this._driver, direction, this._webio.isIOS, startPoint.y, startPoint.x, offsetPoint.y, offsetPoint.x);
+                el = null;
             }
 
             retryCount--;
@@ -864,7 +874,7 @@ export class AppiumDriver {
         }
     }
 
-    private static async applyAdditionalSettings(args) {
+    private static async applyAdditionalSettings(args: INsCapabilities) {
         if (args.isSauceLab) return;
 
         args.appiumCaps['udid'] = args.appiumCaps['udid'] || args.device.token;
@@ -880,6 +890,11 @@ export class AppiumDriver {
             args.appiumCaps["useNewWDA"] = args.appiumCaps.useNewWDA;
             args.appiumCaps["wdaStartupRetries"] = 5;
             args.appiumCaps["shouldUseSingletonTestManager"] = args.appiumCaps.shouldUseSingletonTestManager;
+
+            if (args.derivedDataPath) {
+                args.appiumCaps["derivedDataPath"] = `${args.derivedDataPath}/${args.device.token}`;
+                logWarn('Changed derivedDataPath to: ', args.appiumCaps["derivedDataPath"]);
+            }
 
             // It looks we need it for XCTest (iOS 10+ automation)
             if (args.appiumCaps.platformVersion >= 10 && args.wdaLocalPort) {
