@@ -5,6 +5,7 @@ import { ITestReporter } from "./test-reporter";
 import { LogImageType } from "../enums/log-image-type";
 
 export interface INsCapabilitiesArgs {
+    derivedDataPath?: string;
     port?: number;
     wdaLocalPort?: number;
     projectDir?: string;

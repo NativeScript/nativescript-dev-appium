@@ -30,7 +30,8 @@ import {
     encodeImageToBase64,
     ensureReportsDirExists,
     checkImageLogType,
-    adbShellCommand
+    adbShellCommand,
+    logWarn
 } from "./utils";
 
 import { INsCapabilities } from "./interfaces/ns-capabilities";
@@ -57,8 +58,6 @@ export class AppiumDriver {
     private _isAlive: boolean = false;
     private _locators: Locator;
     private _storageByPlatform: string;
-    private _defaultToleranceType: ImageOptions = ImageOptions.percent;
-    private _defaultTolerance: number = 0;
 
     private constructor(private _driver: any, private _wd, private _webio: any, private _driverConfig, private _args: INsCapabilities) {
         this._elementHelper = new ElementHelper(this._args);
@@ -120,22 +119,6 @@ export class AppiumDriver {
         return this._driver;
     }
 
-    get defaultToleranceType(): ImageOptions {
-        return this._defaultToleranceType;
-    }
-
-    set defaultToleranceType(toleranceType: ImageOptions) {
-        this._defaultToleranceType = toleranceType;
-    }
-
-    get defaultTolerance(): number {
-        return this._defaultTolerance;
-    }
-
-    set defaultTolerance(tolerance: number) {
-        this._defaultTolerance = tolerance;
-    }
-
     /**
     * Get the storage where test results from image comparison is logged. The path should be reports/app nam/device name
     */
@@ -185,6 +168,11 @@ export class AppiumDriver {
     }
 
     public async navBack() {
+        if (this.isAndroid) {
+            logInfo("=== Navigate back with hardware button!");
+        } else {
+            logInfo("=== Navigate back.");
+        }
         return await this._driver.back();
     }
 
@@ -262,7 +250,7 @@ export class AppiumDriver {
                         prepareApp(args);
                         if (!args.device) {
                             if (args.isAndroid) {
-                                args.device = DeviceManager.getDefaultDevice(args, sessionInfo.capabilities.desired.deviceName, sessionInfo.capabilities.deviceUDID.replace("emulator-", ""), sessionInfo.capabilities.deviceUDID.includes("emulator") ? DeviceType.EMULATOR : DeviceType.SIMULATOR, sessionInfo.capabilities.desired.platformVersion || sessionInfo.capabilities.platformVersion);
+                                args.device = DeviceManager.getDefaultDevice(args, sessionInfo.capabilities.desired.deviceName, sessionInfo.capabilities.deviceUDID.replace("emulator-", ""), sessionInfo.capabilities.deviceUDID.includes("emulator") ? DeviceType.EMULATOR : DeviceType.SIMULATOR, sessionInfo.capabilities.deviceApiLevel || sessionInfo.capabilities.platformVersion);
                             } else {
                                 args.device = DeviceManager.getDefaultDevice(args);
                             }
@@ -275,6 +263,8 @@ export class AppiumDriver {
                     }
                 } catch (error) {
                     args.verbose = true;
+                    console.log("===============================");
+                    console.log("", error)
                     if (!args.ignoreDeviceController && error && error.message && error.message.includes("Failure [INSTALL_FAILED_INSUFFICIENT_STORAGE]")) {
                         await DeviceManager.kill(args.device);
                         await DeviceController.startDevice(args.device);
@@ -298,11 +288,11 @@ export class AppiumDriver {
                 console.log("Retry launching appium driver!");
                 hasStarted = false;
 
-                if (error && error.message && error.message.includes("WebDriverAgent")) {
-                    const freePort = await findFreePort(100, args.wdaLocalPort);
-                    console.log("args.appiumCaps['wdaLocalPort']", freePort);
-                    args.appiumCaps["wdaLocalPort"] = freePort;
-                }
+                // if (error && error.message && error.message.includes("WebDriverAgent")) {
+                //     const freePort = await findFreePort(100, args.wdaLocalPort);
+                //     console.log("args.appiumCaps['wdaLocalPort']", freePort);
+                //     args.appiumCaps["wdaLocalPort"] = freePort;
+                // }
             }
 
             if (hasStarted) {
@@ -336,10 +326,16 @@ export class AppiumDriver {
             && sessionInfoDetails.platformName.toLowerCase() === "ios"
             && sessionInfoDetails.platformVersion.startsWith("13")) {
             try {
-                const devicesInfos = IOSController.devicesDisplaysInfos();
-                const matches = devicesInfos.filter(d => sessionInfoDetails.deviceName.includes(d.deviceType));
-                if (matches && matches.length > 0) {
-                    const deviceType = matches[matches.length - 1];
+                const devicesInfos = IOSController.devicesDisplaysInfos()
+                    .filter(d => sessionInfoDetails.deviceName.includes(d.deviceType));
+
+                if (devicesInfos.length > 0) {
+                    // sort devices by best match - in case we have iPhone XR 13 -> it will match device type 'iPhone X' and 'iPhone XR' -> after sort we will pick first longest match
+                    devicesInfos
+                        .sort((a, b) => {
+                            return sessionInfoDetails.deviceName.replace(a.deviceType, "").length - sessionInfoDetails.deviceName.replace(b.deviceType, "").length
+                        });
+                    const deviceType = devicesInfos[0];
                     args.device.viewportRect.y += deviceType.actionBarHeight;
                     args.device.viewportRect.height -= deviceType.actionBarHeight;
                 }
@@ -621,11 +617,11 @@ export class AppiumDriver {
         return await this.driver.getSessionId();
     }
 
-    public async compareElement(element: UIElement, imageName?: string, tolerance: number = this._defaultTolerance, timeOutSeconds: number = 3, toleranceType: ImageOptions = this._defaultToleranceType) {
+    public async compareElement(element: UIElement, imageName?: string, tolerance: number = this.imageHelper.defaultTolerance, timeOutSeconds: number = 3, toleranceType: ImageOptions = this.imageHelper.defaultToleranceType) {
         return await this.compareRectangle(await element.getActualRectangle(), imageName, timeOutSeconds, tolerance, toleranceType);
     }
 
-    public async compareRectangle(rect: IRectangle, imageName?: string, timeOutSeconds: number = 3, tolerance: number = this._defaultTolerance, toleranceType: ImageOptions = this._defaultToleranceType) {
+    public async compareRectangle(rect: IRectangle, imageName?: string, timeOutSeconds: number = 3, tolerance: number = this.imageHelper.defaultTolerance, toleranceType: ImageOptions = this.imageHelper.defaultToleranceType) {
         imageName = imageName || this.imageHelper.testName;
         const options = this.imageHelper.extendOptions({
             imageName: imageName,
@@ -639,7 +635,7 @@ export class AppiumDriver {
         return await this.imageHelper.compare(options);
     }
 
-    public async compareScreen(imageName?: string, timeOutSeconds: number = 3, tolerance: number = this._defaultTolerance, toleranceType: ImageOptions = this._defaultToleranceType) {
+    public async compareScreen(imageName?: string, timeOutSeconds: number = 3, tolerance: number = this.imageHelper.defaultTolerance, toleranceType: ImageOptions = this.imageHelper.defaultToleranceType) {
         imageName = imageName || this.imageHelper.testName;
         const options = this.imageHelper.extendOptions({
             imageName: imageName,
@@ -878,7 +874,7 @@ export class AppiumDriver {
         }
     }
 
-    private static async applyAdditionalSettings(args) {
+    private static async applyAdditionalSettings(args: INsCapabilities) {
         if (args.isSauceLab) return;
 
         args.appiumCaps['udid'] = args.appiumCaps['udid'] || args.device.token;
@@ -894,6 +890,11 @@ export class AppiumDriver {
             args.appiumCaps["useNewWDA"] = args.appiumCaps.useNewWDA;
             args.appiumCaps["wdaStartupRetries"] = 5;
             args.appiumCaps["shouldUseSingletonTestManager"] = args.appiumCaps.shouldUseSingletonTestManager;
+
+            if (args.derivedDataPath) {
+                args.appiumCaps["derivedDataPath"] = `${args.derivedDataPath}/${args.device.token}`;
+                logWarn('Changed derivedDataPath to: ', args.appiumCaps["derivedDataPath"]);
+            }
 
             // It looks we need it for XCTest (iOS 10+ automation)
             if (args.appiumCaps.platformVersion >= 10 && args.wdaLocalPort) {

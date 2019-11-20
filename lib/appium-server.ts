@@ -126,7 +126,7 @@ export class AppiumServer {
 
     private startAppiumServer(logLevel: string, isSauceLab: boolean) {
         const startingServerArgs: Array<string> = isSauceLab ? ["--log-level", logLevel] : ["-p", this.port.toString(), "--log-level", logLevel];
-        if (this._args.isAndroid && this._args.ignoreDeviceController && !this._args.isSauceLab) {
+        if (this._args.isAndroid) {
             this._args.relaxedSecurity ? startingServerArgs.push("--relaxed-security") : console.log("'relaxedSecurity' is not enabled!\nTo enabled it use '--relaxedSecurity'!");
         }
 

@@ -83,6 +83,8 @@ export class ImageHelper {
     private _blockOutAreas: IRectangle[];
     private _imagesResults = new Map<string, boolean>();
     private _options: IImageCompareOptions = {};
+    private _defaultToleranceType: ImageOptions = ImageOptions.percent;
+    private _defaultTolerance: number = 0;
     private _defaultOptions: IImageCompareOptions = {
         timeOutSeconds: 2,
         tolerance: 0,
@@ -146,6 +148,22 @@ export class ImageHelper {
 
     set blockOutAreas(rectangles: IRectangle[]) {
         this._blockOutAreas = rectangles;
+    }
+
+    get defaultToleranceType(): ImageOptions {
+        return this._defaultToleranceType;
+    }
+
+    set defaultToleranceType(toleranceType: ImageOptions) {
+        this._defaultToleranceType = toleranceType;
+    }
+
+    get defaultTolerance(): number {
+        return this._defaultTolerance;
+    }
+
+    set defaultTolerance(tolerance: number) {
+        this._defaultTolerance = tolerance;
     }
 
     public async compareScreen(options?: IImageCompareOptions) {
@@ -314,13 +332,13 @@ export class ImageHelper {
 
     public compareImages(options: IImageCompareOptions, actual: string, expected: string, output: string) {
         const clipRect = {
-            x: this.options.cropRectangle.x,
-            y: this.options.cropRectangle.y,
-            width: this.options.cropRectangle.width,
-            height: this.options.cropRectangle.height
+            x: options.cropRectangle.x,
+            y: options.cropRectangle.y,
+            width: options.cropRectangle.width,
+            height: options.cropRectangle.height
         }
 
-        if (!this.options.keepOriginalImageSize) {
+        if (!options.keepOriginalImageSize) {
             clipRect.x = 0;
             clipRect.y = 0;
             clipRect.width = undefined;

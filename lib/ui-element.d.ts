@@ -33,7 +33,10 @@ export declare class UIElement {
      * @experimental
      * Double tap on element
      */
-    doubleTap(): Promise<any>;
+    doubleTap(offset?: {
+        x: number;
+        y: number;
+    }): Promise<any>;
     longPress(duration: number): Promise<void>;
     /**
      * Get location of element
@@ -178,10 +181,10 @@ export declare class UIElement {
     /**
     *@experimental
     * Pan element with specific offset
-    * @param points where the finger should move to.
+    * @param offsets where the finger should move to.
     * @param initPointOffset element.getRectangle() is used as start point. In case some additional offset should be provided use this param.
     */
-    pan(points: {
+    pan(offsets: {
         x: number;
         y: number;
     }[], initPointOffset?: {
