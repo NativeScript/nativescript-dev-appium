@@ -499,7 +499,7 @@ export class AppiumDriver {
      * @param xOffset
      */
     public async scroll(direction: Direction, y: number, x: number, yOffset: number, xOffset: number = 0) {
-        await scroll(this._wd, this._driver, direction, this._webio.isIOS, y, x, yOffset, xOffset);
+        await scroll(this._wd, this._driver, direction, this._args, y, x, yOffset, xOffset);
     }
 
     /**
@@ -519,12 +519,12 @@ export class AppiumDriver {
                 el = await element();
                 isDisplayed = el && await el.isDisplayed();
                 if (!isDisplayed) {
-                    await scroll(this._wd, this._driver, direction, this._webio.isIOS, startPoint.y, startPoint.x, offsetPoint.y, offsetPoint.x);
+                    await scroll(this._wd, this._driver, direction, this._args, startPoint.y, startPoint.x, offsetPoint.y, offsetPoint.x);
                     el = null;
                 }
             } catch (error) {
                 console.log("scrollTo Error: " + error);
-                await scroll(this._wd, this._driver, direction, this._webio.isIOS, startPoint.y, startPoint.x, offsetPoint.y, offsetPoint.x);
+                await scroll(this._wd, this._driver, direction, this._args, startPoint.y, startPoint.x, offsetPoint.y, offsetPoint.x);
                 el = null;
             }
 

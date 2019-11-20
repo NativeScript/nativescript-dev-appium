@@ -381,19 +381,26 @@ export function getAppPath(caps: INsCapabilities) {
     return appFullPath;
 }
 
-export function calculateOffset(direction, y: number, yOffset: number, x: number, xOffset: number, isIOS: boolean) {
+export function calculateOffset(direction, y: number, yOffset: number, x: number, xOffset: number, args: INsCapabilities) {
     let speed = 10;
     let yEnd = y;
     let xEnd = x;
     let duration = Math.abs(yEnd) * speed;
 
     if (direction === Direction.down) {
-        yEnd = Math.abs(y);
-        y = Math.abs(yOffset - y);
+        yEnd = y == 0 ? Math.abs(y + args.device.statBarHeight) : Math.abs(y);
+        y = Math.abs(yOffset);
         duration = Math.abs(yOffset) * speed;
     }
     if (direction === Direction.up) {
-        yEnd = Math.abs((Math.abs(y - yOffset)));
+        const actionbarHeight = 50;
+        if (y == 0) {
+            y = args.device.statBarHeight + y;
+            if (y + actionbarHeight < yOffset) {
+                y = y + actionbarHeight;
+            }
+        }
+        yEnd = Math.abs((Math.abs(yOffset)));
         duration = Math.abs(yOffset) * speed;
     }
 
@@ -406,8 +413,8 @@ export function calculateOffset(direction, y: number, yOffset: number, x: number
     if (direction === Direction.left) {
         xEnd = Math.abs(xOffset + x);
         duration = Math.abs(xOffset) * speed;
-        const addToX = isIOS ? 50 : 5;
-        if (isIOS) {
+        const addToX = args.isIOS ? 50 : 5;
+        if (args.isIOS) {
             x = x === 0 ? 50 : x;
         } else {
             x = x === 0 ? 5 : x;
@@ -439,14 +446,14 @@ export function calculateOffset(direction, y: number, yOffset: number, x: number
  * @param yOffset
  * @param xOffset 
  */
-export async function scroll(wd, driver, direction: Direction, isIOS: boolean, y: number, x: number, yOffset: number, xOffset: number) {
+export async function scroll(wd, driver, direction: Direction, args: INsCapabilities, y: number, x: number, yOffset: number, xOffset: number) {
     if (x === 0) {
         x = 20;
     }
     if (y === 0) {
         y = 20;
     }
-    const endPoint = calculateOffset(direction, y, yOffset, x, xOffset, isIOS);
+    const endPoint = calculateOffset(direction, y, yOffset, x, xOffset, args);
     const action = new wd.TouchAction(driver);
     action
         .press({ x: x, y: y })
@@ -697,6 +704,11 @@ export const logColorized = (bgColor: ConsoleColor, frontColor: ConsoleColor, in
 
 export async function adbShellCommand(wd: any, command: string, args: Array<any>) {
     await wd.execute('mobile: shell', { "command": command, "args": args });
+}
+
+export function hasNotch(device: string): boolean {
+    const notchDevices = ["iPhone X", "iPhone 11"];
+    return notchDevices.some(notchDevice => device.includes(notchDevice));
 }
 
 enum ConsoleColor {
