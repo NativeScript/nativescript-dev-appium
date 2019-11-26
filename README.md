@@ -166,6 +166,8 @@ npm run e2e -- --runType=sim.iPhoneX
 
 2018, March 6th: [Start Testing Your NativeScript Apps Properly](https://www.nativescript.org/blog/start-testing-your-nativescript-apps-properly)
 
+2019, August 1st: [Additional Set Up Guide, Tips, and Gotchas](http://tylerablake.com/nativescript/2019/08/01/automated-ui-testing-in-nativescript.html)
+
 ## Demos
 
 The official demos of the [nativescript-dev-appium](https://github.com/NativeScript/nativescript-dev-appium#nativescript-dev-appium) plugin: [https://github.com/NativeScript/ns-dev-days-appium-plugin](https://github.com/NativeScript/ns-dev-days-appium-plugin).
