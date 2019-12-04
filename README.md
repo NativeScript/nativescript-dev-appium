@@ -73,12 +73,7 @@ $ brew install carthage
 $ brew install libimobiledevice --HEAD
 $ brew install ideviceinstaller
 $ brew install ios-webkit-debug-proxy
-```
-
-* [NPM](https://www.npmjs.com/):
-
-```shell
-$ npm install -g ios-deploy
+$ brew install ios-deploy
 ```
 
 > For detailed information on external dependencies, please, refer to the [XCUITest](https://github.com/appium/appium-xcuitest-driver/blob/master/README.md#external-dependencies) repository.
