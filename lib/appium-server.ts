@@ -133,6 +133,10 @@ export class AppiumServer {
         logInfo(`Server args: `, startingServerArgs);
 
         this._server = spawn(this._appium, startingServerArgs);
+        this._server.on('error', (err) => {
+            console.error('Failed to start appium! Do you have it installed?');
+            console.error(err);
+        });
     }
 
     public async stop() {
