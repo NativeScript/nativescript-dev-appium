@@ -297,6 +297,11 @@ Run tests in sauceLab
 $ npm run e2e -- --runType android25 --sauceLab --appPath demo.apk
 ```
 
+Run tests in Kobiton
+```
+$ npm run e2e -- --runType android25 --kobiton --appPath demo.apk
+```
+
 Run tests locally
 ```
 $ npm run e2e -- --runType android25

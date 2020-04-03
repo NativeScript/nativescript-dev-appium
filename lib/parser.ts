@@ -38,6 +38,12 @@ const config = (() => {
                 default: false,
                 type: "boolean"
             })
+        .option("kobiton",
+            {
+                describe: "Use it mandatory for Kobiton run!",
+                default: false,
+                type: "boolean"
+            })
         .option("port",
             {
                 alias: "p",
@@ -156,6 +162,17 @@ const config = (() => {
         options.driverConfig = "https://" + sauceUser + ":" + sauceKey + "@ondemand.saucelabs.com:443/wd/hub";
     }
 
+    options.kobiton = options.kobiton || process.env.npm_config_kobiton;
+    if (options.kobiton && !options.remoteAddress) {
+        const kobitonUser = options.kobitonUser || process.env.KOBITON_USERNAME || process.env.npm_config["KOBITON_USERNAME"];
+        const kobitonKey = options.kobitonKey || process.env.KOBITON_ACCESS_KEY || process.env.npm_config["KOBITON_ACCESS_KEY"];
+
+        if (!kobitonKey || !kobitonUser) {
+            throw new Error("Kobiton Username or Access Key is missing! Check environment variables for KOBITON_USERNAME and KOBITON_ACCESS_KEY !!!");
+        }
+
+        options.driverConfig = "https://" + kobitonUser + ":" + kobitonKey + "@api.kobiton.com/wd/hub";
+    }
     const config = {
         port: options.port,
         projectDir: projectDir,
