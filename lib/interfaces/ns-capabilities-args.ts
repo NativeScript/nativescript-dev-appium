@@ -29,6 +29,7 @@ export interface INsCapabilitiesArgs {
     isAndroid?: boolean;
     isIOS?: boolean;
     isSauceLab?: boolean;
+    isKobiton?: boolean;
     reuseDevice?: boolean;
     ignoreDeviceController?: boolean;
     relaxedSecurity?: boolean,

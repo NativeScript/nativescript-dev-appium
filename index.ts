@@ -93,7 +93,7 @@ export async function createDriver(args?: INsCapabilitiesArgs) {
         }
         return appiumDriver;
     }
-    if (!appiumServer.server && !nsCapabilities.isSauceLab) {
+    if (!appiumServer.server && (!nsCapabilities.isSauceLab || !nsCapabilities.isKobiton)) {
         logInfo("Server is not available! To start appium server programmaticаlly use startServer()!");
     }
     if (!nsCapabilities.appiumCapsLocation) {

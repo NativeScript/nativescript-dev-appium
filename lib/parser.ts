@@ -223,6 +223,7 @@ export const {
     testFolder,
     runType,
     isSauceLab,
+    isKobiton,
     appPath,
     storage,
     testReports,

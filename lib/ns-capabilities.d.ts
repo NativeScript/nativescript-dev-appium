@@ -27,6 +27,7 @@ export declare class NsCapabilities implements INsCapabilities {
     devMode: boolean;
     runType: string;
     isSauceLab: boolean;
+    isKobiton: boolean;
     wdaLocalPort: number;
     appName: string;
     appPath: string;
