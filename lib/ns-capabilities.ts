@@ -286,7 +286,7 @@ export class NsCapabilities implements INsCapabilities {
             logInfo("Changing appium setting fullReset: false and noReset: true ");
         }
 
-        if ((!this.kobiton || !this.isSauceLab) && this.appiumCaps["fullReset"] === false && this.appiumCaps["noReset"] === true) {
+        if ((!this.isSauceLab || !this.kobiton) && this.appiumCaps["fullReset"] === false && this.appiumCaps["noReset"] === true) {
             this.devMode = true;
             logWarn("Running in devMode!");
             logWarn("If the application is not installed on device, you can use 'tns run android/ ios' to install it!");
@@ -387,7 +387,7 @@ export class NsCapabilities implements INsCapabilities {
     private checkMandatoryCapabilities() {
         const appPackage = this.isAndroid ? "appPackage" : "bundleId";
 
-        if ((!this.kobiton || !this.isSauceLab) && (!this.appiumCaps[appPackage] && !existsSync(this.appiumCaps.app))) {
+        if ((!this.isSauceLab || !this.kobiton) && (!this.appiumCaps[appPackage] && !existsSync(this.appiumCaps.app))) {
             this.exceptions.push(`The application folder doesn't exists or no ${appPackage} provided!`);
         }
 
