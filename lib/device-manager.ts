@@ -40,8 +40,8 @@ export class DeviceManager implements IDeviceManager {
             return device;
         }
 
-        // When '--isKobiton' or '--isSauceLab' option is set we should do nothing;
-        if (args.isKobiton || args.isSauceLab || args.ignoreDeviceController) {
+        // When '--kobiton' or '--isSauceLab' option is set we should do nothing;
+        if (args.kobiton || args.isSauceLab || args.ignoreDeviceController) {
             args.ignoreDeviceController = true;
             DeviceManager._emulators.set(args.runType, device);
             return device;

@@ -875,7 +875,7 @@ export class AppiumDriver {
     }
 
     private static async applyAdditionalSettings(args: INsCapabilities) {
-        if (args.isSauceLab || args.isKobiton) return;
+        if (args.isSauceLab || args.kobiton) return;
 
         args.appiumCaps['udid'] = args.appiumCaps['udid'] || args.device.token;
         if (args.device.type === DeviceType.EMULATOR && args.device.token) {

@@ -79,7 +79,7 @@ export class AppiumServer {
             logInfo(`SauceLab option is set to true. Skip starting of appium server!`)
             return this;
         }
-        if (this._args.isKobiton) {
+        if (this._args.kobiton) {
             logInfo(`Kobiton option is set to true. Skip starting of appium server!`)
             return this;
         }

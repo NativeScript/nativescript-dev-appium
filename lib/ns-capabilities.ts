@@ -33,7 +33,7 @@ export class NsCapabilities implements INsCapabilities {
     public devMode: boolean;
     public runType: string;
     public isSauceLab: boolean;
-    public isKobiton: boolean;
+    public kobiton: boolean;
     public wdaLocalPort: number;
     public appName: string;
     public appPath: string;
@@ -76,7 +76,7 @@ export class NsCapabilities implements INsCapabilities {
         this.devMode = this._parser.devMode;
         this.runType = this._parser.runType;
         this.isSauceLab = this._parser.isSauceLab;
-        this.isKobiton = this._parser.isKobiton;
+        this.kobiton = this._parser.kobiton;
         this.ignoreDeviceController = this._parser.ignoreDeviceController;
         this.wdaLocalPort = this._parser.wdaLocalPort;
         this.derivedDataPath = this._parser.derivedDataPath;
@@ -286,7 +286,7 @@ export class NsCapabilities implements INsCapabilities {
             logInfo("Changing appium setting fullReset: false and noReset: true ");
         }
 
-        if ((!this.isKobiton || !this.isSauceLab) && this.appiumCaps["fullReset"] === false && this.appiumCaps["noReset"] === true) {
+        if ((!this.kobiton || !this.isSauceLab) && this.appiumCaps["fullReset"] === false && this.appiumCaps["noReset"] === true) {
             this.devMode = true;
             logWarn("Running in devMode!");
             logWarn("If the application is not installed on device, you can use 'tns run android/ ios' to install it!");
@@ -372,7 +372,7 @@ export class NsCapabilities implements INsCapabilities {
             this.appPath = this.appiumCaps.app;
             this.ignoreDeviceController = true;
             logInfo(`Using Sauce Labs. The application path is changed to: ${this.appiumCaps.app}`);
-        } else if (this.isKobiton) {
+        } else if (this.kobiton) {
             this.appPath = this.appiumCaps.app;
             this.ignoreDeviceController = true;
             logInfo(`Using Kobiton. The application path is changed to: ${this.appiumCaps.app}`);
@@ -387,7 +387,7 @@ export class NsCapabilities implements INsCapabilities {
     private checkMandatoryCapabilities() {
         const appPackage = this.isAndroid ? "appPackage" : "bundleId";
 
-        if ((!this.isKobiton || !this.isSauceLab) && (!this.appiumCaps[appPackage] && !existsSync(this.appiumCaps.app))) {
+        if ((!this.kobiton || !this.isSauceLab) && (!this.appiumCaps[appPackage] && !existsSync(this.appiumCaps.app))) {
             this.exceptions.push(`The application folder doesn't exists or no ${appPackage} provided!`);
         }
 
