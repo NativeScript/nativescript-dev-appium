@@ -168,6 +168,7 @@ const config = (() => {
         runType: options.runType || process.env.npm_config_runType,
         appiumCapsLocation: options.appiumCapsLocation || process.env.npm_config_appiumCapsLocation || join(projectDir, options.testFolder, "config", options.capabilitiesName),
         isSauceLab: options.isSauceLab,
+        kobiton: options.kobiton,
         verbose: options.verbose || process.env.npm_config_loglevel === "verbose",
         appPath: options.appPath || process.env.npm_config_appPath,
         storage: options.storage || process.env.npm_config_STORAGE || process.env.STORAGE,
