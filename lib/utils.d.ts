@@ -21,7 +21,7 @@ export declare const getStorage: (args: INsCapabilities) => string;
 export declare function getReportPath(args: INsCapabilities): string;
 export declare const getRegexResultsAsArray: (regex: any, str: any) => any[];
 export declare function getAppPath(caps: INsCapabilities): string;
-export declare function calculateOffset(direction: any, y: number, yOffset: number, x: number, xOffset: number, isIOS: boolean): {
+export declare function calculateOffset(direction: any, y: number, yOffset: number, x: number, xOffset: number, args: INsCapabilities): {
     startPoint: Point;
     endPoint: Point;
     duration: number;
@@ -33,7 +33,7 @@ export declare function calculateOffset(direction: any, y: number, yOffset: numb
  * @param yOffset
  * @param xOffset
  */
-export declare function scroll(wd: any, driver: any, direction: Direction, isIOS: boolean, y: number, x: number, yOffset: number, xOffset: number): Promise<void>;
+export declare function scroll(wd: any, driver: any, direction: Direction, args: INsCapabilities, y: number, x: number, yOffset: number, xOffset: number): Promise<void>;
 export declare const addExt: (fileName: string, ext: string) => string;
 export declare const isPortAvailable: (port: any) => Promise<{}>;
 export declare const findFreePort: (retries?: number, port?: number) => Promise<number>;
@@ -53,6 +53,7 @@ export declare function logError(info: any, obj?: any): void;
 export declare function log(message: any, verbose: any): void;
 export declare const logColorized: (bgColor: ConsoleColor, frontColor: ConsoleColor, info: any) => void;
 export declare function adbShellCommand(wd: any, command: string, args: Array<any>): Promise<void>;
+export declare function hasNotch(device: string): boolean;
 declare enum ConsoleColor {
     Reset = "\u001B[0m",
     Bright = "\u001B[1m",
