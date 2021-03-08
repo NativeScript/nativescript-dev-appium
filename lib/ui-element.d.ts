@@ -216,4 +216,10 @@ export declare class UIElement {
         x: number;
         y: number;
     }): Promise<void>;
+
+	/**
+     * Returns if an element is enable
+     */
+    isChecked(): Promise<boolean>;
+
 }
