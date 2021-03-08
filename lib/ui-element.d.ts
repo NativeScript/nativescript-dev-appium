@@ -220,6 +220,6 @@ export declare class UIElement {
 	/**
      * Returns if an element is enable
      */
-    isChecked(): Promise<boolean>;
+    isEnabled(): Promise<boolean>;
 
 }
