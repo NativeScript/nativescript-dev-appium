@@ -1,3 +1,7 @@
+> *Remark* [This repository] is a fork of [the original by Nativescript] (https://github.com/NativeScript/nativescript-dev-appium.git)
+
+Fork from (https://github.com/EddyVerbruggen/nativescript-plugin-firebase/pull/1640).
+
 # nativescript-dev-appium
 
 A package to help with writing and executing e2e [Appium](http://appium.io) tests.

@@ -624,4 +624,38 @@ export class UIElement {
         await multiAction.perform();
         logInfo("End pinch gesture!");
     }
+
+	/**
+     * Returns if an element is enabled
+     */
+    public async isEnabled() {
+        const el = (await this.element());
+        if (!el) {
+            return false;
+        }
+        if (this._args.isAndroid) {
+            try {
+                const isEnabled = await el.getAttribute("clickable");
+                return isEnabled === "true" || isEnabled === true;
+            }
+            catch (error) {
+                console.error("Check if this is the correct element!");
+            }
+        }
+        try {
+            return await el.isEnabled();
+        }
+        catch (ex) {
+            console.warn("'enabled' attr is not reachable on this element!");
+        }
+
+        console.warn("Trying use 'value' attr!");
+        try {
+            const attrValue = await el.getAttribute("value");
+            return attrValue === "1" || attrValue === "true" || attrValue === true;
+        }
+        catch (error) {
+            return false;
+        }
+    }
 }
